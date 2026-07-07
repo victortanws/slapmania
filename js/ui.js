@@ -52,8 +52,11 @@ export function setBest(entry) {
 }
 
 export function intro(arch) {
-  if (!arch) { el.intro.classList.add('hidden'); return; }
+  // while the big name banner is up (faceoff), drop the taunt bubble to the
+  // lower third so it never covers the volunteer's name.
+  if (!arch) { el.intro.classList.add('hidden'); el.bubble.classList.remove('withIntro'); return; }
   el.intro.classList.remove('hidden');
+  el.bubble.classList.add('withIntro');
   el.introName.textContent = arch.name;
   el.introTag.textContent = `${arch.tag} — SCORE ×${arch.mass}`;
 }

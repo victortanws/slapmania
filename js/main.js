@@ -106,8 +106,22 @@ function gradeP(spineA, spineV) {
 }
 
 // persistent top-5 leaderboard: [{pts, dist, opp, when}]
-let board = [];
-try { board = JSON.parse(localStorage.getItem('slapp_board') || '[]'); } catch { board = []; }
+// The board is a single localStorage key, so any second context (another tab,
+// an earlier session left open) that saves with a STALE in-memory copy would
+// blind-overwrite and erase newer scores. Every save therefore re-reads storage
+// and MERGES (read-modify-write), and a `storage` listener keeps open tabs synced.
+function readBoard() {
+  try { return JSON.parse(localStorage.getItem('slapp_board') || '[]'); } catch { return []; }
+}
+function mergeBoards(...lists) {
+  const seen = new Set(), out = [];
+  for (const e of [].concat(...lists)) {
+    const k = `${e.pts}|${e.dist}|${e.opp}|${e.when}`;
+    if (!seen.has(k)) { seen.add(k); out.push(e); }
+  }
+  return out.sort((a, b) => b.pts - a.pts).slice(0, 5);
+}
+let board = readBoard();
 const bestPts = () => (board[0] ? board[0].pts : 0);
 
 function refreshBest() {
@@ -118,6 +132,29 @@ function refreshBest() {
   ]);
 }
 refreshBest();
+// another tab saved a score — fold it in so our BEST + top-5 stay current.
+addEventListener('storage', (e) => {
+  if (e.key === 'slapp_board') { board = mergeBoards(board, readBoard()); refreshBest(); }
+});
+// reclaim: pull scores you posted worldwide (under your saved name) back into the
+// county board — recovers entries a stale tab may have clobbered before A's fix.
+// Dedupe on pts+dist+opp (worldwide has no local `when`), never removes anything.
+if (net.configured()) {
+  const myName = localStorage.getItem('slapp_name') || '';
+  if (myName.trim()) {
+    net.fetchByName(myName).then((rows) => {
+      const have = new Set(board.map((e) => `${e.pts}|${(+e.dist).toFixed(1)}|${e.opp}`));
+      const adds = (rows || [])
+        .filter((r) => !have.has(`${r.pts}|${(+r.dist).toFixed(1)}|${r.opp}`))
+        .map((r) => ({ pts: r.pts, dist: +r.dist, opp: r.opp, when: Date.parse(r.created_at) || Date.now() }));
+      if (adds.length) {
+        board = mergeBoards(board, adds);
+        localStorage.setItem('slapp_board', JSON.stringify(board));
+        refreshBest();
+      }
+    }).catch(() => {});
+  }
+}
 ui.setAttempts(attempts, 0);
 ui.initName();
 ui.setMaster(localStorage.getItem('slapp_emperor') ? 2 : localStorage.getItem('slapp_master') ? 1 : 0);
@@ -345,9 +382,10 @@ function showResult() {
   const pts = Math.round(dist * arch.mass * 10);
   attempts.push({ dist, pts, foul: isFoul ? slap.foul : null, part: slap ? slap.part : null, opp: arch.name });
   if (pts > 0) {
-    board.push({ pts, dist, opp: arch.name, when: Date.now() });
-    board.sort((a, b) => b.pts - a.pts);
-    board = board.slice(0, 5);
+    // read-modify-write: fold in whatever storage holds now (maybe newer than our
+    // in-memory copy), add this score, then persist — so we never clobber a score
+    // another tab wrote while we weren't looking.
+    board = mergeBoards(board, readBoard(), [{ pts, dist, opp: arch.name, when: Date.now() }]);
     localStorage.setItem('slapp_board', JSON.stringify(board));
     refreshBest();
   }

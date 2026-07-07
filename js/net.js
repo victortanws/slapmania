@@ -25,6 +25,19 @@ export async function fetchTop(n = 10) {
   return r.json();
 }
 
+// scores you've posted worldwide under a given name — used to reclaim entries
+// (e.g. a score a stale tab clobbered locally) back into the county board.
+export async function fetchByName(name, n = 20) {
+  const clean = String(name).trim().slice(0, 12).toUpperCase();
+  if (!clean) return [];
+  const r = await fetch(
+    `${cfg().supabaseUrl}/rest/v1/slapp_scores?select=pts,dist,opp,created_at&name=eq.${encodeURIComponent(clean)}&order=pts.desc&limit=${n}`,
+    { headers: headers() }
+  );
+  if (!r.ok) throw new Error(`fetchByName ${r.status}`);
+  return r.json();
+}
+
 export async function submit({ name, pts, dist, opp }) {
   const row = {
     name: String(name).trim().slice(0, 12).toUpperCase(),
