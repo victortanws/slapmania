@@ -639,11 +639,11 @@ function tick(now) {
     ui.setKeys(keys, wanted);
     opponent.setTargetHot(snapLvl);
     if (chain.tRel === null) {
-      if (keys.s) ui.coach(coilPct >= 90 ? 'FULL COIL! LET GO OF [S]!' : `COILING... ${coilPct}% — HOLD [S], DEEPER!`);
-      else ui.coach('STEP 1: HOLD [S] — COIL THE SPINE');
-    } else if (!chain.l) ui.coach('TAP [L] — FIRE THE HIPS! (COIL IS DRAINING)');
+      if (keys.s) ui.coach(coilPct >= 90 ? 'FULL SWIVEL! LET GO OF [S]!' : `SWIVELING... ${coilPct}% — HOLD [S], DEEPER!`);
+      else ui.coach('STEP 1: HOLD [S] — SWIVEL THE SPINE');
+    } else if (!chain.l) ui.coach('TAP [L] — LUNGE THE HIPS! (SWIVEL IS DRAINING)');
     else if (!chain.a) ui.coach('PRESS [A] — THROW THE ARM!');
-    else if (!chain.p) ui.coach(snapCue ? '[P]!! SNAP!!' : 'WAIT FOR THE GREEN RING... THEN [P]');
+    else if (!chain.p) ui.coach(snapCue ? '[P]!! PALM!!' : 'WAIT FOR THE GREEN RING... THEN [P]');
     else ui.coach(null);
 
     shotClock -= dts;

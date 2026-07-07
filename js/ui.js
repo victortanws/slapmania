@@ -200,7 +200,7 @@ export function showResult({ dist, pts, arch, part, foul, chain, line, n }) {
       : 'CLEAN CHEEK CONTACT ✓';
   }
   el.resChain.textContent = chain
-    ? `CHAIN ${chain.pct}% OF PERFECT — COIL ${chain.coil}% · HIPS ${chain.l} · ARM ${chain.a} · SNAP ${chain.p}${chain.ugly ? ' · (REBOUND FLAIL −70%)' : ''}${chain.bal != null && chain.bal < 95 ? ` · OFF-BALANCE −${100 - chain.bal}%` : ''}`
+    ? `CHAIN ${chain.pct}% OF PERFECT — SWIVEL ${chain.coil}% · LUNGE ${chain.l} · ARM ${chain.a} · PALM ${chain.p}${chain.ugly ? ' · (REBOUND FLAIL −70%)' : ''}${chain.bal != null && chain.bal < 95 ? ` · OFF-BALANCE −${100 - chain.bal}%` : ''}`
     : '';
   el.resLine.textContent = line;
   el.resNext.textContent = n >= 3 ? 'CLICK / ENTER → FINAL VERDICT' : `CLICK / ENTER → ATTEMPT ${n + 1} OF 3`;
@@ -216,12 +216,19 @@ export function showMatch({ bestAttempt, line, board }) {
     ? board.map((b, i) =>
         `<div class="boardrow"><span>#${i + 1}</span><b>${b.pts} PTS</b><span>${b.dist.toFixed(1)}m vs ${b.opp}</span></div>`).join('')
     : '<div class="boardrow">No slaps on record.</div>');
-  el.shareBtn.textContent = 'COPY BRAG TEXT';
-  el.shareBtn.onclick = () => {
-    const txt = `I scored ${bestAttempt.pts} PTS slapping ${bestAttempt.opp} ${bestAttempt.dist.toFixed(1)}m across a farm in SLAPMANIA! Controls: S, L, A, P. That's the whole game.`;
-    navigator.clipboard?.writeText(txt).then(
-      () => { el.shareBtn.textContent = 'COPIED!'; },
-      () => { el.shareBtn.textContent = txt; }
+  el.shareBtn.textContent = navigator.share ? 'SHARE MY SLAP' : 'COPY BRAG TEXT';
+  el.shareBtn.onclick = async () => {
+    const url = document.querySelector('meta[property="og:url"]')?.content || location.href;
+    const txt = `I scored ${bestAttempt.pts} PTS slapping ${bestAttempt.opp} ${bestAttempt.dist.toFixed(1)}m across a farm in SLAPMANIA! Four keys — S·L·A·P. Can you beat it?`;
+    // native share sheet where available (mobile: Facebook, Messages, WhatsApp…);
+    // fall back to clipboard on browsers without the Web Share API.
+    if (navigator.share) {
+      try { await navigator.share({ title: 'SLAPMANIA', text: txt, url }); return; }
+      catch (e) { if (e.name === 'AbortError') return; }
+    }
+    navigator.clipboard?.writeText(`${txt} ${url}`).then(
+      () => { el.shareBtn.textContent = 'COPIED — PASTE ANYWHERE!'; },
+      () => { el.shareBtn.textContent = `${txt} ${url}`; }
     );
   };
 }
@@ -244,7 +251,9 @@ export function showPick({ title, blurb, items, confirmLabel, onHover, onConfirm
   el.pickBlurb.textContent = blurb;
   el.pickGo.textContent = confirmLabel;
   el.pickGo.onclick = () => onConfirm();
-  el.pickHint.textContent = `1–${items.length} OR HOVER TO PREVIEW • ENTER OR CLICK TO CONFIRM`;
+  el.pickHint.textContent = document.body.classList.contains('touch')
+    ? 'TAP A FIGHTER TO SIZE THEM UP IN THE RING • THEN HIT THE BIG BUTTON'
+    : `1–${items.length} OR HOVER TO PREVIEW • ENTER OR CLICK TO CONFIRM`;
   el.pickRow.innerHTML = '';
   items.forEach((it, i) => {
     const b = document.createElement('div');
@@ -253,8 +262,15 @@ export function showPick({ title, blurb, items, confirmLabel, onHover, onConfirm
       <div class="cname">${it.name}</div>
       <div class="ctag">${it.sub}</div>
       <div class="cdesc">${it.desc}</div>`;
-    b.onmouseenter = () => onHover(i);
-    b.onclick = () => { onHover(i); onConfirm(); };
+    // mouse: hover previews, a click selects + confirms in one action (as before).
+    // touch: a tap ONLY selects and shows that fighter in the ring above — the
+    // big GO button is the deliberate confirm, so nobody locks in blind or by a
+    // stray double-tap. (The character was hidden before; small cards fix that.)
+    b.onpointerenter = (e) => { if (e.pointerType === 'mouse') onHover(i); };
+    b.onclick = () => {
+      if (document.body.classList.contains('touch')) onHover(i);
+      else { onHover(i); onConfirm(); }
+    };
     el.pickRow.appendChild(b);
   });
 }

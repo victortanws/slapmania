@@ -6,6 +6,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8994", "-d", "."],
       "port": 8994
+    },
+    {
+      "name": "slap-preview",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8995", "-d", "."],
+      "port": 8995
     }
   ]
 }

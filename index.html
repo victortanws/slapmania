@@ -4,16 +4,16 @@
 <meta charset="UTF-8"/>
 <title>SlapMania — The Official Slapping Contest Simulator</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-<meta name="description" content="SLAPMANIA — the QWOP-style slapping contest. Four keys, one open palm. Coil, lunge, whip, SNAP a volunteer past the hay wall, over the county line, into legend."/>
+<meta name="description" content="SLAPMANIA — the QWOP-style slapping contest. Four keys, one open palm. SWIVEL, LUNGE, ARM, PALM — send a volunteer past the hay wall, over the county line, into legend."/>
 <!-- social cards: absolute URLs (crawlers require them) -->
 <meta property="og:title" content="SLAPMANIA — The Official Slapping Contest Simulator"/>
-<meta property="og:description" content="A physics game of genuine technique. S·L·A·P: coil, lunge, whip, snap — and send a county-fair volunteer 90 meters into the corn."/>
+<meta property="og:description" content="A physics game of genuine technique. S·L·A·P — Swivel, Lunge, Arm, Palm — and send a county-fair volunteer 90 meters into the corn."/>
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="https://victortanws.github.io/slapmania/"/>
 <meta property="og:image" content="https://victortanws.github.io/slapmania/og.jpg"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="SLAPMANIA — The Official Slapping Contest Simulator"/>
-<meta name="twitter:description" content="A physics game of genuine technique. S·L·A·P: coil, lunge, whip, snap — and send a county-fair volunteer 90 meters into the corn."/>
+<meta name="twitter:description" content="A physics game of genuine technique. S·L·A·P — Swivel, Lunge, Arm, Palm — and send a county-fair volunteer 90 meters into the corn."/>
 <meta name="twitter:image" content="https://victortanws.github.io/slapmania/og.jpg"/>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👋</text></svg>"/>
 <style>
@@ -222,7 +222,21 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
   #meters{flex-direction:column;gap:6px;align-items:center;}
   #chainwrap{transform:scale(.82);transform-origin:bottom center;}
   body.touch #meters{bottom:100px;}
+  /* compact pick dock: shrink the cards to a bottom strip so the fighter in the
+     ring stays visible. Drop the per-card blurb (you can SEE them now). */
+  #pick{padding-bottom:12px;gap:8px;}
+  #pick .tagline{font-size:13px;letter-spacing:2px;padding:6px 12px;top:40px;}
+  #pick .verdict{font-size:11px;padding:5px 10px;max-width:90vw;top:96px;}
+  #pickRow{gap:6px;max-width:100%;}
+  .choice{width:104px;padding:5px 4px;border-width:3px;box-shadow:3px 3px 0 rgba(0,0,0,.55);}
+  .choice.sel{transform:translateY(-3px);}
+  .choice .num{font-size:10px;padding:0 6px;margin-bottom:1px;}
+  .choice .cname{font-size:11px;line-height:1.05;}
+  .choice .ctag{font-size:7.5px;margin-top:1px;letter-spacing:.3px;line-height:1.15;}
+  .choice .cdesc{display:none;}
+  #pickGo{font-size:16px;padding:11px 24px;animation:goPulse 1.4s ease-in-out infinite;}
 }
+@keyframes goPulse{50%{transform:scale(1.05);}}
 </style>
 <script type="importmap">
 {"imports":{
@@ -263,15 +277,15 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
     <div class="now">NOW SLAPPING</div>
     <div id="introName"></div>
     <div id="introTag"></div>
-    <div><span id="introHow">THE MOVE: HOLD <b>[S]</b> TO COIL → LET GO → DRUM <b>[L]</b> → <b>[A]</b> → <b>[P]</b> ON THE GREEN RING</span></div>
+    <div><span id="introHow">THE MOVE: HOLD <b>[S]</b> TO SWIVEL → LET GO → DRUM <b>[L]</b> → <b>[A]</b> → <b>[P]</b> ON THE GREEN RING</span></div>
   </div>
   <div id="bubble" class="hidden"></div>
   <div id="coach" class="hidden"></div>
   <div id="keysbar" class="hidden">
-    <div class="keychip" id="k-s"><span>S</span><label>COIL</label></div>
-    <div class="keychip" id="k-l"><span>L</span><label>HIPS</label></div>
+    <div class="keychip" id="k-s"><span>S</span><label>SWIVEL</label></div>
+    <div class="keychip" id="k-l"><span>L</span><label>LUNGE</label></div>
     <div class="keychip" id="k-a"><span>A</span><label>ARM</label></div>
-    <div class="keychip" id="k-p"><span>P</span><label>SNAP</label></div>
+    <div class="keychip" id="k-p"><span>P</span><label>PALM</label></div>
   </div>
   <div id="meters" class="hidden">
     <div id="leanwrap">
@@ -280,10 +294,10 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
     </div>
     <div id="chainwrap">
       <div class="chainrow">
-        <div class="clink" id="cl-coil"><label>COIL [S]</label><span>—</span></div>
-        <div class="clink" id="cl-hips"><label>HIPS [L]</label><span>—</span></div>
+        <div class="clink" id="cl-coil"><label>SWIVEL [S]</label><span>—</span></div>
+        <div class="clink" id="cl-hips"><label>LUNGE [L]</label><span>—</span></div>
         <div class="clink" id="cl-arm"><label>ARM [A]</label><span>—</span></div>
-        <div class="clink" id="cl-snap"><label>SNAP [P]</label><span>—</span></div>
+        <div class="clink" id="cl-snap"><label>PALM [P]</label><span>—</span></div>
       </div>
       <div class="meterlabel">THE CHAIN — FIRE EACH LINK ON TIME</div>
     </div>
@@ -291,12 +305,12 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
 
   <div id="touchPad">
     <div class="tside">
-      <button class="tbtn" data-code="KeyS">S<small>COIL</small></button>
-      <button class="tbtn" data-code="KeyL">L<small>HIPS</small></button>
+      <button class="tbtn" data-code="KeyS">S<small>SWIVEL</small></button>
+      <button class="tbtn" data-code="KeyL">L<small>LUNGE</small></button>
     </div>
     <div class="tside">
       <button class="tbtn" data-code="KeyA">A<small>ARM</small></button>
-      <button class="tbtn" data-code="KeyP">P<small>SNAP</small></button>
+      <button class="tbtn" data-code="KeyP">P<small>PALM</small></button>
     </div>
   </div>
 
@@ -317,10 +331,10 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
       </ol>
     </div>
     <div class="keys">
-      <span class="key">S</span>COIL
-      <span class="key">L</span>HIPS
+      <span class="key">S</span>SWIVEL
+      <span class="key">L</span>LUNGE
       <span class="key">A</span>ARM
-      <span class="key">P</span>SNAP
+      <span class="key">P</span>PALM
     </div>
     <div class="tagline" style="font-size:12px;">FIRE 'EM IN THAT ORDER — TIMING IS EVERYTHING</div>
     <div class="pressany blink">PRESS ANY KEY TO MOSEY ON UP</div>
