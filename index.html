@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>SlapMania — The Official Slapping Contest Simulator</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="description" content="SLAPMANIA — the QWOP-style slapping contest. Four keys, one open palm. Coil, lunge, whip, SNAP a volunteer past the hay wall, over the county line, into legend."/>
+<!-- social cards: og:image should be an ABSOLUTE url once you know your domain -->
+<meta property="og:title" content="SLAPMANIA — The Official Slapping Contest Simulator"/>
+<meta property="og:description" content="A physics game of genuine technique. S·L·A·P: coil, lunge, whip, snap — and send a county-fair volunteer 90 meters into the corn."/>
+<meta property="og:type" content="website"/>
+<meta property="og:image" content="og.jpg"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="SLAPMANIA — The Official Slapping Contest Simulator"/>
+<meta name="twitter:description" content="A physics game of genuine technique. S·L·A·P: coil, lunge, whip, snap — and send a county-fair volunteer 90 meters into the corn."/>
+<meta name="twitter:image" content="og.jpg"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👋</text></svg>"/>
+<style>
+:root{ --red:#ff4757; --yellow:#ffd23f; --ink:#12142b; }
+html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
+  font-family:'Arial Black','Arial Bold',Impact,'Helvetica Neue',sans-serif;user-select:none;}
+#c{position:fixed;inset:0;display:block;width:100%;height:100%;}
+#hud{position:fixed;inset:0;pointer-events:none;color:#fff;overflow:hidden;}
+.hidden{display:none !important;}
+
+/* ---- top bar ---- */
+#topbar{position:absolute;top:14px;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:0 24px;}
+#attempts{font-size:15px;letter-spacing:2px;color:var(--yellow);text-shadow:2px 2px 0 #000;min-width:200px;}
+#attempts .dot{display:inline-block;margin-right:10px;text-align:center;}
+#attempts .dot small{display:block;font-size:10px;color:#fff;}
+#clock{font-size:46px;color:#fff;text-shadow:3px 3px 0 #000;min-width:130px;text-align:center;}
+#clock.hot{color:var(--red);animation:throb .5s infinite alternate;}
+@keyframes throb{from{transform:scale(1)}to{transform:scale(1.12)}}
+#best{font-size:15px;color:var(--yellow);text-align:right;text-shadow:2px 2px 0 #000;min-width:200px;}
+#masterTag{position:absolute;top:64px;right:24px;font-size:12px;letter-spacing:2px;color:#ffe9a0;
+  text-shadow:2px 2px 0 #a8720f,3px 3px 0 #000;}
+
+/* ---- flight distance ticker ---- */
+#distance{position:absolute;top:72px;left:0;right:0;text-align:center;font-size:66px;color:#fff;
+  -webkit-text-stroke:2px #000;text-shadow:5px 5px 0 rgba(0,0,0,.5);}
+
+/* ---- banner ---- */
+#banner{position:absolute;top:30%;left:0;right:0;text-align:center;}
+#banner .big{font-size:76px;color:var(--yellow);-webkit-text-stroke:3px #000;text-shadow:6px 6px 0 rgba(0,0,0,.6);}
+#banner .sub{font-size:20px;color:#fff;text-shadow:2px 2px 0 #000;margin-top:6px;}
+#banner.foul .big{color:var(--red);}
+.pop{animation:pop .32s cubic-bezier(.2,2.6,.4,1) both;}
+@keyframes pop{from{transform:scale(.15) rotate(-14deg);opacity:0}to{transform:scale(1) rotate(-4deg);opacity:1}}
+
+/* ---- coach line ---- */
+#coach{position:absolute;top:136px;left:0;right:0;text-align:center;font-size:27px;color:var(--yellow);
+  -webkit-text-stroke:1.5px #000;text-shadow:4px 4px 0 rgba(0,0,0,.7);letter-spacing:1px;}
+
+/* ---- live key chips ---- */
+#keysbar{position:absolute;bottom:96px;left:0;right:0;display:flex;justify-content:center;gap:14px;}
+.keychip{width:56px;text-align:center;}
+.keychip span{display:block;margin:0 auto;width:44px;height:44px;line-height:44px;background:#252a4a;color:#8b93bd;
+  border:3px solid #000;border-radius:9px;font-size:22px;box-shadow:0 4px 0 #000;transition:background .06s,color .06s,transform .06s;}
+.keychip label{display:block;font-size:9px;letter-spacing:1px;color:#8b93bd;margin-top:5px;}
+.keychip.held span{background:var(--yellow);color:#111;transform:translateY(3px);box-shadow:0 1px 0 #000;}
+.keychip.held label{color:#fff;}
+.keychip.cue span{animation:cuepulse .3s infinite alternate;background:var(--red);color:#fff;}
+@keyframes cuepulse{from{transform:scale(1)}to{transform:scale(1.22)}}
+
+/* ---- meters ---- */
+#meters{position:absolute;bottom:20px;left:0;right:0;display:flex;justify-content:center;gap:46px;align-items:flex-end;}
+.meterlabel{font-size:10px;color:#9aa3c7;letter-spacing:2px;text-align:center;margin-top:5px;}
+#leanwrap{width:290px;}
+#leanbar{position:relative;height:16px;background:#1e2440;border:2px solid #000;border-radius:9px;}
+#leanbar .zone{position:absolute;top:0;bottom:0;width:16%;background:rgba(255,71,87,.5);}
+#leanbar .zone.left{left:0;border-radius:7px 0 0 7px;}
+#leanbar .zone.right{right:0;border-radius:0 7px 7px 0;}
+#leanneedle{position:absolute;top:-5px;width:7px;height:26px;background:var(--yellow);border:2px solid #000;border-radius:3px;left:50%;transform:translateX(-50%);}
+#chainwrap{text-align:center;}
+.chainrow{display:flex;gap:8px;justify-content:center;}
+.clink{width:70px;background:#1e2440;border:2px solid #000;border-radius:8px;padding:5px 0;}
+.clink label{display:block;font-size:9px;letter-spacing:1px;color:#8b93bd;}
+.clink span{display:block;font-family:'Arial Black',Impact,sans-serif;font-size:13px;color:#5a6390;margin-top:2px;}
+.clink.t1 span{color:var(--red);}
+.clink.t2 span{color:var(--yellow);}
+.clink.t3 span{color:#54ff6e;}
+.clink.t1,.clink.t2,.clink.t3{animation:linkpop .25s cubic-bezier(.2,2.4,.4,1);}
+@keyframes linkpop{from{transform:scale(.7)}to{transform:scale(1)}}
+
+/* ---- opponent intro plate ---- */
+#intro{position:absolute;top:16%;left:0;right:0;text-align:center;}
+#intro .now{font-size:15px;letter-spacing:4px;color:#fff;text-shadow:2px 2px 0 #000;}
+#introName{font-size:52px;color:var(--yellow);-webkit-text-stroke:2px #000;text-shadow:4px 4px 0 rgba(0,0,0,.6);transform:rotate(-2deg);}
+#introTag{font-size:16px;letter-spacing:2px;color:#fff;text-shadow:2px 2px 0 #000;}
+#introHow{display:inline-block;margin-top:12px;background:rgba(10,12,26,.78);border:2px solid var(--yellow);
+  border-radius:9px;padding:7px 16px;font-size:14px;letter-spacing:1px;color:#fff;}
+#introHow b{color:var(--yellow);}
+
+/* ---- leaderboard ---- */
+#board,#gboard{background:#fffbe8;color:#1b1d33;border:4px solid #000;border-radius:10px;padding:10px 22px;
+  box-shadow:6px 6px 0 rgba(0,0,0,.55);font-family:Arial,sans-serif;min-width:320px;}
+.boardhead{font-family:'Arial Black',Impact,sans-serif;font-size:15px;letter-spacing:2px;color:var(--red);margin-bottom:6px;text-align:center;}
+.boardrow{display:flex;gap:12px;justify-content:space-between;font-weight:bold;font-size:13px;line-height:1.8;}
+
+/* ---- pick screens: transparent dock so the 3D showcase stays visible ---- */
+#pick{background:transparent;justify-content:flex-end;gap:10px;padding-bottom:18px;pointer-events:none;}
+/* title + blurb pinned to the top so the volunteer's face stays visible mid-screen */
+#pick .tagline{position:absolute;top:48px;left:0;right:0;margin:0 auto;width:fit-content;
+  background:rgba(10,12,26,.72);padding:8px 18px;border-radius:10px;}
+#pick .verdict{position:absolute;top:92px;left:0;right:0;margin:0 auto;
+  background:rgba(10,12,26,.6);padding:6px 14px;border-radius:8px;font-size:13px;max-width:640px;}
+#pickRow{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:1020px;}
+.choice{pointer-events:auto;cursor:pointer;background:#fffbe8;color:#1b1d33;border:4px solid #000;border-radius:12px;
+  padding:8px 6px;width:126px;text-align:center;box-shadow:5px 5px 0 rgba(0,0,0,.55);
+  font-family:Arial,sans-serif;transition:transform .08s;}
+.choice:hover{transform:translateY(-4px) rotate(-1deg);}
+.choice.sel{outline:5px solid var(--yellow);transform:translateY(-7px);}
+.choice .num{display:inline-block;background:#1b1d33;color:var(--yellow);border-radius:6px;padding:1px 8px;
+  font-family:'Arial Black',Impact,sans-serif;font-size:13px;margin-bottom:4px;}
+.choice .cname{font-family:'Arial Black',Impact,sans-serif;font-size:15px;color:var(--red);line-height:1.15;}
+.choice .ctag{font-size:10px;font-weight:bold;letter-spacing:1px;color:#5a5f7d;margin-top:3px;}
+.choice .cdesc{font-size:11px;font-weight:bold;margin-top:5px;line-height:1.3;}
+#pickGo{background:var(--red);color:#fff;font-size:20px;padding:13px 34px;}
+#pick .pressany{background:rgba(10,12,26,.72);padding:5px 12px;border-radius:8px;}
+
+/* ---- global leaderboard + submit ---- */
+#boards{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;justify-content:center;}
+#submitRow{display:flex;gap:8px;justify-content:center;margin-top:8px;}
+#nameInput{pointer-events:auto;font-family:'Arial Black',Impact,sans-serif;font-size:15px;width:150px;
+  padding:9px 10px;border:3px solid #000;border-radius:8px;background:#fff;color:#111;text-transform:uppercase;}
+#submitBtn{font-size:13px;padding:9px 14px;}
+#netMsg{font-family:Arial,sans-serif;font-weight:bold;font-size:12px;color:var(--yellow);margin-top:6px;min-height:16px;}
+
+/* ---- buy me a coffee ---- */
+.coffee{pointer-events:auto;display:inline-block;font-family:'Arial Black',Impact,sans-serif;font-size:13px;
+  letter-spacing:1px;background:#ffdd57;color:#111;border:3px solid #000;border-radius:9px;padding:8px 16px;
+  text-decoration:none;box-shadow:0 4px 0 #000;}
+.coffee:active{transform:translateY(3px);box-shadow:0 1px 0 #000;}
+/* ---- touch controls: left thumb coils and drives, right thumb whips and snaps ---- */
+#touchPad{position:absolute;bottom:0;left:0;right:0;display:none;
+  justify-content:space-between;align-items:flex-end;padding:0 12px 14px;pointer-events:none;}
+#touchPad.inplay{display:flex;}
+#touchPad .tside{display:flex;gap:10px;}
+.tbtn{pointer-events:auto;width:74px;height:74px;border-radius:18px;border:4px solid #000;
+  background:rgba(255,251,232,.94);color:#12142b;font-family:'Arial Black',Impact,sans-serif;
+  font-size:26px;box-shadow:0 5px 0 #000;touch-action:none;-webkit-user-select:none;user-select:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;}
+.tbtn small{font-size:8px;letter-spacing:1.5px;font-family:Arial,sans-serif;font-weight:bold;}
+.tbtn.held{transform:translateY(4px);box-shadow:0 1px 0 #000;background:var(--yellow);}
+/* touch layout: lift the meters clear of the thumb zones */
+body.touch #meters{bottom:104px;}
+body.touch #keysbar{display:none;} /* the buttons ARE the legend on touch */
+
+#creditBar{position:absolute;bottom:9px;left:0;right:0;text-align:center;white-space:nowrap;
+  font-family:Arial,sans-serif;font-weight:bold;font-size:10px;letter-spacing:1.5px;
+  color:rgba(255,255,255,.65);text-shadow:1px 1px 0 #000;}
+#creditBar a{pointer-events:auto;color:var(--yellow);text-decoration:none;}
+#creditBar a:hover{text-decoration:underline;}
+#creditBar .sep{margin:0 9px;color:rgba(255,255,255,.3);}
+
+/* ---- opponent speech bubble ---- */
+#bubble{position:absolute;top:22%;right:12%;max-width:270px;background:#fff;color:#111;
+  font-family:Arial,sans-serif;font-weight:bold;font-size:15px;padding:12px 16px;border-radius:16px;border:3px solid #000;}
+#bubble::after{content:'';position:absolute;left:-20px;bottom:22%;border:11px solid transparent;border-right-color:#000;}
+
+/* ---- cards ---- */
+.card{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(10,12,26,.84);text-align:center;pointer-events:auto;gap:14px;padding:20px;}
+.card h1{font-size:84px;margin:0;color:var(--red);-webkit-text-stroke:3px #000;
+  text-shadow:6px 6px 0 var(--yellow),10px 10px 0 #000;transform:rotate(-4deg);letter-spacing:2px;}
+
+/* ---- the SLAPMANIA impact burst ---- */
+#smack{position:absolute;top:14%;left:0;right:0;display:flex;flex-direction:column;align-items:center;pointer-events:none;}
+#smack svg{width:min(58vw,520px);filter:drop-shadow(8px 10px 0 rgba(0,0,0,.45));}
+#smack .smacktext{position:absolute;top:50%;left:50%;transform:translate(-50%,-58%) rotate(-7deg);
+  font-size:min(9vw,74px);color:var(--yellow);-webkit-text-stroke:3px #000;
+  text-shadow:4px 4px 0 var(--red),7px 7px 0 #000;white-space:nowrap;}
+#smack.go{animation:smackpop .45s cubic-bezier(.2,2.8,.35,1) both;}
+/* body blows get the discount burst: dull, blue-grey, smaller text */
+#smack.body svg{filter:hue-rotate(155deg) saturate(.5) brightness(.92);}
+#smack.body .smacktext{font-size:min(6.5vw,52px);color:#cfe4ff;
+  text-shadow:3px 3px 0 #2c4a72,6px 6px 0 #000;}
+/* the slapmaster coronation burst: molten gold */
+#smack.gold svg{filter:sepia(1) saturate(2.6) hue-rotate(-12deg) brightness(1.12);}
+#smack.gold .smacktext{color:#fff2ba;text-shadow:4px 4px 0 #a8720f,7px 7px 0 #000;}
+@keyframes smackpop{
+  0%{transform:scale(.1) rotate(-32deg);opacity:0;}
+  55%{transform:scale(1.14) rotate(4deg);opacity:1;}
+  100%{transform:scale(1) rotate(0deg);opacity:1;}
+}
+.tagline{font-size:16px;letter-spacing:4px;color:var(--yellow);text-shadow:2px 2px 0 #000;}
+.rules{background:#fffbe8;color:#1b1d33;border:4px solid #000;border-radius:10px;padding:14px 30px;transform:rotate(1deg);
+  box-shadow:6px 6px 0 rgba(0,0,0,.55);font-family:Arial,sans-serif;}
+.rules .rulehead{font-family:'Arial Black',Impact,sans-serif;font-size:18px;letter-spacing:2px;color:var(--red);margin-bottom:6px;}
+.rules ol{margin:0;padding-left:22px;text-align:left;font-weight:bold;font-size:14px;line-height:1.7;}
+.keys{font-size:18px;letter-spacing:2px;color:#fff;margin-top:6px;}
+.key{display:inline-block;background:#fff;color:#111;border:3px solid #000;border-radius:8px;
+  padding:6px 13px;margin:0 6px 0 16px;box-shadow:0 4px 0 #000;font-size:22px;}
+.pressany{font-size:15px;letter-spacing:3px;color:var(--yellow);margin-top:10px;}
+.blink{animation:blink 1s steps(2,start) infinite;}
+@keyframes blink{to{visibility:hidden}}
+.bigdist{font-size:120px;color:#fff;-webkit-text-stroke:3px #000;text-shadow:7px 7px 0 rgba(0,0,0,.6);line-height:1;}
+.bigdist.foul{color:var(--red);font-size:90px;}
+.verdict{max-width:520px;font-family:Arial,sans-serif;font-weight:bold;font-size:18px;color:#fffbe8;line-height:1.5;}
+button{pointer-events:auto;font-family:'Arial Black',Impact,sans-serif;font-size:18px;letter-spacing:1px;
+  background:var(--yellow);color:#111;border:4px solid #000;border-radius:10px;padding:12px 26px;cursor:pointer;
+  box-shadow:0 5px 0 #000;}
+button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
+.hint{position:absolute;bottom:10px;right:14px;font-size:10px;color:#57608c;letter-spacing:1px;}
+/* narrow windows (embedded previews, phones) */
+@media (max-width: 560px){
+  .card h1{font-size:54px;}
+  .bigdist{font-size:60px;} .bigdist.foul{font-size:44px;}
+  #banner .big{font-size:42px;} #banner .sub{font-size:14px;}
+  #distance{font-size:40px;} #clock{font-size:30px;min-width:80px;}
+  .rules{padding:10px 14px;} .rules ol{font-size:11px;}
+  .keys{font-size:13px;} .key{font-size:15px;padding:4px 9px;}
+  #attempts,#best{min-width:110px;font-size:12px;}
+  #bubble{max-width:180px;font-size:12px;}
+  .verdict{font-size:14px;}
+  #coach{font-size:14px;top:110px;}
+  #keysbar{bottom:84px;gap:8px;}
+  .keychip{width:40px;} .keychip span{width:32px;height:32px;line-height:32px;font-size:15px;}
+  .keychip label{font-size:7px;}
+  /* narrow screens: stack the meters so nothing clips off-screen */
+  #meters{flex-direction:column;gap:6px;align-items:center;}
+  #chainwrap{transform:scale(.82);transform-origin:bottom center;}
+  body.touch #meters{bottom:100px;}
+}
+</style>
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "cannon-es":"https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.js"
+}}
+</script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">
+  <div id="topbar">
+    <div id="attempts"></div>
+    <div id="clock" class="hidden">10.0</div>
+    <div id="best"></div>
+  </div>
+  <div id="masterTag" class="hidden">★ SLAPMASTER ★</div>
+  <div id="distance" class="hidden"></div>
+  <div id="banner" class="hidden"><div class="big"></div><div class="sub"></div></div>
+  <div id="smack" class="hidden">
+    <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+      <polygon fill="#e8352e" stroke="#000" stroke-width="7" stroke-linejoin="round"
+        points="385,150 292,132 360,85 267,102 293,37 225,84 200,20 175,84 108,37 133,102 40,85 108,132 15,150 108,168 40,215 133,198 108,263 175,216 200,280 225,216 293,263 267,198 360,215 292,168"/>
+      <polygon fill="#ffd23f" transform="rotate(9 200 150) translate(40 30) scale(0.8)"
+        points="385,150 292,132 360,85 267,102 293,37 225,84 200,20 175,84 108,37 133,102 40,85 108,132 15,150 108,168 40,215 133,198 108,263 175,216 200,280 225,216 293,263 267,198 360,215 292,168"/>
+      <g fill="#c22e2e" opacity="0.88" transform="rotate(-14 200 152)">
+        <ellipse cx="200" cy="168" rx="36" ry="42"/>
+        <ellipse cx="163" cy="126" rx="10" ry="26" transform="rotate(-18 163 126)"/>
+        <ellipse cx="186" cy="114" rx="10" ry="30"/>
+        <ellipse cx="209" cy="112" rx="10" ry="31"/>
+        <ellipse cx="231" cy="120" rx="10" ry="27" transform="rotate(12 231 120)"/>
+        <ellipse cx="249" cy="150" rx="9" ry="20" transform="rotate(58 249 150)"/>
+      </g>
+    </svg>
+    <div class="smacktext">SLAPMANIA!</div>
+  </div>
+  <div id="intro" class="hidden">
+    <div class="now">NOW SLAPPING</div>
+    <div id="introName"></div>
+    <div id="introTag"></div>
+    <div><span id="introHow">THE MOVE: HOLD <b>[S]</b> TO COIL → LET GO → DRUM <b>[L]</b> → <b>[A]</b> → <b>[P]</b> ON THE GREEN RING</span></div>
+  </div>
+  <div id="bubble" class="hidden"></div>
+  <div id="coach" class="hidden"></div>
+  <div id="keysbar" class="hidden">
+    <div class="keychip" id="k-s"><span>S</span><label>COIL</label></div>
+    <div class="keychip" id="k-l"><span>L</span><label>HIPS</label></div>
+    <div class="keychip" id="k-a"><span>A</span><label>ARM</label></div>
+    <div class="keychip" id="k-p"><span>P</span><label>SNAP</label></div>
+  </div>
+  <div id="meters" class="hidden">
+    <div id="leanwrap">
+      <div id="leanbar"><div class="zone left"></div><div class="zone right"></div><div id="leanneedle"></div></div>
+      <div class="meterlabel">BALANCE — STAY OUT OF THE RED</div>
+    </div>
+    <div id="chainwrap">
+      <div class="chainrow">
+        <div class="clink" id="cl-coil"><label>COIL [S]</label><span>—</span></div>
+        <div class="clink" id="cl-hips"><label>HIPS [L]</label><span>—</span></div>
+        <div class="clink" id="cl-arm"><label>ARM [A]</label><span>—</span></div>
+        <div class="clink" id="cl-snap"><label>SNAP [P]</label><span>—</span></div>
+      </div>
+      <div class="meterlabel">THE CHAIN — FIRE EACH LINK ON TIME</div>
+    </div>
+  </div>
+
+  <div id="touchPad">
+    <div class="tside">
+      <button class="tbtn" data-code="KeyS">S<small>COIL</small></button>
+      <button class="tbtn" data-code="KeyL">L<small>HIPS</small></button>
+    </div>
+    <div class="tside">
+      <button class="tbtn" data-code="KeyA">A<small>ARM</small></button>
+      <button class="tbtn" data-code="KeyP">P<small>SNAP</small></button>
+    </div>
+  </div>
+
+  <div id="title" class="card">
+    <h1>SLAPMANIA</h1>
+    <div class="tagline">THE COUNTY FAIR'S FRIENDLIEST FULL-CONTACT PASTIME</div>
+    <div class="verdict" style="max-width:560px;">Well howdy, sugar! Mosey on up, roll them sleeves,
+      and get your slapping chops ready — our volunteers signed the waivers and waxed their cheeks,
+      and the whole county's here to watch 'em fly. No experience needed. Just four keys and a dream.</div>
+    <div class="rules">
+      <div class="rulehead">HOUSE RULES (READ 'EM, CHAMP)</div>
+      <ol>
+        <li>BOOTS STAY PLANTED — TIP OVER AND THAT'S A FOUL.</li>
+        <li>OPEN PALM ONLY — THIS AIN'T A PUNCHING ESTABLISHMENT.</li>
+        <li>AIM FOR THE CHEEK — BODY BLOWS PAY 40% LESS.</li>
+        <li>TEN SECONDS ON THE CLOCK — DON'T KEEP THE CROWD WAITIN'.</li>
+        <li>SCORE = METERS × WEIGHT CLASS — BIG FOLKS PAY BIG.</li>
+      </ol>
+    </div>
+    <div class="keys">
+      <span class="key">S</span>COIL
+      <span class="key">L</span>HIPS
+      <span class="key">A</span>ARM
+      <span class="key">P</span>SNAP
+    </div>
+    <div class="tagline" style="font-size:12px;">FIRE 'EM IN THAT ORDER — TIMING IS EVERYTHING</div>
+    <div class="pressany blink">PRESS ANY KEY TO MOSEY ON UP</div>
+    <div id="creditBar">MADE BY VICTOR TAN<span class="sep">·</span>© 2026 ALL RIGHTS RESERVED<span class="sep">·</span><a href="https://www.youtube.com/@VictorTan" target="_blank" rel="noopener">▶ YOUTUBE</a><span class="sep">·</span><a href="https://buymeacoffee.com/victortanws" target="_blank" rel="noopener">☕ BUY ME A COFFEE</a></div>
+  </div>
+
+  <div id="pick" class="card hidden">
+    <div class="tagline" id="pickTitle"></div>
+    <div class="verdict" id="pickBlurb"></div>
+    <div id="pickRow"></div>
+    <button id="pickGo"></button>
+    <div class="pressany" id="pickHint"></div>
+  </div>
+
+  <div id="result" class="card hidden">
+    <div id="resDist" class="bigdist"></div>
+    <div id="resScore" class="tagline"></div>
+    <div id="resChain" class="verdict" style="font-size:13px;color:#9fe8a8;"></div>
+    <div id="resPart" class="verdict" style="font-size:14px;color:var(--yellow);"></div>
+    <div id="resLine" class="verdict"></div>
+    <div id="resNext" class="pressany blink"></div>
+  </div>
+
+  <div id="match" class="card hidden">
+    <div class="tagline">FINAL VERDICT OF THE COUNTY FAIR</div>
+    <div id="matchDist" class="bigdist"></div>
+    <div id="matchLine" class="verdict"></div>
+    <div id="boards">
+      <div id="board"></div>
+      <div id="globalWrap" class="hidden">
+        <div id="gboard"></div>
+        <div id="submitRow">
+          <input id="nameInput" maxlength="12" placeholder="YOUR NAME"/>
+          <button id="submitBtn">POST MY SCORE</button>
+        </div>
+        <div id="netMsg"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:14px;align-items:center;">
+      <button id="shareBtn">COPY BRAG TEXT</button>
+      <a class="coffee" href="https://buymeacoffee.com/victortanws" target="_blank" rel="noopener">☕ BUY ME A COFFEE</a>
+    </div>
+    <div style="font-family:Arial,sans-serif;font-weight:bold;font-size:9px;letter-spacing:1px;color:rgba(255,255,255,.6);text-shadow:1px 1px 0 #000;">
+      MADE BY VICTOR TAN · © 2026 ·
+      <a href="https://www.youtube.com/@VictorTan" target="_blank" rel="noopener" style="color:var(--yellow);text-decoration:none;">▶ YOUTUBE.COM/@VICTORTAN</a>
+    </div>
+    <div class="pressany blink">CLICK / ENTER = PICK YOUR NEXT VOLUNTEER</div>
+  </div>
+
+</div>
+<script>
+  // Worldwide leaderboard — paste your Supabase project credentials here.
+  // Setup: run supabase.sql in your project's SQL editor, then copy
+  // Project Settings → API → "Project URL" and "anon public" key below.
+  window.SLAPP_CONFIG = {
+    supabaseUrl: 'https://kgutyxufqfqavwaujzhg.supabase.co',
+    supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtndXR5eHVmcWZxYXZ3YXVqemhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0MDE0MzQsImV4cCI6MjA5ODk3NzQzNH0.rRZa3V8lwcBolvXWT2ISP75gRUUycKTpahvCpsgyZQI',
+  };
+</script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

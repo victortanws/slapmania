@@ -1,0 +1,683 @@
+import * as THREE from 'three';
+import { createRagdoll } from './ragdoll.js';
+import { toonMat } from './scene.js';
+
+// gingham for Fran: cream base, red bands, thin blue cross-threads
+let plaidTex = null;
+function plaidMat() {
+  if (!plaidTex) {
+    const cv = document.createElement('canvas');
+    cv.width = 64; cv.height = 64;
+    const g = cv.getContext('2d');
+    g.fillStyle = '#eee3cb';
+    g.fillRect(0, 0, 64, 64);
+    g.fillStyle = 'rgba(198,62,58,0.8)';
+    for (const o of [4, 36]) { g.fillRect(o, 0, 13, 64); g.fillRect(0, o, 64, 13); }
+    g.fillStyle = 'rgba(58,76,128,0.45)';
+    for (const o of [24, 56]) { g.fillRect(o, 0, 4, 64); g.fillRect(0, o, 64, 4); }
+    plaidTex = new THREE.CanvasTexture(cv);
+    plaidTex.wrapS = plaidTex.wrapT = THREE.RepeatWrapping;
+    plaidTex.repeat.set(2, 2);
+  }
+  const m = toonMat(0xffffff);
+  m.map = plaidTex;
+  m.needsUpdate = true;
+  return m;
+}
+
+// playable slappers — physique is REAL: height sets the strike plane (short
+// folks slap upward → high launch arcs), arm length sets reach, power moves mass
+export const SLAPPERS = [
+  {
+    key: 'charlie', name: "SLAPPIN' CHARLIE", desc: 'Local legend. Tremendous hair.',
+    skin: 0xe9c19b, shirt: 0x6e2231, pants: 0x4a6fa5,
+    hair: 'long', hairCol: 0x231a13, beard: 'full',
+    height: 0.93, arm: 0.97, power: 1.0,
+  },
+  {
+    key: 'fran', name: 'FARMHAND FRAN', desc: 'Wound tighter than a hay baler.',
+    skin: 0xd9a877, shirt: 0xc94f4f, pants: 0x53617a,
+    hair: 'pigtails', hairCol: 0xd9b34a, beard: null, female: true,
+    plaid: true, skirt: 'plaid',
+    height: 1.0, arm: 1.06, power: 0.92,
+  },
+  {
+    key: 'buck', name: 'UNCLE BUCK', desc: "Forty years of swattin' flies. Ready.",
+    skin: 0xcf9058, shirt: 0xf2ede1, pants: 0x4a5a8a,
+    hair: 'afro', hairCol: 0x8a8378, beard: 'stache', deerTee: true,
+    height: 0.98, arm: 0.95, power: 1.06,
+  },
+  {
+    key: 'roy', name: 'RODEO ROY', desc: 'Eight seconds? He only needs one.',
+    skin: 0x7a4f33, shirt: 0x27233a, pants: 0x3d3a45,
+    hair: 'buzz', hairCol: 0x14100c, beard: 'stache', hat: 'cowboy',
+    height: 1.08, arm: 1.08, power: 1.2,
+  },
+  {
+    key: 'victor', name: 'VICTOR SEPUP', desc: 'Built the fair. Slaps in it.',
+    skin: 0xe8c39a, shirt: 0x3b7dd8, pants: 0x33415c,
+    hair: 'short', hairCol: 0x181820, beard: null,
+    height: 0.99, arm: 1.0, power: 1.02,
+  },
+  {
+    key: 'mei', name: 'MADAM MEI', desc: 'Her palm reads YOUR future.',
+    skin: 0xf0cda2, shirt: 0xc9385a, pants: 0x2f3550,
+    hair: 'long', hairCol: 0x141418, beard: null, female: true, busty: true,
+    earrings: true, skirt: 0x5a2f4f,
+    height: 0.9, arm: 0.93, power: 0.88,
+  },
+];
+
+// The slapper. Pre-contact he is NOT physics-engine driven: each joint is a scalar
+// angle integrated with key-held torques, springs to rest pose, damping and limits —
+// QWOP-style raw torque control. On a balance foul he collapses into a real ragdoll.
+export class Player {
+  constructor({ scene, world, mat, look = SLAPPERS[0] }) {
+    this.scene = scene;
+    this.world = world;
+    this.mat = mat;
+    this.look = look;
+    // physique: h sets the strike plane, arm sets reach, str moves tonnage.
+    // baseX walks short-armed slappers closer so everyone can find the cheek.
+    this.phys = { h: look.height || 1, arm: look.arm || 1, str: look.power || 1 };
+    this.baseX = THREE.MathUtils.clamp(0.73 * (1 - this.phys.h * this.phys.arm), -0.15, 0.2);
+    this.rag = null;
+    this.fallen = false;
+
+    // joint = current angle, velocity, spring rest/stiffness/damping, limits
+    this.j = {
+      spine:    { a: 0.0, v: 0, rest: 0.0, k: 16, c: 2.0, min: -0.7, max: 2.4 },
+      shoulder: { a: 0.5, v: 0, rest: 0.5, k: 16, c: 1.6, min: -1.6, max: 2.0 },
+      elbow:    { a: 1.2, v: 0, rest: 1.2, k: 12, c: 1.8, min: 0.06, max: 2.3 },
+      wrist:    { a: 0.9, v: 0, rest: 0.9, k: 15, c: 2.0, min: -0.3, max: 1.1 },
+    };
+    this.lean = 0;
+    this.leanV = 0;
+
+    this.handVel = new THREE.Vector3();
+    this.handSeg = null;
+    this._cur = new THREE.Vector3();
+    this._prev = new THREE.Vector3();
+    this._tracked = false;
+
+    this.buildMeshes();
+    this.pose();
+  }
+
+  buildMeshes() {
+    const L = this.look;
+    const T = (c) => toonMat(c);
+    // the shirt/dress material: plaid folks get gingham, everyone else a color
+    const SM = () => (L.plaid ? plaidMat() : T(L.shirt));
+    const M = (mesh) => { mesh.castShadow = true; return mesh; };
+    const root = this.root = new THREE.Group();
+    root.scale.setScalar(this.phys.h);
+    this.scene.add(root);
+    const A = this.phys.arm;
+
+    for (const s of [-1, 1]) {
+      const leg = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.75, 3, 8), T(L.pants)));
+      leg.position.set(0.02, 0.48, s * 0.14);
+      root.add(leg);
+      const foot = M(new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.09, 0.13), T(0x5a4632)));
+      foot.position.set(0.09, 0.05, s * 0.14);
+      root.add(foot);
+    }
+    const pelvis = M(new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.2, 0.28), T(L.pants)));
+    pelvis.position.y = 1.0;
+    root.add(pelvis);
+    if (L.skirt) {
+      const skirt = M(new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.36, 0.42, 12),
+        L.skirt === 'plaid' ? plaidMat() : T(L.skirt)));
+      skirt.position.y = 0.87;
+      root.add(skirt);
+    }
+
+    const torsoG = this.torsoG = new THREE.Group();
+    torsoG.position.y = 1.08;
+    root.add(torsoG);
+    const torso = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.19, 0.22, 4, 12), SM()));
+    torso.position.y = 0.3;
+    torsoG.add(torso);
+    if (L.busty) {
+      // she has a figure — blouse-colored, bloused, and businesslike
+      for (const s of [-1, 1]) {
+        const bump = M(new THREE.Mesh(new THREE.SphereGeometry(0.085, 10, 10), SM()));
+        bump.position.set(0.14, 0.34, s * 0.078);
+        torsoG.add(bump);
+      }
+    }
+    if (L.suit) {
+      // crisp white shirtfront and the power tie — it reaches the belt. Always.
+      const shirtV = M(new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.2, 0.095), T(0xf2ede1)));
+      shirtV.position.set(0.172, 0.4, 0);
+      torsoG.add(shirtV);
+      const knot = M(new THREE.Mesh(new THREE.BoxGeometry(0.042, 0.05, 0.05), T(L.tie)));
+      knot.position.set(0.193, 0.46, 0);
+      torsoG.add(knot);
+      const blade = M(new THREE.Mesh(new THREE.BoxGeometry(0.036, 0.28, 0.056), T(L.tie)));
+      blade.position.set(0.192, 0.3, 0);
+      torsoG.add(blade);
+    }
+    if (L.deerTee) {
+      // Buck's pride: a majestic buck, printed on the chest
+      const cv = document.createElement('canvas');
+      cv.width = 96; cv.height = 96;
+      const dg = cv.getContext('2d');
+      dg.fillStyle = '#6e4a2a';
+      dg.strokeStyle = '#6e4a2a';
+      dg.lineWidth = 3.5;
+      dg.beginPath(); dg.ellipse(52, 54, 20, 11, 0, 0, Math.PI * 2); dg.fill();  // body
+      dg.beginPath(); dg.ellipse(31, 43, 8, 9, 0.5, 0, Math.PI * 2); dg.fill();  // neck
+      dg.beginPath(); dg.arc(25, 32, 7, 0, Math.PI * 2); dg.fill();              // head
+      dg.fillRect(14, 29, 10, 5);                                                // muzzle
+      for (const lx of [38, 45, 58, 65]) dg.fillRect(lx, 62, 4, 19);             // legs
+      dg.beginPath(); dg.arc(71, 49, 4, 0, Math.PI * 2); dg.fill();              // tail
+      dg.beginPath();                                                            // antlers
+      dg.moveTo(23, 26); dg.lineTo(18, 12); dg.moveTo(21, 19); dg.lineTo(13, 15);
+      dg.moveTo(27, 26); dg.lineTo(33, 12); dg.moveTo(29, 19); dg.lineTo(37, 16);
+      dg.stroke();
+      const tex = new THREE.CanvasTexture(cv);
+      const dm = toonMat(0xffffff);
+      dm.map = tex;
+      dm.transparent = true;
+      const decal = new THREE.Mesh(new THREE.PlaneGeometry(0.18, 0.18), dm);
+      decal.position.set(0.192, 0.33, 0);
+      decal.rotation.y = Math.PI / 2;
+      torsoG.add(decal);
+    }
+    if (L.overalls) {
+      const bib = M(new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.2, 0.2), T(L.pants)));
+      bib.position.set(0.17, 0.36, 0);
+      torsoG.add(bib);
+      for (const s of [-1, 1]) {
+        const strap = M(new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.22, 0.05), T(L.pants)));
+        strap.position.set(0.14, 0.5, s * 0.09);
+        strap.rotation.z = 0.25;
+        torsoG.add(strap);
+      }
+    }
+
+    const head = this.headMesh = M(new THREE.Mesh(new THREE.SphereGeometry(0.16, 14, 14), T(L.skin)));
+    head.position.y = 0.64;
+    torsoG.add(head);
+    for (const s of [-1, 1]) {
+      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.022, 6, 6), T(0x111111));
+      eye.position.set(0.14, 0.03, s * 0.055);
+      head.add(eye);
+    }
+    this.decorateHead(head, 0.16);
+
+    // left arm (non-slapping): hangs at the side, with a proper t-shirt sleeve
+    const armL = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.05, 0.5, 3, 8), T(L.skin)));
+    armL.position.set(0, 0.15, 0.26);
+    torsoG.add(armL);
+    const sleeveL = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.068, 0.16, 3, 8), SM()));
+    sleeveL.position.set(0, 0.33, 0.26);
+    torsoG.add(sleeveL);
+
+    // right arm: the weapon. shoulder → upper arm → elbow → forearm → hand.
+    // ball spheres at every pivot seal the hinges so bends never look dislocated
+    const shoulderG = this.shoulderG = new THREE.Group();
+    shoulderG.position.set(0.02, 0.44, -0.25);
+    torsoG.add(shoulderG);
+    const shoulderBall = M(new THREE.Mesh(new THREE.SphereGeometry(0.08, 10, 10), SM()));
+    shoulderG.add(shoulderBall);
+    const ua = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.055, 0.24 * A, 3, 8), T(L.skin)));
+    ua.rotation.z = -Math.PI / 2;
+    ua.position.set(0.17 * A, 0, 0);
+    shoulderG.add(ua);
+    const sleeveR = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.072, 0.13, 3, 8), SM()));
+    sleeveR.rotation.z = -Math.PI / 2;
+    sleeveR.position.set(0.08 * A, 0, 0);
+    shoulderG.add(sleeveR);
+
+    const elbowG = this.elbowG = new THREE.Group();
+    elbowG.position.set(0.34 * A, -0.03, 0);
+    shoulderG.add(elbowG);
+    const elbowBall = M(new THREE.Mesh(new THREE.SphereGeometry(0.06, 10, 10), T(L.skin)));
+    elbowG.add(elbowBall);
+    const fa = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.05, 0.22 * A, 3, 8), T(L.skin)));
+    fa.rotation.z = -Math.PI / 2;
+    fa.position.set(0.15 * A, 0, 0);
+    elbowG.add(fa);
+
+    // red wristband marks THE slapping hand
+    const band = M(new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.1, 0.1), T(0xff4757)));
+    band.position.set(0.27 * A, 0, 0);
+    elbowG.add(band);
+
+    // a real mitt: palm + four fingers + thumb. The fingers stay CURLED in a
+    // fist until P fires the wrist — then they visibly snap open into a palm.
+    // Palm tone follows the slapper's own skin, one honest shade brighter.
+    const SKIN2 = new THREE.Color(L.skin).lerp(new THREE.Color(0xffffff), 0.14).getHex();
+    const handG = this.handG = new THREE.Group();
+    handG.position.set(0.31 * A, 0, 0);
+    elbowG.add(handG);
+    const wristBall = M(new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 8), T(SKIN2)));
+    handG.add(wristBall);
+    const palm = this.handMesh = M(new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.17, 0.05), T(SKIN2)));
+    palm.position.set(0.06, 0, 0);
+    handG.add(palm);
+    this.fingers = [];
+    for (let i = 0; i < 4; i++) {
+      const fg = new THREE.Group();
+      fg.position.set(0.115, 0.062 - i * 0.041, 0);
+      const f = M(new THREE.Mesh(new THREE.BoxGeometry(0.115, 0.034, 0.045), T(SKIN2)));
+      f.position.set(0.052, 0, 0);
+      fg.add(f);
+      handG.add(fg);
+      this.fingers.push(fg);
+    }
+    const thumbG = new THREE.Group();
+    thumbG.position.set(0.03, -0.09, 0);
+    thumbG.rotation.z = -0.55;
+    const th = M(new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.034, 0.042), T(SKIN2)));
+    th.position.set(0.04, 0, 0);
+    thumbG.add(th);
+    handG.add(thumbG);
+  }
+
+  // hair, beard and headgear per the chosen look, sized to any head radius
+  decorateHead(head, r) {
+    const L = this.look;
+    const g = new THREE.Group();
+    const h = () => toonMat(L.hairCol);
+    if (L.hair === 'long') {
+      const cap = new THREE.Mesh(new THREE.SphereGeometry(0.175, 14, 14), h());
+      cap.scale.set(1, 0.85, 1.08);
+      cap.position.set(-0.025, 0.03, 0);
+      g.add(cap);
+      const back = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.42, 0.22), h());
+      back.position.set(-0.13, -0.14, 0);
+      g.add(back);
+      for (const s of [-1, 1]) {
+        const side = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.36, 0.055), h());
+        side.position.set(0.02, -0.13, s * 0.155);
+        side.rotation.x = -s * 0.08;
+        g.add(side);
+      }
+    } else if (L.hair === 'pony') {
+      const cap = new THREE.Mesh(new THREE.SphereGeometry(0.172, 14, 14), h());
+      cap.scale.set(1, 0.78, 1.05);
+      cap.position.set(-0.02, 0.04, 0);
+      g.add(cap);
+      const tail = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.3, 0.07), h());
+      tail.position.set(-0.17, -0.08, 0);
+      tail.rotation.z = 0.3;
+      g.add(tail);
+    } else if (L.hair === 'pigtails') {
+      const cap = new THREE.Mesh(new THREE.SphereGeometry(0.172, 14, 14), h());
+      cap.scale.set(1, 0.78, 1.05);
+      cap.position.set(-0.02, 0.04, 0);
+      g.add(cap);
+      for (const s of [-1, 1]) {
+        const tuft = new THREE.Mesh(new THREE.SphereGeometry(0.055, 8, 8), h());
+        tuft.position.set(-0.055, 0.01, s * 0.16);
+        g.add(tuft);
+        const tail = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.22, 0.06), h());
+        tail.position.set(-0.08, -0.1, s * 0.185);
+        tail.rotation.x = s * 0.3;
+        tail.rotation.z = 0.12;
+        g.add(tail);
+        const bow = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.035, 0.05), toonMat(0xd8404f));
+        bow.position.set(-0.05, 0.03, s * 0.195);
+        g.add(bow);
+      }
+    } else if (L.hair === 'swoop') {
+      // the architectural marvel: swept forward, up, and back into legend
+      const cap = new THREE.Mesh(new THREE.SphereGeometry(0.176, 14, 14), h());
+      cap.scale.set(1.05, 0.82, 1.08);
+      cap.position.set(-0.035, 0.05, 0);
+      g.add(cap);
+      const swoop = new THREE.Mesh(new THREE.BoxGeometry(0.17, 0.055, 0.19), h());
+      swoop.position.set(0.1, 0.12, 0);
+      swoop.rotation.z = 0.3;
+      g.add(swoop);
+      const crest = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.05, 0.17), h());
+      crest.position.set(0.165, 0.075, 0);
+      crest.rotation.z = 0.9;
+      g.add(crest);
+      for (const s of [-1, 1]) {
+        const side = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.085, 0.032), h());
+        side.position.set(0.0, -0.015, s * 0.16);
+        g.add(side);
+      }
+    } else if (L.hair === 'afro') {
+      // a glorious silver dome, face left respectfully clear
+      const puff = new THREE.Mesh(new THREE.SphereGeometry(0.185, 14, 14), h());
+      puff.scale.set(1, 0.95, 1.02);
+      puff.position.set(-0.055, 0.105, 0);
+      g.add(puff);
+      for (const s of [-1, 1]) {
+        const burn = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.09, 0.03), h());
+        burn.position.set(0.08, -0.04, s * 0.157);
+        g.add(burn);
+      }
+    } else if (L.hair === 'short') {
+      // a proper cut: full crown, crisp fringe, tapered sides
+      const cap = new THREE.Mesh(new THREE.SphereGeometry(0.172, 14, 14), h());
+      cap.scale.set(1, 0.76, 1.04);
+      cap.position.set(-0.028, 0.045, 0);
+      g.add(cap);
+      const fringe = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.05, 0.19), h());
+      fringe.position.set(0.135, 0.085, 0);
+      fringe.rotation.z = -0.35;
+      g.add(fringe);
+      for (const s of [-1, 1]) {
+        const side = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.09, 0.035), h());
+        side.position.set(0.0, -0.015, s * 0.157);
+        g.add(side);
+      }
+    } else { // buzz
+      const cap = new THREE.Mesh(new THREE.SphereGeometry(0.168, 14, 14), h());
+      cap.scale.set(1, 0.62, 1);
+      cap.position.set(-0.02, 0.07, 0);
+      g.add(cap);
+    }
+    if (L.beard) {
+      const stache = new THREE.Mesh(new THREE.BoxGeometry(0.028, 0.028, 0.115), h());
+      stache.position.set(0.155, -0.045, 0);
+      g.add(stache);
+      if (L.beard === 'full') {
+        const chin = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.1, 0.1), h());
+        chin.position.set(0.135, -0.115, 0);
+        g.add(chin);
+      }
+    }
+    if (L.hat === 'straw') {
+      const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.025, 14), toonMat(0xd9b96a));
+      brim.position.set(-0.01, 0.1, 0);
+      g.add(brim);
+      const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.16, 0.13, 12), toonMat(0xcfae5c));
+      crown.position.set(-0.01, 0.17, 0);
+      g.add(crown);
+    } else if (L.hat === 'cowboy') {
+      const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.27, 0.028, 14), toonMat(0x4a3423));
+      brim.position.set(-0.01, 0.1, 0);
+      g.add(brim);
+      const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 0.17, 12), toonMat(0x4a3423));
+      crown.position.set(-0.01, 0.19, 0);
+      g.add(crown);
+      const band = new THREE.Mesh(new THREE.CylinderGeometry(0.152, 0.152, 0.045, 12), toonMat(0xc9a227));
+      band.position.set(-0.01, 0.125, 0);
+      g.add(band);
+    }
+    if (L.female) {
+      const lips = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.03, 0.075), toonMat(0xc4506a));
+      lips.position.set(0.152, -0.055, 0);
+      g.add(lips);
+      for (const sgn of [-1, 1]) {
+        const lash = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.014, 0.052), toonMat(0x161616));
+        lash.position.set(0.138, 0.068, sgn * 0.055);
+        g.add(lash);
+      }
+    }
+    if (L.earrings) {
+      for (const sgn of [-1, 1]) {
+        const ring = new THREE.Mesh(new THREE.SphereGeometry(0.024, 8, 8), toonMat(0xffd23f));
+        ring.position.set(0.02, -0.045, sgn * 0.162);
+        g.add(ring);
+      }
+    }
+    g.children.forEach((m) => { m.castShadow = true; });
+    g.scale.setScalar(r / 0.16);
+    head.add(g);
+  }
+
+  reset() {
+    if (this.rag) { this.rag.remove(); this.rag = null; }
+    this.fallen = false;
+    // idle stance: arm hanging loose at the side — it only cocks up when coiling
+    const rests = { spine: 0, shoulder: 0.5, elbow: 0.35, wrist: 0.9 };
+    for (const n in this.j) { this.j[n].a = rests[n]; this.j[n].v = 0; }
+    this.armLift = -1.15;
+    this._armed = false;
+    this.strikeLift = 0;
+    this.ascendT = null;
+    this.root.position.y = 0;
+    this.root.rotation.y = 0;
+    this.setHandGlow(false);
+    this.lean = 0;
+    this.leanV = 0;
+    this._tracked = false;
+    this.handVel.set(0, 0, 0);
+    this.handSeg = null;
+    // kinetic chain state: joints stay locked until their key fires
+    this.sWasDown = false;
+    this.sReleased = false;
+    this.releaseCoil = 0;
+    this.lFired = false;
+    this.aUnlocked = false;
+    this.pUnlocked = false;
+    this.lungeT = null;
+    this.lungeAmt = 0;
+    this.root.position.x = this.baseX;
+    this.root.visible = true;
+    this.pose();
+  }
+
+  get ascending() { return this.ascendT !== null; }
+
+  // the emperor's hand shines with golden light
+  setHandGlow(on) {
+    if (on && !this.glowSprite) {
+      const cv = document.createElement('canvas');
+      cv.width = 128; cv.height = 128;
+      const g = cv.getContext('2d');
+      const grad = g.createRadialGradient(64, 64, 4, 64, 64, 64);
+      grad.addColorStop(0, 'rgba(255,240,180,1)');
+      grad.addColorStop(0.4, 'rgba(255,215,100,0.55)');
+      grad.addColorStop(1, 'rgba(255,200,60,0)');
+      g.fillStyle = grad;
+      g.fillRect(0, 0, 128, 128);
+      this.glowSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: new THREE.CanvasTexture(cv), transparent: true,
+        blending: THREE.AdditiveBlending, depthWrite: false,
+      }));
+      this.glowSprite.scale.setScalar(0.6);
+      this.glowSprite.position.set(0.08, 0, 0);
+      this.handG.add(this.glowSprite);
+    }
+    if (this.glowSprite) this.glowSprite.visible = !!on;
+  }
+
+  // SLAP EMPEROR: he rises, slowly turning, into the light
+  startAscension() {
+    if (this.ascendT === null) this.ascendT = 0;
+  }
+
+  // real 3D: aim the swing plane at THIS victim's cheek — slap upward at the
+  // tall, downward at the short. Shoulder and reach follow the slapper's OWN
+  // physique, so a short slapper golfs tall victims skyward at a steep arc.
+  setStrikeTarget(headY) {
+    const shoulderY = 1.52 * this.phys.h;
+    const reach = 0.72 * this.phys.h * this.phys.arm;
+    const s = THREE.MathUtils.clamp((headY - shoulderY) / reach, -1, 1);
+    this.strikeLift = THREE.MathUtils.clamp(Math.asin(s), -0.35, 0.5);
+  }
+
+  // a fresh S press after a spent swing re-holsters everything: arm back to
+  // the cocked fist, locks re-engaged, stance reset — an independent new slap
+  rearm() {
+    this.sReleased = false;
+    this.releaseCoil = 0;
+    this.lFired = false;
+    this.aUnlocked = false;
+    this.pUnlocked = false;
+    this.lungeT = null;
+    this.lungeAmt = 0;
+    this.root.position.x = this.baseX;
+    const rests = { shoulder: 0.5, elbow: 1.2, wrist: 0.9 };
+    for (const n in rests) { this.j[n].a = rests[n]; this.j[n].v = 0; }
+  }
+
+  // the hips made visible: a forward step-lunge that carries the whole swing
+  startLunge(amt) {
+    if (this.lungeT !== null) return;
+    this.lungeT = 0;
+    this.lungeAmt = amt;
+    this.j.spine.v -= 1.5;   // real kick into the whip
+    this.leanV += 0.25;      // weight shifts forward — modest price
+  }
+
+  get strength() { return this.phys.str; }
+  get handSpeed() { return this.handVel.length(); }
+  get handPos() { return this._cur; }
+  get elbowBend() { return this.j.elbow.a; }
+  get elbowVel() { return this.j.elbow.v; }
+  get wristOpen() { return THREE.MathUtils.clamp((0.9 - this.j.wrist.a) / 1.1, 0, 1); }
+  get spineAngle() { return this.j.spine.a; }
+  get spineVel() { return this.j.spine.v; }
+  get coilFrac() { return Math.min(1, Math.max(0, this.j.spine.a) / 2.35); }
+
+  update(dt, keys) {
+    if (this.fallen) { if (this.rag) this.rag.sync(); return; }
+    if (dt <= 0) return;
+
+    // --- kinetic chain: each joint stays rigid until its key fires ---
+    if (!this.sReleased && this.sWasDown && !keys.s) {
+      this.sReleased = true;
+      this.releaseCoil = Math.max(0, this.j.spine.a);
+    }
+    this.sWasDown = keys.s;
+    if (!this.lFired && keys.l) this.lFired = true;
+    if (!this.aUnlocked && keys.a) {
+      this.aUnlocked = true;
+      // the whip: torso speed at the unlock moment slings into the shoulder
+      this.j.shoulder.v += Math.min(0, this.j.spine.v) * 0.4;
+    }
+    if (!this.pUnlocked && keys.p) this.pUnlocked = true;
+
+    const t = { spine: 0, shoulder: 0, elbow: 0, wrist: 0 };
+    if (keys.s) t.spine += 75;              // coil the torso back (beats the spring to full coil in ~1s)
+    // hip drive is only worth anything if you actually coiled the spine first
+    if (keys.l) t.spine -= 12 + 16 * Math.max(0, this.j.spine.a);
+    if (this.aUnlocked && keys.a) t.shoulder -= 34;
+    if (this.pUnlocked && keys.p) { t.elbow -= 210; t.wrist -= 170; }
+
+    // after releasing S the body HOLDS the coiled pose until L fires the hips —
+    // the whip waits for the player instead of evaporating in 300ms. The coil
+    // slowly leaks while you dawdle, so there's still a reason to be crisp.
+    const spineGated = this.sReleased && !this.lFired && !keys.s;
+    this._armed = keys.s || this.sReleased || this.aUnlocked;
+
+    for (const n in this.j) {
+      const J = this.j[n];
+      // locked joints ride rigidly on the torso — no free spring energy
+      if (n === 'spine' && spineGated) { J.v = 0; J.a = Math.max(0, J.a - 0.55 * dt); continue; }
+      if (n === 'shoulder' && !this.aUnlocked) { J.v = 0; continue; }
+      if (n === 'elbow' && !this.pUnlocked) {
+        // folded tight when armed, gently bent when just standing around
+        J.v = 0;
+        J.a += ((this._armed ? 1.2 : 0.35) - J.a) * Math.min(1, 8 * dt);
+        continue;
+      }
+      if (n === 'wrist' && !this.pUnlocked) { J.v = 0; continue; }
+      const tq = t[n] - J.k * (J.a - J.rest) - J.c * J.v;
+      J.v += tq * dt;
+      J.a += J.v * dt;
+      if (J.a < J.min) { J.a = J.min; if (J.v < 0) J.v *= -0.25; }
+      if (J.a > J.max) { J.a = J.max; if (J.v > 0) J.v *= -0.25; }
+    }
+
+    // balance: a deep coil is genuinely risky to sit on, and lunging the hips
+    // while still coiled is how you slap yourself off your own feet
+    const coil = Math.max(0, this.j.spine.a) / 2.35;
+    const earlyL = keys.l && this.j.spine.a > 1.0;
+    const drive = (keys.s ? -(0.35 + 1.5 * coil * coil) : 0)
+      + (keys.l ? (earlyL ? 3.6 : 1.0) : 0)
+      + (keys.a ? 0.4 : 0);
+    this.leanV += drive * dt;
+    this.leanV += this.lean * 2.2 * dt;
+    // righting gives up exactly where the HUD red zone begins (|lean| ≈ 0.71)
+    const upright = Math.max(0, 1 - Math.abs(this.lean) / 1.05);
+    this.leanV += (-this.lean * 7.0 * upright - this.leanV * (1.5 + 2 * upright)) * dt;
+    this.lean += this.leanV * dt;
+
+    // lunge: eased forward step, physically extends reach and hand speed
+    if (this.lungeT !== null) {
+      this.lungeT += dt;
+      const k = Math.min(1, this.lungeT / 0.22);
+      this.root.position.x = this.baseX + this.lungeAmt * (1 - (1 - k) * (1 - k));
+    }
+
+    // ascension: accelerating rise into heaven, gently rotating
+    if (this.ascendT !== null) {
+      this.ascendT += dt;
+      this.root.position.y = Math.min(0.35 * this.ascendT * this.ascendT, 14);
+      this.root.rotation.y += dt * 0.7;
+      if (this.glowSprite && this.glowSprite.visible) {
+        this.glowSprite.scale.setScalar(0.6 + Math.sin(this.ascendT * 8) * 0.15);
+      }
+    }
+
+    this.pose();
+
+    this.root.updateMatrixWorld(true);
+    this.handMesh.getWorldPosition(this._cur);
+    if (this._tracked) {
+      this.handVel.copy(this._cur).sub(this._prev).divideScalar(dt);
+      this.handSeg = { p0: this._prev.clone(), p1: this._cur.clone() };
+    }
+    this._prev.copy(this._cur);
+    this._tracked = true;
+
+    if (Math.abs(this.lean) > 1.05) this.collapse(Math.sign(this.lean));
+  }
+
+  pose() {
+    this.torsoG.rotation.y = this.j.spine.a;
+    this.headMesh.rotation.y = -this.j.spine.a * 0.6; // keeps his eyes on the target
+    this.shoulderG.rotation.y = this.j.shoulder.a + 0.35;
+    // arm hangs at the side until you coil — then it rises into the cock, and
+    // when A fires it settles onto the strike plane aimed at the victim's cheek
+    const targetLift = this.aUnlocked ? this.strikeLift : (this._armed ? 0.42 : -1.15);
+    this.armLift += (targetLift - this.armLift) * 0.18;
+    this.shoulderG.rotation.z = this.armLift;
+    this.elbowG.rotation.y = this.j.elbow.a;
+    this.handG.rotation.y = -(0.9 - this.j.wrist.a) * 0.4;
+    // fist → open palm, driven by the wrist joint (P key)
+    const curl = 1.45 * (1 - this.wristOpen);
+    if (this.fingers) this.fingers.forEach((fg) => { fg.rotation.y = curl; });
+    this.root.rotation.z = -this.lean * 0.5;
+  }
+
+  collapse(dir) {
+    this.fallen = true;
+    this.root.visible = false;
+    this.rag = createRagdoll({
+      world: this.world, scene: this.scene, mat: this.mat,
+      x: 0, z: 0, skin: this.look.skin, shirt: this.look.shirt, pants: this.look.pants,
+      hScale: this.phys.h, massScale: this.phys.str,
+    });
+    this.decorateHead(this.rag.parts.head.mesh, 0.17);
+    if (this.look.skirt) {
+      const skirt = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.36, 0.4, 12),
+        this.look.skirt === 'plaid' ? plaidMat() : toonMat(this.look.skirt));
+      skirt.position.y = -0.12;
+      skirt.castShadow = true;
+      this.rag.parts.pelvis.mesh.add(skirt);
+    }
+    if (this.look.busty) {
+      for (const s of [-1, 1]) {
+        const bump = new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 10), toonMat(this.look.shirt));
+        bump.position.set(0.2, 0.08, s * 0.1);
+        bump.castShadow = true;
+        this.rag.parts.torso.mesh.add(bump);
+      }
+    }
+    if (this.look.suit) {
+      const blade = new THREE.Mesh(new THREE.BoxGeometry(0.036, 0.26, 0.056), toonMat(this.look.tie));
+      blade.position.set(0.2, 0.02, 0);
+      blade.castShadow = true;
+      this.rag.parts.torso.mesh.add(blade);
+    }
+    this.rag.topple(dir || 1);
+  }
+
+  remove() {
+    if (this.rag) { this.rag.remove(); this.rag = null; }
+    this.scene.remove(this.root);
+  }
+}
