@@ -185,24 +185,26 @@ for (const btn of touchPad.querySelectorAll('.tbtn')) {
 // ---------- pick screens ----------
 const SLAPPER_TITLES = ['THE NATURAL', 'THE TECHNICIAN', 'THE VETERAN', 'THE OUTLAW', 'JUST VICTOR', 'THE ORACLE'];
 
-function openSlapperPick() {
+function openSlapperPick(previewChar = null) {
   setState('SELECT_SLAPPER');
   ui.showTitle(false);
   ui.hideCards();
   ui.bubble(null);
-  // locked (DLC) slappers are excluded until purchased — see slapp_unlocks (Phase 1)
+  // locked (DLC) slappers are excluded until purchased — see slapp_unlocks (Phase 1).
+  // A ?preview= character is appended so it shows as a (highlighted) card.
   const pickable = SLAPPERS.filter((s) => !s.locked);
+  if (previewChar && !pickable.includes(previewChar)) pickable.push(previewChar);
   pickHighlight = (i) => { pickIndex = i; ui.setPickSel(i); setLook(pickable[i]); };
   pickConfirmFn = () => openOppPick();
   ui.showPick({
     title: "WHO'S DOIN' THE SLAPPIN'?",
     blurb: 'They do NOT slap alike, sugar — short folks golf \'em skyward, big arms reach, muscle moves the heavy ones.',
     confirmLabel: "THAT'S MY CHAMPION →",
-    items: pickable.map((s) => ({ name: s.name, sub: SLAPPER_TITLES[SLAPPERS.indexOf(s)] || '', desc: s.desc })),
+    items: pickable.map((s) => ({ name: s.name, sub: SLAPPER_TITLES[SLAPPERS.indexOf(s)] || (s.locked ? '🔒 DLC' : ''), desc: s.desc })),
     onHover: (i) => pickHighlight(i),
     onConfirm: () => pickConfirmFn(),
   });
-  pickHighlight(Math.max(0, pickable.indexOf(player.look)));
+  pickHighlight(Math.max(0, pickable.indexOf(previewChar || player.look)));
 }
 
 // PostHog product events — null-safe: if the SDK is blocked or absent this
@@ -869,5 +871,5 @@ window.__slapp = {
 const _pv = new URLSearchParams(location.search).get('preview');
 if (_pv) {
   const c = SLAPPERS.find((s) => s.key === _pv);
-  if (c) { openSlapperPick(); setLook(c); }
+  if (c) openSlapperPick(c);   // appended + highlighted as a card, model rendered
 }

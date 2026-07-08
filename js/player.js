@@ -85,8 +85,8 @@ export const SLAPPERS = [
   {
     key: 'chucknorth', name: 'CHUCK NORTH', desc: 'Counts to infinity. Twice.',
     skin: 0xdca878, shirt: 0x466f9c, pants: 0x2f3b52,
-    hair: 'short', hairCol: 0x8a4b2a, beard: 'full',
-    height: 1.06, arm: 1.04, power: 1.24,
+    hair: 'short', hairCol: 0x8a4b2a, beard: 'full', bigArms: true,
+    height: 1.06, arm: 1.04, power: 1.42,
     locked: true, price: 4,
   },
 ];
@@ -137,6 +137,7 @@ export class Player {
     root.scale.setScalar(this.phys.h);
     this.scene.add(root);
     const A = this.phys.arm;
+    const AR = L.bigArms ? 2.3 : 1;  // gigantic-arm thickness multiplier
 
     for (const s of [-1, 1]) {
       const leg = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.75, 3, 8), T(L.pants)));
@@ -253,10 +254,10 @@ export class Player {
     this.decorateHead(head, 0.16);
 
     // left arm (non-slapping): hangs at the side, with a proper t-shirt sleeve
-    const armL = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.05, 0.5, 3, 8), T(L.skin)));
-    armL.position.set(0, 0.15, 0.26);
+    const armL = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.05 * AR, 0.5, 3, 8), T(L.skin)));
+    armL.position.set(0, 0.15, 0.26 + (AR - 1) * 0.05);
     torsoG.add(armL);
-    const sleeveL = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.068, 0.16, 3, 8), SM()));
+    const sleeveL = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.068 * AR, 0.16, 3, 8), SM()));
     sleeveL.position.set(0, 0.33, 0.26);
     torsoG.add(sleeveL);
 
@@ -265,13 +266,13 @@ export class Player {
     const shoulderG = this.shoulderG = new THREE.Group();
     shoulderG.position.set(0.02, 0.44, -0.25);
     torsoG.add(shoulderG);
-    const shoulderBall = M(new THREE.Mesh(new THREE.SphereGeometry(0.08, 10, 10), SM()));
+    const shoulderBall = M(new THREE.Mesh(new THREE.SphereGeometry(0.08 * AR, 10, 10), SM()));
     shoulderG.add(shoulderBall);
-    const ua = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.055, 0.24 * A, 3, 8), T(L.skin)));
+    const ua = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.055 * AR, 0.24 * A, 3, 8), T(L.skin)));
     ua.rotation.z = -Math.PI / 2;
     ua.position.set(0.17 * A, 0, 0);
     shoulderG.add(ua);
-    const sleeveR = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.072, 0.13, 3, 8), SM()));
+    const sleeveR = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.072 * AR, 0.13, 3, 8), SM()));
     sleeveR.rotation.z = -Math.PI / 2;
     sleeveR.position.set(0.08 * A, 0, 0);
     shoulderG.add(sleeveR);
@@ -279,9 +280,9 @@ export class Player {
     const elbowG = this.elbowG = new THREE.Group();
     elbowG.position.set(0.34 * A, -0.03, 0);
     shoulderG.add(elbowG);
-    const elbowBall = M(new THREE.Mesh(new THREE.SphereGeometry(0.06, 10, 10), T(L.skin)));
+    const elbowBall = M(new THREE.Mesh(new THREE.SphereGeometry(0.06 * AR, 10, 10), T(L.skin)));
     elbowG.add(elbowBall);
-    const fa = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.05, 0.22 * A, 3, 8), T(L.skin)));
+    const fa = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.05 * AR, 0.22 * A, 3, 8), T(L.skin)));
     fa.rotation.z = -Math.PI / 2;
     fa.position.set(0.15 * A, 0, 0);
     elbowG.add(fa);
