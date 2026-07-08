@@ -75,6 +75,7 @@ export const ROSTER = [
     skin: 0xf2cda2, shirt: 0xf2cda2, pants: 0x2f6fe0, skirt: 0x2f6fe0, bikini: true,
     cropTop: 0xff3d88, hairFlow: true,   // pink crop top, blue shorts, windswept hair
     hair: 'long', hairCol: 0xf0cf6a, shades: true, shadesCol: 0x141414, phone: true,
+    hat: 'floppy', hatCol: 0xf7f2ea, bandCol: 0x2f6fe0,   // chic white floppy hat, blue band
     lookUp: true, lipstick: 0xe0244f,    // selfie-from-above tilt + bold lips
     pickLine: 'Wait — is this thing recording? Hi besties!',
     taunts: ["Don't forget to like and subscribe!", 'This is SO going on my story.'],
@@ -125,9 +126,15 @@ export class Opponent {
     };
     set('torso', START_X - 0.05, 1.33, 0, 0, 0, 0.22);
     set('head', START_X - 0.16, 1.56, 0, 0.18, 0, arch.lookUp ? -0.5 : 0.35);   // lookUp tilts the face skyward
-    set('uaL', START_X + 0.08, 1.38, 0.24, 0, 0, 0.45);
+    if (arch.phone) {
+      // left arm raised, holding a selfie stick up in front of her face
+      set('uaL', START_X + 0.02, 1.5, 0.2, 0, 0, -1.15);
+      set('faL', START_X - 0.13, 1.72, 0.13, 0, 0, -0.55);
+    } else {
+      set('uaL', START_X + 0.08, 1.38, 0.24, 0, 0, 0.45);
+      set('faL', START_X + 0.20, 1.06, 0.10, 0.9, 0, 0.3);
+    }
     set('uaR', START_X + 0.08, 1.38, -0.24, 0, 0, 0.45);
-    set('faL', START_X + 0.20, 1.06, 0.10, 0.9, 0, 0.3);
     set('faR', START_X + 0.20, 1.06, -0.10, -0.9, 0, 0.3);
     rag.sync();
 
@@ -146,30 +153,52 @@ export class Opponent {
       stache.scale.setScalar(hr);
       head.add(stache);
     }
-    if (arch.shades) {
-      // wraparound shades — magenta rave visor by default, or a set color (e.g. black)
-      const frame = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.09, 0.26), toonMat(arch.shadesCol || 0xff3df0));
+    if (arch.shades && arch.shadesCol) {
+      // proper two-lens sunglasses: rims, dark lenses, a bridge and temple arms
+      const fCol = arch.shadesCol;
+      for (const sgn of [-1, 1]) {
+        const rim = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.062, 0.1), toonMat(fCol));
+        rim.position.set(-0.126 * hr, 0.035 * hr, sgn * 0.06 * hr);
+        rim.scale.setScalar(hr);
+        head.add(rim);
+        const lens = new THREE.Mesh(new THREE.BoxGeometry(0.014, 0.048, 0.082), toonMat(0x0b0b14));
+        lens.position.set(-0.137 * hr, 0.035 * hr, sgn * 0.06 * hr);
+        lens.scale.setScalar(hr);
+        head.add(lens);
+      }
+      const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.014, 0.045), toonMat(fCol));
+      bridge.position.set(-0.13 * hr, 0.045 * hr, 0);
+      bridge.scale.setScalar(hr);
+      head.add(bridge);
+      for (const sgn of [-1, 1]) {
+        const temple = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.012, 0.012), toonMat(fCol));
+        temple.position.set(-0.08 * hr, 0.04 * hr, sgn * 0.115 * hr);
+        temple.scale.setScalar(hr);
+        head.add(temple);
+      }
+    } else if (arch.shades) {
+      // outlandish rave visor (RAVIN' RAY): neon magenta frame, dark wraparound lens
+      const frame = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.09, 0.26), toonMat(0xff3df0));
       frame.position.set(-0.128 * hr, 0.035 * hr, 0);
       frame.scale.setScalar(hr);
       head.add(frame);
-      const lens = new THREE.Mesh(new THREE.BoxGeometry(0.038, 0.05, 0.21), toonMat(arch.shadesCol ? 0x050505 : 0x1a0f2e));
+      const lens = new THREE.Mesh(new THREE.BoxGeometry(0.038, 0.05, 0.21), toonMat(0x1a0f2e));
       lens.position.set(-0.135 * hr, 0.035 * hr, 0);
       lens.scale.setScalar(hr);
       head.add(lens);
     }
     if (arch.phone) {
-      // selfie stick held out in FRONT of the face (she faces -X) and angled up so
-      // she looks up at it — kept entirely clear of the head so nothing clips through
-      const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.42, 6), toonMat(0xcfd2da));
-      stick.position.set(-0.34 * hr, 0.05 * hr, 0.04);
-      stick.rotation.z = 0.7;   // runs from lower-front (hand) up to the phone
-      head.add(stick);
-      const ph = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.16, 0.09), toonMat(0x15151c));
-      ph.position.set(-0.48 * hr, 0.23 * hr, 0.04);
-      head.add(ph);
-      const screen = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.13, 0.065), toonMat(0x9fd6ff));
-      screen.position.set(-0.462 * hr, 0.23 * hr, 0.04);   // screen faces back toward her
-      head.add(screen);
+      // a selfie stick held IN HER HAND (left forearm) — extends from the fist to the phone
+      const fa = P.faL.mesh;
+      const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.5, 6), toonMat(0xcfd2da));
+      stick.position.set(0, 0.36, 0);
+      fa.add(stick);
+      const ph = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.03, 0.16), toonMat(0x15151c));
+      ph.position.set(0, 0.62, 0);
+      fa.add(ph);
+      const screen = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.012, 0.13), toonMat(0x9fd6ff));
+      screen.position.set(0, 0.605, 0);
+      fa.add(screen);
     }
     if (arch.female) {
       const lips = new THREE.Mesh(
@@ -397,6 +426,22 @@ export class Opponent {
           petal.position.set(-0.16 + Math.cos(pa) * 0.045, -0.028, 0.16 + Math.sin(pa) * 0.045);
           hat.add(petal);
         }
+      } else if (arch.hat === 'floppy') {
+        // a chic wide-brim floppy fashion hat — soft rounded crown, bold ribbon
+        const col = arch.hatCol || 0xf7f2ea;
+        const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.43, 0.4, 0.02, 20), T(col));
+        brim.position.y = -0.075;
+        brim.rotation.x = 0.06;   // a slight jaunty droop
+        hat.add(brim);
+        const crown = new THREE.Mesh(new THREE.SphereGeometry(0.165, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), T(col));
+        crown.position.y = -0.03;
+        hat.add(crown);
+        const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.148, 0.148, 0.02, 14), T(col));
+        cap.position.y = 0.055;
+        hat.add(cap);
+        const band = new THREE.Mesh(new THREE.CylinderGeometry(0.152, 0.158, 0.055, 16), T(arch.bandCol || 0x2f6fe0));
+        band.position.y = -0.05;
+        hat.add(band);
       } else { // straw
         const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.03, 14), T(0xd9b96a));
         brim.position.y = -0.05;
