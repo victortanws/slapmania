@@ -75,6 +75,7 @@ export const ROSTER = [
     skin: 0xf2cda2, shirt: 0xf2cda2, pants: 0x2f6fe0, skirt: 0x2f6fe0, bikini: true,
     cropTop: 0xff3d88, hairFlow: true,   // pink crop top, blue shorts, windswept hair
     hair: 'long', hairCol: 0xf0cf6a, shades: true, shadesCol: 0x141414, phone: true,
+    lookUp: true, lipstick: 0xe0244f,    // selfie-from-above tilt + bold lips
     pickLine: 'Wait — is this thing recording? Hi besties!',
     taunts: ["Don't forget to like and subscribe!", 'This is SO going on my story.'],
   },
@@ -123,7 +124,7 @@ export class Opponent {
       P[name].body.quaternion.setFromEuler(ex, ey, ez);
     };
     set('torso', START_X - 0.05, 1.33, 0, 0, 0, 0.22);
-    set('head', START_X - 0.16, 1.56, 0, 0.18, 0, 0.35);
+    set('head', START_X - 0.16, 1.56, 0, 0.18, 0, arch.lookUp ? -0.5 : 0.35);   // lookUp tilts the face skyward
     set('uaL', START_X + 0.08, 1.38, 0.24, 0, 0, 0.45);
     set('uaR', START_X + 0.08, 1.38, -0.24, 0, 0, 0.45);
     set('faL', START_X + 0.20, 1.06, 0.10, 0.9, 0, 0.3);
@@ -171,8 +172,10 @@ export class Opponent {
       head.add(stick);
     }
     if (arch.female) {
-      const lips = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.03, 0.075), toonMat(0xc4506a));
-      lips.position.set(-0.155 * hr, -0.055 * hr, 0);
+      const lips = new THREE.Mesh(
+        new THREE.BoxGeometry(0.024, arch.lipstick ? 0.042 : 0.03, arch.lipstick ? 0.095 : 0.075),
+        toonMat(arch.lipstick || 0xc4506a));
+      lips.position.set(-0.156 * hr, -0.055 * hr, 0);
       head.add(lips);
       for (const sgn of [-1, 1]) {
         const lash = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.014, 0.052), toonMat(0x161616));
@@ -444,7 +447,7 @@ export class Opponent {
     }
     // waggle the offered cheek
     P.head.body.position.y += bob * 0.5;
-    P.head.body.quaternion.setFromEuler(0.18 + Math.sin(t * 2.6 + 0.6) * 0.16, 0, 0.35);
+    P.head.body.quaternion.setFromEuler(0.18 + Math.sin(t * 2.6 + 0.6) * 0.16, 0, this.arch.lookUp ? -0.5 : 0.35);
     // beckoning right arm: raised toward the player, forearm curling
     const shX = START_X + 0.02 * w, shY = 1.5 * h + bob, shZ = -0.24 * w;
     P.uaR.body.position.set(shX - 0.13 * w, shY, shZ);
