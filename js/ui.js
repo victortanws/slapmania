@@ -221,6 +221,7 @@ export function showMatch({ bestAttempt, line, board }) {
     : '<div class="boardrow">No slaps on record.</div>');
   el.shareBtn.textContent = navigator.share ? 'SHARE MY SLAP' : 'COPY BRAG TEXT';
   el.shareBtn.onclick = async () => {
+    try { window.posthog?.capture('share_clicked', { pts: bestAttempt.pts, dist: +bestAttempt.dist.toFixed(1), opp: bestAttempt.opp }); } catch {}
     const url = document.querySelector('meta[property="og:url"]')?.content || location.href;
     const txt = `I scored ${bestAttempt.pts} PTS slapping ${bestAttempt.opp} ${bestAttempt.dist.toFixed(1)}m across a farm in SLAPMANIA! Four keys — S·L·A·P. Can you beat it?`;
     // native share sheet where available (mobile: Facebook, Messages, WhatsApp…);

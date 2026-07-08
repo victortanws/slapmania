@@ -203,8 +203,13 @@ function openSlapperPick() {
   pickHighlight(Math.max(0, SLAPPERS.indexOf(player.look)));
 }
 
+// PostHog product events — null-safe: if the SDK is blocked or absent this
+// no-ops and the game is untouched. Feeds the pick→play→EMPEROR→share funnel.
+const track = (event, props) => { try { window.posthog?.capture(event, props); } catch {} };
+
 function openOppPick() {
   setState('SELECT_OPP');
+  track('slapper_selected', { slapper: player.look?.name });
   // step well back to size up the volunteer — nobody's hugging anybody
   player.root.position.x = -2.6;
   ui.hideCards();
@@ -232,6 +237,7 @@ function startMatch() {
   attempts = [];
   submitted = false;
   if (!chosenArch) chosenArch = ROSTER[1];
+  track('match_started', { opponent: chosenArch.name });
   startAttempt();
 }
 
@@ -381,6 +387,12 @@ function showResult() {
   const dist = isFoul ? 0 : flew;
   const pts = Math.round(dist * arch.mass * 10);
   attempts.push({ dist, pts, foul: isFoul ? slap.foul : null, part: slap ? slap.part : null, opp: arch.name });
+  track('slap_landed', {
+    opp: arch.name, pts, dist: +dist.toFixed(1),
+    foul: isFoul ? slap.foul : null,
+    chain_pct: slap && slap.chain ? slap.chain.pct : null,
+    part: slap ? slap.part : null,
+  });
   if (pts > 0) {
     // read-modify-write: fold in whatever storage holds now (maybe newer than our
     // in-memory copy), add this score, then persist — so we never clobber a score
@@ -405,6 +417,7 @@ function showResult() {
   // SLAPMASTER: he cleared the hay wall itself (60.5m) — the landmark IS the bar
   if (!isFoul && dist > 62 && !masterDone) {
     masterDone = true;
+    track('slapmaster_reached', { dist: +dist.toFixed(1), opp: arch.name });
     excite = 1;
     stage.summonSpirits(opponent.pelvisPos().x);
     sfx.choir();
@@ -420,6 +433,7 @@ function showResult() {
   // The hand shines, and he ascends.
   if (!isFoul && dist > 85 && slap && slap.chain && slap.chain.pct >= 90 && !emperorDone) {
     emperorDone = true;
+    track('slap_emperor_reached', { dist: +dist.toFixed(1), chain_pct: slap.chain.pct, opp: arch.name });
     excite = 1;
     player.setHandGlow(true);
     player.startAscension();
@@ -444,6 +458,7 @@ function advance() {
   if (pendingCard) return; // the ceremony finishes before the paperwork
   if (attempts.length >= 3) {
     const bestAttempt = attempts.reduce((a, b) => (b.pts > a.pts ? b : a), attempts[0]);
+    track('match_completed', { best_pts: bestAttempt.pts, best_dist: +bestAttempt.dist.toFixed(1), opp: bestAttempt.opp });
     ui.hideCards();
     ui.showMatch({ bestAttempt, line: ui.commentaryFor(bestAttempt.dist, false), board });
     setupGlobalPanel(bestAttempt);
@@ -470,6 +485,7 @@ function setupGlobalPanel(bestAttempt) {
     net.submit({ name, pts: bestAttempt.pts, dist: bestAttempt.dist, opp: bestAttempt.opp })
       .then(() => {
         submitted = true;
+        track('score_posted', { pts: bestAttempt.pts, dist: +bestAttempt.dist.toFixed(1), opp: bestAttempt.opp });
         ui.submitState('POSTED ✓', true);
         ui.netMsg("You're on the board. Y'all come back now.");
         return net.fetchTop(10).then((rows) => ui.renderGlobal(rows));
