@@ -106,7 +106,7 @@ export const SLAPPERS = [
   {
     key: 'auntie', name: 'AUNTIE', desc: 'Aiyah! Sit down and get slapped.',
     skin: 0xe8c19a, shirt: 0xf4efe6, pants: 0xe8c19a,   // white dress top, bare (skin) legs
-    hair: 'short', hairCol: 0x241a14, female: true, curlers: true, glasses: true, cigarette: true,
+    hair: 'short', hairCol: 0x241a14, female: true, busty: true, curlers: true, glasses: true, cigarette: true,
     skirt: 0xf4efe6, flared: true,                       // white flared dress
     height: 0.90, arm: 0.92, power: 1.08,
     locked: true, price: 4,
@@ -528,16 +528,27 @@ export class Player {
       }
     }
     if (L.curlers) {
-      // a rainbow of hair rollers on top
+      // a full head of rainbow rollers + tight curls — the classic auntie perm
       const cols = [0xff4757, 0xffd23f, 0x54a0ff, 0xff6b9d, 0x5fd15f, 0xb06bff];
-      const spots = [[-0.05, 0.14, 0.07], [0.04, 0.15, 0.1], [-0.09, 0.1, 0.14],
-        [0.06, 0.12, -0.09], [-0.04, 0.14, -0.13], [-0.02, 0.16, 0.0], [0.02, 0.11, -0.15]];
+      const spots = [
+        [-0.05, 0.14, 0.07], [0.04, 0.15, 0.1], [-0.09, 0.1, 0.14], [0.06, 0.12, -0.09],
+        [-0.04, 0.14, -0.13], [-0.02, 0.16, 0.0], [0.02, 0.11, -0.15], [0.08, 0.13, 0.05],
+        [-0.11, 0.09, -0.05], [0.0, 0.12, 0.16], [-0.12, 0.1, 0.02], [0.05, 0.16, -0.04],
+        [-0.06, 0.1, 0.16], [0.09, 0.1, -0.12], [-0.02, 0.13, -0.16], [0.07, 0.14, 0.12],
+      ];
       spots.forEach((p, i) => {
-        const roll = new THREE.Mesh(new THREE.CylinderGeometry(0.042, 0.042, 0.062, 8), toonMat(cols[i % cols.length]));
+        const roll = new THREE.Mesh(new THREE.CylinderGeometry(0.043, 0.043, 0.064, 8), toonMat(cols[i % cols.length]));
         roll.position.set(p[0], p[1], p[2]);
         roll.rotation.x = Math.PI / 2;
+        roll.rotation.z = (i % 3) * 0.5;
         g.add(roll);
       });
+      // tight curl puffs around the sides for permed volume
+      for (const [x, y, z] of [[-0.13, 0.0, 0.12], [-0.13, 0.0, -0.12], [-0.14, -0.03, 0.02], [-0.1, -0.05, 0.13], [-0.1, -0.05, -0.13]]) {
+        const curl = new THREE.Mesh(new THREE.SphereGeometry(0.048, 8, 8), h());
+        curl.position.set(x, y, z);
+        g.add(curl);
+      }
     }
     if (L.glasses) {
       for (const sgn of [-1, 1]) {

@@ -935,10 +935,10 @@ if (new URLSearchParams(location.search).get('unlockall')) {
 // look can be shared before it's unlockable — without exposing it in the pick list.
 const _pv = new URLSearchParams(location.search).get('preview');
 if (_pv) {
-  const c = SLAPPERS.find((s) => s.key === _pv);
-  if (c) {
-    openSlapperPick(c);
-    // hide the card dock so the FULL character (head to toe) is visible in preview
-    ['pickRow', 'pickGo', 'pickHint'].forEach((id) => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
-  }
+  // hide the card dock so the FULL character (head to toe) is visible in preview
+  const hideDock = () => ['pickRow', 'pickGo', 'pickHint'].forEach((id) => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+  const slapper = SLAPPERS.find((s) => s.key === _pv);
+  const volunteer = ROSTER.find((r) => r.key === _pv);
+  if (slapper) { openSlapperPick(slapper); hideDock(); }
+  else if (volunteer) { ui.showTitle(false); openOppPick(); pickHighlight(ROSTER.indexOf(volunteer)); hideDock(); }
 }
