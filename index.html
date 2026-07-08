@@ -246,6 +246,32 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
   #pickGo{font-size:16px;padding:11px 24px;animation:goPulse 1.4s ease-in-out infinite;}
 }
 @keyframes goPulse{50%{transform:scale(1.05);}}
+
+/* ---- DLC lock badge + unlock modal ---- */
+.choice{position:relative;}
+.choice.locked .cname{color:#8a5fc0;}
+.lockbadge{position:absolute;top:-9px;right:-7px;background:var(--ink);color:var(--yellow);
+  border:2px solid #000;border-radius:8px;font-family:'Arial Black',Impact,sans-serif;font-size:11px;
+  padding:2px 7px;box-shadow:0 3px 0 #000;letter-spacing:.5px;}
+#unlockModal{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(6,7,16,.82);pointer-events:auto;z-index:60;padding:16px;}
+.unlockCard{position:relative;background:#fffbe8;color:#1b1d33;border:5px solid #000;border-radius:16px;
+  padding:24px 28px;max-width:340px;width:100%;text-align:center;box-shadow:8px 8px 0 rgba(0,0,0,.55);
+  font-family:Arial,sans-serif;}
+.unlockX{position:absolute;top:8px;right:10px;background:none;border:none;box-shadow:none;
+  font-size:18px;color:#1b1d33;padding:2px 6px;cursor:pointer;}
+.unlockLock{font-size:38px;line-height:1;}
+#unlockName{font-family:'Arial Black',Impact,sans-serif;font-size:25px;color:var(--red);margin:4px 0;}
+#unlockDesc{font-weight:bold;font-size:14px;margin-bottom:12px;color:#3a3f5c;}
+.unlockPrice{font-family:'Arial Black',Impact,sans-serif;font-size:16px;letter-spacing:1px;margin-bottom:10px;}
+#unlockBuy{background:var(--red);color:#fff;font-size:18px;width:100%;}
+.unlockOr{font-size:11px;letter-spacing:1px;color:#8a8fa5;margin:14px 0 8px;}
+.unlockRedeem{display:flex;gap:6px;}
+#unlockCode{flex:1;pointer-events:auto;font-family:'Arial Black',Impact,sans-serif;font-size:14px;
+  padding:9px 10px;border:3px solid #000;border-radius:8px;background:#fff;color:#111;
+  text-transform:uppercase;text-align:center;}
+#unlockRedeemBtn{font-size:13px;}
+#unlockMsg{font-weight:bold;font-size:13px;color:var(--red);min-height:18px;margin-top:10px;}
 </style>
 <script type="importmap">
 {"imports":{
@@ -320,6 +346,23 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
     <div class="tside">
       <button class="tbtn" data-code="KeyA">A<small>ARM</small></button>
       <button class="tbtn" data-code="KeyP">P<small>PALM</small></button>
+    </div>
+  </div>
+
+  <div id="unlockModal" class="hidden">
+    <div class="unlockCard">
+      <button id="unlockClose" class="unlockX">✕</button>
+      <div class="unlockLock">🔒</div>
+      <div id="unlockName"></div>
+      <div id="unlockDesc"></div>
+      <div class="unlockPrice">UNLOCK — $<span id="unlockPriceVal">4</span></div>
+      <button id="unlockBuy">BUY IT NOW</button>
+      <div class="unlockOr">— OR REDEEM A CODE —</div>
+      <div class="unlockRedeem">
+        <input id="unlockCode" placeholder="CODE" maxlength="16"/>
+        <button id="unlockRedeemBtn">REDEEM</button>
+      </div>
+      <div id="unlockMsg"></div>
     </div>
   </div>
 

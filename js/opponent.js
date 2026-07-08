@@ -69,6 +69,14 @@ export const ROSTER = [
     pickLine: 'The most slappable cheek in history. Tremendous.',
     taunts: ['You call that a hand? Sad!', 'I know slaps. I have the best slaps.', 'My cheek is a perfect 10. Ask anyone.'],
   },
+  {
+    key: 'influencer', name: 'THE INFLUENCER', tag: 'LIGHTWEIGHT',
+    w: 0.8, h: 1.0, mass: 0.7, female: true,
+    skin: 0xf0cba0, shirt: 0x8ecaf5, pants: 0x8ecaf5, skirt: 0x8ecaf5,
+    hair: 'pony', hairCol: 0xe8c86a, shades: true, phone: true,
+    pickLine: 'Wait — is this thing recording? Hi besties!',
+    taunts: ["Don't forget to like and subscribe!", 'This is SO going on my story.'],
+  },
 ];
 
 function segSphere(p0, p1, c, r) {
@@ -146,6 +154,15 @@ export class Opponent {
       lens.position.set(-0.135 * hr, 0.035 * hr, 0);
       lens.scale.setScalar(hr);
       head.add(lens);
+    }
+    if (arch.phone) {
+      // held up for a selfie in front of the face (she faces -X) — films her own launch
+      const ph = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.15, 0.085), toonMat(0x15151c));
+      ph.position.set(-0.32 * hr, 0.06 * hr, 0.13);
+      head.add(ph);
+      const screen = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.12, 0.062), toonMat(0x9fd6ff));
+      screen.position.set(-0.339 * hr, 0.06 * hr, 0.13);
+      head.add(screen);
     }
     if (arch.female) {
       const lips = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.03, 0.075), toonMat(0xc4506a));

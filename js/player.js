@@ -89,6 +89,27 @@ export const SLAPPERS = [
     height: 1.06, arm: 1.04, power: 1.42,
     locked: true, price: 4,
   },
+  {
+    key: 'earl', name: 'BIG EARL McSLAPP', desc: 'Shirtless. Fearless. Enormous.',
+    skin: 0xcf9a63, shirt: 0xcf9a63, pants: 0x3a5a3f,   // shirtless: shirt matches skin
+    hair: 'buzz', hairCol: 0x3a2a1a, beard: 'stache', overalls: true, bigArms: true,
+    height: 1.14, arm: 1.06, power: 1.34,
+    locked: true, price: 4,
+  },
+  {
+    key: 'reverend', name: 'THE REVEREND', desc: 'Repent, and be LAUNCHED.',
+    skin: 0xcda07a, shirt: 0x18181e, pants: 0x18181e,
+    hair: 'short', hairCol: 0x9a9188, beard: 'stache', cassock: 0x14141a, collar: true,
+    height: 1.04, arm: 1.06, power: 1.07,
+    locked: true, price: 4,
+  },
+  {
+    key: 'auntie', name: 'AUNTIE', desc: 'Aiyah! Sit down and get slapped.',
+    skin: 0xe8c19a, shirt: 0x9c6bb0, pants: 0x40485e,
+    hair: 'short', hairCol: 0x241a14, female: true, curlers: true, glasses: true, cigarette: true,
+    height: 0.90, arm: 0.92, power: 1.08,
+    locked: true, price: 4,
+  },
 ];
 
 // The slapper. Pre-contact he is NOT physics-engine driven: each joint is a scalar
@@ -161,6 +182,12 @@ export class Player {
       skirt.position.y = 0.87;
       root.add(skirt);
     }
+    if (L.cassock) {
+      // a floor-length clergy robe from waist to boots
+      const robe = M(new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.3, 0.98, 14), T(L.cassock)));
+      robe.position.y = 0.52;
+      root.add(robe);
+    }
 
     const torsoG = this.torsoG = new THREE.Group();
     torsoG.position.y = 1.08;
@@ -187,6 +214,15 @@ export class Player {
       const blade = M(new THREE.Mesh(new THREE.BoxGeometry(0.036, 0.28, 0.056), T(L.tie)));
       blade.position.set(0.192, 0.3, 0);
       torsoG.add(blade);
+    }
+    if (L.collar) {
+      // white clerical band + tab at the throat
+      const band = M(new THREE.Mesh(new THREE.CylinderGeometry(0.145, 0.145, 0.055, 14), T(0xf4efe6)));
+      band.position.y = 0.55;
+      torsoG.add(band);
+      const tab = M(new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.06, 0.045), T(0xffffff)));
+      tab.position.set(0.19, 0.5, 0);
+      torsoG.add(tab);
     }
     if (L.trackStripe) {  // side stripes continue up the torso
       for (const s of [-1, 1]) {
@@ -466,6 +502,38 @@ export class Player {
         fr.position.set(0.146, -0.005 + dy, sgn * 0.075);
         g.add(fr);
       }
+    }
+    if (L.curlers) {
+      // a rainbow of hair rollers on top
+      const cols = [0xff4757, 0xffd23f, 0x54a0ff, 0xff6b9d, 0x5fd15f, 0xb06bff];
+      const spots = [[-0.05, 0.14, 0.07], [0.04, 0.15, 0.1], [-0.09, 0.1, 0.14],
+        [0.06, 0.12, -0.09], [-0.04, 0.14, -0.13], [-0.02, 0.16, 0.0], [0.02, 0.11, -0.15]];
+      spots.forEach((p, i) => {
+        const roll = new THREE.Mesh(new THREE.CylinderGeometry(0.042, 0.042, 0.062, 8), toonMat(cols[i % cols.length]));
+        roll.position.set(p[0], p[1], p[2]);
+        roll.rotation.x = Math.PI / 2;
+        g.add(roll);
+      });
+    }
+    if (L.glasses) {
+      for (const sgn of [-1, 1]) {
+        const lens = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.052, 0.058), toonMat(0x15151a));
+        lens.position.set(0.152, 0.03, sgn * 0.056);
+        g.add(lens);
+      }
+      const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.012, 0.05), toonMat(0x15151a));
+      bridge.position.set(0.152, 0.035, 0);
+      g.add(bridge);
+    }
+    if (L.cigarette) {
+      const cig = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.1, 6), toonMat(0xf5f0e6));
+      cig.position.set(0.19, -0.052, 0.04);
+      cig.rotation.z = Math.PI / 2;
+      cig.rotation.y = 0.35;
+      g.add(cig);
+      const ember = new THREE.Mesh(new THREE.SphereGeometry(0.011, 6, 6), toonMat(0xff5522));
+      ember.position.set(0.237, -0.052, 0.057);
+      g.add(ember);
     }
     if (L.female) {
       const lips = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.03, 0.075), toonMat(0xc4506a));

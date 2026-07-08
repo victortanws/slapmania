@@ -185,22 +185,76 @@ for (const btn of touchPad.querySelectorAll('.tbtn')) {
 // ---------- pick screens ----------
 const SLAPPER_TITLES = ['THE NATURAL', 'THE TECHNICIAN', 'THE VETERAN', 'THE OUTLAW', 'JUST VICTOR', 'THE ORACLE'];
 
+// ---------- DLC unlocks (Phase 1: local. Stripe checkout + server codes = Phase 2) ----------
+let unlocks = [];
+try { unlocks = JSON.parse(localStorage.getItem('slapp_unlocks') || '[]'); } catch { unlocks = []; }
+const owned = (key) => unlocks.includes(key);
+function unlock(key) {
+  if (!unlocks.includes(key)) {
+    unlocks.push(key);
+    localStorage.setItem('slapp_unlocks', JSON.stringify(unlocks));
+    try { window.posthog?.capture('slapper_unlocked', { slapper: key }); } catch {}
+  }
+}
+
+// unlock modal — BUY is a placeholder until Stripe is wired; a temporary dev code
+// (SLAPDEV) unlocks locally so the whole flow is testable now.
+const um = {
+  modal: document.getElementById('unlockModal'), name: document.getElementById('unlockName'),
+  desc: document.getElementById('unlockDesc'), price: document.getElementById('unlockPriceVal'),
+  buy: document.getElementById('unlockBuy'), code: document.getElementById('unlockCode'),
+  redeem: document.getElementById('unlockRedeemBtn'), close: document.getElementById('unlockClose'),
+  msg: document.getElementById('unlockMsg'),
+};
+let unlockTarget = null;
+function openUnlockModal(char) {
+  unlockTarget = char;
+  um.name.textContent = char.name;
+  um.desc.textContent = char.desc;
+  um.price.textContent = char.price || 4;
+  um.msg.textContent = ''; um.code.value = '';
+  um.modal.classList.remove('hidden');
+}
+function closeUnlockModal() { um.modal.classList.add('hidden'); unlockTarget = null; }
+if (um.modal) {
+  um.close.onclick = closeUnlockModal;
+  um.buy.onclick = () => { um.msg.textContent = 'Checkout opens soon — hang tight! 🛒'; };
+  um.redeem.onclick = () => {
+    const code = um.code.value.trim().toUpperCase();
+    if (unlockTarget && code === 'SLAPDEV') {   // TEMP dev code — replace with server validation in Phase 2
+      const c = unlockTarget;
+      unlock(c.key);
+      um.msg.textContent = 'UNLOCKED! 🎉';
+      setTimeout(() => { closeUnlockModal(); openSlapperPick(); pickHighlight(SLAPPERS.indexOf(c)); }, 700);
+    } else {
+      um.msg.textContent = "That code isn't active yet — the shop opens soon.";
+    }
+  };
+}
+
 function openSlapperPick(previewChar = null) {
   setState('SELECT_SLAPPER');
   ui.showTitle(false);
   ui.hideCards();
   ui.bubble(null);
-  // locked (DLC) slappers are excluded until purchased — see slapp_unlocks (Phase 1).
-  // A ?preview= character is appended so it shows as a (highlighted) card.
-  const pickable = SLAPPERS.filter((s) => !s.locked);
+  // show ALL slappers; locked+unowned ones display a 🔒 badge and gate on confirm.
+  const pickable = [...SLAPPERS];
   if (previewChar && !pickable.includes(previewChar)) pickable.push(previewChar);
   pickHighlight = (i) => { pickIndex = i; ui.setPickSel(i); setLook(pickable[i]); };
-  pickConfirmFn = () => openOppPick();
+  pickConfirmFn = () => {
+    const c = pickable[pickIndex];
+    if (c && c.locked && !owned(c.key)) { openUnlockModal(c); return; }  // gate DLC
+    openOppPick();
+  };
   ui.showPick({
     title: "WHO'S DOIN' THE SLAPPIN'?",
     blurb: 'They do NOT slap alike, sugar — short folks golf \'em skyward, big arms reach, muscle moves the heavy ones.',
     confirmLabel: "THAT'S MY CHAMPION →",
-    items: pickable.map((s) => ({ name: s.name, sub: SLAPPER_TITLES[SLAPPERS.indexOf(s)] || (s.locked ? '🔒 DLC' : ''), desc: s.desc })),
+    items: pickable.map((s) => ({
+      name: s.name, desc: s.desc,
+      sub: SLAPPER_TITLES[SLAPPERS.indexOf(s)] || (s.locked ? 'DLC FIGHTER' : ''),
+      locked: !!(s.locked && !owned(s.key)), price: s.price,
+    })),
     onHover: (i) => pickHighlight(i),
     onConfirm: () => pickConfirmFn(),
   });
@@ -822,6 +876,10 @@ window.__slapp = {
   opponent: () => opponent,
   // preview any slapper by key (incl. locked DLC) without exposing it in the pick UI
   setLook: (key) => setLook(SLAPPERS.find((s) => s.key === key) || SLAPPERS[0]),
+  // DLC dev backdoor: unlock/relock without paying (Phase 2 replaces with real codes)
+  unlock: (key) => { unlock(key); return [...unlocks]; },
+  relock: (key) => { unlocks = key ? unlocks.filter((k) => k !== key) : []; localStorage.setItem('slapp_unlocks', JSON.stringify(unlocks)); return [...unlocks]; },
+  get unlocks() { return [...unlocks]; },
   dist: () => opponent.distance(),
   get chainState() { return chain; },
   get bestScore() { return bestPts(); },

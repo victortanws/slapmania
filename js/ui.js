@@ -261,11 +261,12 @@ export function showPick({ title, blurb, items, confirmLabel, onHover, onConfirm
   el.pickRow.innerHTML = '';
   items.forEach((it, i) => {
     const b = document.createElement('div');
-    b.className = 'choice';
+    b.className = 'choice' + (it.locked ? ' locked' : '');
     b.innerHTML = `<span class="num">${i + 1}</span>
       <div class="cname">${it.name}</div>
       <div class="ctag">${it.sub}</div>
-      <div class="cdesc">${it.desc}</div>`;
+      <div class="cdesc">${it.desc}</div>`
+      + (it.locked ? `<div class="lockbadge">🔒 $${it.price || 4}</div>` : '');
     // mouse: hover previews, a click selects + confirms in one action (as before).
     // touch: a tap ONLY selects and shows that fighter in the ring above — the
     // big GO button is the deliberate confirm, so nobody locks in blind or by a
