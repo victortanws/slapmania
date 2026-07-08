@@ -924,6 +924,12 @@ window.__slapp = {
   },
 };
 
+// ?unlockall=1 — dev/preview: unlock every DLC slapper so they can all be played.
+// TEMP (like the SLAPDEV code) — remove when Stripe validation is live.
+if (new URLSearchParams(location.search).get('unlockall')) {
+  SLAPPERS.filter((s) => s.locked).forEach((s) => unlock(s.key));
+}
+
 // ?preview=<key> renders any slapper (incl. locked DLC) in the pick showcase, so a
 // look can be shared before it's unlockable — without exposing it in the pick list.
 const _pv = new URLSearchParams(location.search).get('preview');
