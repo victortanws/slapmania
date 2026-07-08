@@ -75,6 +75,20 @@ export const SLAPPERS = [
     height: 0.85, arm: 0.94, power: 0.80,
     locked: true, price: 4,
   },
+  {
+    key: 'bruceslee', name: 'BRUCE SLEE', desc: 'The palm has no form. WATAAA!',
+    skin: 0xe8b98a, shirt: 0xf5c518, pants: 0xf5c518,
+    hair: 'bowl', hairCol: 0x14100e, beard: null, trackStripe: 0x161616,
+    height: 0.90, arm: 1.08, power: 1.10,
+    locked: true, price: 4,
+  },
+  {
+    key: 'chucknorth', name: 'CHUCK NORTH', desc: 'Counts to infinity. Twice.',
+    skin: 0xdca878, shirt: 0x466f9c, pants: 0x2f3b52,
+    hair: 'short', hairCol: 0x8a4b2a, beard: 'full',
+    height: 1.06, arm: 1.04, power: 1.24,
+    locked: true, price: 4,
+  },
 ];
 
 // The slapper. Pre-contact he is NOT physics-engine driven: each joint is a scalar
@@ -128,6 +142,11 @@ export class Player {
       const leg = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.75, 3, 8), T(L.pants)));
       leg.position.set(0.02, 0.48, s * 0.14);
       root.add(leg);
+      if (L.trackStripe) {  // the tracksuit's side stripe
+        const stripe = M(new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.78, 0.03), T(L.trackStripe)));
+        stripe.position.set(0.02, 0.48, s * 0.205);
+        root.add(stripe);
+      }
       const foot = M(new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.09, 0.13), T(0x5a4632)));
       foot.position.set(0.09, 0.05, s * 0.14);
       root.add(foot);
@@ -167,6 +186,13 @@ export class Player {
       const blade = M(new THREE.Mesh(new THREE.BoxGeometry(0.036, 0.28, 0.056), T(L.tie)));
       blade.position.set(0.192, 0.3, 0);
       torsoG.add(blade);
+    }
+    if (L.trackStripe) {  // side stripes continue up the torso
+      for (const s of [-1, 1]) {
+        const st = M(new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.42, 0.045), T(L.trackStripe)));
+        st.position.set(0.02, 0.32, s * 0.19);
+        torsoG.add(st);
+      }
     }
     if (L.suspenders) {
       // two straps up the front — that county-fair kid look
@@ -387,6 +413,15 @@ export class Player {
         side.position.set(0.0, -0.015, s * 0.157);
         g.add(side);
       }
+    } else if (L.hair === 'bowl') {
+      // the iconic bowl cut: a full rounded helmet with a straight fringe
+      const cap = new THREE.Mesh(new THREE.SphereGeometry(0.184, 14, 14), h());
+      cap.scale.set(1.02, 0.92, 1.07);
+      cap.position.set(-0.02, 0.015, 0);
+      g.add(cap);
+      const fringe = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.05, 0.3), h());
+      fringe.position.set(0.14, 0.02, 0);
+      g.add(fringe);
     } else { // buzz
       const cap = new THREE.Mesh(new THREE.SphereGeometry(0.168, 14, 14), h());
       cap.scale.set(1, 0.62, 1);
