@@ -190,17 +190,19 @@ function openSlapperPick() {
   ui.showTitle(false);
   ui.hideCards();
   ui.bubble(null);
-  pickHighlight = (i) => { pickIndex = i; ui.setPickSel(i); setLook(SLAPPERS[i]); };
+  // locked (DLC) slappers are excluded until purchased — see slapp_unlocks (Phase 1)
+  const pickable = SLAPPERS.filter((s) => !s.locked);
+  pickHighlight = (i) => { pickIndex = i; ui.setPickSel(i); setLook(pickable[i]); };
   pickConfirmFn = () => openOppPick();
   ui.showPick({
     title: "WHO'S DOIN' THE SLAPPIN'?",
     blurb: 'They do NOT slap alike, sugar — short folks golf \'em skyward, big arms reach, muscle moves the heavy ones.',
     confirmLabel: "THAT'S MY CHAMPION →",
-    items: SLAPPERS.map((s, i) => ({ name: s.name, sub: SLAPPER_TITLES[i] || '', desc: s.desc })),
+    items: pickable.map((s) => ({ name: s.name, sub: SLAPPER_TITLES[SLAPPERS.indexOf(s)] || '', desc: s.desc })),
     onHover: (i) => pickHighlight(i),
     onConfirm: () => pickConfirmFn(),
   });
-  pickHighlight(Math.max(0, SLAPPERS.indexOf(player.look)));
+  pickHighlight(Math.max(0, pickable.indexOf(player.look)));
 }
 
 // PostHog product events — null-safe: if the SDK is blocked or absent this
@@ -816,6 +818,8 @@ window.__slapp = {
   get keys() { return keys; },
   player: () => player,
   opponent: () => opponent,
+  // preview any slapper by key (incl. locked DLC) without exposing it in the pick UI
+  setLook: (key) => setLook(SLAPPERS.find((s) => s.key === key) || SLAPPERS[0]),
   dist: () => opponent.distance(),
   get chainState() { return chain; },
   get bestScore() { return bestPts(); },
@@ -859,3 +863,11 @@ window.__slapp = {
       dist: +opponent.distance().toFixed(2), fallen: player.fallen, lean: +player.lean.toFixed(2) };
   },
 };
+
+// ?preview=<key> renders any slapper (incl. locked DLC) in the pick showcase, so a
+// look can be shared before it's unlockable — without exposing it in the pick list.
+const _pv = new URLSearchParams(location.search).get('preview');
+if (_pv) {
+  const c = SLAPPERS.find((s) => s.key === _pv);
+  if (c) { openSlapperPick(); setLook(c); }
+}

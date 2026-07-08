@@ -66,6 +66,15 @@ export const SLAPPERS = [
     earrings: true, skirt: 0x5a2f4f,
     height: 0.9, arm: 0.93, power: 0.88,
   },
+  // ---- DLC (locked until purchased) ----
+  {
+    key: 'dynamite', name: "LIL' DYNAMITE", desc: "Five and three-quarters. All fury.",
+    skin: 0xf0c9a0, shirt: 0xd83a3a, pants: 0x35507a,
+    hair: 'short', hairCol: 0xc24a1e, beard: null,
+    hat: 'cowboy', bigHat: true, suspenders: 0x2a2f45, freckles: true,
+    height: 0.85, arm: 0.94, power: 0.80,
+    locked: true, price: 4,
+  },
 ];
 
 // The slapper. Pre-contact he is NOT physics-engine driven: each joint is a scalar
@@ -158,6 +167,15 @@ export class Player {
       const blade = M(new THREE.Mesh(new THREE.BoxGeometry(0.036, 0.28, 0.056), T(L.tie)));
       blade.position.set(0.192, 0.3, 0);
       torsoG.add(blade);
+    }
+    if (L.suspenders) {
+      // two straps up the front — that county-fair kid look
+      for (const s of [-1, 1]) {
+        const strap = M(new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.42, 0.03), T(L.suspenders)));
+        strap.position.set(0.176, 0.34, s * 0.085);
+        strap.rotation.z = s * 0.04;
+        torsoG.add(strap);
+      }
     }
     if (L.deerTee) {
       // Buck's pride: a majestic buck, printed on the chest
@@ -393,15 +411,25 @@ export class Player {
       crown.position.set(-0.01, 0.17, 0);
       g.add(crown);
     } else if (L.hat === 'cowboy') {
+      const hg = new THREE.Group();
       const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.27, 0.028, 14), toonMat(0x4a3423));
       brim.position.set(-0.01, 0.1, 0);
-      g.add(brim);
+      hg.add(brim);
       const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 0.17, 12), toonMat(0x4a3423));
       crown.position.set(-0.01, 0.19, 0);
-      g.add(crown);
+      hg.add(crown);
       const band = new THREE.Mesh(new THREE.CylinderGeometry(0.152, 0.152, 0.045, 12), toonMat(0xc9a227));
       band.position.set(-0.01, 0.125, 0);
-      g.add(band);
+      hg.add(band);
+      if (L.bigHat) { hg.scale.setScalar(1.38); hg.position.y -= 0.07; }  // oversized, pulled down over a kid's head
+      g.add(hg);
+    }
+    if (L.freckles) {
+      for (const sgn of [-1, 1]) for (const dy of [0, 0.028]) {
+        const fr = new THREE.Mesh(new THREE.SphereGeometry(0.011, 6, 6), toonMat(0xb06a3a));
+        fr.position.set(0.146, -0.005 + dy, sgn * 0.075);
+        g.add(fr);
+      }
     }
     if (L.female) {
       const lips = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.03, 0.075), toonMat(0xc4506a));
