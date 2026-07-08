@@ -215,7 +215,8 @@ export class Opponent {
       const hm = toonMat(arch.hairCol || 0x5b3d1e);
       const cap = new THREE.Mesh(new THREE.SphereGeometry(0.175 * hr, 12, 12), hm);
       cap.scale.set(1, 0.8, 1.05);
-      cap.position.set(0.025 * hr, 0.03 * hr, 0); // back of the head (he/she faces -X)
+      // faces -X; hairFlow pushes the cap up & back so it never drapes over the face
+      cap.position.set((arch.hairFlow ? 0.09 : 0.025) * hr, (arch.hairFlow ? 0.07 : 0.03) * hr, 0);
       head.add(cap);
       if (arch.hair === 'pony') {
         const tail = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.28, 0.06), hm);
@@ -242,17 +243,18 @@ export class Opponent {
           head.add(strand);
         }
         if (flow) {
-          // a fuller crown pulled forward + face-framing bangs so the front isn't bald
-          const crown = new THREE.Mesh(new THREE.SphereGeometry(0.185 * hr, 12, 12), hm);
-          crown.scale.set(1.06, 0.94, 1.12);
-          crown.position.set(-0.035 * hr, 0.05 * hr, 0);
-          head.add(crown);
+          // volume on TOP and BACK only, swept back — the face stays fully clear
+          const pouf = new THREE.Mesh(new THREE.SphereGeometry(0.15 * hr, 12, 12), hm);
+          pouf.scale.set(1.05, 0.85, 1.15);
+          pouf.position.set(0.11 * hr, 0.13 * hr, 0);   // high on the crown, well behind the face
+          head.add(pouf);
           for (const sgn of [-1, 1]) {
-            const frame = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.28, 0.05), hm);
-            frame.position.set(-0.1 * hr, -0.05 * hr, sgn * 0.13 * hr);
-            frame.rotation.z = 0.15;
-            frame.scale.setScalar(hr);
-            head.add(frame);
+            // hair swept back behind the ears (sides only — never over the front)
+            const side = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.3, 0.055), hm);
+            side.position.set(0.07 * hr, -0.04 * hr, sgn * 0.15 * hr);
+            side.rotation.z = -0.15;
+            side.scale.setScalar(hr);
+            head.add(side);
           }
         }
       } else if (arch.hair === 'swoop') {
