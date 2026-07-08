@@ -74,7 +74,7 @@ export const ROSTER = [
     w: 0.82, h: 1.0, mass: 0.7, female: true, busty: true,
     skin: 0xf2cda2, shirt: 0xf2cda2, pants: 0x2f6fe0, skirt: 0x2f6fe0, bikini: true,
     cropTop: 0xff3d88, hairFlow: true,   // pink crop top, blue shorts, windswept hair
-    hair: 'long', hairCol: 0xf0cf6a, shades: true, phone: true,
+    hair: 'long', hairCol: 0xf0cf6a, shades: true, shadesCol: 0x141414, phone: true,
     pickLine: 'Wait — is this thing recording? Hi besties!',
     taunts: ["Don't forget to like and subscribe!", 'This is SO going on my story.'],
   },
@@ -146,24 +146,29 @@ export class Opponent {
       head.add(stache);
     }
     if (arch.shades) {
-      // outlandish rave visor: neon magenta frame, dark wraparound lens
-      const frame = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.09, 0.26), toonMat(0xff3df0));
+      // wraparound shades — magenta rave visor by default, or a set color (e.g. black)
+      const frame = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.09, 0.26), toonMat(arch.shadesCol || 0xff3df0));
       frame.position.set(-0.128 * hr, 0.035 * hr, 0);
       frame.scale.setScalar(hr);
       head.add(frame);
-      const lens = new THREE.Mesh(new THREE.BoxGeometry(0.038, 0.05, 0.21), toonMat(0x1a0f2e));
+      const lens = new THREE.Mesh(new THREE.BoxGeometry(0.038, 0.05, 0.21), toonMat(arch.shadesCol ? 0x050505 : 0x1a0f2e));
       lens.position.set(-0.135 * hr, 0.035 * hr, 0);
       lens.scale.setScalar(hr);
       head.add(lens);
     }
     if (arch.phone) {
-      // held up for a selfie in front of the face (she faces -X) — films her own launch
+      // held out on a selfie stick (she faces -X) — films her own launch
       const ph = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.15, 0.085), toonMat(0x15151c));
-      ph.position.set(-0.32 * hr, 0.06 * hr, 0.13);
+      ph.position.set(-0.36 * hr, 0.12 * hr, 0.13);
       head.add(ph);
       const screen = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.12, 0.062), toonMat(0x9fd6ff));
-      screen.position.set(-0.339 * hr, 0.06 * hr, 0.13);
+      screen.position.set(-0.379 * hr, 0.12 * hr, 0.13);
       head.add(screen);
+      // the selfie stick, running from the phone down toward the hand
+      const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.44, 6), toonMat(0xcfd2da));
+      stick.position.set(-0.26 * hr, -0.12 * hr, 0.115);
+      stick.rotation.z = -0.95;
+      head.add(stick);
     }
     if (arch.female) {
       const lips = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.03, 0.075), toonMat(0xc4506a));
@@ -232,6 +237,20 @@ export class Opponent {
           if (flow) strand.rotation.z = -0.55;
           strand.scale.setScalar(hr);
           head.add(strand);
+        }
+        if (flow) {
+          // a fuller crown pulled forward + face-framing bangs so the front isn't bald
+          const crown = new THREE.Mesh(new THREE.SphereGeometry(0.185 * hr, 12, 12), hm);
+          crown.scale.set(1.06, 0.94, 1.12);
+          crown.position.set(-0.035 * hr, 0.05 * hr, 0);
+          head.add(crown);
+          for (const sgn of [-1, 1]) {
+            const frame = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.28, 0.05), hm);
+            frame.position.set(-0.1 * hr, -0.05 * hr, sgn * 0.13 * hr);
+            frame.rotation.z = 0.15;
+            frame.scale.setScalar(hr);
+            head.add(frame);
+          }
         }
       } else if (arch.hair === 'swoop') {
         // the architectural marvel: swept forward, up, and back into legend

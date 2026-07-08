@@ -106,7 +106,8 @@ export const SLAPPERS = [
   {
     key: 'auntie', name: 'AUNTIE', desc: 'Aiyah! Sit down and get slapped.',
     skin: 0xe8c19a, shirt: 0xf4efe6, pants: 0xe8c19a,   // white dress top, bare (skin) legs
-    hair: 'short', hairCol: 0x241a14, female: true, busty: true, curlers: true, glasses: true, cigarette: true,
+    hair: 'short', hairCol: 0x241a14, female: true, busty: true, bust: 1.6, vneck: true,
+    curlers: true, glasses: true, cigarette: true, eyebrows: true, mole: true,
     skirt: 0xf4efe6, flared: true,                       // white flared dress
     height: 0.90, arm: 0.92, power: 1.08,
     locked: true, price: 4,
@@ -197,12 +198,19 @@ export class Player {
     torso.position.y = 0.3;
     torsoG.add(torso);
     if (L.busty) {
-      // she has a figure — blouse-colored, bloused, and businesslike
+      // she has a figure — blouse-colored, with an optional deeper curve
+      const br = 0.085 * (L.bust || 1);
       for (const s of [-1, 1]) {
-        const bump = M(new THREE.Mesh(new THREE.SphereGeometry(0.085, 10, 10), SM()));
-        bump.position.set(0.14, 0.34, s * 0.078);
+        const bump = M(new THREE.Mesh(new THREE.SphereGeometry(br, 12, 12), SM()));
+        bump.position.set(0.135, 0.34, s * (0.05 + br * 0.45));
         torsoG.add(bump);
       }
+    }
+    if (L.vneck) {
+      // a slip of bare skin at the neckline — a little reveal
+      const skinV = M(new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.13, 0.075), T(L.skin)));
+      skinV.position.set(0.185, 0.41, 0);
+      torsoG.add(skinV);
     }
     if (L.dragon) {
       // a coiling green dragon, tattooed across the bare chest
@@ -559,6 +567,19 @@ export class Player {
       const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.012, 0.05), toonMat(0x15151a));
       bridge.position.set(0.152, 0.035, 0);
       g.add(bridge);
+    }
+    if (L.eyebrows) {
+      for (const sgn of [-1, 1]) {
+        const brow = new THREE.Mesh(new THREE.BoxGeometry(0.014, 0.013, 0.055), toonMat(L.hairCol || 0x2a1a12));
+        brow.position.set(0.151, 0.078, sgn * 0.055);
+        brow.rotation.x = sgn * 0.25;   // angled in — gives her that expression
+        g.add(brow);
+      }
+    }
+    if (L.mole) {
+      const mole = new THREE.Mesh(new THREE.SphereGeometry(0.011, 6, 6), toonMat(0x140f0c));
+      mole.position.set(0.156, -0.025, 0.062);   // a small dark beauty mark on the cheek
+      g.add(mole);
     }
     if (L.shades) {
       // cool dark wraparound sunglasses over the eyes
