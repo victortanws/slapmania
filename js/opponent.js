@@ -158,18 +158,18 @@ export class Opponent {
       head.add(lens);
     }
     if (arch.phone) {
-      // held out on a selfie stick (she faces -X) — films her own launch
-      const ph = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.15, 0.085), toonMat(0x15151c));
-      ph.position.set(-0.36 * hr, 0.12 * hr, 0.13);
-      head.add(ph);
-      const screen = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.12, 0.062), toonMat(0x9fd6ff));
-      screen.position.set(-0.379 * hr, 0.12 * hr, 0.13);
-      head.add(screen);
-      // the selfie stick, running from the phone down toward the hand
-      const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.44, 6), toonMat(0xcfd2da));
-      stick.position.set(-0.26 * hr, -0.12 * hr, 0.115);
-      stick.rotation.z = -0.95;
+      // selfie stick held out in FRONT of the face (she faces -X) and angled up so
+      // she looks up at it — kept entirely clear of the head so nothing clips through
+      const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.42, 6), toonMat(0xcfd2da));
+      stick.position.set(-0.34 * hr, 0.05 * hr, 0.04);
+      stick.rotation.z = 0.7;   // runs from lower-front (hand) up to the phone
       head.add(stick);
+      const ph = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.16, 0.09), toonMat(0x15151c));
+      ph.position.set(-0.48 * hr, 0.23 * hr, 0.04);
+      head.add(ph);
+      const screen = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.13, 0.065), toonMat(0x9fd6ff));
+      screen.position.set(-0.462 * hr, 0.23 * hr, 0.04);   // screen faces back toward her
+      head.add(screen);
     }
     if (arch.female) {
       const lips = new THREE.Mesh(
