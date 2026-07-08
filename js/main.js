@@ -936,5 +936,9 @@ if (new URLSearchParams(location.search).get('unlockall')) {
 const _pv = new URLSearchParams(location.search).get('preview');
 if (_pv) {
   const c = SLAPPERS.find((s) => s.key === _pv);
-  if (c) { openSlapperPick(c); player.root.rotation.y = 2.7; }  // turn to face the camera for the preview
+  if (c) {
+    openSlapperPick(c);
+    // hide the card dock so the FULL character (head to toe) is visible in preview
+    ['pickRow', 'pickGo', 'pickHint'].forEach((id) => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+  }
 }

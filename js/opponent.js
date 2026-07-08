@@ -72,9 +72,9 @@ export const ROSTER = [
   {
     key: 'influencer', name: 'THE INFLUENCER', tag: 'LIGHTWEIGHT',
     w: 0.82, h: 1.0, mass: 0.7, female: true, busty: true,
-    skin: 0xf2cda2, shirt: 0x7fc4f0, pants: 0x7fc4f0, skirt: 0x7fc4f0, bikini: true,
+    skin: 0xf2cda2, shirt: 0xf2cda2, pants: 0x2f6fe0, skirt: 0x2f6fe0, bikini: true,
+    cropTop: 0xff3d88, hairFlow: true,   // pink crop top, blue shorts, windswept hair
     hair: 'long', hairCol: 0xf0cf6a, shades: true, phone: true,
-    hat: 'sun', hatCol: 0xf5ede0, bandCol: 0x7fc4f0,
     pickLine: 'Wait — is this thing recording? Hi besties!',
     taunts: ["Don't forget to like and subscribe!", 'This is SO going on my story.'],
   },
@@ -186,13 +186,21 @@ export class Opponent {
       skirt.castShadow = true;
       P.pelvis.mesh.add(skirt);
       if (arch.busty) {
-        // the dress has a figure — dress-colored, dressed, and dignified
+        // the dress has a figure — dress- (or crop-top-) colored
         for (const sgn of [-1, 1]) {
-          const bump = new THREE.Mesh(new THREE.SphereGeometry(0.115 * w, 10, 10), toonMat(arch.shirt));
+          const bump = new THREE.Mesh(new THREE.SphereGeometry(0.115 * w, 10, 10), toonMat(arch.cropTop || arch.shirt));
           bump.position.set(-0.2 * w, 0.08, sgn * 0.1 * w);
           bump.castShadow = true;
           P.torso.mesh.add(bump);
         }
+      }
+      if (arch.cropTop) {
+        // a crop top band across the chest — the midriff below stays bare (skin torso)
+        const r = 0.38 * w * 0.52 + 0.02;
+        const band = new THREE.Mesh(new THREE.CylinderGeometry(r, r, 0.17 * h, 14), toonMat(arch.cropTop));
+        band.position.y = 0.12 * h;
+        band.castShadow = true;
+        P.torso.mesh.add(band);
       }
     }
     if (arch.hair) {
@@ -212,13 +220,16 @@ export class Opponent {
         bun.position.set(0.16 * hr, 0.09 * hr, 0);
         head.add(bun);
       } else if (arch.hair === 'long') {
-        const back = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.42, 0.2), hm);
-        back.position.set(0.13 * hr, -0.12 * hr, 0);
+        const flow = arch.hairFlow;   // windswept: sweep the hair up and back
+        const back = new THREE.Mesh(new THREE.BoxGeometry(0.09, flow ? 0.5 : 0.42, 0.22), hm);
+        back.position.set((flow ? 0.22 : 0.13) * hr, (flow ? 0.04 : -0.12) * hr, 0);
+        if (flow) back.rotation.z = -0.7;
         back.scale.setScalar(hr);
         head.add(back);
         for (const sgn of [-1, 1]) {
-          const strand = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.34, 0.055), hm);
-          strand.position.set(0.01 * hr, -0.13 * hr, sgn * 0.15 * hr);
+          const strand = new THREE.Mesh(new THREE.BoxGeometry(0.12, flow ? 0.4 : 0.34, 0.055), hm);
+          strand.position.set((flow ? 0.14 : 0.01) * hr, (flow ? 0.02 : -0.13) * hr, sgn * 0.15 * hr);
+          if (flow) strand.rotation.z = -0.55;
           strand.scale.setScalar(hr);
           head.add(strand);
         }

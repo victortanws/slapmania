@@ -78,8 +78,8 @@ export const SLAPPERS = [
   {
     key: 'bruceslee', name: 'BRUCE SLEE', desc: 'The palm has no form. WATAAA!',
     skin: 0xe0ab7a, shirt: 0xe0ab7a, pants: 0xf5c518,   // shirtless: shirt matches skin
-    hair: 'bowl', hairCol: 0x14100e, beard: null, shades: true, bigArms: 1.35,
-    height: 0.90, arm: 1.08, power: 1.10,
+    hair: 'bowl', hairCol: 0x14100e, beard: null, shades: true, bigArms: 1.9, dragon: true,
+    height: 1.02, arm: 1.08, power: 1.10,
     locked: true, price: 4,
   },
   {
@@ -105,8 +105,9 @@ export const SLAPPERS = [
   },
   {
     key: 'auntie', name: 'AUNTIE', desc: 'Aiyah! Sit down and get slapped.',
-    skin: 0xe8c19a, shirt: 0x9c6bb0, pants: 0x40485e,
+    skin: 0xe8c19a, shirt: 0xf4efe6, pants: 0xe8c19a,   // white dress top, bare (skin) legs
     hair: 'short', hairCol: 0x241a14, female: true, curlers: true, glasses: true, cigarette: true,
+    skirt: 0xf4efe6, flared: true,                       // white flared dress
     height: 0.90, arm: 0.92, power: 1.08,
     locked: true, price: 4,
   },
@@ -177,9 +178,9 @@ export class Player {
     pelvis.position.y = 1.0;
     root.add(pelvis);
     if (L.skirt) {
-      const skirt = M(new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.36, 0.42, 12),
+      const skirt = M(new THREE.Mesh(new THREE.CylinderGeometry(0.2, L.flared ? 0.52 : 0.36, L.flared ? 0.48 : 0.42, 14),
         L.skirt === 'plaid' ? plaidMat() : T(L.skirt)));
-      skirt.position.y = 0.87;
+      skirt.position.y = L.flared ? 0.9 : 0.87;
       root.add(skirt);
     }
     if (L.cassock) {
@@ -202,6 +203,24 @@ export class Player {
         bump.position.set(0.14, 0.34, s * 0.078);
         torsoG.add(bump);
       }
+    }
+    if (L.dragon) {
+      // a coiling green dragon, tattooed across the bare chest
+      const cv = document.createElement('canvas'); cv.width = 96; cv.height = 96;
+      const d = cv.getContext('2d');
+      d.strokeStyle = '#1f9d3f'; d.fillStyle = '#1f9d3f'; d.lineWidth = 8; d.lineCap = 'round'; d.lineJoin = 'round';
+      d.beginPath(); d.moveTo(18, 74); d.bezierCurveTo(40, 48, 58, 74, 74, 34); d.stroke(); // serpent body
+      d.beginPath(); d.arc(74, 30, 10, 0, Math.PI * 2); d.fill();                            // head
+      d.lineWidth = 4;
+      d.beginPath(); d.moveTo(70, 22); d.lineTo(66, 10); d.moveTo(80, 22); d.lineTo(85, 11); d.stroke(); // horns
+      d.beginPath(); d.moveTo(18, 74); d.lineTo(9, 84); d.lineTo(20, 80); d.closePath(); d.fill();        // tail
+      d.fillStyle = '#e01e1e'; d.beginPath(); d.arc(77, 27, 3, 0, Math.PI * 2); d.fill();                // eye
+      const tex = new THREE.CanvasTexture(cv);
+      const dm = toonMat(0xffffff); dm.map = tex; dm.transparent = true;
+      const decal = M(new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.22), dm));
+      decal.position.set(0.192, 0.33, 0);
+      decal.rotation.y = Math.PI / 2;
+      torsoG.add(decal);
     }
     if (L.suit) {
       // crisp white shirtfront and the power tie — it reaches the belt. Always.
