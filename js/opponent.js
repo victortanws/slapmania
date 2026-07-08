@@ -71,9 +71,10 @@ export const ROSTER = [
   },
   {
     key: 'influencer', name: 'THE INFLUENCER', tag: 'LIGHTWEIGHT',
-    w: 0.8, h: 1.0, mass: 0.7, female: true,
-    skin: 0xf0cba0, shirt: 0x8ecaf5, pants: 0x8ecaf5, skirt: 0x8ecaf5,
-    hair: 'pony', hairCol: 0xe8c86a, shades: true, phone: true,
+    w: 0.82, h: 1.0, mass: 0.7, female: true, busty: true,
+    skin: 0xf2cda2, shirt: 0x7fc4f0, pants: 0x7fc4f0, skirt: 0x7fc4f0, bikini: true,
+    hair: 'long', hairCol: 0xf0cf6a, shades: true, phone: true,
+    hat: 'sun', hatCol: 0xf5ede0, bandCol: 0x7fc4f0,
     pickLine: 'Wait — is this thing recording? Hi besties!',
     taunts: ["Don't forget to like and subscribe!", 'This is SO going on my story.'],
   },
@@ -176,12 +177,12 @@ export class Opponent {
         earring.position.set(-0.01 * hr, -0.03 * hr, sgn * 0.168 * hr);
         head.add(earring);
       }
-      // a proper skirt over the pelvis — flies with the ragdoll
+      // a proper skirt over the pelvis — or a short bikini bottom — flies with the ragdoll
       const skirt = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.21 * w, 0.4 * w, 0.42 * h, 12),
+        new THREE.CylinderGeometry(0.22 * w, (arch.bikini ? 0.3 : 0.4) * w, (arch.bikini ? 0.14 : 0.42) * h, 12),
         toonMat(arch.skirt || 0xc95d73)
       );
-      skirt.position.y = -0.14 * h;
+      skirt.position.y = (arch.bikini ? -0.02 : -0.14) * h;
       skirt.castShadow = true;
       P.pelvis.mesh.add(skirt);
       if (arch.busty) {

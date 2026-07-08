@@ -270,6 +270,7 @@ function openOppPick() {
   track('slapper_selected', { slapper: player.look?.name });
   // step well back to size up the volunteer — nobody's hugging anybody
   player.root.position.x = -2.6;
+  player.root.rotation.y = 0;   // clear any ?preview facing before play
   ui.hideCards();
   // the highlighted volunteer stands in the ring beckoning — slap-me showcase
   pickHighlight = (i) => {
@@ -935,5 +936,5 @@ if (new URLSearchParams(location.search).get('unlockall')) {
 const _pv = new URLSearchParams(location.search).get('preview');
 if (_pv) {
   const c = SLAPPERS.find((s) => s.key === _pv);
-  if (c) openSlapperPick(c);   // appended + highlighted as a card, model rendered
+  if (c) { openSlapperPick(c); player.root.rotation.y = 2.7; }  // turn to face the camera for the preview
 }

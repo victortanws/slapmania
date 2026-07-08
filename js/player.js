@@ -77,8 +77,8 @@ export const SLAPPERS = [
   },
   {
     key: 'bruceslee', name: 'BRUCE SLEE', desc: 'The palm has no form. WATAAA!',
-    skin: 0xe8b98a, shirt: 0xf5c518, pants: 0xf5c518,
-    hair: 'bowl', hairCol: 0x14100e, beard: null, trackStripe: 0x161616,
+    skin: 0xe0ab7a, shirt: 0xe0ab7a, pants: 0xf5c518,   // shirtless: shirt matches skin
+    hair: 'bowl', hairCol: 0x14100e, beard: null, shades: true, bigArms: 1.35,
     height: 0.90, arm: 1.08, power: 1.10,
     locked: true, price: 4,
   },
@@ -158,7 +158,7 @@ export class Player {
     root.scale.setScalar(this.phys.h);
     this.scene.add(root);
     const A = this.phys.arm;
-    const AR = L.bigArms ? 2.3 : 1;  // gigantic-arm thickness multiplier
+    const AR = typeof L.bigArms === 'number' ? L.bigArms : (L.bigArms ? 2.3 : 1);  // arm thickness multiplier
 
     for (const s of [-1, 1]) {
       const leg = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.75, 3, 8), T(L.pants)));
@@ -451,14 +451,19 @@ export class Player {
         g.add(side);
       }
     } else if (L.hair === 'bowl') {
-      // the iconic bowl cut: a full rounded helmet with a straight fringe
-      const cap = new THREE.Mesh(new THREE.SphereGeometry(0.184, 14, 14), h());
-      cap.scale.set(1.02, 0.92, 1.07);
-      cap.position.set(-0.02, 0.015, 0);
+      // the iconic bowl cut: a helmet on the crown + a brow-line fringe that clears the eyes
+      const cap = new THREE.Mesh(new THREE.SphereGeometry(0.176, 14, 14), h());
+      cap.scale.set(1.0, 0.84, 1.08);
+      cap.position.set(-0.03, 0.05, 0);
       g.add(cap);
-      const fringe = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.05, 0.3), h());
-      fringe.position.set(0.14, 0.02, 0);
+      const fringe = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.31), h());
+      fringe.position.set(0.132, 0.082, 0);
       g.add(fringe);
+      for (const s of [-1, 1]) {   // fuller sides for the bowl shape
+        const side = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.11, 0.04), h());
+        side.position.set(0.0, -0.02, s * 0.16);
+        g.add(side);
+      }
     } else { // buzz
       const cap = new THREE.Mesh(new THREE.SphereGeometry(0.168, 14, 14), h());
       cap.scale.set(1, 0.62, 1);
@@ -524,6 +529,17 @@ export class Player {
       const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.012, 0.05), toonMat(0x15151a));
       bridge.position.set(0.152, 0.035, 0);
       g.add(bridge);
+    }
+    if (L.shades) {
+      // cool dark wraparound sunglasses over the eyes
+      const bar = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.018, 0.2), toonMat(0x141418));
+      bar.position.set(0.146, 0.052, 0);
+      g.add(bar);
+      for (const sgn of [-1, 1]) {
+        const lens = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.058, 0.082), toonMat(0x0a0a10));
+        lens.position.set(0.151, 0.028, sgn * 0.052);
+        g.add(lens);
+      }
     }
     if (L.cigarette) {
       const cig = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.1, 6), toonMat(0xf5f0e6));
