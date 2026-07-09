@@ -186,9 +186,14 @@ for (const btn of touchPad.querySelectorAll('.tbtn')) {
 const SLAPPER_TITLES = ['THE NATURAL', 'THE TECHNICIAN', 'THE VETERAN', 'THE OUTLAW', 'JUST VICTOR', 'THE ORACLE'];
 
 // ---------- DLC unlocks (Phase 1: local. Stripe checkout + server codes = Phase 2) ----------
+// MASTER KILL SWITCH: DLC isn't on sale yet. While false, every locked character
+// stays locked on every device — even ones that visited an old ?unlockall=1 / SLAPDEV
+// test link and already have entries in localStorage.slapp_unlocks. Flip to true
+// only once Stripe checkout (Phase 2) is actually wired and ready to take payment.
+const DLC_LIVE = false;
 let unlocks = [];
 try { unlocks = JSON.parse(localStorage.getItem('slapp_unlocks') || '[]'); } catch { unlocks = []; }
-const owned = (key) => unlocks.includes(key);
+const owned = (key) => DLC_LIVE && unlocks.includes(key);
 function unlock(key) {
   if (!unlocks.includes(key)) {
     unlocks.push(key);
@@ -221,7 +226,7 @@ if (um.modal) {
   um.buy.onclick = () => { um.msg.textContent = 'Checkout opens soon — hang tight! 🛒'; };
   um.redeem.onclick = () => {
     const code = um.code.value.trim().toUpperCase();
-    if (unlockTarget && code === 'SLAPDEV') {   // TEMP dev code — replace with server validation in Phase 2
+    if (DLC_LIVE && unlockTarget && code === 'SLAPDEV') {   // TEMP dev code — replace with server validation in Phase 2
       const c = unlockTarget;
       unlock(c.key);
       um.msg.textContent = 'UNLOCKED! 🎉';
@@ -926,8 +931,8 @@ window.__slapp = {
 };
 
 // ?unlockall=1 — dev/preview: unlock every DLC slapper so they can all be played.
-// TEMP (like the SLAPDEV code) — remove when Stripe validation is live.
-if (new URLSearchParams(location.search).get('unlockall')) {
+// Gated behind DLC_LIVE like everything else — inert while DLC isn't on sale.
+if (DLC_LIVE && new URLSearchParams(location.search).get('unlockall')) {
   SLAPPERS.filter((s) => s.locked).forEach((s) => unlock(s.key));
 }
 
