@@ -240,10 +240,14 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   kill switch that overrides `localStorage.slapp_unlocks`, the SLAPDEV dev code
   and `?unlockall=1`. **Keep false until Stripe checkout ships**, then flip.
   `?preview=<key>` showcases any slapper or volunteer (hides the card dock).
-- **Volunteers now 11**, incl. THE INFLUENCER (selfie-stick lightweight) and two
-  **bosses**: BOULDER BOB (mass 4.0 — barely moves, pays ×4) and DODGY DALE
-  (`weave: true` — a fixed-rhythm boxer's slip in `Opponent.update`: 1.5s in the
-  pocket / 1.5s ducked-and-back, beats even the rebound flail; time the whip).
+- **Volunteers**: ROSTER has 11 incl. THE INFLUENCER, but the public pick uses
+  the `PICKABLE` export (9 — `boss: true` excluded). The two **bosses** are
+  **campaign-only**, summoned by tour challenges via `chosenArch`: BOULDER BOB
+  (mass 4.0, w 2.15 / h 1.28 — barely moves, pays ×4; stony skin, unibrow,
+  handlebar stache, champion's belt) and DODGY DALE (`weave: true` — a
+  fixed-rhythm boxer's slip in `Opponent.update`, 1.5s pocket / 1.5s
+  ducked-and-back that beats even the rebound flail; frizzy gray hair).
+  `?preview=<bossKey>` still showcases bosses directly.
 - **Reach fairness**: `strikeLift` upper clamp is 0.9 (was 0.5) so the shortest
   slappers can cheek the tallest volunteers; launch arc unaffected (dir.y
   saturates at lift 0.33). Verified via sim matrix.

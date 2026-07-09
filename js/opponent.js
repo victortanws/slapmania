@@ -80,23 +80,30 @@ export const ROSTER = [
     pickLine: 'Wait — is this thing recording? Hi besties!',
     taunts: ["Don't forget to like and subscribe!", 'This is SO going on my story.'],
   },
-  // ---- BOSSES: the reward ladder's final exams ----
+  // ---- BOSSES (boss: true): campaign-only — never listed in the public
+  // volunteer pick; tour challenges summon them by key ----
   {
-    key: 'boulder', name: 'BOULDER BOB', tag: 'BOSS · SUPER-MASSIVE',
-    w: 1.9, h: 1.15, mass: 4.0, noStache: true,
-    skin: 0xc9a27d, shirt: 0x8a8f96, pants: 0x5c6168, suspenders: 0x3a3f45,
+    key: 'boulder', name: 'BOULDER BOB', tag: 'BOSS · SUPER-MASSIVE', boss: true,
+    w: 2.15, h: 1.28, mass: 4.0,
+    // old-time strongman hewn from granite: stony skin, charcoal singlet,
+    // handlebar stache, heavy unibrow, champion's belt
+    skin: 0xa8a49c, shirt: 0x2f3140, pants: 0x3d4152,
+    brow: true, beltCol: 0x7a1f24,
     pickLine: 'Geologically unmoved. The points pay ×4.',
     taunts: ['Mountains ask ME for advice.', 'I have never taken a single step.'],
   },
   {
-    key: 'dale', name: 'DODGY DALE', tag: 'BOSS · SLIPPERY',
+    key: 'dale', name: 'DODGY DALE', tag: 'BOSS · SLIPPERY', boss: true,
     w: 0.85, h: 1.02, mass: 0.9, noStache: true, weave: true,
     skin: 0xdcae85, shirt: 0x2b2b33, pants: 0xd83a3a,
-    hat: 'band', hatCol: 0xd83a3a, hair: 'flat', hairCol: 0x1c140e,
+    hat: 'band', hatCol: 0xd83a3a, hair: 'frizz', hairCol: 0xb9b3ac,
     pickLine: 'Never been slapped. Time the sway, sugar.',
     taunts: ['Swing and a miss.', 'My cheek is a moving target.'],
   },
 ];
+
+// the public volunteer pick — bosses excluded (campaign-only)
+export const PICKABLE = ROSTER.filter((r) => !r.boss);
 
 function segSphere(p0, p1, c, r) {
   const d = new THREE.Vector3().subVectors(p1, p0);
@@ -168,6 +175,22 @@ export class Opponent {
       stache.position.set(-0.16 * hr, -0.045 * hr, 0);
       stache.scale.setScalar(hr);
       head.add(stache);
+      if (arch.brow) {
+        // strongman handlebar: the stache gets curled tips
+        for (const sgn of [-1, 1]) {
+          const curl = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.045, 0.03), toonMat(0x2b1c10));
+          curl.position.set(-0.155 * hr, -0.03 * hr, sgn * 0.08 * hr);
+          curl.scale.setScalar(hr);
+          head.add(curl);
+        }
+      }
+    }
+    if (arch.brow) {
+      // one heavy, disapproving unibrow
+      const brow = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.035, 0.17), toonMat(0x241a12));
+      brow.position.set(-0.138 * hr, 0.08 * hr, 0);
+      brow.scale.setScalar(hr);
+      head.add(brow);
     }
     if (arch.shades && arch.shadesCol) {
       // proper two-lens sunglasses: rims, dark lenses, a bridge and temple arms
@@ -302,6 +325,21 @@ export class Opponent {
             head.add(side);
           }
         }
+      } else if (arch.hair === 'frizz') {
+        // a wild, frizzy burst — irregular puffs around the crown and sides,
+        // erupting over the headband like an aging boxer's mop
+        const puffs = [
+          [0.1, 0.12, 0.0, 0.075], [0.02, 0.15, 0.1, 0.065], [0.02, 0.15, -0.1, 0.065],
+          [0.12, 0.08, 0.12, 0.06], [0.12, 0.08, -0.12, 0.06], [-0.04, 0.16, 0.0, 0.06],
+          [0.16, 0.04, 0.06, 0.055], [0.16, 0.04, -0.06, 0.055],
+          [0.06, 0.05, 0.16, 0.05], [0.06, 0.05, -0.16, 0.05],
+        ];
+        for (const [x, y, z, r] of puffs) {
+          const puff = new THREE.Mesh(new THREE.SphereGeometry(r, 8, 8), hm);
+          puff.position.set(x * hr, y * hr, z * hr);
+          puff.scale.setScalar(hr);
+          head.add(puff);
+        }
       } else if (arch.hair === 'swoop') {
         // the architectural marvel: swept forward, up, and back into legend
         const swoop = new THREE.Mesh(new THREE.BoxGeometry(0.17, 0.055, 0.19), hm);
@@ -322,6 +360,18 @@ export class Opponent {
         }
       }
     }
+    if (arch.beltCol) {
+      // a champion's belt around the waist, gold buckle out front
+      const belt = new THREE.Mesh(new THREE.CylinderGeometry(0.29 * w, 0.29 * w, 0.11 * h, 14), toonMat(arch.beltCol));
+      belt.position.y = 0.1 * h;
+      belt.castShadow = true;
+      P.pelvis.mesh.add(belt);
+      const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.1 * h, 0.11), toonMat(0xd8b13c));
+      buckle.position.set(-0.29 * w, 0.1 * h, 0);
+      buckle.castShadow = true;
+      P.pelvis.mesh.add(buckle);
+    }
+
     // wardrobe extras that ride the torso (and fly with it)
     if (arch.stripes) {
       const tr = 0.38 * w * 0.52 + 0.008;

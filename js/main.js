@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { createStage } from './scene.js';
 import { createWorld, addSolids } from './ragdoll.js';
 import { Player, SLAPPERS } from './player.js';
-import { Opponent, ROSTER } from './opponent.js';
+import { Opponent, ROSTER, PICKABLE } from './opponent.js';
 import { Sfx } from './audio.js';
 import * as ui from './ui.js';
 import * as net from './net.js';
@@ -282,24 +282,25 @@ function openOppPick() {
   player.root.position.x = -2.6;
   player.root.rotation.y = 0;   // clear any ?preview facing before play
   ui.hideCards();
-  // the highlighted volunteer stands in the ring beckoning — slap-me showcase
+  // the highlighted volunteer stands in the ring beckoning — slap-me showcase.
+  // PICKABLE only: bosses never appear here, the tour summons them by key.
   pickHighlight = (i) => {
     pickIndex = i;
     ui.setPickSel(i);
     opponent.remove();
-    opponent = new Opponent({ scene, world: phys.world, mat: phys.fleshMat, arch: ROSTER[i], showcase: true });
-    ui.bubble(ROSTER[i].pickLine);
+    opponent = new Opponent({ scene, world: phys.world, mat: phys.fleshMat, arch: PICKABLE[i], showcase: true });
+    ui.bubble(PICKABLE[i].pickLine);
   };
-  pickConfirmFn = () => { chosenArch = ROSTER[pickIndex]; ui.bubble(null); startMatch(); };
+  pickConfirmFn = () => { chosenArch = PICKABLE[pickIndex]; ui.bubble(null); startMatch(); };
   ui.showPick({
     title: "NOW — WHO'S CATCHIN' IT TODAY?",
     blurb: 'Heavy folks barely budge, but oh, the points pay mighty fine. Three swings at whoever you pick.',
     confirmLabel: 'SLAP THIS VOLUNTEER!',
-    items: ROSTER.map((a) => ({ name: a.name, sub: `${a.tag} — SCORE ×${a.mass}`, desc: a.pickLine })),
+    items: PICKABLE.map((a) => ({ name: a.name, sub: `${a.tag} — SCORE ×${a.mass}`, desc: a.pickLine })),
     onHover: (i) => pickHighlight(i),
     onConfirm: () => pickConfirmFn(),
   });
-  pickHighlight(Math.max(0, ROSTER.indexOf(chosenArch)));
+  pickHighlight(Math.max(0, PICKABLE.indexOf(chosenArch)));
 }
 
 function startMatch() {
@@ -312,6 +313,7 @@ function startMatch() {
 
 // Escape from anywhere: back to the front porch
 function goToTitle() {
+  if (chosenArch && chosenArch.boss) chosenArch = null;   // bosses don't loiter on the porch
   player.reset();
   opponent.remove();
   opponent = new Opponent({ scene, world: phys.world, mat: phys.fleshMat, arch: chosenArch || ROSTER[1] });
@@ -646,8 +648,15 @@ function advanceScreens(code) {
   if (code && KEYMAP[code]) return false;
   if (state === 'RESULT' && tState > 1.0) { advance(); return true; }
   if (state === 'MATCH_END' && tState > 1.0) {
-    // a tour match hands you back to the tour, checkmark freshly inked
-    if (campaign.active) { campaign.clearActive(); restoreBar(); openTourMenu(); return true; }
+    // a tour match hands you back to the tour, checkmark freshly inked; a boss
+    // never lingers as the quick-match default
+    if (campaign.active) {
+      campaign.clearActive();
+      if (chosenArch && chosenArch.boss) chosenArch = null;
+      restoreBar();
+      openTourMenu();
+      return true;
+    }
     openOppPick();
     return true;
   }
@@ -664,7 +673,7 @@ addEventListener('keydown', (e) => {
   if (e.code === 'Escape' && state !== 'TITLE') { goToTitle(); return; }
   if (state === 'TITLE' && e.code === 'KeyT' && campaign.enabled()) { openTourMenu(); return; }
   if (state === 'SELECT_SLAPPER' || state === 'SELECT_OPP') {
-    const n = state === 'SELECT_SLAPPER' ? SLAPPERS.length : ROSTER.length;
+    const n = state === 'SELECT_SLAPPER' ? SLAPPERS.length : PICKABLE.length;
     const m = /^Digit([1-9])$/.exec(e.code);
     if (m) {
       const i = +m[1] - 1;
@@ -1036,7 +1045,7 @@ let challenge = null;
       by: (q.get('cby') || 'A RIVAL').slice(0, 12).toUpperCase(),
     };
     const oppArch = ROSTER.find((r) => r.key === q.get('copp'));
-    if (oppArch) chosenArch = oppArch;                       // volunteer preselected
+    if (oppArch && !oppArch.boss) chosenArch = oppArch;      // volunteer preselected (bosses stay tour-only)
     const sl = SLAPPERS.find((s) => s.key === q.get('csl'));
     if (sl && !(sl.locked && !owned(sl.key))) setLook(sl);   // slapper too, if playable
     rivalBarText = `⚔️ ${challenge.by} CHALLENGES YOU — BEAT ${challenge.pts} PTS${oppArch ? ` VS ${oppArch.name}` : ''}`;
@@ -1052,5 +1061,17 @@ if (_pv) {
   const slapper = SLAPPERS.find((s) => s.key === _pv);
   const volunteer = ROSTER.find((r) => r.key === _pv);
   if (slapper) { openSlapperPick(slapper); hideDock(); }
-  else if (volunteer) { ui.showTitle(false); openOppPick(); pickHighlight(ROSTER.indexOf(volunteer)); hideDock(); }
+  else if (volunteer) {
+    ui.showTitle(false);
+    openOppPick();
+    const i = PICKABLE.indexOf(volunteer);
+    if (i >= 0) pickHighlight(i);
+    else {
+      // bosses aren't in the pick list — showcase them directly
+      opponent.remove();
+      opponent = new Opponent({ scene, world: phys.world, mat: phys.fleshMat, arch: volunteer, showcase: true });
+      ui.bubble(volunteer.pickLine);
+    }
+    hideDock();
+  }
 }
