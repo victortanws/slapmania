@@ -41,6 +41,11 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
 #masterTag{position:absolute;top:64px;right:24px;font-size:12px;letter-spacing:2px;color:#ffe9a0;
   text-shadow:2px 2px 0 #a8720f,3px 3px 0 #000;}
 
+/* ---- challenge banner: a rival's gauntlet, pinned under the topbar ---- */
+#challengeBar{position:absolute;top:60px;left:0;right:0;margin:0 auto;width:fit-content;max-width:92vw;
+  background:#2a1140;border:3px solid var(--yellow);color:#fff;font-size:13px;letter-spacing:1px;
+  padding:8px 16px;border-radius:10px;box-shadow:4px 4px 0 rgba(0,0,0,.5);z-index:40;text-align:center;}
+
 /* ---- flight distance ticker ---- */
 #distance{position:absolute;top:72px;left:0;right:0;text-align:center;font-size:66px;color:#fff;
   -webkit-text-stroke:2px #000;text-shadow:5px 5px 0 rgba(0,0,0,.5);}
@@ -289,6 +294,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
     <div id="best"></div>
   </div>
   <div id="masterTag" class="hidden">★ SLAPMASTER ★</div>
+  <div id="challengeBar" class="hidden"></div>
   <div id="distance" class="hidden"></div>
   <div id="banner" class="hidden"><div class="big"></div><div class="sub"></div></div>
   <div id="smack" class="hidden">

@@ -15,7 +15,15 @@ const el = {
   pickRow: $('pickRow'), pickHint: $('pickHint'), pickGo: $('pickGo'),
   globalWrap: $('globalWrap'), gboard: $('gboard'),
   nameInput: $('nameInput'), submitBtn: $('submitBtn'), netMsg: $('netMsg'),
+  challengeBar: $('challengeBar'),
 };
+
+// a rival's gauntlet, pinned under the topbar for the whole session
+export function challengeBar(text) {
+  if (!text) { el.challengeBar.classList.add('hidden'); return; }
+  el.challengeBar.textContent = text;
+  el.challengeBar.classList.remove('hidden');
+}
 
 export const FOUL_LINES = {
   punch: 'UPON REVIEW: the palm never opened. That is a PUNCH, sir. This is a slapping establishment.',
@@ -209,7 +217,7 @@ export function showResult({ dist, pts, arch, part, foul, chain, line, n }) {
   el.resNext.textContent = n >= 3 ? 'CLICK / ENTER → FINAL VERDICT' : `CLICK / ENTER → ATTEMPT ${n + 1} OF 3`;
 }
 
-export function showMatch({ bestAttempt, line, board }) {
+export function showMatch({ bestAttempt, line, board, shareUrl }) {
   el.match.classList.remove('hidden');
   el.matchDist.textContent = `${bestAttempt.pts} PTS`;
   el.matchLine.textContent = bestAttempt.pts > 0
@@ -222,7 +230,8 @@ export function showMatch({ bestAttempt, line, board }) {
   el.shareBtn.textContent = navigator.share ? 'SHARE MY SLAP' : 'COPY BRAG TEXT';
   el.shareBtn.onclick = async () => {
     try { window.posthog?.capture('share_clicked', { pts: bestAttempt.pts, dist: +bestAttempt.dist.toFixed(1), opp: bestAttempt.opp }); } catch {}
-    const url = document.querySelector('meta[property="og:url"]')?.content || location.href;
+    // a challenge link carries the score to beat — the share IS the head-to-head
+    const url = shareUrl || document.querySelector('meta[property="og:url"]')?.content || location.href;
     const txt = `I scored ${bestAttempt.pts} PTS slapping ${bestAttempt.opp} ${bestAttempt.dist.toFixed(1)}m across a farm in SLAPMANIA! Four keys — S·L·A·P. Can you beat it?`;
     // native share sheet where available (mobile: Facebook, Messages, WhatsApp…);
     // fall back to clipboard on browsers without the Web Share API.
@@ -295,11 +304,26 @@ export const getName = () => el.nameInput.value.trim();
 
 export function showGlobal(on) { el.globalWrap.classList.toggle('hidden', !on); }
 
-export function renderGlobal(rows) {
-  el.gboard.innerHTML = '<div class="boardhead">WORLDWIDE RANKINGS</div>' + (rows && rows.length
-    ? rows.map((b, i) =>
-        `<div class="boardrow"><span>#${i + 1}</span><b>${b.pts} PTS</b><span>${(+b.dist).toFixed(1)}m vs ${b.opp} — ${b.name}</span></div>`).join('')
-    : '<div class="boardrow">Nobody worldwide yet. Be first.</div>');
+// server-sourced names go through innerHTML — escape them (audit hardening)
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+// rows = this week's board. extra: { week, champion, matchup, matchTitle } —
+// all optional so the pre-migration (legacy all-time) board still renders.
+export function renderGlobal(rows, extra = {}) {
+  const row = (b, i, tail) =>
+    `<div class="boardrow"><span>#${i + 1}</span><b>${+b.pts} PTS</b><span>${(+b.dist).toFixed(1)}m${tail(b)}</span></div>`;
+  let html = `<div class="boardhead">${extra.week ? `WORLDWIDE — WEEK ${esc(extra.week)}` : 'WORLDWIDE RANKINGS'}</div>`;
+  if (extra.champion) {
+    html += `<div class="boardrow"><span>👑</span><b>${esc(extra.champion.name)}</b><span>reigning champ — ${+extra.champion.pts} PTS last week</span></div>`;
+  }
+  html += rows && rows.length
+    ? rows.map((b, i) => row(b, i, (x) => ` vs ${esc(x.opp)} — ${esc(x.name)}`)).join('')
+    : `<div class="boardrow">${extra.week ? 'Nobody this week. Be first.' : 'Nobody worldwide yet. Be first.'}</div>`;
+  if (extra.matchup && extra.matchup.length) {
+    html += `<div class="boardhead" style="margin-top:8px;">THIS MATCHUP${extra.matchTitle ? ` — ${esc(extra.matchTitle)}` : ''}</div>`
+      + extra.matchup.map((b, i) => row(b, i, (x) => ` — ${esc(x.name)}`)).join('');
+  }
+  el.gboard.innerHTML = html;
 }
 
 export function netMsg(text) { el.netMsg.textContent = text || ''; }

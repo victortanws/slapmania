@@ -518,13 +518,29 @@ function showResult() {
   setState('RESULT');
 }
 
+// every share is a thrown gauntlet: the link reopens the game preset to this
+// exact matchup with the score to beat
+function challengeUrl(bestAttempt) {
+  if (!bestAttempt || bestAttempt.pts <= 0) return null;
+  const oppKey = (ROSTER.find((r) => r.name === bestAttempt.opp) || {}).key || '';
+  const by = (ui.getName() || 'A RIVAL').slice(0, 12);
+  return `https://slapmania.org/?cpts=${bestAttempt.pts}&copp=${oppKey}&csl=${player.look?.key || ''}&cby=${encodeURIComponent(by)}`;
+}
+
 function advance() {
   if (pendingCard) return; // the ceremony finishes before the paperwork
   if (attempts.length >= 3) {
     const bestAttempt = attempts.reduce((a, b) => (b.pts > a.pts ? b : a), attempts[0]);
     track('match_completed', { best_pts: bestAttempt.pts, best_dist: +bestAttempt.dist.toFixed(1), opp: bestAttempt.opp });
     ui.hideCards();
-    ui.showMatch({ bestAttempt, line: ui.commentaryFor(bestAttempt.dist, false), board });
+    let line = ui.commentaryFor(bestAttempt.dist, false);
+    if (challenge) {
+      const won = bestAttempt.pts > challenge.pts;
+      line += won ? ` ⚔️ CHALLENGE WON — ${challenge.by}'s ${challenge.pts} PTS is dust!`
+                  : ` ⚔️ ${challenge.by}'s ${challenge.pts} PTS still stands. Run it back.`;
+      track('challenge_result', { won, target: challenge.pts, scored: bestAttempt.pts, by: challenge.by });
+    }
+    ui.showMatch({ bestAttempt, line, board, shareUrl: challengeUrl(bestAttempt) });
     setupGlobalPanel(bestAttempt);
     setState('MATCH_END');
   } else {
@@ -537,8 +553,21 @@ function setupGlobalPanel(bestAttempt) {
   ui.showGlobal(true);
   ui.renderGlobal(null);
   ui.netMsg('Fetching the worldwide rankings…');
-  net.fetchTop(10)
-    .then((rows) => { ui.renderGlobal(rows); ui.netMsg(''); })
+  // weekly board + reigning champ + apples-to-apples matchup board, all at once.
+  // Champion/matchup resolve to null pre-migration, so this degrades to legacy.
+  const refreshBoards = () => Promise.all([
+    net.fetchTop(10),
+    net.fetchChampion().catch(() => null),
+    net.fetchMatchup(player.look?.name, bestAttempt.opp).catch(() => null),
+    net.supportsSeasons().catch(() => false),
+  ]).then(([rows, champion, matchup, seasonal]) => {
+    ui.renderGlobal(rows, {
+      week: seasonal ? net.weekKey() : null,
+      champion, matchup,
+      matchTitle: matchup ? `${player.look?.name} vs ${bestAttempt.opp}` : null,
+    });
+  });
+  refreshBoards().then(() => ui.netMsg(''))
     .catch(() => ui.netMsg("Couldn't reach the county office. Rankings unavailable."));
   ui.submitState(submitted ? 'POSTED ✓' : 'POST MY SCORE', submitted || bestAttempt.pts <= 0);
   ui.bindSubmit(() => {
@@ -546,13 +575,13 @@ function setupGlobalPanel(bestAttempt) {
     const name = ui.getName();
     if (!name) { ui.netMsg('Need a name first, sugar.'); return; }
     ui.submitState('POSTING…', true);
-    net.submit({ name, pts: bestAttempt.pts, dist: bestAttempt.dist, opp: bestAttempt.opp })
+    net.submit({ name, pts: bestAttempt.pts, dist: bestAttempt.dist, opp: bestAttempt.opp, slapper: player.look?.name })
       .then(() => {
         submitted = true;
         track('score_posted', { pts: bestAttempt.pts, dist: +bestAttempt.dist.toFixed(1), opp: bestAttempt.opp });
         ui.submitState('POSTED ✓', true);
         ui.netMsg("You're on the board. Y'all come back now.");
-        return net.fetchTop(10).then((rows) => ui.renderGlobal(rows));
+        return refreshBoards();
       })
       .catch(() => {
         ui.submitState('POST MY SCORE', false);
@@ -938,6 +967,26 @@ if (DLC_LIVE && new URLSearchParams(location.search).get('unlockall')) {
 
 // ?preview=<key> renders any slapper (incl. locked DLC) in the pick showcase, so a
 // look can be shared before it's unlockable — without exposing it in the pick list.
+// ---- challenge links: ?cpts=254&copp=bertha&csl=charlie&cby=VIC ----
+// A shared score arrives as a standing challenge: banner up top, the matchup
+// preselected, and a verdict on the final card (see advance()).
+let challenge = null;
+{
+  const q = new URLSearchParams(location.search);
+  if (q.get('cpts')) {
+    challenge = {
+      pts: Math.max(0, Math.min(99999, parseInt(q.get('cpts'), 10) || 0)),
+      by: (q.get('cby') || 'A RIVAL').slice(0, 12).toUpperCase(),
+    };
+    const oppArch = ROSTER.find((r) => r.key === q.get('copp'));
+    if (oppArch) chosenArch = oppArch;                       // volunteer preselected
+    const sl = SLAPPERS.find((s) => s.key === q.get('csl'));
+    if (sl && !(sl.locked && !owned(sl.key))) setLook(sl);   // slapper too, if playable
+    ui.challengeBar(`⚔️ ${challenge.by} CHALLENGES YOU — BEAT ${challenge.pts} PTS${oppArch ? ` VS ${oppArch.name}` : ''}`);
+    track('challenge_opened', { by: challenge.by, pts: challenge.pts, opp: oppArch ? oppArch.name : null });
+  }
+}
+
 const _pv = new URLSearchParams(location.search).get('preview');
 if (_pv) {
   // hide the card dock so the FULL character (head to toe) is visible in preview

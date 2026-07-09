@@ -225,3 +225,32 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
 - After choosing a domain, make the `og:image` / `twitter:image` URLs
   **absolute** in `index.html` (crawlers require it).
 - Pick a static host (GitHub Pages / Netlify / Vercel) and deploy.
+
+## Post-launch additions (2026-07-07 → 07-10) — supersedes stale bits above
+
+- **Live at `https://slapmania.org`** (GitHub Pages, repo `victortanws/slapmania`,
+  custom domain + HTTPS enforced; old github.io URL 301s). OG URLs are absolute.
+  Analytics: Cloudflare Web Analytics beacon + PostHog (funnel events:
+  slapper_selected, match_started, slap_landed, slapmaster/emperor_reached,
+  match_completed, score_posted, share_clicked, challenge_opened/result).
+- **Key labels renamed** to spell S·L·A·P: SWIVEL / LUNGE / ARM / PALM
+  (mechanics unchanged; internal ids like `cl-coil` kept).
+- **DLC roster** (`locked: true, price` in `SLAPPERS`): dynamite, bruceslee,
+  chucknorth, earl, reverend, auntie. Gated by `DLC_LIVE` in main.js — a master
+  kill switch that overrides `localStorage.slapp_unlocks`, the SLAPDEV dev code
+  and `?unlockall=1`. **Keep false until Stripe checkout ships**, then flip.
+  `?preview=<key>` showcases any slapper or volunteer (hides the card dock).
+- **Volunteers now 11**, incl. THE INFLUENCER (selfie-stick lightweight) and two
+  **bosses**: BOULDER BOB (mass 4.0 — barely moves, pays ×4) and DODGY DALE
+  (`weave: true` — a fixed-rhythm boxer's slip in `Opponent.update`: 1.5s in the
+  pocket / 1.5s ducked-and-back, beats even the rebound flail; time the whip).
+- **Reach fairness**: `strikeLift` upper clamp is 0.9 (was 0.5) so the shortest
+  slappers can cheek the tallest volunteers; launch arc unaffected (dir.y
+  saturates at lift 0.33). Verified via sim matrix.
+- **Weekly leaderboards + matchup boards + challenge links**: `net.js` has
+  `weekKey()/supportsSeasons()/fetchChampion()/fetchMatchup()`; falls back to
+  legacy all-time board until `supabase_migrate_weekly.sql` is run (adds `week`,
+  `slapper` columns). Challenge URL params: `?cpts=&copp=<oppKey>&csl=<slKey>&cby=`
+  → banner + preselects + verdict on the match card; the share button emits one.
+- **County board** is lost-update-safe (read-modify-write + `storage` sync) and
+  reclaims worldwide posts under the saved name via `net.fetchByName`.

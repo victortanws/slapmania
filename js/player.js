@@ -693,7 +693,10 @@ export class Player {
     const shoulderY = 1.52 * this.phys.h;
     const reach = 0.72 * this.phys.h * this.phys.arm;
     const s = THREE.MathUtils.clamp((headY - shoulderY) / reach, -1, 1);
-    this.strikeLift = THREE.MathUtils.clamp(Math.asin(s), -0.35, 0.5);
+    // upper clamp 0.9 (was 0.5): lets the shortest slappers genuinely reach the
+    // tallest cheeks (Dynamite vs Hoss needs ~0.83). Launch arc is unaffected —
+    // dir.y already saturates at lift 0.33 — so this is reach, not balance.
+    this.strikeLift = THREE.MathUtils.clamp(Math.asin(s), -0.35, 0.9);
   }
 
   // a fresh S press after a spent swing re-holsters everything: arm back to

@@ -80,6 +80,22 @@ export const ROSTER = [
     pickLine: 'Wait — is this thing recording? Hi besties!',
     taunts: ["Don't forget to like and subscribe!", 'This is SO going on my story.'],
   },
+  // ---- BOSSES: the reward ladder's final exams ----
+  {
+    key: 'boulder', name: 'BOULDER BOB', tag: 'BOSS · SUPER-MASSIVE',
+    w: 1.9, h: 1.15, mass: 4.0, noStache: true,
+    skin: 0xc9a27d, shirt: 0x8a8f96, pants: 0x5c6168, suspenders: 0x3a3f45,
+    pickLine: 'Geologically unmoved. The points pay ×4.',
+    taunts: ['Mountains ask ME for advice.', 'I have never taken a single step.'],
+  },
+  {
+    key: 'dale', name: 'DODGY DALE', tag: 'BOSS · SLIPPERY',
+    w: 0.85, h: 1.02, mass: 0.9, noStache: true, weave: true,
+    skin: 0xdcae85, shirt: 0x2b2b33, pants: 0xd83a3a,
+    hat: 'band', hatCol: 0xd83a3a, hair: 'flat', hairCol: 0x1c140e,
+    pickLine: 'Never been slapped. Time the sway, sugar.',
+    taunts: ['Swing and a miss.', 'My cheek is a moving target.'],
+  },
 ];
 
 function segSphere(p0, p1, c, r) {
@@ -568,15 +584,39 @@ export class Opponent {
       if (this.pelvisPos().x > 57) this.wallSplat = true;
     } else if (this.showcaseMode) {
       this.animateShowcase();
-    } else if (this.target.visible) {
-      const hc = this.headPos();
-      this.target.position.set(hc.x - this.rHead - 0.06, hc.y, hc.z);
-      this.target.rotation.y = -Math.PI / 2 + 0.5; // angled toward the camera side
-      // perfect window flashes hard and fast; good window pulses; idle breathes
-      const spd = this._hot === 2 ? 14 : 6;
-      const amp = this._hot === 2 ? 0.3 : 0.12;
-      const p = 1 + Math.sin(this.time * spd) * amp;
-      this.target.scale.setScalar(p * this.rHead / 0.17);
+    } else {
+      if (this.arch.weave) {
+        // bob & weave: the head slips side to side on the LIVE physics bodies, so
+        // the swept-segment hit test genuinely misses off-center — the only added
+        // "dice" is readable, human-tempo motion the player times, not RNG.
+        // a boxer's SLIP, not a sine wave: he alternates 1.5s square in the pocket
+        // with 1.5s ducked-and-leaning-away — which puts the cheek below the swing
+        // plane AND beyond the arm's reach, outlasting even the rebound flail. The
+        // rhythm is fixed and readable (no RNG): time the whip for the up-window.
+        const inPocket = (this.time % 3.0) < 1.5 ? 0 : 1;
+        this._slipK = (this._slipK || 0) + (inPocket - (this._slipK || 0)) * Math.min(1, dt * 9);
+        const k = this._slipK, sway = Math.sin(this.time * 2.1) * 0.2;
+        const P = this.rag.parts;
+        P.head.body.position.y = this.basePose.head.p.y - 0.38 * k;
+        P.head.body.position.x = this.basePose.head.p.x + 0.32 * k;
+        P.head.body.position.z = this.basePose.head.p.z + sway;
+        P.torso.body.position.y = this.basePose.torso.p.y - 0.19 * k;
+        P.torso.body.position.x = this.basePose.torso.p.x + 0.16 * k;
+        P.torso.body.position.z = this.basePose.torso.p.z + sway * 0.55;
+        if (this.hatBody && this.hatOff) this.hatBody.position.copy(P.head.body.position.vadd(this.hatOff));
+        this.rag.sync();
+        this.syncHat();
+      }
+      if (this.target.visible) {
+        const hc = this.headPos();
+        this.target.position.set(hc.x - this.rHead - 0.06, hc.y, hc.z);
+        this.target.rotation.y = -Math.PI / 2 + 0.5; // angled toward the camera side
+        // perfect window flashes hard and fast; good window pulses; idle breathes
+        const spd = this._hot === 2 ? 14 : 6;
+        const amp = this._hot === 2 ? 0.3 : 0.12;
+        const p = 1 + Math.sin(this.time * spd) * amp;
+        this.target.scale.setScalar(p * this.rHead / 0.17);
+      }
     }
   }
 

@@ -16,8 +16,15 @@ create table public.slapp_scores (
   name text not null check (char_length(name) between 1 and 12),
   pts integer not null check (pts >= 0 and pts <= 2500),
   dist real not null check (dist >= 0 and dist <= 130),
-  opp text not null check (char_length(opp) <= 20)
+  opp text not null check (char_length(opp) <= 20),
+  -- weekly seasons + matchup boards (see supabase_migrate_weekly.sql for
+  -- upgrading an existing table)
+  week text check (week is null or char_length(week) <= 10),
+  slapper text check (slapper is null or char_length(slapper) <= 20)
 );
+
+create index slapp_scores_week_idx on public.slapp_scores (week);
+create index slapp_scores_matchup_idx on public.slapp_scores (slapper, opp);
 
 alter table public.slapp_scores enable row level security;
 
