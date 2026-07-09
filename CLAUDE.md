@@ -254,3 +254,9 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   → banner + preselects + verdict on the match card; the share button emits one.
 - **County board** is lost-update-safe (read-modify-write + `storage` sync) and
   reclaims worldwide posts under the saved name via `net.fetchByName`.
+- **Campaign ("The County Fair Tour")** in `js/campaign.js`: 3 acts × 3
+  challenges (bosses as capstones), goals judged per attempt from existing
+  numbers (dist/pts/head/chain%), progress in `localStorage.slapp_tour`, acts
+  unlock sequentially. **Hidden from the public**: `CAMPAIGN_LIVE = false` in
+  campaign.js; reachable only via `?tour=1` (title button + [T] appear). Flip
+  the flag to launch it. Test hooks: `__slapp.tour`, `__slapp.tourReset()`.

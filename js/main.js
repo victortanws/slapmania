@@ -6,6 +6,7 @@ import { Opponent, ROSTER } from './opponent.js';
 import { Sfx } from './audio.js';
 import * as ui from './ui.js';
 import * as net from './net.js';
+import * as campaign from './campaign.js';
 
 const stage = createStage(document.getElementById('c'));
 const { scene, camera, renderer } = stage;
@@ -45,6 +46,10 @@ let pendingCard = null;  // result card held back until the landing has been see
 let cardDelay = 0;
 let excite = 0;
 let chosenArch = null;
+// the rival-gauntlet banner text (challenge links) — restored when tour goals
+// borrow the same banner slot
+let rivalBarText = null;
+function restoreBar() { ui.challengeBar(rivalBarText); }
 let pickIndex = 0;
 let pickHighlight = null;
 let pickConfirmFn = null;
@@ -323,8 +328,36 @@ function goToTitle() {
   ui.showDistance(null);
   ui.coach(null);
   ui.setAttempts(attempts, 0);
+  campaign.close();
+  campaign.clearActive();
+  restoreBar();
   ui.showTitle(true);
   setState('TITLE');
+}
+
+// ---------- the county fair tour (campaign — hidden until CAMPAIGN_LIVE) ----------
+function openTourMenu() {
+  setState('TOUR');
+  ui.showTitle(false);
+  ui.hideCards();
+  ui.bubble(null);
+  restoreBar();
+  campaign.open((ch) => {
+    campaign.setActive(ch);
+    campaign.close();
+    ui.challengeBar(campaign.goalText());
+    track('tour_challenge_started', { id: ch.id, title: ch.title });
+    const arch = ch.opp ? ROSTER.find((r) => r.key === ch.opp) : null;
+    if (arch) { chosenArch = arch; startMatch(); }   // the challenge names its victim
+    else openOppPick();                              // "anybody" — player's choice
+  });
+  track('tour_opened', { cleared: campaign.progress().length });
+}
+document.getElementById('tourBack').onclick = () => goToTitle();
+if (campaign.enabled()) {
+  const b = document.getElementById('tourBtn');
+  b.classList.remove('hidden');
+  b.onclick = () => { sfx.ensure(); openTourMenu(); };
 }
 
 function startAttempt() {
@@ -465,8 +498,22 @@ function showResult() {
     localStorage.setItem('slapp_board', JSON.stringify(board));
     refreshBest();
   }
-  const line = isFoul ? ui.FOUL_LINES[slap.foul]
+  let line = isFoul ? ui.FOUL_LINES[slap.foul]
     : (slap && slap.part === 'torso' ? ui.bodyLineFor(flew) : ui.commentaryFor(flew, opponent.wallSplat));
+  // tour goals are judged per attempt, from numbers this function already has
+  if (campaign.active) {
+    const cleared = campaign.checkAttempt({
+      dist, pts,
+      part: slap && !isFoul ? slap.part : null,
+      chainPct: slap && slap.chain ? slap.chain.pct : 0,
+      oppKey: arch.key,
+    });
+    if (cleared) {
+      line = `🎪 ${cleared.title} — CLEAR! ` + line;
+      sfx.fanfare();
+      track('tour_challenge_cleared', { id: cleared.id, title: cleared.title });
+    }
+  }
   sfx.crowd(isFoul ? 0 : dist > 20 ? 3 : dist > 10 ? 2 : dist > 4 ? 1 : 0);
   ui.coach(null);
   ui.showDistance(null);
@@ -594,10 +641,16 @@ function setupGlobalPanel(bestAttempt) {
 // clicks or non-gameplay keys advance score screens — S/L/A/P never do, so a
 // player still drumming the slap keys can't blow through their own results
 function advanceScreens(code) {
+  if (state === 'TOUR') return false; // the menu is click-driven; stray taps do nothing
   if (state === 'TITLE') { openSlapperPick(); return true; }
   if (code && KEYMAP[code]) return false;
   if (state === 'RESULT' && tState > 1.0) { advance(); return true; }
-  if (state === 'MATCH_END' && tState > 1.0) { openOppPick(); return true; }
+  if (state === 'MATCH_END' && tState > 1.0) {
+    // a tour match hands you back to the tour, checkmark freshly inked
+    if (campaign.active) { campaign.clearActive(); restoreBar(); openTourMenu(); return true; }
+    openOppPick();
+    return true;
+  }
   return false;
 }
 
@@ -609,6 +662,7 @@ addEventListener('keydown', (e) => {
   if (e.repeat) return;
   sfx.ensure();
   if (e.code === 'Escape' && state !== 'TITLE') { goToTitle(); return; }
+  if (state === 'TITLE' && e.code === 'KeyT' && campaign.enabled()) { openTourMenu(); return; }
   if (state === 'SELECT_SLAPPER' || state === 'SELECT_OPP') {
     const n = state === 'SELECT_SLAPPER' ? SLAPPERS.length : ROSTER.length;
     const m = /^Digit([1-9])$/.exec(e.code);
@@ -911,6 +965,9 @@ window.__slapp = {
   opponent: () => opponent,
   // preview any slapper by key (incl. locked DLC) without exposing it in the pick UI
   setLook: (key) => setLook(SLAPPERS.find((s) => s.key === key) || SLAPPERS[0]),
+  // tour (campaign) test hooks
+  get tour() { return { enabled: campaign.enabled(), active: campaign.active ? campaign.active.id : null, progress: campaign.progress() }; },
+  tourReset: () => { campaign.reset(); return campaign.progress(); },
   // DLC dev backdoor: unlock/relock without paying (Phase 2 replaces with real codes)
   unlock: (key) => { unlock(key); return [...unlocks]; },
   relock: (key) => { unlocks = key ? unlocks.filter((k) => k !== key) : []; localStorage.setItem('slapp_unlocks', JSON.stringify(unlocks)); return [...unlocks]; },
@@ -982,7 +1039,8 @@ let challenge = null;
     if (oppArch) chosenArch = oppArch;                       // volunteer preselected
     const sl = SLAPPERS.find((s) => s.key === q.get('csl'));
     if (sl && !(sl.locked && !owned(sl.key))) setLook(sl);   // slapper too, if playable
-    ui.challengeBar(`⚔️ ${challenge.by} CHALLENGES YOU — BEAT ${challenge.pts} PTS${oppArch ? ` VS ${oppArch.name}` : ''}`);
+    rivalBarText = `⚔️ ${challenge.by} CHALLENGES YOU — BEAT ${challenge.pts} PTS${oppArch ? ` VS ${oppArch.name}` : ''}`;
+    ui.challengeBar(rivalBarText);
     track('challenge_opened', { by: challenge.by, pts: challenge.pts, opp: oppArch ? oppArch.name : null });
   }
 }
