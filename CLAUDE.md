@@ -335,3 +335,27 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   STRIPE_PRICE_ID secret, redeploy both functions from supabase/functions/.
   World selection is three explicit buttons (.worldOpt, active wears red).
   slap-preview moved to port 8996 (8995 collided with another session).
+- **Frozen Lake winter kit (2026-07-10)**: `setWorldTheme('ice')` now dresses
+  the whole county — `winterG` (horizon mountain ring, 3 snowmen w/ carrot
+  noses + coal eyes + scarves, 2 snow-kids mid-snowball-fight, 2 skaters carving
+  circles on the pond — animated in `updateAmbient`), 850-particle falling snow,
+  pond retinted to blue ice, cowgirl in white fur coat + fur arm-sleeves
+  (`furCuffs` ride her arm groups), crowd instance colors → winter whites.
+  The generic **frost system** (`winterMat(mat, winterHex)` for materials,
+  `winterIM(im, n, winterHex)` for instanced meshes, applied by `setFrost(on)`)
+  freezes corn→straw, tree puffs/orchard canopies→snow, conifers→frost-green,
+  hills→white, sunflowers→dead brown, reeds→straw; summer colors are saved
+  lazily on first frost, restore verified both directions. Wan winter sun =
+  sunFace tint 0xcfdce6 @ 0.6 opacity. Register any NEW greenery with
+  winterMat/winterIM or it will stay summer-green on the lake.
+- **Influencer selfie stick**: braced-arm eulers are positive (ez 0.5/0.45,
+  shoulder→elbow→hand chain) — negative eulers scatter the limb into a "third
+  arm". Stick is black 0x15151c, r 0.02 (pale gray vanished against the sky and
+  the phone read as floating).
+- **`__slapp.stage` is exposed** for visual debugging. Freeze-frame screenshot
+  recipe: `__slapp.freeze(true)` stops the render loop entirely and a single
+  manual render doesn't survive to a screenshot (no preserveDrawingBuffer), so
+  run `setInterval(() => { stage.camera.position.set(...); stage.camera.lookAt(...);
+  stage.renderer.render(stage.scene, stage.camera); }, 60)` and screenshot while
+  it loops (first frame may still be blank — retake). Remember the game camera
+  overwrites camera state every frame while unfrozen.

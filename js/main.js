@@ -1175,6 +1175,7 @@ addEventListener('visibilitychange', () => { if (!document.hidden) last = perfor
 
 // debug/verification handle
 window.__slapp = {
+  stage, // scene/camera handle for visual debugging (freeze + reposition camera)
   get state() { return state; },
   get pickIndex() { return pickIndex; },
   get attempts() { return attempts; },

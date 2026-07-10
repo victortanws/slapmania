@@ -499,6 +499,28 @@ export function createStage(canvas) {
     }
   }
 
+  // --- seasonal tinting: greenery that frosts over on the Frozen Lake ---
+  // setWorldTheme('ice') calls setFrost(true); summer colors are saved lazily.
+  const seasonMats = [];
+  const winterMat = (mat, winterHex) => { seasonMats.push({ mat, summer: mat.color.getHex(), winter: winterHex }); return mat; };
+  const seasonIMs = [];
+  const winterIM = (im, n, winterHex) => { seasonIMs.push({ im, n, winterHex, orig: null }); return im; };
+  function setFrost(on) {
+    for (const e of seasonMats) e.mat.color.setHex(on ? e.winter : e.summer);
+    const c = new THREE.Color();
+    for (const e of seasonIMs) {
+      if (!e.im.instanceColor) continue;
+      if (on && !e.orig) e.orig = e.im.instanceColor.array.slice();
+      if (!e.orig) continue;
+      for (let i = 0; i < e.n; i++) {
+        if (on) c.setHex(e.winterHex).offsetHSL(0, 0, -(i % 4) * 0.02);
+        else c.fromArray(e.orig, i * 3);
+        e.im.setColorAt(i, c);
+      }
+      e.im.instanceColor.needsUpdate = true;
+    }
+  }
+
   // --- corn patch ---
   const cornIM = new THREE.InstancedMesh(new THREE.ConeGeometry(0.16, 1.8, 5), toonMat(0xffffff), 180);
   const cc = new THREE.Color();
@@ -510,7 +532,7 @@ export function createStage(canvas) {
     cornIM.setMatrixAt(i, pd.matrix);
     cornIM.setColorAt(i, cc.setHSL(0.24, 0.5, 0.32 + Math.random() * 0.12));
   }
-  scene.add(cornIM);
+  scene.add(winterIM(cornIM, 180, 0xd9cfa8));
 
   // --- trees ---
   function tree(x, z, s = 1) {
@@ -520,7 +542,7 @@ export function createStage(canvas) {
     trunk.castShadow = true;
     g.add(trunk);
     for (const [ox, oy, oz, r] of [[0, 3.1, 0, 1.5], [0.9, 2.5, 0.3, 1.0], [-0.9, 2.6, -0.2, 1.1]]) {
-      const puff = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 10), toonMat(0x4e7d3a));
+      const puff = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 10), winterMat(toonMat(0x4e7d3a), 0xe9f0f4));
       puff.position.set(ox, oy, oz);
       puff.castShadow = true;
       g.add(puff);
@@ -548,7 +570,7 @@ export function createStage(canvas) {
     edgeCornIM.setMatrixAt(i, pd.matrix);
     edgeCornIM.setColorAt(i, cc.setHSL(0.23, 0.5, 0.3 + Math.random() * 0.14));
   }
-  scene.add(edgeCornIM);
+  scene.add(winterIM(edgeCornIM, 280, 0xd9cfa8));
 
   function scarecrow(x, z, ry = 0) {
     const g = new THREE.Group();
@@ -652,14 +674,14 @@ export function createStage(canvas) {
   // sunflower sentries along the far lane
   function sunflower(x, z, s = 1) {
     const g = new THREE.Group();
-    const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.05, 1.5, 6), toonMat(0x5c7a3a));
+    const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.05, 1.5, 6), winterMat(toonMat(0x5c7a3a), 0x8a7454));
     stalk.position.y = 0.75;
     g.add(stalk);
     const face = new THREE.Group();
     face.position.y = 1.55;
     face.rotation.y = -Math.PI / 2; // greets the incoming flyer
     face.rotation.x = 0.15;
-    const petals = new THREE.Mesh(new THREE.CircleGeometry(0.24, 12), toonMat(0xf2c53d));
+    const petals = new THREE.Mesh(new THREE.CircleGeometry(0.24, 12), winterMat(toonMat(0xf2c53d), 0xb5946a));
     petals.material.side = THREE.DoubleSide;
     face.add(petals);
     const heart = new THREE.Mesh(new THREE.CircleGeometry(0.11, 12), toonMat(0x6e4a2a));
@@ -791,7 +813,7 @@ export function createStage(canvas) {
     fieldCornIM.setMatrixAt(i, pd.matrix);
     fieldCornIM.setColorAt(i, cc.setHSL(0.23, 0.5, 0.3 + Math.random() * 0.14));
   }
-  scene.add(fieldCornIM);
+  scene.add(winterIM(fieldCornIM, 420, 0xd9cfa8));
 
   // fruit trees: apples red, oranges orange, both delicious at 30 m/s
   function fruitTree(x, z, fruitCol, leafCol, s = 1) {
@@ -799,7 +821,7 @@ export function createStage(canvas) {
     const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.28, 1.9, 8), toonMat(0x6b4a2e));
     trunk.position.y = 0.95;
     g.add(trunk);
-    const blob = new THREE.Mesh(new THREE.SphereGeometry(1.35, 10, 10), toonMat(leafCol));
+    const blob = new THREE.Mesh(new THREE.SphereGeometry(1.35, 10, 10), winterMat(toonMat(leafCol), 0xe9f0f4));
     blob.scale.set(1, 0.85, 1);
     blob.position.y = 2.6;
     g.add(blob);
@@ -835,18 +857,20 @@ export function createStage(canvas) {
   }
 
   // the pond: still water, tall reeds, zero lifeguards
+  let pondWater = null; // retinted to ice by setWorldTheme('ice')
   {
     const water = new THREE.Mesh(new THREE.CircleGeometry(6, 24), toonMat(0x5b9bd0));
     water.rotation.x = -Math.PI / 2;
     water.position.set(40, 0.03, 24);
     scene.add(water);
-    const rim = new THREE.Mesh(new THREE.RingGeometry(6, 6.8, 24), toonMat(0xc9b88a));
+    pondWater = water;
+    const rim = new THREE.Mesh(new THREE.RingGeometry(6, 6.8, 24), winterMat(toonMat(0xc9b88a), 0xe9f2f8));
     rim.rotation.x = -Math.PI / 2;
     rim.position.set(40, 0.02, 24);
     scene.add(rim);
     for (let i = 0; i < 14; i++) {
       const a = Math.random() * Math.PI * 2;
-      const reed = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.035, 0.9 + Math.random() * 0.6, 4), toonMat(0x5c7a3a));
+      const reed = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.035, 0.9 + Math.random() * 0.6, 4), winterMat(toonMat(0x5c7a3a), 0xcbb98a));
       reed.position.set(40 + Math.cos(a) * (5.6 + Math.random()), 0.5, 24 + Math.sin(a) * (5.6 + Math.random()));
       scene.add(reed);
     }
@@ -902,12 +926,12 @@ export function createStage(canvas) {
       conifer.setColorAt(i, cc.setHSL(0.32, 0.35, 0.2 + Math.random() * 0.1));
     }
     conifer.castShadow = true;
-    scene.add(conifer);
+    scene.add(winterIM(conifer, spots.length, 0xc9d8d2));
   }
 
   // distant hills close the horizon — the county rolls on to ~200m
   for (const [hx, hz, hr, hh] of [[190, -60, 90, 26], [170, 80, 80, 20], [-90, -120, 100, 24], [40, 190, 110, 26], [230, 40, 100, 30]]) {
-    const hill = new THREE.Mesh(new THREE.SphereGeometry(hr, 16, 12), toonMat(0x6e8f5a));
+    const hill = new THREE.Mesh(new THREE.SphereGeometry(hr, 16, 12), winterMat(toonMat(0x6e8f5a), 0xe6edf5));
     hill.scale.set(1, hh / hr, 1);
     hill.position.set(hx, -hr * 0.35, hz);
     scene.add(hill);
@@ -1437,6 +1461,23 @@ export function createStage(canvas) {
   // --- ambient life: windmill, wandering animals, clouds, a moody sun ---
   function updateAmbient(dt, time) {
     fan.rotation.z += dt * 1.4;
+    if (snowPts.visible) {
+      const a = snowGeo2.attributes.position.array;
+      for (let i = 0; i < SNOW_N; i++) {
+        a[i * 3 + 1] -= (1.5 + (i % 5) * 0.3) * dt;
+        a[i * 3] += Math.sin(time * 0.8 + i) * 0.35 * dt;
+        if (a[i * 3 + 1] < 0.05) a[i * 3 + 1] += 26;
+      }
+      snowGeo2.attributes.position.needsUpdate = true;
+      for (const sk of iceSkaters) {
+        const a = time * sk.speed + sk.phase;
+        const dir = Math.sign(sk.speed);
+        sk.g.position.set(40 + Math.cos(a) * sk.r, 0.05, 24 + Math.sin(a) * sk.r);
+        sk.g.rotation.y = -a - dir * Math.PI / 2; // face along the tangent
+        sk.g.rotation.z = dir * 0.14;             // lean into the curve
+        sk.g.position.y += Math.abs(Math.sin(time * 2.2 + sk.phase)) * 0.015; // stride bob
+      }
+    }
     if (kidCelebT > 0) kidCelebT -= dt;
     // the sun's reaction wears off back to a contented idle
     sunFace.quaternion.copy(sunBaseQ);
@@ -1890,6 +1931,175 @@ export function createStage(canvas) {
     bruce: () => new THREE.Vector3(bruceG.position.x, 1.55, bruceG.position.z),
   };
 
+  // --- FROZEN LAKE winter kit: mountains, snowmen, snowball kids, fur coats,
+  // falling snow — all toggled by setWorldTheme('ice') ---
+  const iceSkaters = [];
+  const winterG = new THREE.Group();
+  {
+    const snowWhite = toonMat(0xf6fafc);
+    const mtnMat = toonMat(0xe4ecf6);
+    const mtn = (x, z, h, r) => {
+      const m = new THREE.Mesh(new THREE.ConeGeometry(r, h, 5), mtnMat);
+      m.position.set(x, h / 2 - 1.5, z);
+      winterG.add(m);
+    };
+    mtn(-30, -55, 26, 22); mtn(5, -62, 34, 26); mtn(45, -58, 30, 24);
+    mtn(90, -64, 38, 30); mtn(128, -54, 28, 22);
+    mtn(-25, 56, 30, 24); mtn(20, 62, 36, 28); mtn(65, 58, 30, 24);
+    mtn(108, 62, 34, 26); mtn(138, 18, 32, 24);
+    const snowman = (x, z, s, ry, scarfCol) => {
+      const g = new THREE.Group();
+      const b1 = new THREE.Mesh(new THREE.SphereGeometry(0.5, 12, 12), snowWhite); b1.position.y = 0.45; g.add(b1);
+      const b2 = new THREE.Mesh(new THREE.SphereGeometry(0.36, 12, 12), snowWhite); b2.position.y = 1.05; g.add(b2);
+      const b3 = new THREE.Mesh(new THREE.SphereGeometry(0.25, 12, 12), snowWhite); b3.position.y = 1.55; g.add(b3);
+      if (scarfCol) {
+        const scarf = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.06, 8, 14), toonMat(scarfCol));
+        scarf.rotation.x = Math.PI / 2; scarf.position.y = 1.34; g.add(scarf);
+        const tail = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.3, 0.04), toonMat(scarfCol));
+        tail.position.set(0.24, 1.18, 0.06); tail.rotation.z = -0.15; g.add(tail);
+      }
+      for (const sgn of [-1, 1]) {
+        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.035, 6, 6), toonMat(0x1a1a1a));
+        eye.position.set(0.225, 1.63, sgn * 0.08); g.add(eye);
+        const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.035, 0.62, 5), toonMat(0x6b4a2e));
+        stick.position.set(0, 1.12, sgn * 0.52); stick.rotation.x = sgn * -1.25; g.add(stick);
+      }
+      const carrot = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.3, 8), toonMat(0xe8752d));
+      carrot.rotation.z = -Math.PI / 2; carrot.position.set(0.36, 1.55, 0); g.add(carrot);
+      for (const [bx, by] of [[0.31, 1.14], [0.35, 0.98], [0.36, 0.82]]) {
+        const btn = new THREE.Mesh(new THREE.SphereGeometry(0.03, 6, 6), toonMat(0x1a1a1a));
+        btn.position.set(bx, by, 0); g.add(btn);
+      }
+      g.traverse((m) => { m.castShadow = true; });
+      g.scale.setScalar(s); g.position.set(x, 0, z); g.rotation.y = ry;
+      winterG.add(g);
+    };
+    snowman(16, 9, 1, -0.4, 0xd83a3a); snowman(34, -10, 0.85, 0.5); snowman(55, 13, 1.15, -0.2, 0x3d7a5c);
+    // two kids mid-snowball-fight — one ball frozen mid-air, as is county tradition
+    const snowKid = (x, z, coat, ry, throwing) => {
+      const g = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.16, 0.3, 3, 8), toonMat(coat)); body.position.y = 0.42; g.add(body);
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 10), toonMat(0xf0c8a0)); head.position.y = 0.78; g.add(head);
+      const hatK = new THREE.Mesh(new THREE.SphereGeometry(0.125, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2), toonMat(0xd83a3a)); hatK.position.y = 0.8; g.add(hatK);
+      const bob = new THREE.Mesh(new THREE.SphereGeometry(0.05, 6, 6), snowWhite); bob.position.y = 0.95; g.add(bob);
+      for (const s of [-1, 1]) {
+        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.016, 5, 5), toonMat(0x1a1a1a));
+        eye.position.set(0.105, 0.8, s * 0.045); g.add(eye);
+      }
+      const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.04, 0.24, 2, 6), toonMat(coat));
+      if (throwing) { arm.position.set(0.05, 0.68, 0.14); arm.rotation.z = -2.2; }
+      else { arm.position.set(0, 0.52, 0.18); arm.rotation.z = -0.5; }
+      g.add(arm);
+      g.traverse((m) => { m.castShadow = true; });
+      g.position.set(x, 0, z); g.rotation.y = ry;
+      winterG.add(g);
+    };
+    snowKid(24, 7.5, 0x4a6fa5, -1.4, true);
+    snowKid(27.5, 7.8, 0x8a5fb0, 1.6, false);
+    // skaters carving circles on the frozen pond (animated in updateAmbient)
+    const skater = (coat, scarf, r, speed, phase) => {
+      const g = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.17, 0.42, 3, 8), toonMat(coat)); body.position.y = 0.62; g.add(body);
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 10), toonMat(0xf0c8a0)); head.position.y = 1.05; g.add(head);
+      const hatS = new THREE.Mesh(new THREE.SphereGeometry(0.135, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2), toonMat(scarf)); hatS.position.y = 1.07; g.add(hatS);
+      const wrap = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.04, 6, 12), toonMat(scarf)); wrap.rotation.x = Math.PI / 2; wrap.position.y = 0.9; g.add(wrap);
+      for (const s of [-1, 1]) {
+        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.018, 5, 5), toonMat(0x1a1a1a));
+        eye.position.set(0.115, 1.07, s * 0.05); g.add(eye);
+      }
+      for (const s of [-1, 1]) {
+        const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.04, 0.3, 2, 6), toonMat(coat));
+        arm.position.set(-0.14, 0.72, s * 0.16); arm.rotation.x = s * 0.5; arm.rotation.z = 0.9; g.add(arm);
+        const blade = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.02, 0.03), toonMat(0xdddddd));
+        blade.position.set(0.02, 0.02, s * 0.08); g.add(blade);
+      }
+      g.traverse((m) => { m.castShadow = true; });
+      winterG.add(g);
+      iceSkaters.push({ g, r, speed, phase });
+    };
+    skater(0xb54a4a, 0xf4f4f0, 3.6, 0.55, 0);
+    skater(0x3d7a5c, 0xf0d060, 2.4, -0.42, 2.1);
+    const ball = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), toonMat(0xffffff));
+    ball.position.set(25.8, 1.15, 7.6); winterG.add(ball);
+    const ballMat = toonMat(0xd4dfe9); // blue-gray so they read against the snow
+    for (const [bx, bz] of [[24.6, 7.0], [26.8, 8.3], [25.5, 8.6]]) {
+      const gb = new THREE.Mesh(new THREE.SphereGeometry(0.09, 8, 8), ballMat);
+      gb.castShadow = true;
+      gb.position.set(bx, 0.09, bz); winterG.add(gb);
+    }
+  }
+  winterG.visible = false;
+  scene.add(winterG);
+
+  // falling snow — drifts down in updateAmbient while the lake is frozen
+  const SNOW_N = 850;
+  const snowArr = new Float32Array(SNOW_N * 3);
+  for (let i = 0; i < SNOW_N; i++) {
+    snowArr[i * 3] = -25 + Math.random() * 145;
+    snowArr[i * 3 + 1] = Math.random() * 26;
+    snowArr[i * 3 + 2] = -40 + Math.random() * 80;
+  }
+  const snowGeo2 = new THREE.BufferGeometry();
+  snowGeo2.setAttribute('position', new THREE.BufferAttribute(snowArr, 3));
+  const snowPts = new THREE.Points(snowGeo2, new THREE.PointsMaterial({ color: 0xffffff, size: 0.28, transparent: true, opacity: 0.85 }));
+  snowPts.visible = false;
+  scene.add(snowPts);
+
+  // the ringside cowgirl bundles up: white fur coat, collar, hem and ear muffs
+  const furG = new THREE.Group();
+  {
+    const fur = toonMat(0xf4f4f0);
+    const coat = new THREE.Mesh(new THREE.CapsuleGeometry(0.215, 0.42, 4, 10), fur); coat.position.y = 1.05; furG.add(coat);
+    const collar = new THREE.Mesh(new THREE.TorusGeometry(0.13, 0.05, 8, 14), fur); collar.rotation.x = Math.PI / 2; collar.position.y = 1.38; furG.add(collar);
+    const hem = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.23, 0.1, 12), fur); hem.position.y = 0.82; furG.add(hem);
+    for (const s of [-1, 1]) {
+      const muff = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 8), fur);
+      muff.position.set(0, 1.56, s * 0.145); furG.add(muff);
+    }
+    furG.traverse((m) => { m.castShadow = true; });
+  }
+  furG.visible = false;
+  ringGirl.g.add(furG);
+  // fur sleeves ride the arm groups so they track her waving
+  const furCuffs = [];
+  for (const armG of [ringGirl.armL, ringGirl.armR]) {
+    if (!armG) continue;
+    const sleeve = new THREE.Mesh(new THREE.CapsuleGeometry(0.055, 0.34, 3, 8), toonMat(0xf4f4f0));
+    sleeve.position.y = 0.19;
+    sleeve.castShadow = true;
+    sleeve.visible = false;
+    armG.add(sleeve);
+    furCuffs.push(sleeve);
+  }
+
+  // the whole crowd bundles up too: instance colors swap to winter whites
+  let crowdOrig = null;
+  function setCrowdWinter(on) {
+    if (!bodyIM.instanceColor) return;
+    if (on && !crowdOrig) {
+      crowdOrig = {
+        body: bodyIM.instanceColor.array.slice(),
+        skirt: skirtIM.instanceColor ? skirtIM.instanceColor.array.slice() : null,
+      };
+    }
+    if (!crowdOrig) return;
+    const c = new THREE.Color();
+    for (let i = 0; i < N; i++) {
+      if (on) c.setHex(0xf2f4f6).offsetHSL(0, 0, (i % 5) * -0.015);
+      else c.fromArray(crowdOrig.body, i * 3);
+      bodyIM.setColorAt(i, c);
+    }
+    bodyIM.instanceColor.needsUpdate = true;
+    if (skirtIM.instanceColor && crowdOrig.skirt) {
+      for (let i = 0; i < femN; i++) {
+        if (on) c.setHex(0xe8ecf2);
+        else c.fromArray(crowdOrig.skirt, i * 3);
+        skirtIM.setColorAt(i, c);
+      }
+      skirtIM.instanceColor.needsUpdate = true;
+    }
+  }
+
   // --- world themes: Day Fair / Night Fair / Frozen Lake ---
   // Same geometry, retinted + relit (the ice friction flip lives in ragdoll.js;
   // main.js drives both). Night gets string lanterns along the ring + stars.
@@ -1939,6 +2149,17 @@ export function createStage(canvas) {
     sunFace.visible = t.sunFace;
     lanternG.visible = t.night;
     stars.visible = t.night;
+    const ice = name === 'ice';
+    winterG.visible = ice;
+    snowPts.visible = ice;
+    furG.visible = ice;
+    for (const cf of furCuffs) cf.visible = ice;
+    // wan winter sun: pale and half-hidden behind the snow sky
+    sunFace.material.color.setHex(ice ? 0xcfdce6 : 0xffffff);
+    sunFace.material.opacity = ice ? 0.6 : 1;
+    if (pondWater) pondWater.material.color.setHex(ice ? 0xaed4ec : 0x5b9bd0);
+    setCrowdWinter(ice);
+    setFrost(ice);
   }
 
   return {

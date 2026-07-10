@@ -229,9 +229,11 @@ export class Opponent {
     set('torso', START_X - 0.05, 1.33, 0, 0, 0, 0.22);
     set('head', START_X - 0.16, 1.56, 0, 0.18, 0, arch.lookUp ? -0.5 : 0.35);   // lookUp tilts the face skyward
     if (arch.phone) {
-      // left arm raised, holding a selfie stick up in front of her face
-      set('uaL', START_X + 0.02, 1.5, 0.2, 0, 0, -1.15);
-      set('faL', START_X - 0.13, 1.72, 0.13, 0, 0, -0.55);
+      // one CONNECTED raised arm: shoulder → elbow → hand → stick. Positive z
+      // euler tilts the segment toward her face (-x); the old negative values
+      // scattered the two segments and read as a third arm.
+      set('uaL', START_X - 0.05, 1.52, 0.22, 0, 0, 0.5);
+      set('faL', START_X - 0.17, 1.74, 0.18, 0, 0, 0.45);
     } else {
       set('uaL', START_X + 0.08, 1.38, 0.24, 0, 0, 0.45);
       set('faL', START_X + 0.20, 1.06, 0.10, 0.9, 0, 0.3);
@@ -345,14 +347,14 @@ export class Opponent {
     if (arch.phone) {
       // a selfie stick held IN HER HAND (left forearm) — extends from the fist to the phone
       const fa = P.faL.mesh;
-      const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.5, 6), toonMat(0xcfd2da));
-      stick.position.set(0, 0.36, 0);
+      const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.34, 6), toonMat(0x15151c));
+      stick.position.set(0, 0.3, 0);
       fa.add(stick);
       const ph = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.03, 0.16), toonMat(0x15151c));
-      ph.position.set(0, 0.62, 0);
+      ph.position.set(0, 0.49, 0);
       fa.add(ph);
       const screen = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.012, 0.13), toonMat(0x9fd6ff));
-      screen.position.set(0, 0.605, 0);
+      screen.position.set(0, 0.475, 0);
       fa.add(screen);
     }
     if (arch.female) {
