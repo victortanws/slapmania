@@ -547,9 +547,6 @@ function onContact(hit) {
   const coilFrac = chain.l ? chain.coil : player.coilFrac;
   const coilF = 0.35 + 0.65 * Math.min(1, coilFrac);
 
-  // the palm never fired: that rigid folded arm is a punch, sir
-  const foulType = player.pUnlocked ? null : 'punch';
-
   // CONTACT QUALITY (head only) — real slap physics: a blow that lands level
   // with the cheek's center and drives INTO it transfers square; a high/low
   // graze skims off. Rewards reading heights (matchups) and the volunteer's
@@ -573,20 +570,23 @@ function onContact(hit) {
   // muscle is a multiplier, not a substitute: the cap means brute strength only
   // pays off against tonnage — technique still decides everything else
   let power = 12.5 * player.strength * balF * coilF * lg.g * ag.g * pg.g * sweet;
+  // a slow "cleanup" graze that sneaks past the 2.2 gate (e.g. catching a weave
+  // boss on the pop-up frame) shouldn't launch full power off a crawling hand:
+  // taper below 6 m/s of real contact speed. Normal swings land ~10.8 → untouched.
+  power *= THREE.MathUtils.clamp(speed / 6, 0.35, 1);
   // rebound flail: only true multi-oscillation scuffles — a first-rebound catch
   // is a legitimate (already low-graded) beginner slap
   const ugly = chain.tFire != null && swingT - chain.tFire > 2.2;
   if (ugly) power *= 0.3;
-  if (foulType) power *= 0.3;
   // chain quality as % of theoretical max — shown to the player, and the number
   // boss gates judge (so the HUD and the boss always agree)
   const chainPct = Math.round(Math.min(1, (coilF * lg.g * ag.g * pg.g) / 1.8) * 100);
   // BOSS MECHANICS — readable, skill-targeted handicaps, never RNG:
   // grease: only a PERFECT palm grips — anything less slides off (P-timing exam)
-  const greased = !!(opponent.arch.grease && !foulType && !ugly && pg.tier < 3);
+  const greased = !!(opponent.arch.grease && !ugly && pg.tier < 3);
   if (greased) power *= 0.45;
   // chainGate: below the posted chain% he no-sells the hit (whole-chain exam)
-  const noSold = !!(opponent.arch.chainGate && !foulType && !ugly && chainPct < opponent.arch.chainGate);
+  const noSold = !!(opponent.arch.chainGate && !ugly && chainPct < opponent.arch.chainGate);
   if (noSold) power *= 0.12;
   // the cap scales with muscle: a perfect chain caps everyone, but the strong
   // cap HIGHER — strength genuinely moves tonnage instead of dying at 30
@@ -601,7 +601,7 @@ function onContact(hit) {
 
   opponent.launch(dir, power);
   slap = {
-    foul: foulType, part: hit.part,
+    foul: null, part: hit.part, // a landed contact is never a foul (fouls use the FOULED path)
     chain: {
       coil: Math.round(Math.min(1, coilFrac) * 100), l: lg.label, a: ag.label, p: pg.label, ugly,
       bal: Math.round(balF * 100),
@@ -618,7 +618,7 @@ function onContact(hit) {
   excite = Math.min(1, power / 20);
   player.leanV += power * 0.04; // a monster follow-through rocks YOU too
   // the sun judges TECHNIQUE, not tonnage — chain quality decides its mood
-  if (foulType || ugly || hit.part === 'torso' || slap.chain.pct < 25) stage.sunMood('meh', 3.5);
+  if (ugly || hit.part === 'torso' || slap.chain.pct < 25) stage.sunMood('meh', 3.5);
   else if (slap.chain.pct >= 60) stage.sunMood('happy', 5);
   if (ugly) ui.slapBurst('SLOPPY SLAP!', 'THE CHAIN WAS LONG GONE');
   else if (noSold) ui.slapBurst('NO-SOLD!', `HE NEEDS A ${opponent.arch.chainGate}% CHAIN TO EVEN BLINK`);

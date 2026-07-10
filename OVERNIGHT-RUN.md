@@ -31,13 +31,13 @@ protect the quirk?
 | # | Role | Agent | Preview server | Status |
 |---|------|-------|----------------|--------|
 | 1 | Physicality & reality validator | PHYS | slap-phys :8990 | ✅ reported |
-| 2 | Game-design validator (confirms/disconfirms #1) | GDES | — | queued (after #1) |
+| 2 | Game-design validator (confirms/disconfirms #1) | GDES | slap-phys :8990 | ✅ reported |
 | 3 | Visual & appearance critic | ART | slap-art :8991 | running |
 | 4 | Story & causality / believability critic | STORY | slap-story :8993 | ✅ reported |
 | 5 | UI/UX blocking critic | UIUX | slap-uiux :8992 | ✅ reported → FIXES SHIPPED (branch) |
 | 6 | Environments & bosses ideator (desert+) | WORLD | slap-game :8994 | ✅ reported |
 | 7 | Roast → feedback → re-code orchestrator | (me + roast agent) | slap-preview :8996 | active |
-| 8 | Camera & cinematography validator | CAMERA | slap-cam :8988 | running |
+| 8 | Camera & cinematography validator | CAMERA | slap-cam :8988 | ✅ reported |
 | 9 | Scene & boss-arena designer | ARENA | slap-arena :8989 | ✅ reported |
 | 10 | Character creator (bosses/volunteers/slappers) | CREATOR | — | queued (synthesizes all others) |
 
@@ -165,7 +165,65 @@ HEAD (reach fair via strikeLift 0.9 clamp); launch capped 34 m/s → true max ~9
 | P3 | MINOR | Heavy volunteers (Hoss 2.6, Boulder 4.0) can defer result card to the 20s hard fallback (grounded but sliding) | PLANNED — faster settle for high-mass: `maxSpeed<2.0` once `pelY<0.6 && tState>6` |
 | P4 | MINOR | `punch` foul is dead code (`main.js:551` — onContact only runs when pUnlocked, so foulType always null) | PLANNED — delete the unreachable branch (closed-fist whiff is correct + intended) |
 
+### GDES (role 2) — VERDICT: SHIP — reported (adjudicates PHYS + own findings)
+
+Physics adjudication: **P1 DISCONFIRM the fix** — clean-swing variance is only ~1% (94.6–95.7m),
+not a leaderboard problem; do NOT seed a PRNG (robotic replays read as less alive); at most trim
+jitter band 0.98–1.02 or just correct the CLAUDE.md "deterministic" wording. **P2 CONFIRM the fix**
+but drop the floor to **0.35** (`power*=clamp(contactSpeed/6,0.35,1)`); it does NOT violate
+grades-never-lie (that's about HUD chips, not delivered power — same family as balF/coilF). **P3
+REFINE/low-ROI** (only ice-slides hit the 20s cap; at most tState>20→14). **P4 CONFIRM — DELETE**
+the dead punch branch (wiring it would contradict "closed palm whiffs, doesn't foul").
+
+GDES own findings:
+| # | Sev | Finding | Disposition |
+|---|-----|---------|-------------|
+| G-B1 | MAJOR | The entire finished campaign is dark (`CAMPAIGN_LIVE=false`) — 20 challenges/cutscenes/7 bosses, the biggest retention hole, fix already in repo | FLAG (director call) — improve campaign this run; recommend shipping as "STORY (BETA)"; do not auto-flip |
+| G-B2 | MAJOR | Roster identity collapses at skill ceiling — speed cap 34 makes Charlie×Slim≈Charlie×Hank (~95m) at flawless, so "featherweight flies farther" is false for experts | CONSIDER — add a low-mass `lightnessBonus` to the cap so featherweights genuinely out-fly (sim-verify vs 117m perimeter / 130 cap), OR make the copy honest |
+| G-B3 | MINOR/MAJ | cq + breath-timing near-invisible (±12% cq, no in-play teach) | PLANNED — widen cq to ±18%, pulse the target ring at breath extremes to teach it |
+| G-B4 | MINOR/MAJ | DLC is mild pay-for-ceiling on a SHARED board (Chuck 1.42/Earl 1.34 > free Roy 1.20; power multiplies the score cap) | FLAG (monetization/director call) — normalize strength out of the *global* board, or split boards, or sell DLC on joke not stat |
+| G-B5 | — | EMPEROR gating + 20/30/40/62/80m ladder well-placed | KEEP as-is |
+
+Expansion verdicts (ROI-ranked): **1. sandblast L-exam — BUILD** (lowest risk, completes S·L·A·P
+exam set). **2. boss ARENAS — BUILD** (presentation only, no rebalance; keep lane/perimeter byte-identical).
+**3. DESERT — BUILD-WITH-CHANGES** (tumbleweeds must be ambient/low-mass so they can't deflect a launch —
+luck injection fights "earned by technique"; consider a deterministic sand DRAG that *shortens* flights as
+the inverse of ice). **4. new cast — HOLD unless mechanic-linked** (roster already large; only add a
+mechanic-carrier like the sandblast desert boss or a distinct silhouette, not filler).
+
+**GDES single highest-leverage idea (fun + virality, keeps the charm):** a one-tap **"share your launch"
+auto-generated result IMAGE** (canvas card stamped with distance + volunteer + the ragdoll's arc) — the
+viral act IS "watch this person fly," but today the only shareable output is a text URL + a number. Turns
+every monster slap into self-contained social content. (Second lever: flip the campaign.)
+
+NOTE on GDES security flag: it reset `slapp_board` on its *localhost preview* origin (test data) — this is
+NOT the user's real board (that lives on the slapmania.org origin, in the user's own browser). No real state
+was destroyed.
+
+### CAMERA (role 8) — VERDICT: SHIP — reported
+
+Verified GOOD: flight tracking never loses the flyer; landing always shown before the card; SWING
+readability; SELECT_OPP framing; all cutscene ¾ shots match the speaker. Findings:
+
+| # | Sev | Finding | Disposition |
+|---|-----|---------|-------------|
+| C1 | MAJOR | FLIGHT cam trails diagonally (`main.js:927` `V(b.x-5, …, b.z+5.4)`) → sweeps the flat red barn + lane conifers occlude the flyer; short/heavy flyers spend their WHOLE arc in this messy zone | PLANNED — reframe down-lane w/ lead room: `p=V(b.x-6.5, max(2.8,b.y+1.4), b.z+3.0)`, look-target `l.x=b.x+3`. "Single most cinematic cheap win." |
+| C2 | MINOR | 30m cow-moo/kids + SLAPMASTER spirit summon fire behind the cam (audio-only; 40m duel + 20m smash ARE framed) | CONSIDER — optional 0.6s cut-back or spawn FX ahead |
+| C3 | MINOR/PLAUS | EMPEROR ascension may read as a tumble; cam cuts at ascendT=5 while body rises to ~6.3 | FLAG — needs human eyeball on a real emperor run; consider upright pose + extend window to 6.3 |
+| C4 | MINOR | TITLE hero buried behind the rules card (`main.js:905`) | PLANNED — offset orbit/card so slapper is beside not behind |
+| C5 | MINOR | SELECT_SLAPPER head grazes the instruction bubble (`main.js:894`) | PLANNED — drop look-target y 1.25→1.15 or pull cam back 0.3 |
+
 ## Improvements implemented
+
+### Batch 2 — mechanics (PHYS P2/P4, GDES-adjudicated) — DONE + verified
+- **P2 weave-graze taper:** `power *= clamp(speed/6, 0.35, 1)` in onContact — a slow cleanup graze that
+  sneaks past the 2.2 gate (e.g. catching a weave boss on the pop-up) no longer launches full power.
+  VERIFIED: normal expert swing contactSpeed 10.8 → ×1.0 (dist 95.3m, unchanged from baseline); no regression.
+- **P4 dead-code removal:** deleted the always-null `foulType`/`punch` branch (onContact only runs when
+  pUnlocked). Removed `&& !foulType` from greased/noSold (always true), `foul:foulType`→`foul:null`,
+  and the dangling `foulType||` in the sun-mood line. `node --check` clean, no console errors.
+- **P1/P3:** NOT implemented per GDES — P1 variance ~1% is fine (no PRNG seeding; correct the doc wording
+  later); P3 low-ROI. File: js/main.js.
 
 ### Batch 1 — UI/UX mobile blockers (UIUX U1/U2/U3/U4/U5) — DONE + verified
 - **U1+U2 BLOCKERs:** `.card{overflow-y:auto}` + mobile `#title,#match{justify-content:flex-start;
