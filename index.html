@@ -62,6 +62,13 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
   #tour{overflow-y:auto;justify-content:flex-start;padding-top:52px;}
 }
 
+/* ---- ref bar: the judge's remarks / slapper quips — LOW, never over the intro ---- */
+#refBar{position:absolute;bottom:158px;left:0;right:0;margin:0 auto;width:fit-content;max-width:88vw;
+  background:rgba(10,12,26,.78);border:2px solid rgba(255,210,63,.5);color:#ffe9a0;font-size:13px;
+  font-family:Arial,sans-serif;font-weight:bold;letter-spacing:.4px;padding:7px 14px;border-radius:9px;
+  text-align:center;z-index:30;}
+@media (max-width:560px){ #refBar{bottom:196px;font-size:11px;} }
+
 /* ---- challenge banner: a rival's gauntlet, pinned under the topbar ---- */
 #challengeBar{position:absolute;top:60px;left:0;right:0;margin:0 auto;width:fit-content;max-width:92vw;
   background:#2a1140;border:3px solid var(--yellow);color:#fff;font-size:13px;letter-spacing:1px;
@@ -330,6 +337,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
   </div>
   <div id="masterTag" class="hidden">★ SLAPMASTER ★</div>
   <div id="challengeBar" class="hidden"></div>
+  <div id="refBar" class="hidden"></div>
   <div id="distance" class="hidden"></div>
   <div id="banner" class="hidden"><div class="big"></div><div class="sub"></div></div>
   <div id="smack" class="hidden">

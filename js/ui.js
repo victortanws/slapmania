@@ -15,8 +15,16 @@ const el = {
   pickRow: $('pickRow'), pickHint: $('pickHint'), pickGo: $('pickGo'),
   globalWrap: $('globalWrap'), gboard: $('gboard'),
   nameInput: $('nameInput'), submitBtn: $('submitBtn'), netMsg: $('netMsg'),
-  challengeBar: $('challengeBar'),
+  challengeBar: $('challengeBar'), refBar: $('refBar'),
 };
+
+// low, non-blocking bar for the judge's remarks / slapper quips — the intro
+// name plate stays fully readable above it
+export function refBar(text) {
+  if (!text) { el.refBar.classList.add('hidden'); return; }
+  el.refBar.textContent = text;
+  el.refBar.classList.remove('hidden');
+}
 
 // a rival's gauntlet, pinned under the topbar for the whole session
 export function challengeBar(text) {

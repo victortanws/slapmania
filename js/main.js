@@ -348,6 +348,7 @@ function goToTitle() {
   ui.showDistance(null);
   ui.coach(null);
   ui.setAttempts(attempts, 0);
+  ui.refBar(null);
   dlg.stop();
   campaign.close();
   campaign.clearActive();
@@ -385,16 +386,23 @@ function openTourMenu() {
     ui.challengeBar(campaign.goalText());
     track('tour_challenge_started', { id: ch.id, title: ch.title });
     const arch = ch.opp ? ROSTER.find((r) => r.key === ch.opp) : null;
-    if (arch) { chosenArch = arch; startMatch(); }   // the challenge names its victim
-    else openOppPick();                              // "anybody" — player's choice
-    // story beats: a cutscene plays over the frozen faceoff, once per challenge
+    const launch = () => {
+      if (arch) { chosenArch = arch; startMatch(); }  // the challenge names its victim
+      else openOppPick();                             // "anybody" — player's choice
+    };
+    // story beats: every challenge opens with a scene, once (slapp_seen).
+    // Named opponents: launch first so their close-ups have a subject, scene
+    // plays over the frozen faceoff. "Anybody" scenes (player/wide shots only)
+    // play over the open farm, then hand off to the volunteer pick.
     const cine = campaign.CUTSCENES[ch.id];
     const seen = JSON.parse(localStorage.getItem('slapp_seen') || '[]');
-    if (cine && arch && !seen.includes(ch.id)) {
+    if (cine && !seen.includes(ch.id)) {
       seen.push(ch.id);
       localStorage.setItem('slapp_seen', JSON.stringify(seen));
-      dlg.play(cine.map((l) => (l.who === 'YOU' ? { ...l, who: player.look.name } : l)));
-    }
+      const lines = cine.map((l) => (l.who === 'YOU' ? { ...l, who: player.look.name } : l));
+      if (arch) { launch(); dlg.play(lines); }
+      else dlg.play(lines, launch);
+    } else launch();
   });
   track('tour_opened', { cleared: campaign.progress().length });
 }
@@ -453,11 +461,12 @@ function startAttempt() {
   ui.intro(arch);
   ui.bubble(arch.taunts[Math.floor(Math.random() * arch.taunts.length)]);
   // campaign matches are officiated — His Honor has remarks; in quick play the
-  // slapper gets the word instead (dialogue for EVERY character, every round)
-  if (campaign.active) ui.coach(`🎺 JUDGE PENNYWHISTLE: “${REF_LINES[refLineIdx++ % REF_LINES.length]}”`);
+  // slapper gets the word instead. Shown on the LOW ref bar so the volunteer's
+  // name plate stays readable.
+  if (campaign.active) ui.refBar(`🎺 JUDGE PENNYWHISTLE: “${REF_LINES[refLineIdx++ % REF_LINES.length]}”`);
   else {
     const q = QUIPS[player.look?.key];
-    if (q) ui.coach(`${player.look.name}: “${q[attempts.length % q.length]}”`);
+    if (q) ui.refBar(`${player.look.name}: “${q[attempts.length % q.length]}”`);
   }
   excite = Math.max(excite, 0.28); // the crowd greets the volunteer
   setState('FACEOFF');
@@ -611,6 +620,7 @@ function showResult() {
   }
   sfx.crowd(isFoul ? 0 : dist > 20 ? 3 : dist > 10 ? 2 : dist > 4 ? 1 : 0);
   ui.coach(null);
+  ui.refBar(null);
   ui.showDistance(null);
   ui.setAttempts(attempts, attempts.length);
   // the card waits: first the camera settles on WHERE he landed, then any

@@ -1654,9 +1654,12 @@ export function createStage(canvas) {
     angel.rotation.y = Math.PI; // they face each other
     devil.position.set(0, 0, -1.0);
     g.add(angel, devil);
-    g.position.set(x + 6, 4.6, 0);
+    // spawn well AHEAD of the flyer and big, so the chase camera flies THROUGH
+    // the duel instead of leaving it behind in a frame or two
+    g.position.set(x + 20, 5.4, -1.6);
+    g.scale.setScalar(1.9);
     scene.add(g);
-    fx.push({ mesh: g, t: 0, life: 5.2, type: 'duel', angel, devil, hits: 0 });
+    fx.push({ mesh: g, t: 0, life: 7, type: 'duel', angel, devil, hits: 0 });
   }
 
   // --- the ascension: a pillar of light and rising golden sparks ---

@@ -310,3 +310,13 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   close-up camera, world keeps breathing. Any key advances, Escape/SKIP ends.
 - **Pick dock** is one horizontally-scrollable row (roster can grow forever;
   the 3D preview stays visible).
+- **Campaign v2**: locked acts render SEALED (title + 🔒 only — no story or
+  challenge spoilers). Every challenge opens with a cutscene (all 20 in
+  `campaign.CUTSCENES`): named-opponent scenes launch the match first (opp
+  close-ups need the spawn), "anybody" scenes play over the open farm then hand
+  off to the pick — their shots must be player/wide only. Master Slee is a
+  disembodied spirit (👻 nameplate); BRUCE SLEE cameos in Scroll II/III as the
+  DLC tease. Judge/quip lines moved off the coach slot to `ui.refBar` (low
+  bottom bar) so the intro name plate stays readable. Slap-angel duel spawns
+  x+20 ahead, scaled 1.9, life 7s so the chase camera flies through it.
+  Orchard ground apples are intentional windfall fruit (scene.js fruitTree).
