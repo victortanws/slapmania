@@ -78,6 +78,7 @@ let submitted = false;
 // ---------- the kinetic chain: grade each link the moment it fires ----------
 let chain = null;
 let swingT = 0;
+let surgeFired = false; // CHUCK NORTH Second Wind: has the surge telegraph fired this attempt
 const prevKeys = { s: false, l: false, a: false, p: false };
 
 function resetChain() {
@@ -439,10 +440,14 @@ function openTourMenu() {
     // FIRST time prepends the prologue (Bruce and the master, and the technique
     // he died one percent short of). Named opponents launch first so their
     // close-ups have a subject; the scene plays over the frozen faceoff.
+    // pin the tour's star slapper (Charlie/Bruce/…) so the 'YOU' voice + avatar
+    // match the story; grants free campaign-use of a locked DLC slapper.
+    if (ch.slapper) { const s = SLAPPERS.find((x) => x.key === ch.slapper); if (s) setLook(s); }
     let lines = [];
-    if (ch.id[0] === 'a' && campaign.CUTSCENES.palm_prologue && !seenScene('palm_prologue')) {
-      markScene('palm_prologue');
-      lines.push(...campaign.CUTSCENES.palm_prologue);
+    const proKey = (ch.tourKey || '') + '_prologue';
+    if (campaign.CUTSCENES[proKey] && !seenScene(proKey)) {
+      markScene(proKey);
+      lines.push(...campaign.CUTSCENES[proKey]);
     }
     const cine = campaign.CUTSCENES[ch.id];
     if (cine && !seenScene(ch.id)) {
@@ -594,6 +599,11 @@ function onContact(hit) {
   // coilExam: the mainspring only trips on a nearly-full wind-up (S/coil exam)
   const unwound = !!(opponent.arch.coilExam && !ugly && coilFrac < opponent.arch.coilExam / 100);
   if (unwound) power *= 0.40;
+  // secondWind (CHUCK NORTH): mortal for the first `delay` seconds of the swing —
+  // strike in that quiet for full power. Once the crowd chants (tState past delay)
+  // he becomes a STORY: an 85%+ chain punches THROUGH (bonus), anything less is shrugged.
+  const sw = opponent.arch.secondWind;
+  if (sw && !ugly && tState >= sw.delay) power *= (chainPct >= sw.gate) ? sw.punch : sw.weak;
   // the cap scales with muscle: a perfect chain caps everyone, but the strong
   // cap HIGHER — strength genuinely moves tonnage instead of dying at 30
   power = Math.min(power, 30 * player.strength);
@@ -1016,6 +1026,7 @@ function tick(now) {
       // officiated (campaign) matches: the judge's whistle IS the shot clock —
       // one long blast at the exact frame the 10 seconds start running
       if (campaign.active) { sfx.whistle('start'); ui.coach(null); }
+      surgeFired = false; // reset Chuck's Second Wind telegraph for this attempt
       setState('SWING');
     }
   } else if (state === 'SWING') {
@@ -1023,6 +1034,15 @@ function tick(now) {
     swingT += dts;
     sfx.whoosh(player.handSpeed);
     ui.setMeters(player.lean);
+    // Chuck's Second Wind: the instant the 4-second quiet ends, the crowd chants
+    // and he surges — telegraphed by a banner, a crowd roar, and his red aura
+    const swArch = opponent.arch.secondWind;
+    if (swArch && !surgeFired && tState >= swArch.delay) {
+      surgeFired = true;
+      opponent.setSurge(true);
+      sfx.crowd(3);
+      ui.slapBurst('SECOND WIND!', `STRIKE WAS IN THE QUIET — NOW BRING A ${swArch.gate}% CHAIN`);
+    }
 
     // --- a fresh S press after a spent/misfired swing starts a clean slap ---
     if (!prevKeys.s && keys.s && (chain.tRel !== null || chain.l || chain.a || chain.p || chain.lPend !== undefined)) {

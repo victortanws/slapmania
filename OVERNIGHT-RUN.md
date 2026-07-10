@@ -257,6 +257,32 @@ CUT: SIDEWINDER SID (collides with TREMENDOUS DON). Defer: DUSTY DAN (2nd feathe
 (free reach-specialist slapper, power 0.85 — build only with slack). New flags inventory:
 snapExam, coilExam, robe→longSleeves, windKey, paintedGrin, redNose, (dojo, strawTufts optional).
 
+### REWARDS & MILESTONE designer (role 11) — redesign — reported (ready-spec)
+
+Collaborates with CAMERA C2 + GDES B2/B5. Core principle: **a reward must be SEEN where the player is
+looking** (the reframed FLIGHT cam looks down-lane `b.x+3`; RESULT cam looks down at the body). So mid-flight
+rewards must spawn AT/AHEAD of the flyer (`b.x…b.x+25`), landing rewards at the LANDING SITE with a cam.
+- **Mid-flight vs final POLICY (director's Q):** keep the SPLIT — journey beats (20/30/40/80) fire mid-flight
+  as spectacle; identity ceremonies (SLAPMASTER 62, EMPEROR 85, +new LEGEND 100) fire at landing (you want to
+  SEE where the body lands before being told). Do NOT move to end-only; the bug is STAGING, not timing.
+- **Thresholds:** KEEP all six (20/30/40/62/80/85 — GDES-B5 well-placed); ADD one apex ~100m; optional 52m filler.
+- **C2 staging fixes (ranked build):** (1) **62m SLAPMASTER** — spawn spirits lower + arcing DOWN into the
+  landing (start `pelX+10,y9`, `v.y≈−0.6`) + a 2.8s ceremony cam (`b.x−7,y5.5` look `b.x,y3.5` tilt up) so body
+  + spirits share frame. (2) **30m** — relocate the moo to a LANE-SIDE cow at ~`(START_X+34, z−7)` that hops as
+  the flyer sails over (+dust puffs at `pelX+6`), so the moo has an on-screen cause. (3) **80m** — add a
+  lane-ahead "NOW LEAVING SLAPP COUNTY" signpost glint/flock-scatter at `pelX+15`.
+- **APEX — "SLAP LEGEND" ~100m** (fires at landing, `dist>100 && !isFoul`, no chain gate = 100m self-gates):
+  golden ground shockwave + beam + confetti at the LANDING site + the always-on Ferris wheel flares in salute;
+  `sfx.fanfare+choir+crowd(3)`; new `localStorage.slapp_legend`, `cardDelay 4.5`. Fills the dead 85→117m
+  stretch, rewards ice/featherweight, answers GDES-B2 (gives experts a reason past the ~95m plateau).
+- **Per-world:** thresholds IDENTICAL (distance = the shared-board equalizer; "the number means the number");
+  reskin the FLAVOR per world (night=aurora, ice=snow-angel vs ice-imp + aurora spirits, desert=dust-djinn vs
+  scarecrow-saint + mirage). CAVEAT: if `lightnessBonus`(B2)+ice push flights past the 117m perimeter/130 cap,
+  add a per-world distance clamp; the ladder stays fixed, the CAP is what may need a guard.
+- Files: main.js (milestone block ~1105, showResult ~688, FLIGHT/RESULT cam ~931), scene.js (summonSpirits,
+  slapDuel, cowMoo, balloon/Ferris, + new legendCeremony + lane-side cow). Build order: 62m cam → 30m cow →
+  100m LEGEND → 80m flourish → per-world flavor → (defer 52m).
+
 ## Improvements implemented
 
 ### ROAST PASS (role 7) — VERDICT: SHIP-READY — done + fixes applied
@@ -271,6 +297,29 @@ on flawless / fire on imperfect, scenes add no colliders. 4 MINORs — dispositi
 - **M4 ANNOTATED** — Master Mantis `arena:'dojo'` is inert until the ARENA system ships; added a comment.
 - **M2 ACCEPTED** — Greased Pete sheen is front-facing (the side the in-match camera sees); fine.
 Branch is merge-ready for the 6 batches.
+
+### Batch 7 — two new campaigns + Chuck North + the Second Wind mechanic — DONE + verified
+Built from the comedy designer's specs (original parody, no real-person depiction — Charlie is our own
+deadpan documentary character).
+- **"THE WONDERS OF SLAPPING"** (key `wonders`, pins SLAPPIN' CHARLIE): a prestige nature documentary
+  where Charlie narrates slaps in flat monotone as "specimens" while 🎬 Director Vane melts down. 3 reels ×
+  3 challenges, causally tight (leak→virality→Influencer inserts herself→specimens critique back). Uses the
+  two new bosses (Tom REEL II, Mantis REEL III). Full cutscenes + FAILS.
+- **"THE SECOND WIND"** (key `secondwind`, pins BRUCE SLEE — free campaign use of the locked DLC): Bruce
+  climbs to final boss CHUCK NORTH. 3 acts; Act II unmakes Chuck's three legends (Dale/Grease/Iron-Jaw);
+  Act III ends in the empowered round. Full cutscenes + FAILS.
+- **NEW boss CHUCK NORTH** (`chucknorth`, boss): broad frontier legend (green shirt, auburn `beard`, `brawn`
+  torso). New look flags: `beard:<hex>` (colorized/fuller beard), `brawn` (torso ×1.2), `redAura` (surge ring).
+- **NEW mechanic `secondWind`** (`{delay:4,gate:85,weak:0.35,punch:1.15}`): Chuck is MORTAL for the first
+  4s of the swing (`tState<delay` → full power); once the crowd chants (past 4s) he SURGES — an 85%+ chain
+  punches through (×1.15 BONUS), anything less is shrugged (×0.35). Deterministic, telegraphed (banner +
+  crowd roar + red aura ring), pre-taught 3 acts deep. VERIFIED: aura OFF at start, a quiet swing (<4s) flew
+  53.8m at full power (no false-trigger); surge fires + aura on only when you dawdle past 4s.
+- **Infra:** each tour gets a `slapper:` pin (forces the avatar via setLook — grants free DLC campaign use);
+  challenges stamped with `slapper`/`tourKey`; the prologue prepend generalized (`<tourKey>_prologue`).
+- VERIFIED: all 4 tours appear in the menu; Charlie/Bruce pin correctly; Director Vane prologue + b3c3 launch
+  render in the cine letterbox; Chuck spawns with secondWind; zero console errors; node --check clean.
+  Files: js/campaign.js, js/opponent.js, js/main.js. (Campaign still CAMPAIGN_LIVE=false → ?tour=1 only.)
 
 ### Batch 6 — always-on fair scenes (ARENA) — DONE + verified
 - **Fairground Ferris wheel** (behind the treeline at (15,6.4,−31)): red rim + 8 evenly-spaced colored

@@ -190,6 +190,16 @@ export const ROSTER = [
     pickLine: 'Wind him ALL the way, or the mainspring never trips.',
     taunts: ['Tick... tick... not yet.', 'Half a wind is no wind at all.'],
   },
+  {
+    key: 'chucknorth', name: 'CHUCK NORTH', tag: 'BOSS · THE SECOND WIND', boss: true,
+    w: 1.25, h: 1.10, mass: 1.5, noStache: true,
+    // a broad frontier legend: auburn full beard, powers up mid-match ("the crowd chants")
+    skin: 0xd6a878, shirt: 0x3a5a3f, pants: 0x2f3b2f,
+    beard: 0x8a5522, brawn: true, redAura: true,
+    secondWind: { delay: 4.0, gate: 85, weak: 0.35, punch: 1.15 },
+    pickLine: "Never been slapped. Not once. Ask the tornado — it'll tell you the same.",
+    taunts: ['I once counted to infinity. Twice.', "Four seconds of quiet, son. You won't take 'em.", 'This beard has its own zip code.'],
+  },
 ];
 
 // every volunteer speaks with their own voice, and has enough lines that
@@ -617,11 +627,25 @@ export class Opponent {
       blade.castShadow = true;
       P.torso.mesh.add(blade);
     }
-    if (arch.whiteBeard) {
-      const beard = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.12, 0.11), toonMat(0xe8e2d5));
-      beard.position.set(-0.13 * hr, -0.12 * hr, 0);
+    if (arch.whiteBeard || arch.beard) {
+      // a chin beard — wispy white sage by default, or a fuller colored beard for arch.beard
+      const full = !!arch.beard;
+      const beard = new THREE.Mesh(new THREE.BoxGeometry(0.06, full ? 0.17 : 0.12, full ? 0.15 : 0.11), toonMat(arch.beard || 0xe8e2d5));
+      beard.position.set(-0.135 * hr, (full ? -0.15 : -0.12) * hr, 0);
       beard.scale.setScalar(hr);
+      beard.castShadow = true;
       head.add(beard);
+    }
+    if (arch.brawn) { P.torso.mesh.scale.x = 1.2; P.torso.mesh.scale.z = 1.2; } // broad frontier-legend build
+    if (arch.redAura) {
+      // a red power-up ring at the feet — hidden until secondWind surges (setSurge)
+      const aura = this.auraRing = new THREE.Mesh(
+        new THREE.RingGeometry(0.5, 0.85, 22),
+        new THREE.MeshBasicMaterial({ color: 0xff2a1a, transparent: true, opacity: 0.55, side: THREE.DoubleSide }));
+      aura.rotation.x = -Math.PI / 2;
+      aura.position.y = -0.92;
+      aura.visible = false;
+      P.pelvis.mesh.add(aura);
     }
 
     // red handprint decal, revealed on impact
@@ -792,6 +816,7 @@ export class Opponent {
     this.hatMesh.quaternion.copy(this.hatBody.quaternion);
   }
 
+  setSurge(on) { if (this.auraRing) this.auraRing.visible = on; } // Chuck's Second Wind power-up glow
   headPos() { return new THREE.Vector3().copy(this.rag.parts.head.body.position); }
   torsoPos() { return new THREE.Vector3().copy(this.rag.parts.torso.body.position); }
   pelvisPos() { return new THREE.Vector3().copy(this.rag.parts.pelvis.body.position); }

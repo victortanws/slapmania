@@ -83,6 +83,74 @@ export const TOURS = [
       },
     ],
   },
+  {
+    key: 'wonders', title: '🎥 THE WONDERS OF SLAPPING',
+    slapper: 'charlie', // pin the deadpan narrator — the 'YOU' cutscene voice depends on it
+    blurb: 'A nature documentary about the palm. The narrator will not, under any circumstances, emote.',
+    acts: [
+      {
+        act: 'REEL I — FIELD NOTES',
+        story: 'The Institute of Applied Palmistry wants a documentary. They hired you because your slap is "reproducible under laboratory conditions" and your voice makes violence sound like weather. Roll camera.',
+        challenges: [
+          { id: 'w1c1', title: 'SPECIMEN 001 — THE COMMON CHEEK', desc: 'A clean head slap on HAYSEED HANK — establish the baseline', opp: 'hank', goal: { type: 'head' } },
+          { id: 'w1c2', title: 'ESCAPE BEHAVIOR', desc: 'Send SLIM PETE 22m — document the featherweight in flight', opp: 'slim', goal: { type: 'dist', v: 22 } },
+          { id: 'w1c3', title: 'THE ELDER SPECIMEN', desc: 'Post GRANDPA CLETUS 28m — the weathered, unbothered variety', opp: 'cletus', goal: { type: 'dist', v: 28 } },
+        ],
+      },
+      {
+        act: 'REEL II — THE COLLECTION GROWS',
+        story: 'The tape leaked. Forty million views. The Institute wants rarer specimens, the Influencer has invited herself into frame, and Director Vane has begun to weep and demand an Academy Award.',
+        challenges: [
+          { id: 'w2c1', title: 'MEGAFAUNA', desc: 'Score 480 off BIG BERTHA — when the large specimen moves, the ground reports it', opp: 'bertha', goal: { type: 'pts', v: 480 } },
+          { id: 'w2c2', title: 'INVASIVE SPECIES', desc: 'Relocate THE INFLUENCER 55m — drawn to the lens, must be moved downrange', opp: 'influencer', goal: { type: 'dist', v: 55 } },
+          { id: 'w2c3', title: '☗ BOSS: THE CLOCKWORK SPECIMEN', desc: 'Score 450 off TICK-TOCK TOM — first wind the coil past 85%, then move him', opp: 'clockwork', goal: { type: 'pts', v: 450 } },
+        ],
+      },
+      {
+        act: 'REEL III — THE OBSERVED OBSERVE BACK',
+        story: 'The specimens have seen the film. They critique your form now. They perform for the lens. And one of them narrates back.',
+        challenges: [
+          { id: 'w3c1', title: 'PEER REVIEW', desc: 'A 90% chain before MAESTRO FORTISSIMO — the specimen grades the observer', opp: 'maestro', goal: { type: 'chain', v: 90 } },
+          { id: 'w3c2', title: 'TERMINAL VELOCITY', desc: 'Send SLIM PETE 88m — the featherweight achieves escape velocity on camera', opp: 'slim', goal: { type: 'dist', v: 88 } },
+          { id: 'w3c3', title: '☗ BOSS: THE DEADPAN', desc: 'Slap MASTER MANTIS 55m — only a true SNAP lands; a lazy arm is just narration', opp: 'mantis', goal: { type: 'dist', v: 55 } },
+        ],
+      },
+    ],
+  },
+  {
+    key: 'secondwind', title: '🐉 THE SECOND WIND',
+    slapper: 'bruceslee', // pin Bruce (grants free campaign-use of the locked DLC); martial 'YOU' voice
+    blurb: 'Bruce Slee climbs to the one slap the county calls a myth. Chuck North has never been slapped. Strike in the quiet — before the legend hardens.',
+    acts: [
+      {
+        act: 'ACT I — THE TRAILHEAD',
+        story: "A stranger finished your grandfather's Fourth Form while you watched. To prove the palm is a living art and not an heirloom, you set out for the one man no hand has touched. First: earn the road.",
+        challenges: [
+          { id: 'b1c1', title: 'THE EMPTY HAND', desc: 'A clean head slap on HAYSEED HANK — no want, no fear', opp: 'hank', goal: { type: 'head' } },
+          { id: 'b1c2', title: 'BECOME WATER', desc: 'Send SLIM PETE 25m — do not push the river; become it', opp: 'slim', goal: { type: 'dist', v: 25 } },
+          { id: 'b1c3', title: '☗ BOSS: THE MOUNTAIN AT THE GATE', desc: 'Score 420 off BOULDER BOB — he does not move for the unready', opp: 'boulder', goal: { type: 'pts', v: 420 } },
+        ],
+      },
+      {
+        act: 'ACT II — THE THREE FACETS OF THE LEGEND',
+        story: "Chuck's myth has three faces, and each one is a real disciple guarding the road. Unmake them, and you learn the truth: his power was never muscle. It is belief — and in this county, belief is a force with weight.",
+        challenges: [
+          { id: 'b2c1', title: '"HE CANNOT BE CAUGHT"', desc: 'Slap DODGY DALE 45m — a slip has a rhythm, and a rhythm is a promise', opp: 'dale', goal: { type: 'dist', v: 45 } },
+          { id: 'b2c2', title: '"HE CANNOT BE GRIPPED"', desc: 'Send GREASED PETE 40m — arrive so perfectly the grease has nothing to refuse', opp: 'grease', goal: { type: 'dist', v: 40 } },
+          { id: 'b2c3', title: '☗ BOSS: "HE CANNOT BE MOVED"', desc: 'Move IRON-JAW McGRAW 30m — below 70% chain he grants you nothing', opp: 'ironjaw', goal: { type: 'dist', v: 30 } },
+        ],
+      },
+      {
+        act: 'ACT III — THE PORCH',
+        story: 'No more gatekeepers. Only the long road up, the thin air, one certified sign-in sheet, and the man inside the mountain — who is about to hear his crowd start to chant.',
+        challenges: [
+          { id: 'b3c1', title: 'THE LONG ROAD UP', desc: 'Send HAYSEED HANK 80m — pure form, no tricks, one long exhale', opp: 'hank', goal: { type: 'dist', v: 80 } },
+          { id: 'b3c2', title: 'CERTIFIED', desc: "A 90% chain before SCHOOLMARM SUSIE — Chuck's porch has a sign-in sheet", opp: 'susie', goal: { type: 'chain', v: 90 } },
+          { id: 'b3c3', title: '☗ FINAL BOSS: THE SECOND WIND', desc: 'Slap CHUCK NORTH 55m — strike in the 4-second quiet, or answer his surge with an 85% chain', opp: 'chucknorth', goal: { type: 'dist', v: 55 } },
+        ],
+      },
+    ],
+  },
 ];
 
 // ---- cutscenes: { who, text, shot } — shots: player | opp | spirit | judge | wide.
@@ -213,10 +281,132 @@ export const CUTSCENES = {
     { who: 'YOU', text: 'And the fair?', shot: 'player' },
     { who: 'JUDGE PENNYWHISTLE', text: 'The fair stands. Parking Structure Seven shall be built as a birdhouse. Case dismissed.', shot: 'judge' },
   ],
+
+  // ===== THE WONDERS OF SLAPPING (Charlie, deadpan documentary) =====
+  wonders_prologue: [
+    { who: '🎬 DIRECTOR VANE', text: 'The Institute greenlit a documentary. On the palm. Prestige. Awards. I need a narrator with gravitas — a voice that makes a grown man flying two hundred feet feel like a tide chart.', shot: 'wide' },
+    { who: 'YOU', text: 'I slap people. I describe it while it happens. Is that the job.', shot: 'player' },
+    { who: '🎬 DIRECTOR VANE', text: 'That — yes. That is precisely the job. One thing. Can you sound moved? Ever? Even by accident?', shot: 'wide' },
+    { who: 'YOU', text: 'No.', shot: 'player' },
+    { who: '🎬 DIRECTOR VANE', text: '...God help me, that is perfect. Roll camera.', shot: 'wide' },
+  ],
+  w1c1: [
+    { who: 'YOU', text: 'Specimen one. The common cheek. Note the trusting posture — the fair-day slouch, the unguarded jaw. It does not yet know it is a specimen.', shot: 'player' },
+    { who: 'HAYSEED HANK', text: "I can hear you. You're standing two feet from me.", shot: 'opp' },
+    { who: 'YOU', text: 'The specimen vocalizes when approached. Fascinating. We proceed.', shot: 'player' },
+  ],
+  w1c2: [
+    { who: '🎬 DIRECTOR VANE', text: "This one's all elbows. Is it dramatic? Tell me it's dramatic, Charlie, I need one dramatic frame.", shot: 'wide' },
+    { who: 'YOU', text: 'Observe the featherweight. Hollow-boned. Built to travel. There is nothing dramatic in it. It simply goes.', shot: 'player' },
+    { who: 'SLIM PETE', text: "I'm RIGHT here, man.", shot: 'opp' },
+    { who: 'YOU', text: 'And shortly, he will be there. Twenty-two meters there.', shot: 'player' },
+  ],
+  w1c3: [
+    { who: 'GRANDPA CLETUS', text: "Sonny, I been slapped at three counties. You narrate every one of 'em in that voice?", shot: 'opp' },
+    { who: 'YOU', text: 'The elder specimen. Weathered. Unbothered. In this one respect, he and I are the same animal.', shot: 'player' },
+    { who: 'GRANDPA CLETUS', text: "...huh. Fair enough. Twenty-eight meters, and mind the suspenders, they're my good pair.", shot: 'opp' },
+  ],
+  w2c1: [
+    { who: '🎬 DIRECTOR VANE', text: 'The tape LEAKED. Forty million views. They call you "the calmest man alive" and I HATE how well it tests. Now — megafauna. And Charlie: feel something.', shot: 'wide' },
+    { who: 'YOU', text: 'Note the mass. When a specimen of this magnitude relocates, the county registers it underfoot. This is not excitement. It is seismology.', shot: 'player' },
+    { who: 'BIG BERTHA', text: 'You want the ground to feel somethin, sugar? Then swing like you MEAN it.', shot: 'opp' },
+  ],
+  w2c2: [
+    { who: 'THE INFLUENCER', text: "Okay so your little documentary is trending and I cannot — CANNOT — let a slapping tape out-clip me. I'm inserting myself into the ecosystem.", shot: 'opp' },
+    { who: 'YOU', text: 'An invasive species arrives. Loud. Reflective. Drawn to the lens. Standard protocol is relocation. Fifty-five meters, minimum.', shot: 'player' },
+    { who: 'THE INFLUENCER', text: 'Relocate me somewhere with GOOD lighting, bestie.', shot: 'opp' },
+  ],
+  w2c3: [
+    { who: '🎬 DIRECTOR VANE', text: 'The Institute loaned us their crown specimen. It is a — it is a wind-up man, Charlie. This is my Oscar. Look at it and FEEL a human feeling.', shot: 'wide' },
+    { who: 'TICK-TOCK TOM', text: 'I have not run down since 1911. Wind me fully, then move me. If you can wind.', shot: 'opp' },
+    { who: 'YOU', text: 'A mechanical specimen. It does not breathe; it ticks. To move it, one must first wind the coil past its stop. I find I respect it. This is not emotion. It is data.', shot: 'player' },
+  ],
+  w3c1: [
+    { who: 'MAESTRO FORTISSIMO', text: 'I watched your film. Forty million people, and not ONE of them heard the flat swivel in Reel One. I heard it. Ninety percent, narrator, or I walk out of my own documentary.', shot: 'opp' },
+    { who: 'YOU', text: 'The specimen has learned to critique the observer. Note the reversal — rare, and slightly rude. I will grant it a ninety-percent chain. For science. Not for the review.', shot: 'player' },
+  ],
+  w3c2: [
+    { who: '🎬 DIRECTOR VANE', text: 'Series finale. I need a MIRACLE. The featherweight, terminal velocity, county line. Give me the ending — and Charlie, this once, for the Academy: cry.', shot: 'wide' },
+    { who: 'YOU', text: 'Released at the correct angle, the featherweight reaches what the ancients called escape velocity. Eighty-eight meters. Observe closely. I will not be crying.', shot: 'player' },
+    { who: 'SLIM PETE', text: "Third documentary I'm in. Still no residuals.", shot: 'opp' },
+  ],
+  w3c3: [
+    { who: 'MASTER MANTIS', text: 'You narrate the palm as if it were a beetle. I have narrated MEN as if they were weather. Let us learn whose voice stays flat when the other cracks the air.', shot: 'opp' },
+    { who: 'YOU', text: 'A rival deadpan. He believes the study concludes when one of us blinks. For the record: I do not blink. And the whip must be a true snap, or the air will not carry me.', shot: 'player' },
+    { who: 'MASTER MANTIS', text: 'Then observe closely, biologist. Only a genuine SNAP moves a master. A lazy arm is not a slap. It is merely... narration.', shot: 'opp' },
+  ],
+  outro_w3c3: [
+    { who: '🎬 DIRECTOR VANE', text: "That's a wrap. Fifty million views. Critics are calling it 'the most disturbing calm ever committed to film.' You could have cried ONE time.", shot: 'wide' },
+    { who: 'YOU', text: 'In conclusion: the palm is neither cruel nor kind. It coils, it travels, it lands, it rests. The Field Guide is complete.', shot: 'player' },
+    { who: 'MASTER MANTIS', text: '...you truly felt nothing? The entire study?', shot: 'opp' },
+    { who: 'YOU', text: 'I felt the follow-through. In my shoulder. It was pleasant. Roll credits.', shot: 'player' },
+  ],
+
+  // ===== THE SECOND WIND (Bruce → final boss Chuck North) =====
+  secondwind_prologue: [
+    { who: '👻 MASTER SLEE', text: 'Grandson. A stranger finished my Fourth Form while you watched from the doorway. I saw the question it left in you. Ask it aloud.', shot: 'spirit' },
+    { who: 'YOU', text: 'If a stranger can finish your form, grandfather, then the art is not an inheritance. It is alive. It belongs to whoever is present enough to hold it. I will prove this — against the one slap no one believes is real.', shot: 'player' },
+    { who: '👻 MASTER SLEE', text: 'Chuck North. Never been slapped — not because he is untouchable, but because every challenger waits too long, and this county\'s tall tales wind him tighter than any coil.', shot: 'spirit' },
+    { who: '👻 MASTER SLEE', text: 'Hear me, boy. Strike in the QUIET. The instant the crowd begins to chant, he stops being a man and becomes a story. And stories do not fall.', shot: 'spirit' },
+    { who: 'YOU', text: 'Then I will become present enough to strike in the silence — one honest breath before belief becomes muscle. Show me the road.', shot: 'player' },
+  ],
+  b1c1: [
+    { who: '👻 MASTER SLEE', text: 'Before the mountain, the pebble. Hank\'s cheek is honest. Meet it with an empty hand — no want, no fear, no borrowed force.', shot: 'spirit' },
+    { who: 'HAYSEED HANK', text: "I've been the honest pebble in THREE separate legends now. Somebody in this county owes me a raise.", shot: 'opp' },
+    { who: 'YOU', text: 'There is no empty in the empty hand, honest one. There is only the hand, and the willingness. Hold still.', shot: 'player' },
+  ],
+  b1c2: [
+    { who: 'YOU', text: 'Water does not push the river. It becomes the river. Watch the featherweight learn this — twenty-five meters downstream.', shot: 'player' },
+    { who: 'SLIM PETE', text: 'Every philosopher in this county practices on ME specifically.', shot: 'opp' },
+    { who: 'YOU', text: 'Because you, alone among them, understand flight.', shot: 'player' },
+  ],
+  b1c3: [
+    { who: '👻 MASTER SLEE', text: 'The mountain at the trailhead. Bob has guarded this ground since before the fence. He does not move for the unready — do not ask him to.', shot: 'spirit' },
+    { who: 'BOULDER BOB', text: 'Many earnest young men have monologued at me. The lichen finds them relaxing.', shot: 'opp' },
+    { who: 'YOU', text: 'I do not ask you to move, mountain. I ask the weight in you to remember it was once a stone that rolled. Remember it four hundred and twenty times.', shot: 'player' },
+  ],
+  b2c1: [
+    { who: '👻 MASTER SLEE', text: 'Chuck\'s first legend: "He cannot be caught." Dale is where that story lives. Catch the uncatchable, and one third of the myth unravels.', shot: 'spirit' },
+    { who: 'DODGY DALE', text: 'I taught Chuck the slip. Or he taught me — the story changes at every fair. Four hundred palms, zero landings. I keep the tears in a jar.', shot: 'opp' },
+    { who: 'YOU', text: 'A slip has a rhythm. A rhythm is a promise. I will meet you at the honest word of it — forty-five meters.', shot: 'player' },
+  ],
+  b2c2: [
+    { who: '👻 MASTER SLEE', text: 'Second legend: "He slides through any grip." Pete carries that story in nine years of pig-grease. Only a true palm holds — a perfect one, or none.', shot: 'spirit' },
+    { who: 'GREASED PETE', text: "You can't grip a legend, kid. You can't grip me either. Same physics.", shot: 'opp' },
+    { who: 'YOU', text: 'I do not wish to hold you. I wish to ARRIVE so completely, so perfectly, that the grease has nothing left to refuse. Forty meters, on an open palm.', shot: 'player' },
+  ],
+  b2c3: [
+    { who: '👻 MASTER SLEE', text: 'The last facet: "He never budges." McGraw is Chuck\'s stubbornness, cast in iron. Below seventy percent he will not grant you so much as a blink.', shot: 'spirit' },
+    { who: 'IRON-JAW McGRAW', text: "Move me and you've moved the mountain's opinion of you. Seventy percent. Show the form, or don't waste the wind.", shot: 'opp' },
+    { who: 'YOU', text: 'Form is not decoration, iron man. Form is the whole sentence. I will speak it clearly — and you will feel thirty meters of it.', shot: 'player' },
+  ],
+  b3c1: [
+    { who: '👻 MASTER SLEE', text: 'No gatekeepers now. Only the long road, the thin air, and your own honesty. Send Hank to the county line — pure form, no tricks.', shot: 'spirit' },
+    { who: 'HAYSEED HANK', text: 'Eighty meters. From a man who talks like a folded-up fortune. And somehow I believe him.', shot: 'opp' },
+    { who: 'YOU', text: 'The road up is the same as the road in. Breathe. Coil. Become present. Eighty meters is only a long exhale.', shot: 'player' },
+  ],
+  b3c2: [
+    { who: 'SCHOOLMARM SUSIE', text: "Chuck's porch has a sign-in sheet, and I am the sign-in sheet. Ninety percent, in red ink, or you do not pass. I have never once passed anyone.", shot: 'opp' },
+    { who: 'YOU', text: 'Then let me be the first sentence you cannot correct. Every link, in tune. Grade me.', shot: 'player' },
+    { who: 'SCHOOLMARM SUSIE', text: '...show your work, dragon.', shot: 'opp' },
+  ],
+  b3c3: [
+    { who: '👻 MASTER SLEE', text: "There he is. Say nothing you don't mean — he can smell a borrowed word. And boy — strike in the QUIET. The moment they start to chant, he is no longer a man.", shot: 'spirit' },
+    { who: 'CHUCK NORTH', text: 'I once slapped a tornado. It apologized and went home. I once counted to infinity — twice. Nobody\'s laid a hand on me, son, because nobody\'s fast enough to beat the crowd.', shot: 'opp' },
+    { who: 'YOU', text: 'I did not climb this mountain to slap a legend. I climbed it to slap the MAN inside it — before your county finishes building you. There is a quiet before the roar. I will live there.', shot: 'player' },
+    { who: 'CHUCK NORTH', text: 'Four seconds of quiet, boy. Then they believe out loud, and I catch my second wind. Been forty years since anybody swung in the quiet.', shot: 'opp' },
+  ],
+  outro_b3c3: [
+    { who: 'CHUCK NORTH', text: '...huh. You swung in the quiet. Forty years, and the boy swung in the quiet.', shot: 'opp' },
+    { who: '👻 MASTER SLEE', text: 'You struck before the legend hardened. THAT is the whole art, grandson. Not the arm. The moment.', shot: 'spirit' },
+    { who: 'YOU', text: 'The palm was never yours to leave me, grandfather. It was only ever the willingness to be here — one honest second before the noise. Chuck. Get up. The county still needs its story. Just a truer one.', shot: 'player' },
+    { who: 'CHUCK NORTH', text: "A truer story. I like that. I'll allow that the tornado only sprained an ankle.", shot: 'opp' },
+  ],
 };
 
 // failure beats — short, replayable, a little cruel. Keyed by tour prefix
-// ('a' = Palm, 'f' = Fair); rotated so repeated failure stays fresh-ish.
+// ('a' = Palm, 'f' = Fair, 'w' = Wonders, 'b' = Second Wind); rotated so
+// repeated failure stays fresh-ish.
 export const FAILS = {
   a: [
     [{ who: '👻 MASTER SLEE', text: 'We do not speak of that swing. Again.', shot: 'spirit' },
@@ -230,7 +420,26 @@ export const FAILS = {
     [{ who: 'JUDGE PENNYWHISTLE', text: 'I have officiated pie-eating contests with more menace in them. Again, champ.', shot: 'judge' },
      { who: 'YOU', text: 'The fair deserves better. One more swing.', shot: 'player' }],
   ],
+  w: [
+    [{ who: 'YOU', text: 'The specimen remains where it began. My hypothesis was incorrect. We re-run the experiment.', shot: 'player' },
+     { who: '🎬 DIRECTOR VANE', text: 'That was the TAKE? Do it again, and this time — a FEELING, Charlie, ONE feeling.', shot: 'wide' }],
+    [{ who: '🎬 DIRECTOR VANE', text: 'Cut. CUT. That is not documentary footage, that is a blooper.', shot: 'wide' },
+     { who: 'YOU', text: 'The palm missed. I noted it. My tone is unchanged. Again.', shot: 'player' }],
+  ],
+  b: [
+    [{ who: '👻 MASTER SLEE', text: 'You waited. I felt the crowd inhale before your hand moved. Again — in the quiet.', shot: 'spirit' },
+     { who: 'YOU', text: 'I heard the roar before I chose it. Next breath, I move first.', shot: 'player' }],
+    [{ who: 'YOU', text: 'The legend hardened faster than my hand. I was present a half-second late.', shot: 'player' },
+     { who: '👻 MASTER SLEE', text: 'A half-second is the whole mountain, boy. Again.', shot: 'spirit' }],
+  ],
 };
+
+// stamp each challenge with its tour's pinned slapper + tour key so the match
+// launcher can force the avatar and prepend the right prologue (see main.js).
+TOURS.forEach((tour) => tour.acts.forEach((act) => act.challenges.forEach((c) => {
+  c.slapper = tour.slapper || null;
+  c.tourKey = tour.key;
+})));
 
 export const enabled = () =>
   CAMPAIGN_LIVE || new URLSearchParams(location.search).get('tour') === '1';
