@@ -20,8 +20,10 @@ export const TOUR = [
   {
     act: 'ACT II — THE HEAVYWEIGHT INVITATIONAL',
     challenges: [
-      { id: 'a2c1', title: 'BIG GAME HUNTER', desc: 'Score 700 points with one slap', opp: null, goal: { type: 'pts', v: 700 } },
-      { id: 'a2c2', title: 'BUDGE THE MOUNTAIN', desc: 'Move BIG HOSS 22m', opp: 'hoss', goal: { type: 'dist', v: 22 } },
+      // tier-calibrated (skill sims 07-10): 600 pts ≈ 1-in-3 attempts at GOOD
+      // skill vs a heavyweight — about one clear per match. 700 was 1-in-6.
+      { id: 'a2c1', title: 'BIG GAME HUNTER', desc: 'Score 600 points with one slap — the heavies pay best', opp: null, goal: { type: 'pts', v: 600 } },
+      { id: 'a2c2', title: 'BUDGE THE MOUNTAIN', desc: 'Move BIG HOSS 22m — bring the muscle', opp: 'hoss', goal: { type: 'dist', v: 22 } },
       { id: 'a2c3', title: '☗ BOSS: THE IMMOVABLE OBJECT', desc: '500 points off BOULDER BOB', opp: 'boulder', goal: { type: 'pts', v: 500 } },
     ],
   },
@@ -29,7 +31,10 @@ export const TOUR = [
     act: 'ACT III — THE CHAMPIONSHIP',
     challenges: [
       { id: 'a3c1', title: 'FLAWLESS FORM', desc: 'Land a slap with a 90% chain', opp: null, goal: { type: 'chain', v: 90 } },
-      { id: 'a3c2', title: 'COUNTY LINE EXPRESS', desc: 'Send anybody 80m', opp: null, goal: { type: 'dist', v: 80 } },
+      // 80m-vs-anybody fell at GOOD tier 6/6 via SLIM PETE (matchup knowledge,
+      // not execution — flights saturate at the ~95m forest cap). A named
+      // MIDDLEWEIGHT makes it pure form: expert-median 65m, max 82m vs Hank.
+      { id: 'a3c2', title: 'COUNTY LINE EXPRESS', desc: 'Send HAYSEED HANK 75m — no featherweights, pure form', opp: 'hank', goal: { type: 'dist', v: 75 } },
       { id: 'a3c3', title: '☗ BOSS: CATCH THE UNCATCHABLE', desc: 'Slap DODGY DALE 60m — time the sway', opp: 'dale', goal: { type: 'dist', v: 60 } },
     ],
   },
