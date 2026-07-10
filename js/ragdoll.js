@@ -18,9 +18,16 @@ export function createWorld() {
 
   const groundMat = new CANNON.Material('ground');
   const fleshMat = new CANNON.Material('flesh');
-  world.addContactMaterial(new CANNON.ContactMaterial(groundMat, fleshMat, {
+  const groundContact = new CANNON.ContactMaterial(groundMat, fleshMat, {
     friction: 0.45, restitution: 0.42,
-  }));
+  });
+  world.addContactMaterial(groundContact);
+  // FROZEN LAKE: bodies land and keep SLIDING — distance = flight + glide.
+  // One friction knob; every collider that uses groundMat inherits it.
+  const setIce = (on) => {
+    groundContact.friction = on ? 0.03 : 0.45;
+    groundContact.restitution = on ? 0.3 : 0.42;
+  };
 
   const fixed = (shape, x, y, z) => {
     const b = new CANNON.Body({ type: CANNON.Body.STATIC, material: groundMat, collisionFilterGroup: GROUP_STATIC });
@@ -63,7 +70,7 @@ export function createWorld() {
   fixed(new CANNON.Box(new CANNON.Vec3(17.5, 3, 0.15)), 2.5, 3, 2.9);
   fixed(new CANNON.Box(new CANNON.Vec3(17.5, 3, 0.15)), 2.5, 3, -2.9);
 
-  return { world, groundMat, fleshMat };
+  return { world, groundMat, fleshMat, setIce };
 }
 
 // static colliders for the visible structures (footprints supplied by the

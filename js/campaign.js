@@ -88,6 +88,46 @@ export const TOURS = [
   },
 ];
 
+// ---- cutscenes: { who, text, shot } — shot: 'player' | 'opp' | 'wide'.
+// 'YOU' is replaced with the current slapper's name. Played once per challenge
+// (localStorage.slapp_seen), over the frozen faceoff, close-ups and all.
+export const CUTSCENES = {
+  a1c3: [
+    { who: '📜 SCROLL I', text: 'Master Slee wrote: “Before the palm may speak, it must learn to LISTEN.” Nobody knows what that means. Mabel volunteered anyway.', shot: 'wide' },
+    { who: 'MULE-KICK MABEL', text: "You're here about the scrolls? Sugar, I eat wisdom for breakfast. Post me.", shot: 'opp' },
+    { who: 'YOU', text: '...the palm listens.', shot: 'player' },
+    { who: 'JUDGE PENNYWHISTLE', text: 'The court recognizes that the mail must go THROUGH. Proceed!', shot: 'wide' },
+  ],
+  a2c3: [
+    { who: '📜 SCROLL II', text: '“Weight answers only weight,” wrote Master Slee, shortly before being ignored by a hill for eleven years.', shot: 'wide' },
+    { who: 'BOULDER BOB', text: 'I have watched this fair since before the fence. The fence asked my permission.', shot: 'opp' },
+    { who: 'YOU', text: 'Do you... ever move?', shot: 'player' },
+    { who: 'BOULDER BOB', text: 'Once. It was overrated.', shot: 'opp' },
+  ],
+  a3c3: [
+    { who: '📜 SCROLL III', text: 'The final guardian has never been slapped. Not for lack of applicants — for lack of CONTACT.', shot: 'wide' },
+    { who: 'DODGY DALE', text: 'Four hundred palms have come for this cheek. I keep their tears in a jar. Alphabetized.', shot: 'opp' },
+    { who: 'YOU', text: 'Alphabetized by WHAT?', shot: 'player' },
+    { who: 'DODGY DALE', text: 'Regret, sugar. Time the sway.', shot: 'opp' },
+  ],
+  f1c3: [
+    { who: 'THE JUDGE', text: 'This fairground appraises at... sentimental value. My briefcase does not HAVE a column for sentimental value.', shot: 'opp' },
+    { who: 'YOU', text: 'Then add one.', shot: 'player' },
+    { who: 'THE JUDGE', text: 'Very well. Court is in session. FIVE seconds a swing — my parking meter is running.', shot: 'opp' },
+  ],
+  f3c3: [
+    { who: 'GRANNY THUNDER', text: 'Nine years I held that belt. Gave it up for bingo and grandbabies. Don pays me in casserole coupons.', shot: 'opp' },
+    { who: 'YOU', text: "Ma'am, I don't want to slap a grandmother.", shot: 'player' },
+    { who: 'GRANNY THUNDER', text: "Honey, nobody's managed it since 1987. Slip city. Population: you.", shot: 'opp' },
+  ],
+  f4c2: [
+    { who: 'YOU', text: 'The blueprints were in your GAVEL CASE, your honor.', shot: 'player' },
+    { who: 'JUDGE PENNYWHISTLE', text: 'Circumstantial! The hot dog that witnessed the signing has since been EATEN. No witness, no crime.', shot: 'opp' },
+    { who: 'YOU', text: 'You ate him. Mid-testimony.', shot: 'player' },
+    { who: 'JUDGE PENNYWHISTLE', text: 'I was UNDER OATH to be honest about my hunger. Very well — the whistle presides. Six seconds. Objection: EVERYTHING.', shot: 'opp' },
+  ],
+};
+
 export const enabled = () =>
   CAMPAIGN_LIVE || new URLSearchParams(location.search).get('tour') === '1';
 

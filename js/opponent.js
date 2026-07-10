@@ -164,6 +164,23 @@ export const ROSTER = [
   },
 ];
 
+// every volunteer speaks with their own voice, and has enough lines that
+// repeat rounds keep surprising you (shown via the faceoff bubble)
+const MORE_TAUNTS = {
+  slim: ['I ate a big lunch. A grape.', 'The wind and I have an understanding.', "Aim careful — I'm mostly hat."],
+  hank: ['The people demand a show.', "I've been slapped by better. Once.", 'My ma is watching. Make it count.'],
+  ravinray: ['The bass drops harder than you.', 'I warmed up for six hours. At a rave.', 'The shades stay ON.'],
+  mabel: ['The mule sends his regards.', "I've birthed calves scarier than you.", 'Front porch is THAT way, sweetheart.'],
+  hoss: ['I once sat on a tractor. It apologized.', 'Bring the second tractor, sugar.', 'Gravity works FOR me.'],
+  bertha: ['Six county fairs. SIX.', 'My biscuits have flattened lesser folk.', 'This dress has seen things.'],
+  cletus: ['1961. Now THAT was a slap.', 'My hip pops louder than your palm.', 'Aim for the dentures — save us both time.'],
+  don: ['I invented slapping. People are saying it.', 'My cheek pays NO taxes.', 'This is the worst-run fair. Sad!'],
+  influencer: ['Wait — let me get my angle.', 'This is content GOLD, besties.', 'Ring light? No. Ring FIGHT.'],
+  susie: ['Posture. POSTURE.', 'I have detention slips with your name on them.', 'Show your work, dear.'],
+  maestro: ['This will be in D minor. The saddest key.', 'ALLEGRO, you savage!', 'The cello forgives. I do NOT.'],
+};
+ROSTER.forEach((r) => { if (MORE_TAUNTS[r.key]) r.taunts.push(...MORE_TAUNTS[r.key]); });
+
 // the public volunteer pick — bosses excluded (campaign-only)
 export const PICKABLE = ROSTER.filter((r) => !r.boss);
 

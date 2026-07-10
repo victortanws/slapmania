@@ -136,7 +136,21 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
   background:rgba(10,12,26,.72);padding:8px 18px;border-radius:10px;}
 #pick .verdict{position:absolute;top:92px;left:0;right:0;margin:0 auto;
   background:rgba(10,12,26,.6);padding:6px 14px;border-radius:8px;font-size:13px;max-width:640px;}
-#pickRow{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:1020px;}
+/* one swipeable row — the roster can grow forever and the 3D preview stays visible */
+#pickRow{display:flex;gap:10px;flex-wrap:nowrap;overflow-x:auto;max-width:94vw;
+  justify-content:flex-start;padding:6px 4px 10px;scrollbar-width:thin;pointer-events:auto;}
+#pickRow .choice{flex:0 0 auto;width:116px;}
+
+/* ---- campaign dialogue (cutscenes): name plate + words in a good-looking box ---- */
+#dlg{position:absolute;left:0;right:0;bottom:26px;display:flex;justify-content:center;z-index:70;pointer-events:auto;}
+.dlgBox{background:#fffbe8;color:#1b1d33;border:5px solid #000;border-radius:14px;max-width:640px;width:92vw;
+  padding:14px 20px 12px;box-shadow:8px 8px 0 rgba(0,0,0,.55);font-family:Arial,sans-serif;cursor:pointer;position:relative;}
+.dlgName{position:absolute;top:-16px;left:14px;background:var(--red);color:#fff;border:3px solid #000;border-radius:8px;
+  font-family:'Arial Black',Impact,sans-serif;font-size:13px;letter-spacing:1px;padding:3px 12px;box-shadow:3px 3px 0 rgba(0,0,0,.5);}
+.dlgText{font-weight:bold;font-size:15.5px;line-height:1.5;margin-top:6px;min-height:44px;}
+.dlgHint{text-align:right;font-size:10px;letter-spacing:2px;color:#8a8fa5;margin-top:6px;}
+.dlgSkip{position:absolute;top:-16px;right:12px;background:#1b1d33;color:var(--yellow);border:3px solid #000;border-radius:8px;
+  font-family:'Arial Black',Impact,sans-serif;font-size:11px;padding:3px 10px;cursor:pointer;box-shadow:3px 3px 0 rgba(0,0,0,.5);}
 .choice{pointer-events:auto;cursor:pointer;background:#fffbe8;color:#1b1d33;border:4px solid #000;border-radius:12px;
   padding:8px 6px;width:126px;text-align:center;box-shadow:5px 5px 0 rgba(0,0,0,.55);
   font-family:Arial,sans-serif;transition:transform .08s;}
@@ -417,8 +431,18 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
     </div>
     <div class="tagline" style="font-size:12px;">FIRE 'EM IN THAT ORDER — TIMING IS EVERYTHING</div>
     <div class="pressany blink">PRESS ANY KEY TO MOSEY ON UP</div>
+    <button id="worldBtn" style="font-size:13px;padding:8px 16px;">🌞 DAY FAIR ▸</button>
     <button id="tourBtn" class="hidden" style="font-size:14px;padding:9px 18px;">🎪 THE COUNTY FAIR TOUR</button>
     <div id="creditBar">MADE BY VICTOR TAN<span class="sep">·</span>© 2026 ALL RIGHTS RESERVED<span class="sep">·</span><a href="https://www.youtube.com/@VictorTan" target="_blank" rel="noopener">▶ YOUTUBE</a><span class="sep">·</span><a href="https://buymeacoffee.com/victortanws" target="_blank" rel="noopener">☕ BUY ME A COFFEE</a></div>
+  </div>
+
+  <div id="dlg" class="hidden">
+    <div class="dlgBox">
+      <div class="dlgName" id="dlgName"></div>
+      <div class="dlgSkip" id="dlgSkip">SKIP ▸▸</div>
+      <div class="dlgText" id="dlgText"></div>
+      <div class="dlgHint">CLICK / ANY KEY ▸</div>
+    </div>
   </div>
 
   <div id="tour" class="card hidden">

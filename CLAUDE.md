@@ -296,3 +296,17 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
 - **Volunteers 13** (public pick 11): + SCHOOLMARM SUSIE (glasses flag now on
   the opponent builder too) and MAESTRO FORTISSIMO (`cello: true` — rides the
   torso mesh, flies with him; visual only, no collider).
+- **Worlds (public)**: title button cycles 🌞 DAY / 🌙 NIGHT / ❄️ FROZEN LAKE
+  (`localStorage.slapp_world`). `stage.setWorldTheme(name)` retints/relights the
+  one farm (night adds lanterns + stars; ice swaps ground maps for snow);
+  `phys.setIce(on)` (ragdoll.js) drops ground friction to 0.03 → bodies GLIDE
+  (Bertha 36→44.6m same swing). Forest perimeter still caps ~117m < DB cap 130.
+- **Dialogue everywhere**: slappers have QUIPS (main.js, faceoff coach line,
+  public; the judge takes that slot in campaign), volunteers have deep taunt
+  pools (MORE_TAUNTS merge in opponent.js). Campaign **cutscenes** in
+  `js/dialogue.js` + `campaign.CUTSCENES` ({who,text,shot:'player'|'opp'|'wide'},
+  'YOU' → slapper name): played once per challenge (localStorage.slapp_seen)
+  over the FROZEN faceoff — tick() early-returns while dlg.isActive(), runs the
+  close-up camera, world keeps breathing. Any key advances, Escape/SKIP ends.
+- **Pick dock** is one horizontally-scrollable row (roster can grow forever;
+  the 3D preview stays visible).

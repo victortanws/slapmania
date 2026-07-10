@@ -7,6 +7,24 @@ import { Sfx } from './audio.js';
 import * as ui from './ui.js';
 import * as net from './net.js';
 import * as campaign from './campaign.js';
+import * as dlg from './dialogue.js';
+
+// every slapper has a mouth on them too — a quip at the faceoff (public; the
+// judge takes this slot in campaign matches)
+const QUIPS = {
+  charlie: ['Tremendous hair. Tremendous palm.', "Local legends don't rest."],
+  fran: ['Wound tight and READY.', 'The hay baler taught me everything I know.'],
+  buck: ["Forty years of swattin'. One cheek.", 'Steady now. Steady.'],
+  roy: ['Eight seconds is seven too many.', 'Yeehaw is a state of mind.'],
+  victor: ['I built this fair. I can un-build HIM.', 'For the county!'],
+  mei: ['Your future: airborne.', 'The palm sees all. The palm approves.'],
+  dynamite: ['I ate ALL my vegetables.', 'Five and three-quarters of pure FURY.'],
+  bruceslee: ['WATAAA!', 'The palm has no form. The cheek has no chance.'],
+  chucknorth: ['I counted to infinity this morning. Twice.', 'The beard approves this matchup.'],
+  earl: ['Shirts are for quitters.', 'EARL. SMASH.'],
+  reverend: ['REPENT — and be launched.', 'The collar stays ON for this.'],
+  auntie: ['Aiyah. Hold my curlers.', 'You call THAT a cheek? Sit down.'],
+};
 
 const stage = createStage(document.getElementById('c'));
 const { scene, camera, renderer } = stage;
@@ -330,6 +348,7 @@ function goToTitle() {
   ui.showDistance(null);
   ui.coach(null);
   ui.setAttempts(attempts, 0);
+  dlg.stop();
   campaign.close();
   campaign.clearActive();
   restoreBar();
@@ -368,10 +387,34 @@ function openTourMenu() {
     const arch = ch.opp ? ROSTER.find((r) => r.key === ch.opp) : null;
     if (arch) { chosenArch = arch; startMatch(); }   // the challenge names its victim
     else openOppPick();                              // "anybody" — player's choice
+    // story beats: a cutscene plays over the frozen faceoff, once per challenge
+    const cine = campaign.CUTSCENES[ch.id];
+    const seen = JSON.parse(localStorage.getItem('slapp_seen') || '[]');
+    if (cine && arch && !seen.includes(ch.id)) {
+      seen.push(ch.id);
+      localStorage.setItem('slapp_seen', JSON.stringify(seen));
+      dlg.play(cine.map((l) => (l.who === 'YOU' ? { ...l, who: player.look.name } : l)));
+    }
   });
   track('tour_opened', { cleared: campaign.progress().length });
 }
 document.getElementById('tourBack').onclick = () => goToTitle();
+
+// ---------- worlds: Day Fair / Night Fair / Frozen Lake (public) ----------
+// Theme + (for ice) ground friction, persisted. Distances still end at the
+// forest perimeter (~117m), so the DB dist cap (130) holds even on ice.
+const WORLDS = [['day', '🌞 DAY FAIR'], ['night', '🌙 NIGHT FAIR'], ['ice', '❄️ FROZEN LAKE']];
+let worldIdx = Math.max(0, WORLDS.findIndex((w) => w[0] === (localStorage.getItem('slapp_world') || 'day')));
+function applyWorld() {
+  const [key, label] = WORLDS[worldIdx];
+  stage.setWorldTheme(key);
+  phys.setIce(key === 'ice');
+  document.getElementById('worldBtn').textContent = `${label} ▸`;
+  localStorage.setItem('slapp_world', key);
+  track('world_selected', { world: key });
+}
+document.getElementById('worldBtn').onclick = () => { worldIdx = (worldIdx + 1) % WORLDS.length; applyWorld(); sfx.ensure(); };
+applyWorld();
 if (campaign.enabled()) {
   const b = document.getElementById('tourBtn');
   b.classList.remove('hidden');
@@ -409,8 +452,13 @@ function startAttempt() {
   ui.showMeters(false);
   ui.intro(arch);
   ui.bubble(arch.taunts[Math.floor(Math.random() * arch.taunts.length)]);
-  // campaign matches are officiated — His Honor has remarks
+  // campaign matches are officiated — His Honor has remarks; in quick play the
+  // slapper gets the word instead (dialogue for EVERY character, every round)
   if (campaign.active) ui.coach(`🎺 JUDGE PENNYWHISTLE: “${REF_LINES[refLineIdx++ % REF_LINES.length]}”`);
+  else {
+    const q = QUIPS[player.look?.key];
+    if (q) ui.coach(`${player.look.name}: “${q[attempts.length % q.length]}”`);
+  }
   excite = Math.max(excite, 0.28); // the crowd greets the volunteer
   setState('FACEOFF');
 }
@@ -715,6 +763,7 @@ addEventListener('keydown', (e) => {
   if (e.code === 'Space') e.preventDefault();
   if (e.repeat) return;
   sfx.ensure();
+  if (dlg.isActive()) { if (e.code === 'Escape') dlg.stop(); else dlg.advance(); return; }
   if (e.code === 'Escape' && state !== 'TITLE') { goToTitle(); return; }
   if (state === 'TITLE' && e.code === 'KeyT' && campaign.enabled()) { openTourMenu(); return; }
   if (state === 'SELECT_SLAPPER' || state === 'SELECT_OPP') {
@@ -738,6 +787,7 @@ addEventListener('keyup', (e) => {
 });
 addEventListener('pointerdown', (e) => {
   if (e.isTrusted && manual) { manual = false; skipRender = false; last = performance.now(); schedule(); }
+  if (dlg.isActive()) return;   // the dialogue box handles its own clicks
   if (e.target.closest('button, a, input')) return;
   sfx.ensure();
   advanceScreens(null);
@@ -831,6 +881,22 @@ function tick(now) {
   schedule();
   const dt = Math.min(Math.max((now - last) / 1000, 0) || 0, 1 / 30);
   last = now;
+  // cutscene: the match clock freezes, the world stays alive (breathing, sway),
+  // and the camera runs a close-up on whoever is speaking
+  if (dlg.isActive()) {
+    opponent.update(dt);
+    const shot = dlg.currentShot();
+    if (shot !== 'wide') {
+      const tgt = new THREE.Vector3();
+      if (shot === 'opp') tgt.copy(opponent.headPos());
+      else player.headMesh.getWorldPosition(tgt);
+      const off = shot === 'opp' ? new THREE.Vector3(-1.6, 0.35, 1.15) : new THREE.Vector3(1.6, 0.35, 1.15);
+      camera.position.lerp(tgt.clone().add(off), 1 - Math.exp(-5 * dt));
+      camera.lookAt(tgt);
+    }
+    if (!skipRender) renderer.render(scene, camera);
+    return;
+  }
   const dts = dt * timeScale;
   tState += dt;
 

@@ -52,7 +52,8 @@ export function createStage(canvas) {
   resize();
 
   // --- golden-hour lighting ---
-  scene.add(new THREE.HemisphereLight(0xcfe2ff, 0x4f6b3a, 0.9));
+  const hemi = new THREE.HemisphereLight(0xcfe2ff, 0x4f6b3a, 0.9);
+  scene.add(hemi);
   const sun = new THREE.DirectionalLight(0xfff2d8, 1.9);
   sun.position.set(6, 9, 5);
   sun.castShadow = true;
@@ -1808,11 +1809,62 @@ export function createStage(canvas) {
     }
   }
 
+  // --- world themes: Day Fair / Night Fair / Frozen Lake ---
+  // Same geometry, retinted + relit (the ice friction flip lives in ragdoll.js;
+  // main.js drives both). Night gets string lanterns along the ring + stars.
+  const lanternG = new THREE.Group();
+  for (let i = 0; i < 16; i++) {
+    const orb = new THREE.Mesh(new THREE.SphereGeometry(0.09, 8, 8),
+      new THREE.MeshBasicMaterial({ color: 0xffc46a }));
+    orb.position.set(-14 + i * 2.3, 1.62 + (i % 2) * 0.12, i % 2 ? 3.05 : -3.05);
+    lanternG.add(orb);
+  }
+  lanternG.visible = false;
+  scene.add(lanternG);
+  const starPts = [];
+  for (let i = 0; i < 220; i++) {
+    const a = Math.random() * Math.PI * 2, e = 0.12 + Math.random() * 1.35, r = 195;
+    starPts.push(Math.cos(a) * Math.cos(e) * r + 48, Math.sin(e) * r, Math.sin(a) * Math.cos(e) * r);
+  }
+  const starGeo = new THREE.BufferGeometry();
+  starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPts, 3));
+  const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xdfe8ff, size: 0.9, fog: false }));
+  stars.visible = false;
+  scene.add(stars);
+
+  const grassMap = grass.material.map, laneMap = lane.material.map;
+  const WORLD_THEMES = {
+    day:   { fog: [0xdce9f2, 45, 160], skyTint: 0xffffff, hemi: [0xcfe2ff, 0x4f6b3a, 0.9], sun: [0xfff2d8, 1.9], fill: 0.35, cloud: 0xfff6ea, maps: true,  grass: 0xffffff, lane: 0xffffff, night: false, sunFace: true },
+    night: { fog: [0x151b32, 40, 130], skyTint: 0x28325e, hemi: [0x8093c9, 0x243048, 0.5], sun: [0xbfd4ff, 0.7], fill: 0.12, cloud: 0x3a4668, maps: true,  grass: 0x7d88b8, lane: 0x8d94b8, night: true,  sunFace: false },
+    ice:   { fog: [0xe8f1fa, 45, 150], skyTint: 0xdfeafc, hemi: [0xdfeaff, 0x9fb2c8, 0.95], sun: [0xeaf4ff, 1.6], fill: 0.3, cloud: 0xf4f8ff, maps: false, grass: 0xe8f2f8, lane: 0xcfe6f2, night: false, sunFace: true },
+  };
+  function setWorldTheme(name) {
+    const t = WORLD_THEMES[name] || WORLD_THEMES.day;
+    scene.fog.color.setHex(t.fog[0]);
+    scene.fog.near = t.fog[1];
+    scene.fog.far = t.fog[2];
+    sky.material.color.setHex(t.skyTint);
+    hemi.color.setHex(t.hemi[0]); hemi.groundColor.setHex(t.hemi[1]); hemi.intensity = t.hemi[2];
+    sun.color.setHex(t.sun[0]); sun.intensity = t.sun[1];
+    fill.intensity = t.fill;
+    cloudMat.color.setHex(t.cloud);
+    // Frozen Lake swaps the textured ground for flat snow/ice; others restore it
+    grass.material.map = t.maps ? grassMap : null;
+    lane.material.map = t.maps ? laneMap : null;
+    grass.material.color.setHex(t.grass);
+    lane.material.color.setHex(t.lane);
+    grass.material.needsUpdate = true;
+    lane.material.needsUpdate = true;
+    sunFace.visible = t.sunFace;
+    lanternG.visible = t.night;
+    stars.visible = t.night;
+  }
+
   return {
     renderer, scene, camera, updateCrowd, shake, applyShake, START_X,
     trackSun, spawnShock, spawnDust, updateFX, updateAmbient, setScoreboard, animals,
     breakBarricade, resetBarricade, isBarricadeBroken: () => barricade.broken,
     sunMood, currentSunMood: () => sunCurrent, cowMoo, kidsCelebrate, spawnConfetti,
-    summonSpirits, spawnBeam, spawnSparkles, slapDuel, scareBirds, solids,
+    summonSpirits, spawnBeam, spawnSparkles, slapDuel, scareBirds, solids, setWorldTheme,
   };
 }
