@@ -215,6 +215,22 @@ readability; SELECT_OPP framing; all cutscene ¾ shots match the speaker. Findin
 
 ## Improvements implemented
 
+### Batch 3 — campaign story fixes (STORY S1–S8, S12) — DONE + loads clean
+- **S4** Mabel "fifty years"→"forty years" (fixes the 40-yr-dead-master timeline contradiction).
+- **S1** THE JUDGE → **THE ASSESSOR** everywhere (opponent.js roster name/tag/pickLine/taunts; campaign
+  Act I story, f1c3 title "ORDER IN THE COURT"→"THE FINAL APPRAISAL", desc, and cutscene — stripped all
+  "court/session" language, kept the parking-meter mechanic). Un-blurs the Fair twist so "Judge" = only
+  Pennywhistle. (Coordinates with ARENA: the court arena is now Pennywhistle-only.)
+- **S3+S5** "The Fourth Form" now named at the a3c3 climax AND paid in outro_a3c3; the fortune-cookie
+  "in the letting go" replaced with "the hand you finally unclench" (ties to the open-palm title).
+- **S6** Bruce's refusal paid: outro line "I couldn't knock on that door, grandfather. The stranger did."
+- **S2** Pennywhistle corruption PLANTED: epilogue now names him the lone 6–1 dissenter ("on procedure");
+  added an Act III gavel-case tell ("it stays in the case") so the epilogue reveal lands as a sprung trap.
+- **S8** blueprint dating unified ("three weeks before the assessment ever happened").
+- **S12** Victor quip "For the county!" → "I drew up these fairgrounds. Hold still." (his builder register).
+- Files: js/campaign.js, js/opponent.js, js/main.js. `node --check` clean; game loads to TITLE, no errors.
+  (Deep cutscene playback to be re-checked by the roast pass.)
+
 ### Batch 2 — mechanics (PHYS P2/P4, GDES-adjudicated) — DONE + verified
 - **P2 weave-graze taper:** `power *= clamp(speed/6, 0.35, 1)` in onContact — a slow cleanup graze that
   sneaks past the 2.2 gate (e.g. catching a weave boss on the pop-up) no longer launches full power.

@@ -48,11 +48,11 @@ export const TOURS = [
     acts: [
       {
         act: 'ACT I — THE ASSESSORS ARRIVE',
-        story: 'A judge arrived to assess whether the fair is "worth keeping." Pack the stands and show him worth.',
+        story: 'An assessor arrived to appraise whether the fair is "worth keeping." Pack the stands and show him worth.',
         challenges: [
           { id: 'f1c1', title: 'PACK THE STANDS', desc: "Score 350 off BIG BERTHA — when the county's favorite aunt roars, the county roars", opp: 'bertha', goal: { type: 'pts', v: 350 } },
           { id: 'f1c2', title: 'GO VIRAL', desc: 'Send THE INFLUENCER 55m — if the fair trends, it stands', opp: 'influencer', goal: { type: 'dist', v: 55 } },
-          { id: 'f1c3', title: '☗ BOSS: ORDER IN THE COURT', desc: 'Score 300 off THE JUDGE — five seconds a swing', opp: 'judge', goal: { type: 'pts', v: 300 } },
+          { id: 'f1c3', title: '☗ BOSS: THE FINAL APPRAISAL', desc: 'Score 300 off THE ASSESSOR — five seconds a swing', opp: 'judge', goal: { type: 'pts', v: 300 } },
         ],
       },
       {
@@ -75,7 +75,7 @@ export const TOURS = [
       },
       {
         act: 'EPILOGUE — THE VERDICT',
-        story: 'The council voted 6–1 to save the fair. Then the blueprints turned up in Judge Pennywhistle\'s gavel case — signed three weeks ago, witnessed by a hot dog.',
+        story: 'The council voted 6–1 to save the fair — the lone "nay" was Judge Pennywhistle, "on procedure." Then the blueprints turned up in his gavel case, signed three weeks before the assessment ever happened, witnessed by a hot dog.',
         challenges: [
           { id: 'f4c1', title: 'FOLLOW THE MONEY', desc: 'Score 400 off TREMENDOUS DON — the briefcase has a cheek too', opp: 'don', goal: { type: 'pts', v: 400 } },
           { id: 'f4c2', title: '☗ FINAL BOSS: CONTEMPT OF COURT', desc: 'Score 350 off JUDGE PENNYWHISTLE — six seconds a swing', opp: 'pennywhistle', goal: { type: 'pts', v: 350 } },
@@ -108,7 +108,7 @@ export const CUTSCENES = {
   ],
   a1c3: [
     { who: '👻 MASTER SLEE', text: 'Mabel. My first student. I died halfway through her last lesson.', shot: 'spirit' },
-    { who: 'MULE-KICK MABEL', text: "Every Sunday for fifty years I came back to this field and held the follow-through. Waitin' on the old man to say 'good.'", shot: 'opp' },
+    { who: 'MULE-KICK MABEL', text: "Every Sunday for forty years I came back to this field and held the follow-through. Waitin' on the old man to say 'good.'", shot: 'opp' },
     { who: 'YOU', text: 'Then why volunteer for the slap?', shot: 'player' },
     { who: 'MULE-KICK MABEL', text: "Because if he finally found a student, my lesson can finish too. Thirty-five meters, sugar. Make it one he'd call good.", shot: 'opp' },
     { who: '👻 MASTER SLEE', text: '...do not miss.', shot: 'spirit' },
@@ -141,12 +141,12 @@ export const CUTSCENES = {
   a3c3: [
     { who: '👻 MASTER SLEE', text: "The last guardian. I taught him to dodge, the year before I died. He's been dodging ever since.", shot: 'spirit' },
     { who: 'DODGY DALE', text: 'Four hundred palms came for this cheek. I keep the tears in a jar.', shot: 'opp' },
-    { who: '👻 MASTER SLEE', text: "Land this one, student. It's the swing I never finished.", shot: 'spirit' },
+    { who: '👻 MASTER SLEE', text: "Land this one, student. The Fourth Form — the swing I never finished.", shot: 'spirit' },
   ],
   outro_a3c3: [
-    { who: '👻 MASTER SLEE', text: "...so that's what the last percent feels like. It was never in the arm. It was in the letting go.", shot: 'spirit' },
-    { who: 'BRUCE SLEE', text: 'Rest, grandfather.', shot: 'bruce' },
-    { who: '👻 MASTER SLEE', text: "One more Sunday first. Mabel is owed a 'good.'", shot: 'spirit' },
+    { who: '👻 MASTER SLEE', text: "...so that's what the last percent feels like. The Fourth Form. It was never in the arm — it's the hand you finally unclench.", shot: 'spirit' },
+    { who: 'BRUCE SLEE', text: "I couldn't knock on that door, grandfather. The stranger did.", shot: 'bruce' },
+    { who: '👻 MASTER SLEE', text: "Rest, he says. One more Sunday first — Mabel is owed a 'good.'", shot: 'spirit' },
   ],
   f1c1: [
     { who: 'JUDGE PENNYWHISTLE', text: "Word from the capital: Tremendous Don Enterprises wants this fairground for 'Parking Structure Seven.' There will be an assessment.", shot: 'judge' },
@@ -160,9 +160,9 @@ export const CUTSCENES = {
     { who: 'THE INFLUENCER', text: "For the FAIR, bestie. Fifty-five meters minimum or it won't clip well.", shot: 'opp' },
   ],
   f1c3: [
-    { who: 'THE JUDGE', text: 'This fairground appraises at... sentimental value. My briefcase does not have a column for sentimental value.', shot: 'opp' },
+    { who: 'THE ASSESSOR', text: 'This fairground appraises at... sentimental value. My briefcase does not have a column for sentimental value.', shot: 'opp' },
     { who: 'YOU', text: 'Then add one.', shot: 'player' },
-    { who: 'THE JUDGE', text: 'Very well. Court is in session. Five seconds a swing — my parking meter is running.', shot: 'opp' },
+    { who: 'THE ASSESSOR', text: 'Very well. The appraisal begins. Five seconds a swing — my parking meter is running.', shot: 'opp' },
   ],
   f2c1: [
     { who: 'JUDGE PENNYWHISTLE', text: "Bad news. Don's consultants paid Ravin' Ray to testify the fair is 'basically a warehouse rave — rezone it.'", shot: 'judge' },
@@ -187,7 +187,7 @@ export const CUTSCENES = {
     { who: 'SCHOOLMARM SUSIE', text: 'Detention. For the entire fair.', shot: 'opp' },
   ],
   f3c2: [
-    { who: 'JUDGE PENNYWHISTLE', text: 'The demolition foreman. He does not argue. He does not blink. He stands where buildings are meant to fall.', shot: 'judge' },
+    { who: 'JUDGE PENNYWHISTLE', text: "The demolition foreman. He does not argue. He does not blink. I'd bang the gavel to begin, but it's... in the case. It stays in the case.", shot: 'judge' },
     { who: 'IRON-JAW McGRAW', text: 'Was that the wind?', shot: 'opp' },
     { who: 'YOU', text: "I haven't slapped you yet.", shot: 'player' },
     { who: 'IRON-JAW McGRAW', text: 'I was talking about your plan.', shot: 'opp' },

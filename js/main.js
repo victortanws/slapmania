@@ -16,7 +16,7 @@ const QUIPS = {
   fran: ['Wound tight and READY.', 'The hay baler taught me everything I know.'],
   buck: ["Forty years of swattin'. One cheek.", 'Steady now. Steady.'],
   roy: ['Eight seconds is seven too many.', 'Yeehaw is a state of mind.'],
-  victor: ['I built this fair. I can un-build HIM.', 'For the county!'],
+  victor: ['I built this fair. I can un-build HIM.', 'I drew up these fairgrounds. Hold still.'],
   mei: ['Your future: airborne.', 'The palm sees all. The palm approves.'],
   dynamite: ['I ate ALL my vegetables.', 'Five and three-quarters of pure FURY.'],
   bruceslee: ['WATAAA!', 'The palm has no form. The cheek has no chance.'],

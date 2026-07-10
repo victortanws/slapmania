@@ -118,13 +118,13 @@ export const ROSTER = [
   },
   // -- SAVE THE FAIR bosses: each one examines a different skill --
   {
-    key: 'judge', name: 'THE JUDGE', tag: 'BOSS · 5-SECOND COURT', boss: true,
+    key: 'judge', name: 'THE ASSESSOR', tag: 'BOSS · 5-SECOND APPRAISAL', boss: true,
     w: 1.05, h: 1.04, mass: 1.1, noStache: true, shotClock: 5, brow: true,
-    // powdered wig over a black suit — the county assessor himself
+    // powdered wig over a black suit — the county appraiser himself
     skin: 0xdfb992, shirt: 0x17171d, pants: 0x17171d, suit: true, tie: 0x51525e,
     hair: 'frizz', hairCol: 0xf2ede1,
-    pickLine: 'This court allots you FIVE seconds per swing.',
-    taunts: ['Motion to hurry up: GRANTED.', 'The paperwork will not wait, champ.'],
+    pickLine: 'My meter allots you FIVE seconds per swing.',
+    taunts: ['Time is money, and both are running.', 'The paperwork will not wait, champ.'],
   },
   {
     key: 'grease', name: 'GREASED PETE', tag: 'BOSS · UNGRIPPABLE', boss: true,
