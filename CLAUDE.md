@@ -258,9 +258,18 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   → banner + preselects + verdict on the match card; the share button emits one.
 - **County board** is lost-update-safe (read-modify-write + `storage` sync) and
   reclaims worldwide posts under the saved name via `net.fetchByName`.
-- **Campaign ("The County Fair Tour")** in `js/campaign.js`: 3 acts × 3
-  challenges (bosses as capstones), goals judged per attempt from existing
-  numbers (dist/pts/head/chain%), progress in `localStorage.slapp_tour`, acts
-  unlock sequentially. **Hidden from the public**: `CAMPAIGN_LIVE = false` in
-  campaign.js; reachable only via `?tour=1` (title button + [T] appear). Flip
-  the flag to launch it. Test hooks: `__slapp.tour`, `__slapp.tourReset()`.
+- **Campaigns** in `js/campaign.js` (`TOURS`): two storylines × 3 acts × 3
+  challenges — "The Legend of the Open Palm" (ids a1c1..a3c3; Bob + Dale as
+  capstones) and "Save the Fair" (ids f1c1..f3c3; the four exam bosses below).
+  Goals judged per attempt from existing numbers (dist/pts/head/chain%),
+  tier-calibrated (Act I casual / II good / III expert), progress in
+  `localStorage.slapp_tour` (read once at module load — reload after editing
+  it in tests), acts unlock sequentially per tour. **Hidden from the public**:
+  `CAMPAIGN_LIVE = false`; reachable only via `?tour=1`. Test hooks:
+  `__slapp.tour`, `__slapp.tourReset()`.
+- **Boss mechanics** (arch flags, composable): `shotClock` (THE JUDGE, 5s),
+  `grease` (GREASED PETE — non-PERFECT palm ⇒ power ×0.45, "IT SLID OFF!"),
+  `chainGate` (IRON-JAW McGRAW 70 / GRANNY THUNDER 60 — below the posted
+  chain% ⇒ power ×0.12, "NO-SOLD!"), `weave` (Dale, Granny). Feedback bursts
+  go through `ui.slapBurst` (the **banner**, not `#smack` — don't confuse them
+  when testing). New look flags: `ironJaw` (steel chin), `brow`, `frizz` hair.

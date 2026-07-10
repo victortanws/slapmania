@@ -383,7 +383,7 @@ function startAttempt() {
   cardDelay = 0;
   stage.resetBarricade();
   resetChain();
-  shotClock = 10;
+  shotClock = arch.shotClock || 10; // bosses may run a tighter courtroom
   timeScale = 1;
   ui.hideCards();
   ui.showTitle(false);
@@ -437,6 +437,16 @@ function onContact(hit) {
   const ugly = chain.tFire != null && swingT - chain.tFire > 2.2;
   if (ugly) power *= 0.3;
   if (foulType) power *= 0.3;
+  // chain quality as % of theoretical max — shown to the player, and the number
+  // boss gates judge (so the HUD and the boss always agree)
+  const chainPct = Math.round(Math.min(1, (coilF * lg.g * ag.g * pg.g) / 1.8) * 100);
+  // BOSS MECHANICS — readable, skill-targeted handicaps, never RNG:
+  // grease: only a PERFECT palm grips — anything less slides off (P-timing exam)
+  const greased = !!(opponent.arch.grease && !foulType && !ugly && pg.tier < 3);
+  if (greased) power *= 0.45;
+  // chainGate: below the posted chain% he no-sells the hit (whole-chain exam)
+  const noSold = !!(opponent.arch.chainGate && !foulType && !ugly && chainPct < opponent.arch.chainGate);
+  if (noSold) power *= 0.12;
   // the cap scales with muscle: a perfect chain caps everyone, but the strong
   // cap HIGHER — strength genuinely moves tonnage instead of dying at 30
   power = Math.min(power, 30 * player.strength);
@@ -454,8 +464,7 @@ function onContact(hit) {
     chain: {
       coil: Math.round(Math.min(1, coilFrac) * 100), l: lg.label, a: ag.label, p: pg.label, ugly,
       bal: Math.round(balF * 100),
-      // training number: how close this chain came to the theoretical max (1.8)
-      pct: Math.round(Math.min(1, (coilF * lg.g * ag.g * pg.g) / 1.8) * 100),
+      pct: chainPct, // % of theoretical max — same number the boss gates judge
     },
   };
   contact = { point: hit.point.clone(), power };
@@ -470,6 +479,8 @@ function onContact(hit) {
   if (foulType || ugly || hit.part === 'torso' || slap.chain.pct < 25) stage.sunMood('meh', 3.5);
   else if (slap.chain.pct >= 60) stage.sunMood('happy', 5);
   if (ugly) ui.slapBurst('SLOPPY SLAP!', 'THE CHAIN WAS LONG GONE');
+  else if (noSold) ui.slapBurst('NO-SOLD!', `HE NEEDS A ${opponent.arch.chainGate}% CHAIN TO EVEN BLINK`);
+  else if (greased) ui.slapBurst('IT SLID OFF!', 'ONLY A PERFECT PALM GRIPS THE GREASE');
   else if (hit.part === 'head') ui.smack('SLAPMANIA!', false);
   else ui.smack('BODY BLOW!', true);
   ui.showMeters(false);

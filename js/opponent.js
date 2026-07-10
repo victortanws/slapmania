@@ -100,6 +100,42 @@ export const ROSTER = [
     pickLine: 'Never been slapped. Time the sway, sugar.',
     taunts: ['Swing and a miss.', 'My cheek is a moving target.'],
   },
+  // -- SAVE THE FAIR bosses: each one examines a different skill --
+  {
+    key: 'judge', name: 'THE JUDGE', tag: 'BOSS · 5-SECOND COURT', boss: true,
+    w: 1.05, h: 1.04, mass: 1.1, noStache: true, shotClock: 5, brow: true,
+    // powdered wig over a black suit — the county assessor himself
+    skin: 0xdfb992, shirt: 0x17171d, pants: 0x17171d, suit: true, tie: 0x51525e,
+    hair: 'frizz', hairCol: 0xf2ede1,
+    pickLine: 'This court allots you FIVE seconds per swing.',
+    taunts: ['Motion to hurry up: GRANTED.', 'The paperwork will not wait, champ.'],
+  },
+  {
+    key: 'grease', name: 'GREASED PETE', tag: 'BOSS · UNGRIPPABLE', boss: true,
+    w: 0.9, h: 1.0, mass: 0.85, noStache: true, grease: true,
+    // glistening and proud of it: bare slicked torso, work shorts, plastered hair
+    skin: 0xeab890, shirt: 0xeab890, pants: 0x3c4048,
+    hair: 'flat', hairCol: 0x14100c,
+    pickLine: 'Pig-grease champion, nine years running. Slaps slide RIGHT off.',
+    taunts: ['Slippery is a lifestyle.', 'That one slid clean into the trough.'],
+  },
+  {
+    key: 'ironjaw', name: 'IRON-JAW McGRAW', tag: 'BOSS · NO-SELLER', boss: true,
+    w: 1.3, h: 1.08, mass: 1.6, noStache: true, chainGate: 70, ironJaw: true, brow: true,
+    skin: 0xc99a6e, shirt: 0x5a2a2a, pants: 0x33383f,
+    hair: 'flat', hairCol: 0x22180f,
+    pickLine: 'Weak slaps bounce off the jaw. He will not even blink.',
+    taunts: ['Was that the wind?', 'My chin has retired better hands than yours.'],
+  },
+  {
+    key: 'granny', name: 'GRANNY THUNDER', tag: 'BOSS · RETIRED CHAMPION', boss: true,
+    w: 0.95, h: 0.96, mass: 1.4, female: true, weave: true, chainGate: 60,
+    // the 1987 county champion: storm-grey dress, white bun, still slips like a pro
+    skin: 0xe3c09a, shirt: 0x565a6e, pants: 0x565a6e, skirt: 0x4a4e62,
+    hair: 'bun', hairCol: 0xf0ece3,
+    pickLine: 'Held the belt for nine years. Her knees left — the slip stayed.',
+    taunts: ['I dodged your grandfather too, sugar.', 'Thunder only answers REAL form.'],
+  },
 ];
 
 // the public volunteer pick — bosses excluded (campaign-only)
@@ -191,6 +227,18 @@ export class Opponent {
       brow.position.set(-0.138 * hr, 0.08 * hr, 0);
       brow.scale.setScalar(hr);
       head.add(brow);
+    }
+    if (arch.ironJaw) {
+      // a riveted steel chin — the no-sell hardware itself
+      const jaw = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.075, 0.17), toonMat(0x9aa2ad));
+      jaw.position.set(-0.115 * hr, -0.105 * hr, 0);
+      jaw.scale.setScalar(hr);
+      head.add(jaw);
+      for (const sgn of [-1, 1]) {
+        const rivet = new THREE.Mesh(new THREE.SphereGeometry(0.014, 6, 6), toonMat(0x5e646d));
+        rivet.position.set(-0.155 * hr, -0.1 * hr, sgn * 0.06 * hr);
+        head.add(rivet);
+      }
     }
     if (arch.shades && arch.shadesCol) {
       // proper two-lens sunglasses: rims, dark lenses, a bridge and temple arms
