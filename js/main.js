@@ -247,7 +247,7 @@ function openUnlockModal(char) {
   unlockTarget = char;
   um.name.textContent = char.name;
   um.desc.textContent = char.desc;
-  um.price.textContent = char.price || 4;
+  um.price.textContent = '6.99'; // one supporter pack, all six legends
   um.msg.textContent = ''; um.code.value = '';
   um.modal.classList.remove('hidden');
 }
@@ -474,7 +474,8 @@ function applyWorld() {
   const [key, label] = WORLDS[worldIdx];
   stage.setWorldTheme(key);
   phys.setIce(key === 'ice');
-  document.getElementById('worldBtn').textContent = `${label} ▸`;
+  // reads as a STATUS ("you are here"), not a destination — tapping cycles onward
+  document.getElementById('worldBtn').textContent = `WORLD: ${label} — TAP TO CHANGE ▸`;
   localStorage.setItem('slapp_world', key);
   track('world_selected', { world: key });
 }

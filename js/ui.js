@@ -288,7 +288,7 @@ export function showPick({ title, blurb, items, confirmLabel, onHover, onConfirm
       <div class="cname">${it.name}</div>
       <div class="ctag">${it.sub}</div>
       <div class="cdesc">${it.desc}</div>`
-      + (it.locked ? `<div class="lockbadge">🔒 $${it.price || 4}</div>` : '');
+      + (it.locked ? '<div class="lockbadge">🔒 PACK</div>' : '');
     // mouse: hover previews, a click selects + confirms in one action (as before).
     // touch: a tap ONLY selects and shows that fighter in the ring above — the
     // big GO button is the deliberate confirm, so nobody locks in blind or by a
