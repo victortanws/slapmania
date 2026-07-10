@@ -259,6 +259,24 @@ snapExam, coilExam, robe→longSleeves, windKey, paintedGrin, redNose, (dojo, st
 
 ## Improvements implemented
 
+### Batch 5 — new cast: complete the S·L·A·P exam set (CREATOR) — DONE + verified
+- **MASTER MANTIS** (boss) — A/whip exam. Mechanic `snapExam`: `!ugly && ag.tier<3 ⇒ power*=0.45`,
+  burst "NO SNAP!". Green robe (`robe`→longSleeves), bun topknot, white sage beard. Renders clean
+  (verified ?preview=mantis).
+- **TICK-TOCK TOM** (boss) — S/coil exam. Mechanic `coilExam:85`: `!ugly && coilFrac<0.85 ⇒ power*=0.40`,
+  burst "UNWOUND! WIND THE COIL PAST 85%…". Brass automaton + a `windKey` on his back (the signature gag —
+  verified visible from behind), `paintedGrin`, `brow`. grease=P + chainGate=whole + sandblast=L (desert)
+  + these two = the **complete S·L·A·P timing-exam set** → a "School of Slapping" campaign (spec in CREATOR).
+- **RODEO CLOWN CHUCKLES** (public volunteer, PICKABLE) — greasepaint + `redNose` + `paintedGrin` + red frizz
+  fro + circus `stripes`. Immediately playable; inherently shareable. Verified render.
+- New builder branches added (opponent.js): `robe`→longSleeves, `windKey` (4 meshes), `paintedGrin`,
+  `redNose`. New onContact mechanics (main.js): `snapExam`, `coilExam` — exact mirrors of grease/chainGate,
+  so a flawless swing (ag.tier 3, coilFrac ~1) never false-triggers. `node --check` clean, zero console errors.
+- **FOLLOW-UP (flagged):** the two bosses are campaign-only (summoned via chosenArch) and need a tour home —
+  CREATOR's "School of Slapping" tour (Trial of Coil/Lunge/Whip/Palm) or inserts into existing tours. They
+  render + their mechanics are coded; wiring a challenge is the remaining step. (Campaign is CAMPAIGN_LIVE=false
+  regardless.) Chuckles needs no wiring — live in the public pick now.
+
 ### Batch 4 — presentation polish (ART + CAMERA) — DONE + verified
 - **CAMERA C1 (marquee):** FLIGHT cam trails straighter + looks 3m downrange
   (`p=V(b.x-6.5,max(2.8,b.y+1.4),b.z+3.0)`, `l.x=b.x+3`) — barn/conifers to the frame edge, flyer in the

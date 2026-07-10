@@ -588,6 +588,12 @@ function onContact(hit) {
   // chainGate: below the posted chain% he no-sells the hit (whole-chain exam)
   const noSold = !!(opponent.arch.chainGate && !ugly && chainPct < opponent.arch.chainGate);
   if (noSold) power *= 0.12;
+  // snapExam: only a PERFECT arm-whip lands — a lazy arm has no crack (A-timing exam)
+  const noSnap = !!(opponent.arch.snapExam && !ugly && ag.tier < 3);
+  if (noSnap) power *= 0.45;
+  // coilExam: the mainspring only trips on a nearly-full wind-up (S/coil exam)
+  const unwound = !!(opponent.arch.coilExam && !ugly && coilFrac < opponent.arch.coilExam / 100);
+  if (unwound) power *= 0.40;
   // the cap scales with muscle: a perfect chain caps everyone, but the strong
   // cap HIGHER — strength genuinely moves tonnage instead of dying at 30
   power = Math.min(power, 30 * player.strength);
@@ -623,6 +629,8 @@ function onContact(hit) {
   if (ugly) ui.slapBurst('SLOPPY SLAP!', 'THE CHAIN WAS LONG GONE');
   else if (noSold) ui.slapBurst('NO-SOLD!', `HE NEEDS A ${opponent.arch.chainGate}% CHAIN TO EVEN BLINK`);
   else if (greased) ui.slapBurst('IT SLID OFF!', 'ONLY A PERFECT PALM GRIPS THE GREASE');
+  else if (noSnap) ui.slapBurst('NO SNAP!', 'ONLY A CRACKING ARM — A FAST WHIP — MOVES THE MASTER');
+  else if (unwound) ui.slapBurst('UNWOUND!', `WIND THE COIL PAST ${opponent.arch.coilExam}% OR THE SPRING NEVER TRIPS`);
   else if (hit.part === 'head') ui.smack('SLAPMANIA!', false);
   else ui.smack('BODY BLOW!', true);
   ui.showMeters(false);

@@ -96,6 +96,15 @@ export const ROSTER = [
     pickLine: 'Interrupted mid-sonata. Furious. Extremely resonant.',
     taunts: ['You call that TEMPO?', 'My cello has survived three world tours.'],
   },
+  {
+    key: 'chuckles', name: 'RODEO CLOWN CHUCKLES', tag: 'BOUNCER',
+    w: 1.05, h: 0.98, mass: 1.1,
+    // greasepaint face + white "gloves", circus bands, a red fro and a red nose
+    skin: 0xf2ece6, shirt: 0x3a86ff, pants: 0xffd23f, stripes: 0xffd23f,
+    hair: 'frizz', hairCol: 0xff4d4d, redNose: 0xe0242a, paintedGrin: 0xc0202a,
+    pickLine: 'Honk honk. The clown does not fear the palm.',
+    taunts: ['I bounce back, sugar — it is the whole act!', 'Honk if you missed!'],
+  },
   // ---- BOSSES (boss: true): campaign-only — never listed in the public
   // volunteer pick; tour challenges summon them by key ----
   {
@@ -163,6 +172,24 @@ export const ROSTER = [
     pickLine: 'Held the belt for nine years. Her knees left — the slip stayed.',
     taunts: ['I dodged your grandfather too, sugar.', 'Thunder only answers REAL form.'],
   },
+  {
+    key: 'mantis', name: 'MASTER MANTIS', tag: 'BOSS · THE WHIP FORM', boss: true,
+    w: 0.85, h: 1.06, mass: 1.1, snapExam: true, robe: true,
+    // a lean kung-fu sage in a mantis-green robe (shirt = pants = robe), topknot + white sage beard
+    skin: 0xd9a066, shirt: 0x2e7d4f, pants: 0x2e7d4f,
+    hair: 'bun', hairCol: 0x1a1a1f, whiteBeard: true, arena: 'dojo',
+    pickLine: 'The Whip Form. A slap without snap is a caress.',
+    taunts: ['Your arm is asleep. Wake it.', 'Faster. The mantis does not lecture twice.'],
+  },
+  {
+    key: 'clockwork', name: 'TICK-TOCK TOM', tag: 'BOSS · FULLY WOUND', boss: true,
+    w: 1.1, h: 1.02, mass: 1.3, coilExam: 85,
+    // a brass carnival automaton: the wind-up key on his back is the signature gag
+    skin: 0xc9a24b, shirt: 0x9a7a34, pants: 0x6e5626,
+    windKey: true, paintedGrin: 0xc0202a, brow: true,
+    pickLine: 'Wind him ALL the way, or the mainspring never trips.',
+    taunts: ['Tick... tick... not yet.', 'Half a wind is no wind at all.'],
+  },
 ];
 
 // every volunteer speaks with their own voice, and has enough lines that
@@ -218,7 +245,7 @@ export class Opponent {
     const rag = this.rag = createRagdoll({
       world, scene, mat, x: START_X, z: 0,
       skin: arch.skin, shirt: arch.shirt, pants: arch.pants,
-      wScale: w, hScale: h, massScale: arch.mass, longSleeves: !!arch.suit,
+      wScale: w, hScale: h, massScale: arch.mass, longSleeves: !!(arch.suit || arch.robe),
     });
 
     // --- braced pose (facing -X, leaning in, offering the cheek) ---
@@ -250,6 +277,18 @@ export class Opponent {
       const eye = new THREE.Mesh(new THREE.SphereGeometry(0.022, 6, 6), toonMat(0x111111));
       eye.position.set(-0.145 * hr, 0.035 * hr, s * 0.055 * hr);
       head.add(eye);
+    }
+    if (arch.redNose) {
+      const nose = new THREE.Mesh(new THREE.SphereGeometry(0.032 * hr, 8, 8), toonMat(arch.redNose));
+      nose.position.set(-0.172 * hr, -0.005 * hr, 0);
+      nose.castShadow = true;
+      head.add(nose);
+    }
+    if (arch.paintedGrin) {
+      // a flat painted grin (clowns, automatons) — mechanical/greasepaint, not a real smile
+      const grin = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.032, 0.1), toonMat(arch.paintedGrin));
+      grin.position.set(-0.158 * hr, -0.062 * hr, 0);
+      head.add(grin);
     }
     if (!arch.female && !arch.noStache) {
       const stache = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.03, 0.13),
@@ -527,6 +566,23 @@ export class Opponent {
         sheen.scale.set(0.4, 1.6, 0.4);
         sheen.position.set(-(tr + 0.004), sy, sz);
         P.torso.mesh.add(sheen);
+      }
+    }
+    if (arch.windKey) {
+      // a brass wind-up key out the back (+x) — the whole joke: you can see he's a wind-up.
+      // Rides the torso, so it flies with him on launch.
+      const tr = 0.38 * w * 0.52;
+      const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.16, 8), toonMat(0xd8b13c));
+      stem.rotation.z = Math.PI / 2;
+      stem.position.set(tr + 0.09, 0.06 * h, 0);
+      stem.castShadow = true;
+      P.torso.mesh.add(stem);
+      for (const sgn of [-1, 1]) {
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.018, 6, 14), toonMat(0xd8b13c));
+        ring.rotation.y = Math.PI / 2;
+        ring.position.set(tr + 0.17, 0.06 * h, sgn * 0.05);
+        ring.castShadow = true;
+        P.torso.mesh.add(ring);
       }
     }
     if (arch.stripes) {
