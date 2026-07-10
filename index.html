@@ -55,7 +55,8 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
 .tourCh{pointer-events:auto;cursor:pointer;display:flex;gap:9px;align-items:center;padding:7px 8px;
   border-radius:8px;border:2px solid transparent;font-weight:bold;font-size:12px;line-height:1.35;}
 .tourCh:hover{border-color:#000;background:#fff3c4;}
-.tourCh.done{opacity:.55;cursor:default;}
+.tourCh.done{opacity:.62;}
+.tourCh.done small{color:#8a5fc0;font-size:9px;letter-spacing:1px;}
 .tourCh.lockedRow{opacity:.3;cursor:default;pointer-events:none;}
 @media (max-width:560px){
   .tourAct{width:94vw;padding:9px 10px;}
@@ -148,8 +149,17 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
   justify-content:flex-start;padding:6px 4px 10px;scrollbar-width:thin;pointer-events:auto;}
 #pickRow .choice{flex:0 0 auto;width:116px;}
 
+/* ---- cinema mode: letterbox bars + a clean frame (HUD hidden) ---- */
+#cineTop,#cineBot{position:fixed;left:0;right:0;height:0;background:#000;z-index:65;
+  transition:height .45s cubic-bezier(.2,.8,.3,1);pointer-events:none;}
+#cineTop{top:0;} #cineBot{bottom:0;}
+body.cine #cineTop,body.cine #cineBot{height:11vh;}
+body.cine #topbar,body.cine #challengeBar,body.cine #refBar,body.cine #intro,
+body.cine #masterTag,body.cine #coach,body.cine #bubble{display:none !important;}
+
 /* ---- campaign dialogue (cutscenes): name plate + words in a good-looking box ---- */
 #dlg{position:absolute;left:0;right:0;bottom:26px;display:flex;justify-content:center;z-index:70;pointer-events:auto;}
+body.cine #dlg{bottom:calc(11vh + 16px);}
 .dlgBox{background:#fffbe8;color:#1b1d33;border:5px solid #000;border-radius:14px;max-width:640px;width:92vw;
   padding:14px 20px 12px;box-shadow:8px 8px 0 rgba(0,0,0,.55);font-family:Arial,sans-serif;cursor:pointer;position:relative;}
 .dlgName{position:absolute;top:-16px;left:14px;background:var(--red);color:#fff;border:3px solid #000;border-radius:8px;
@@ -444,6 +454,8 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
     <div id="creditBar">MADE BY VICTOR TAN<span class="sep">·</span>© 2026 ALL RIGHTS RESERVED<span class="sep">·</span><a href="https://www.youtube.com/@VictorTan" target="_blank" rel="noopener">▶ YOUTUBE</a><span class="sep">·</span><a href="https://buymeacoffee.com/victortanws" target="_blank" rel="noopener">☕ BUY ME A COFFEE</a></div>
   </div>
 
+  <div id="cineTop"></div>
+  <div id="cineBot"></div>
   <div id="dlg" class="hidden">
     <div class="dlgBox">
       <div class="dlgName" id="dlgName"></div>

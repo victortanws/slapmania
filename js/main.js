@@ -357,6 +357,21 @@ function goToTitle() {
   setState('TITLE');
 }
 
+// cinema mode: letterbox in, HUD out, and the campaign cast steps on stage —
+// Master Slee's ghost materializes for his lines, the Judge stands ringside
+function playScene(lines, after) {
+  const cast = lines.map((l) => l.who).join(' ');
+  document.body.classList.add('cine');
+  if (cast.includes('MASTER SLEE')) stage.setSpirit(true);
+  if (cast.includes('PENNYWHISTLE') || campaign.active) stage.setJudge(true);
+  dlg.play(lines, () => {
+    document.body.classList.remove('cine');
+    stage.setSpirit(false);
+    stage.setJudge(false);
+    if (after) after();
+  });
+}
+
 // ---------- the county fair tour (campaign — hidden until CAMPAIGN_LIVE) ----------
 // Judge Pennywhistle officiates every campaign match: a one-liner at the faceoff,
 // then his whistle starts the shot clock. (In the Save the Fair epilogue, the
@@ -400,8 +415,8 @@ function openTourMenu() {
       seen.push(ch.id);
       localStorage.setItem('slapp_seen', JSON.stringify(seen));
       const lines = cine.map((l) => (l.who === 'YOU' ? { ...l, who: player.look.name } : l));
-      if (arch) { launch(); dlg.play(lines); }
-      else dlg.play(lines, launch);
+      if (arch) { launch(); playScene(lines); }
+      else playScene(lines, launch);
     } else launch();
   });
   track('tour_opened', { cleared: campaign.progress().length });
@@ -897,10 +912,13 @@ function tick(now) {
     opponent.update(dt);
     const shot = dlg.currentShot();
     if (shot !== 'wide') {
+      // 3/4 close-up on whoever is speaking: face + a shoulder, slightly above
       const tgt = new THREE.Vector3();
-      if (shot === 'opp') tgt.copy(opponent.headPos());
-      else player.headMesh.getWorldPosition(tgt);
-      const off = shot === 'opp' ? new THREE.Vector3(-1.6, 0.35, 1.15) : new THREE.Vector3(1.6, 0.35, 1.15);
+      let off;
+      if (shot === 'opp') { tgt.copy(opponent.headPos()); off = new THREE.Vector3(-1.35, 0.3, 0.95); }
+      else if (shot === 'spirit') { tgt.copy(stage.cinePoints.spirit()); off = new THREE.Vector3(1.4, 0.2, 1.0); }
+      else if (shot === 'judge') { tgt.copy(stage.cinePoints.judge()); off = new THREE.Vector3(1.35, 0.3, 1.0); }
+      else { player.headMesh.getWorldPosition(tgt); off = new THREE.Vector3(1.35, 0.3, 0.95); }
       camera.position.lerp(tgt.clone().add(off), 1 - Math.exp(-5 * dt));
       camera.lookAt(tgt);
     }

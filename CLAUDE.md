@@ -320,3 +320,10 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   bottom bar) so the intro name plate stays readable. Slap-angel duel spawns
   x+20 ahead, scaled 1.9, life 7s so the chase camera flies through it.
   Orchard ground apples are intentional windfall fruit (scene.js fruitTree).
+- **Cinema v2**: cutscenes run in a `body.cine` letterbox (bars + ALL HUD incl.
+  bubble hidden); `playScene()` in main.js wraps dlg.play and stages the cast —
+  Master Slee's translucent ghost + a ringside Judge figure live in scene.js
+  (`setSpirit/setJudge/cinePoints`), with 'spirit'/'judge' camera shots. Every
+  campaign challenge names its volunteer (no free pick in tours) and cleared
+  challenges are replayable (↻, no re-clear). VICTOR SEPUP: black cap with a
+  ▽ mark (player 'cap' hat + capMark flag) + black jacket.

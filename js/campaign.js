@@ -1,16 +1,13 @@
 // THE CAMPAIGNS — two storylines. HIDDEN from the public until CAMPAIGN_LIVE
 // flips true; reachable meanwhile only via ?tour=1 (dev/preview).
-// Zero new mechanics live here: every challenge is a goal expressed in numbers
-// the game already produces per attempt (dist, pts, head, chain%). Progress in
-// localStorage.slapp_tour; cutscene seen-flags in localStorage.slapp_seen.
-// Locked acts render as sealed chapters — no story spoilers up front.
+// Every challenge names its volunteer (the story picks your target), opens
+// with a cinematic scene (letterboxed, 3/4 close-ups — shots: 'spirit' frames
+// Master Slee's ghost, 'judge' frames Pennywhistle ringside), and completed
+// challenges stay replayable (no re-clear). Progress: localStorage.slapp_tour;
+// scene seen-flags: localStorage.slapp_seen.
 
 const CAMPAIGN_LIVE = false; // flip when the campaigns should appear for everyone
 
-// goal types: dist (m), pts, head (clean cheek), chain (% of perfect).
-// opp: volunteer key the challenge must be played against (null = your choice).
-// Difficulty is tier-calibrated from the human-skill Monte Carlo sims (07-10):
-// Act/Scroll I ≈ casual, II ≈ good, III ≈ expert.
 export const TOURS = [
   {
     key: 'palm', title: '🖐 THE LEGEND OF THE OPEN PALM',
@@ -20,8 +17,8 @@ export const TOURS = [
         act: 'SCROLL I — THE PATIENT COIL',
         story: 'A spirit has appeared at the fairground. He is forty years dead, extremely opinionated, and he says your swivel has promise.',
         challenges: [
-          { id: 'a1c1', title: 'THE LISTENING PALM', desc: 'Land a clean slap on the cheek', opp: null, goal: { type: 'head' } },
-          { id: 'a1c2', title: 'THROUGH THE BARRICADE', desc: 'Send anybody 20m — the barricade is a DARE', opp: null, goal: { type: 'dist', v: 20 } },
+          { id: 'a1c1', title: 'THE LISTENING PALM', desc: "A clean slap on HAYSEED HANK's cheek — the honest standard", opp: 'hank', goal: { type: 'head' } },
+          { id: 'a1c2', title: 'THROUGH THE BARRICADE', desc: 'Send SLIM PETE 20m — the barricade is a DARE', opp: 'slim', goal: { type: 'dist', v: 20 } },
           { id: 'a1c3', title: 'THE FIRST STUDENT', desc: 'Post MULE-KICK MABEL 35m — she was his student first', opp: 'mabel', goal: { type: 'dist', v: 35 } },
         ],
       },
@@ -29,7 +26,7 @@ export const TOURS = [
         act: 'SCROLL II — THE HEAVY HAND',
         story: 'The second form is weight. The master has opinions about weight. The master has opinions about everything.',
         challenges: [
-          { id: 'a2c1', title: 'WEIGHT ANSWERS WEIGHT', desc: 'Score 600 points with one slap — the heavies pay best', opp: null, goal: { type: 'pts', v: 600 } },
+          { id: 'a2c1', title: 'WEIGHT ANSWERS WEIGHT', desc: 'Score 600 off BIG BERTHA — tonnage is truth', opp: 'bertha', goal: { type: 'pts', v: 600 } },
           { id: 'a2c2', title: 'BUDGE THE MOUNTAIN', desc: 'Move BIG HOSS 22m — bring the muscle', opp: 'hoss', goal: { type: 'dist', v: 22 } },
           { id: 'a2c3', title: '☗ BOSS: THE IMMOVABLE OBJECT', desc: '500 points off BOULDER BOB', opp: 'boulder', goal: { type: 'pts', v: 500 } },
         ],
@@ -38,7 +35,7 @@ export const TOURS = [
         act: 'SCROLL III — THE OPEN PALM',
         story: 'The final scroll. The family is watching. The family includes at least one ghost.',
         challenges: [
-          { id: 'a3c1', title: 'FLAWLESS FORM', desc: 'Land a slap with a 90% chain', opp: null, goal: { type: 'chain', v: 90 } },
+          { id: 'a3c1', title: 'FLAWLESS FORM', desc: 'A 90% chain before MAESTRO FORTISSIMO — every link must SING', opp: 'maestro', goal: { type: 'chain', v: 90 } },
           { id: 'a3c2', title: 'NO SHORTCUTS', desc: 'Send HAYSEED HANK 75m — no featherweights, pure form', opp: 'hank', goal: { type: 'dist', v: 75 } },
           { id: 'a3c3', title: '☗ BOSS: CATCH THE UNCATCHABLE', desc: 'Slap DODGY DALE 60m — time the sway', opp: 'dale', goal: { type: 'dist', v: 60 } },
         ],
@@ -53,7 +50,7 @@ export const TOURS = [
         act: 'ACT I — THE ASSESSORS ARRIVE',
         story: 'A judge arrived to assess whether the fair is "worth keeping." Pack the stands and show him worth.',
         challenges: [
-          { id: 'f1c1', title: 'PACK THE STANDS', desc: 'Score 350 points with one slap — make the crowd ROAR', opp: null, goal: { type: 'pts', v: 350 } },
+          { id: 'f1c1', title: 'PACK THE STANDS', desc: "Score 350 off BIG BERTHA — when the county's favorite aunt roars, the county roars", opp: 'bertha', goal: { type: 'pts', v: 350 } },
           { id: 'f1c2', title: 'GO VIRAL', desc: 'Send THE INFLUENCER 55m — if the fair trends, it stands', opp: 'influencer', goal: { type: 'dist', v: 55 } },
           { id: 'f1c3', title: '☗ BOSS: ORDER IN THE COURT', desc: 'Score 300 off THE JUDGE — you get FIVE seconds a swing', opp: 'judge', goal: { type: 'pts', v: 300 } },
         ],
@@ -63,7 +60,7 @@ export const TOURS = [
         story: 'Don sent "efficiency consultants" to bury the fair in testimony. Some witnesses can be un-bought. With a palm.',
         challenges: [
           { id: 'f2c1', title: 'HOSTILE WITNESS', desc: "Send RAVIN' RAY 30m — he took glowsticks to testify against us", opp: 'ravinray', goal: { type: 'dist', v: 30 } },
-          { id: 'f2c2', title: 'FUNDRAISER FRENZY', desc: 'Score 500 points with one slap — legal fees grow on POINTS', opp: null, goal: { type: 'pts', v: 500 } },
+          { id: 'f2c2', title: 'FUNDRAISER FRENZY', desc: 'Score 500 off BIG HOSS — the biggest donor draw at the fair', opp: 'hoss', goal: { type: 'pts', v: 500 } },
           { id: 'f2c3', title: '☗ BOSS: THE UNGRIPPABLE MAN', desc: 'Slap GREASED PETE 50m — only a PERFECT palm grips', opp: 'grease', goal: { type: 'dist', v: 50 } },
         ],
       },
@@ -71,7 +68,7 @@ export const TOURS = [
         act: 'ACT III — THE WRECKING CREW',
         story: 'The bulldozers idle at the gate. Don sent his closer — and his closer brought his grandmother.',
         challenges: [
-          { id: 'f3c1', title: 'READ THE FINE PRINT', desc: 'Land a slap with an 85% chain — charter clause 44-B demands it', opp: null, goal: { type: 'chain', v: 85 } },
+          { id: 'f3c1', title: 'READ THE FINE PRINT', desc: 'An 85% chain before SCHOOLMARM SUSIE — clause 44-B requires faculty grading', opp: 'susie', goal: { type: 'chain', v: 85 } },
           { id: 'f3c2', title: 'JAWBREAKER', desc: 'Move IRON-JAW McGRAW 28m — under 70% chain he will not blink', opp: 'ironjaw', goal: { type: 'dist', v: 28 } },
           { id: 'f3c3', title: '☗ BOSS: GRANNY THUNDER', desc: 'Send the retired champion 35m — she slips, and weak form bores her', opp: 'granny', goal: { type: 'dist', v: 35 } },
         ],
@@ -88,68 +85,71 @@ export const TOURS = [
   },
 ];
 
-// ---- cutscenes: { who, text, shot } — shot: 'player' | 'opp' | 'wide'.
-// 'YOU' becomes the current slapper's name. EVERY challenge opens with one,
-// once (slapp_seen). Scenes for opp:null challenges use player/wide shots only
-// (they play before the volunteer pick, so there is no opponent to frame).
+// ---- cutscenes: { who, text, shot } — shot: 'player' | 'opp' | 'spirit' |
+// 'judge' | 'wide'. 'YOU' becomes the current slapper's name. Every challenge
+// opens with one, shown once (slapp_seen); replays skip straight to the match.
 export const CUTSCENES = {
   // ---------- THE LEGEND OF THE OPEN PALM ----------
   a1c1: [
-    { who: '👻 MASTER SLEE', text: 'Do not be alarmed. I am Master Slee. I have been dead for forty years and I am STILL the best slapper in this county. That is a problem.', shot: 'wide' },
+    { who: '👻 MASTER SLEE', text: 'Do not be alarmed. I am Master Slee. I have been dead for forty years and I am STILL the best slapper in this county. That is a problem.', shot: 'spirit' },
     { who: 'YOU', text: "You're a... ghost?", shot: 'player' },
-    { who: '👻 MASTER SLEE', text: 'A SPIRIT. Ghosts rattle chains. I rattled CHEEKS. My art dies with me unless somebody learns the Four Forms.', shot: 'wide' },
-    { who: '👻 MASTER SLEE', text: 'Form One: the palm LISTENS before it speaks. Show me. One clean palm, on one honest cheek.', shot: 'player' },
+    { who: '👻 MASTER SLEE', text: 'A SPIRIT. Ghosts rattle chains. I rattled CHEEKS. My art dies with me unless somebody learns the Four Forms.', shot: 'spirit' },
+    { who: 'HAYSEED HANK', text: "Mornin'. I'm the practice cheek. It's an honor, apparently. Nobody asked me.", shot: 'opp' },
+    { who: '👻 MASTER SLEE', text: 'Form One: the palm LISTENS before it speaks. Hank is honest. Strike him honestly — one clean palm, on the cheek.', shot: 'spirit' },
   ],
   a1c2: [
-    { who: '👻 MASTER SLEE', text: 'The county built that barricade to keep slapped volunteers out of the pie stand. It is an insult to the art.', shot: 'wide' },
+    { who: '👻 MASTER SLEE', text: 'The county built that barricade to keep slapped volunteers out of the pie stand. It is an insult to the art.', shot: 'spirit' },
     { who: 'YOU', text: "It's... safety equipment.", shot: 'player' },
-    { who: '👻 MASTER SLEE', text: 'It is a DARE. Twenty meters, student. Put somebody through it.', shot: 'wide' },
+    { who: '👻 MASTER SLEE', text: 'It is a DARE. And Pete here is the dart the county left lying around. Twenty meters. Through it.', shot: 'spirit' },
+    { who: 'SLIM PETE', text: 'I volunteered for the pie, not the physics.', shot: 'opp' },
   ],
   a1c3: [
-    { who: '👻 MASTER SLEE', text: 'Mabel. My first student. Fifty years ago she took my hardest lesson and asked if that was the whole lesson.', shot: 'wide' },
+    { who: '👻 MASTER SLEE', text: 'Mabel. My first student. Fifty years ago she took my hardest lesson and asked if that was the whole lesson.', shot: 'spirit' },
     { who: 'MULE-KICK MABEL', text: "Ol' Slee floatin' around again? Tell him my cheek's right where he left it.", shot: 'opp' },
     { who: 'YOU', text: "Wait — she can't see you?", shot: 'player' },
-    { who: '👻 MASTER SLEE', text: 'She sees me fine. She is IGNORING me. Thirty-five meters. She would be insulted by less.', shot: 'wide' },
+    { who: '👻 MASTER SLEE', text: 'She sees me fine. She is IGNORING me. Thirty-five meters. She would be insulted by less.', shot: 'spirit' },
   ],
   a2c1: [
-    { who: '👻 MASTER SLEE', text: 'Scroll Two. A feather flies far and means nothing. Tonnage, student. Tonnage is TRUTH.', shot: 'wide' },
+    { who: '👻 MASTER SLEE', text: 'Scroll Two. A feather flies far and means nothing. Tonnage, student. Tonnage is TRUTH — and Bertha is the truest woman at this fair.', shot: 'spirit' },
     { who: 'BRUCE SLEE', text: "Grandfather. You're haunting AMATEURS now?", shot: 'wide' },
-    { who: '👻 MASTER SLEE', text: 'Bruce! My blood! Watch this one — there is a wobble in the swivel, but the palm has promise.', shot: 'wide' },
-    { who: 'YOU', text: '...who is this?', shot: 'player' },
-    { who: 'BRUCE SLEE', text: 'The heir. WATAAA is a family word. Six hundred points, rookie. Impress the dead man.', shot: 'wide' },
+    { who: '👻 MASTER SLEE', text: 'Bruce! My blood! Watch this one — there is a wobble in the swivel, but the palm has promise.', shot: 'spirit' },
+    { who: 'BIG BERTHA', text: "Six county fairs, sugar. You'll need more than promise.", shot: 'opp' },
+    { who: 'BRUCE SLEE', text: 'Six hundred points, rookie. Impress the dead man.', shot: 'wide' },
   ],
   a2c2: [
     { who: 'BIG HOSS', text: "The ghost sent you? He's been tryin' to move me since '86.", shot: 'opp' },
-    { who: '👻 MASTER SLEE', text: 'He is NOT a mountain. He is a very committed hill. Twenty-two meters. Bring muscle.', shot: 'wide' },
+    { who: '👻 MASTER SLEE', text: 'He is NOT a mountain. He is a very committed hill. Twenty-two meters. Bring muscle.', shot: 'spirit' },
   ],
   a2c3: [
-    { who: '👻 MASTER SLEE', text: 'The first guardian. I carved him from a landslide. Possibly he carved himself. We do not discuss it.', shot: 'wide' },
+    { who: '👻 MASTER SLEE', text: 'The first guardian. I carved him from a landslide. Possibly he carved himself. We do not discuss it.', shot: 'spirit' },
     { who: 'BOULDER BOB', text: 'I have watched this fair since before the fence. The fence asked my permission.', shot: 'opp' },
     { who: 'YOU', text: 'Do you... ever move?', shot: 'player' },
     { who: 'BOULDER BOB', text: 'Once. It was overrated.', shot: 'opp' },
   ],
   a3c1: [
-    { who: '👻 MASTER SLEE', text: 'Scroll Three. Forget the meters. Forget the points. Show me ONE swing where every link sings.', shot: 'wide' },
-    { who: 'BRUCE SLEE', text: "Ninety percent, rookie. Below that, the family doesn't nod.", shot: 'wide' },
+    { who: '👻 MASTER SLEE', text: 'Scroll Three. Forget the meters. Forget the points. The Maestro will listen to your chain — every link must SING.', shot: 'spirit' },
+    { who: 'MAESTRO FORTISSIMO', text: 'I can hear a flat SWIVEL from the parking lot. Ninety percent. In tune. Or do not bother.', shot: 'opp' },
+    { who: 'BRUCE SLEE', text: "Below ninety, the family doesn't nod.", shot: 'wide' },
     { who: 'YOU', text: 'Does the family ever just... say hello?', shot: 'player' },
     { who: 'BRUCE SLEE', text: 'WATAAA is hello.', shot: 'wide' },
   ],
   a3c2: [
-    { who: '👻 MASTER SLEE', text: 'Any palm can throw a feather over the county line. Throw HANK. The people\'s cheek. Pure form, no shortcuts.', shot: 'wide' },
+    { who: '👻 MASTER SLEE', text: 'Any palm can throw a feather over the county line. Throw HANK. The people\'s cheek. Pure form, no shortcuts.', shot: 'spirit' },
     { who: 'HAYSEED HANK', text: "Why's it always ME for the honest work?", shot: 'opp' },
   ],
   a3c3: [
-    { who: '👻 MASTER SLEE', text: 'The final guardian. I taught him to dodge. I have regretted it for thirty years.', shot: 'wide' },
+    { who: '👻 MASTER SLEE', text: 'The final guardian. I taught him to dodge. I have regretted it for thirty years.', shot: 'spirit' },
     { who: 'DODGY DALE', text: 'Four hundred palms have come for this cheek. I keep their tears in a jar. Alphabetized.', shot: 'opp' },
     { who: 'YOU', text: 'Alphabetized by WHAT?', shot: 'player' },
     { who: 'DODGY DALE', text: 'Regret, sugar. Time the sway.', shot: 'opp' },
-    { who: '👻 MASTER SLEE', text: 'Land this, student — and the Fourth Form is yours. I might even rest.', shot: 'wide' },
+    { who: '👻 MASTER SLEE', text: 'Land this, student — and the Fourth Form is yours. I might even rest.', shot: 'spirit' },
   ],
   // ---------- SAVE THE FAIR ----------
   f1c1: [
-    { who: 'JUDGE PENNYWHISTLE', text: "Word from the capital: Tremendous Don Enterprises wants this fairground for 'Parking Structure Seven.' There will be an assessment.", shot: 'wide' },
+    { who: 'JUDGE PENNYWHISTLE', text: "Word from the capital: Tremendous Don Enterprises wants this fairground for 'Parking Structure Seven.' There will be an assessment.", shot: 'judge' },
     { who: 'YOU', text: 'An assessment of WHAT?', shot: 'player' },
-    { who: 'JUDGE PENNYWHISTLE', text: 'Of whether anyone CARES. So make this crowd roar, champ. Three hundred fifty points of undeniable caring.', shot: 'wide' },
+    { who: 'JUDGE PENNYWHISTLE', text: "Of whether anyone CARES. Bertha is the county's favorite aunt. When SHE roars, the county roars. Three hundred fifty points of caring, champ.", shot: 'judge' },
+    { who: 'BIG BERTHA', text: 'For the fair? Sugar, swing like you MEAN it.', shot: 'opp' },
   ],
   f1c2: [
     { who: 'THE INFLUENCER', text: 'Okay so if the fair TRENDS, the council literally cannot ignore it. I did the math. Well. I did a poll.', shot: 'opp' },
@@ -162,29 +162,30 @@ export const CUTSCENES = {
     { who: 'THE JUDGE', text: 'Very well. Court is in session. FIVE seconds a swing — my parking meter is running.', shot: 'opp' },
   ],
   f2c1: [
-    { who: 'JUDGE PENNYWHISTLE', text: "Bad news, champ. Don's consultants paid Ravin' Ray to testify that the fair is 'basically a warehouse rave — rezone it.'", shot: 'wide' },
+    { who: 'JUDGE PENNYWHISTLE', text: "Bad news, champ. Don's consultants paid Ravin' Ray to testify that the fair is 'basically a warehouse rave — rezone it.'", shot: 'judge' },
     { who: "RAVIN' RAY", text: 'They gave me glowsticks, man. INDUSTRIAL glowsticks.', shot: 'opp' },
     { who: 'YOU', text: 'You sold us out for glowsticks?', shot: 'player' },
     { who: "RAVIN' RAY", text: '...they glow SO good. Look — thirty meters and I recant everything.', shot: 'opp' },
   ],
   f2c2: [
-    { who: 'JUDGE PENNYWHISTLE', text: "Legal defense funds don't grow on trees, champ. They grow on POINTS. The crowd pays by the meter of astonishment.", shot: 'wide' },
-    { who: 'YOU', text: 'That is not how money works.', shot: 'player' },
-    { who: 'JUDGE PENNYWHISTLE', text: 'That is EXACTLY how county money works. Five hundred. One slap.', shot: 'wide' },
+    { who: 'JUDGE PENNYWHISTLE', text: "Legal defense funds don't grow on trees, champ. They grow on POINTS. And nobody draws a paying crowd like the big man.", shot: 'judge' },
+    { who: 'BIG HOSS', text: 'Folks DO love watchin\' me not move.', shot: 'opp' },
+    { who: 'JUDGE PENNYWHISTLE', text: 'Five hundred points. One slap. Make the county open its wallet.', shot: 'judge' },
   ],
   f2c3: [
-    { who: 'JUDGE PENNYWHISTLE', text: "Don's 'conflict-resolution specialist.' Nine-year pig-grease champion. HR could not hold him. SOAP could not hold him.", shot: 'wide' },
+    { who: 'JUDGE PENNYWHISTLE', text: "Don's 'conflict-resolution specialist.' Nine-year pig-grease champion. HR could not hold him. SOAP could not hold him.", shot: 'judge' },
     { who: 'GREASED PETE', text: "You can't fire what you can't grip. And you can't grip ME.", shot: 'opp' },
     { who: 'YOU', text: 'Everything in this county is negotiable except the grease?', shot: 'player' },
     { who: 'GREASED PETE', text: 'The grease is a LIFESTYLE. Perfect palm or nothing, sugar.', shot: 'opp' },
   ],
   f3c1: [
-    { who: 'JUDGE PENNYWHISTLE', text: 'AH-HA! Buried in the county charter, clause 44-B: the fair stands if a citizen demonstrates "form beyond reproach" before a sitting judge. I am EXTREMELY sitting.', shot: 'wide' },
-    { who: 'YOU', text: 'What counts as beyond reproach?', shot: 'player' },
-    { who: 'JUDGE PENNYWHISTLE', text: 'Eighty-five percent. The charter is oddly specific. I did not write it. Stop looking at me.', shot: 'wide' },
+    { who: 'JUDGE PENNYWHISTLE', text: 'AH-HA! Buried in the county charter, clause 44-B: the fair stands if a citizen demonstrates "form beyond reproach" — graded by certified FACULTY.', shot: 'judge' },
+    { who: 'SCHOOLMARM SUSIE', text: 'I grade in red ink and I have never given an A. Eighty-five percent, dear. Show your work.', shot: 'opp' },
+    { who: 'YOU', text: 'What happens below eighty-five?', shot: 'player' },
+    { who: 'SCHOOLMARM SUSIE', text: 'Detention. For the ENTIRE fair.', shot: 'opp' },
   ],
   f3c2: [
-    { who: 'JUDGE PENNYWHISTLE', text: "The demolition foreman. He does not argue. He does not blink. He STANDS where buildings are meant to fall.", shot: 'wide' },
+    { who: 'JUDGE PENNYWHISTLE', text: "The demolition foreman. He does not argue. He does not blink. He STANDS where buildings are meant to fall.", shot: 'judge' },
     { who: 'IRON-JAW McGRAW', text: 'Was that the wind?', shot: 'opp' },
     { who: 'YOU', text: "I haven't slapped you yet.", shot: 'player' },
     { who: 'IRON-JAW McGRAW', text: 'I was talking about your PLAN.', shot: 'opp' },
@@ -229,7 +230,8 @@ export const clearActive = () => { active = null; };
 export const goalText = () =>
   active ? `🎪 ${active.title} — ${active.desc.toUpperCase()}` : null;
 
-// score one attempt against the active challenge; persists + returns it on clear
+// score one attempt against the active challenge; persists + returns it on clear.
+// Replays of cleared challenges are welcome — they just can't clear twice.
 export function checkAttempt({ dist, pts, part, chainPct, oppKey }) {
   if (!active || isDone(active.id)) return null;
   if (active.opp && active.opp !== oppKey) return null;
@@ -246,8 +248,8 @@ export function checkAttempt({ dist, pts, part, chainPct, oppKey }) {
 }
 
 // ---- the tour menu card (self-contained DOM) ----
-// Locked acts are SEALED: title only, no story, no challenge list — the tale
-// reveals itself act by act instead of spoiling the whole arc up front.
+// Locked acts are SEALED (no spoilers); cleared challenges stay clickable so
+// any chapter can be replayed.
 const $ = (id) => document.getElementById(id);
 export function open(onStart) {
   const wrap = $('tourActs');
@@ -273,8 +275,8 @@ export function open(onStart) {
       act.challenges.forEach((c) => {
         const row = document.createElement('div');
         row.className = 'tourCh' + (isDone(c.id) ? ' done' : '');
-        row.innerHTML = `<span class="tick">${isDone(c.id) ? '✅' : '⬜'}</span><span><b>${c.title}</b><br>${c.desc}</span>`;
-        if (!isDone(c.id)) row.onclick = () => onStart(c);
+        row.innerHTML = `<span class="tick">${isDone(c.id) ? '✅' : '⬜'}</span><span><b>${c.title}</b>${isDone(c.id) ? ' <small>↻ replay</small>' : ''}<br>${c.desc}</span>`;
+        row.onclick = () => onStart(c);
         box.appendChild(row);
       });
       wrap.appendChild(box);

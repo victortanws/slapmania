@@ -55,8 +55,9 @@ export const SLAPPERS = [
   },
   {
     key: 'victor', name: 'VICTOR SEPUP', desc: 'Built the fair. Slaps in it.',
-    skin: 0xe8c39a, shirt: 0x3b7dd8, pants: 0x33415c,
+    skin: 0xe8c39a, shirt: 0x1c1c22, pants: 0x33415c,   // black jacket
     hair: 'short', hairCol: 0x181820, beard: null,
+    hat: 'cap', hatCol: 0x141418, capMark: true,        // black cap, ▽ mark
     height: 0.99, arm: 1.0, power: 1.02,
   },
   {
@@ -507,7 +508,23 @@ export class Player {
         g.add(chin);
       }
     }
-    if (L.hat === 'straw') {
+    if (L.hat === 'cap') {
+      // a modern ball cap: low dome, front bill, optional ▽ mark (flat edge up)
+      const dome = new THREE.Mesh(new THREE.SphereGeometry(0.175, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), toonMat(L.hatCol || 0x16161c));
+      dome.scale.set(1, 0.7, 1.05);
+      dome.position.set(-0.015, 0.055, 0);
+      g.add(dome);
+      const bill = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.02, 0.155), toonMat(L.hatCol || 0x16161c));
+      bill.position.set(0.165, 0.07, 0);
+      g.add(bill);
+      if (L.capMark) {
+        const tri = new THREE.Mesh(new THREE.CircleGeometry(0.045, 3), toonMat(0xf2ede1));
+        tri.rotation.y = Math.PI / 2;      // face forward
+        tri.rotation.z = -Math.PI / 2;     // one vertex down — flat edge up
+        tri.position.set(0.158, 0.115, 0);
+        g.add(tri);
+      }
+    } else if (L.hat === 'straw') {
       const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.025, 14), toonMat(0xd9b96a));
       brim.position.set(-0.01, 0.1, 0);
       g.add(brim);

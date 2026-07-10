@@ -1812,6 +1812,61 @@ export function createStage(canvas) {
     }
   }
 
+  // --- campaign cast: Master Slee's ghost + Judge Pennywhistle, ringside ---
+  // Simple stage figures (no physics) shown during cutscenes; cinePoints gives
+  // the dialogue camera their heads for 3/4 close-ups.
+  const spiritG = new THREE.Group();
+  {
+    const ghost = (c, o) => { const m = toonMat(c); m.transparent = true; m.opacity = o; return m; };
+    const tail = new THREE.Mesh(new THREE.ConeGeometry(0.34, 1.0, 10), ghost(0xbfe8ff, 0.4));
+    tail.rotation.x = Math.PI; tail.position.y = 0.5; spiritG.add(tail);
+    const robe = new THREE.Mesh(new THREE.CapsuleGeometry(0.26, 0.5, 4, 10), ghost(0xd6f0ff, 0.55));
+    robe.position.y = 1.25; spiritG.add(robe);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.17, 12, 12), ghost(0xe8f8ff, 0.85));
+    head.position.y = 1.85; spiritG.add(head);
+    for (const s of [-1, 1]) {
+      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.02, 6, 6), toonMat(0x2a4a5e));
+      eye.position.set(0.145, 1.88, s * 0.055); spiritG.add(eye);
+    }
+    const beard = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.3, 8), ghost(0xffffff, 0.9));
+    beard.rotation.x = Math.PI; beard.position.set(0.12, 1.68, 0); spiritG.add(beard);
+    const knot = new THREE.Mesh(new THREE.SphereGeometry(0.055, 8, 8), ghost(0xffffff, 0.9));
+    knot.position.set(-0.04, 2.05, 0); spiritG.add(knot);
+    spiritG.position.set(-2.3, 0.55, -1.7);   // floating left of the ring
+    spiritG.visible = false;
+    scene.add(spiritG);
+  }
+  const judgeG = new THREE.Group();
+  {
+    const robe = new THREE.Mesh(new THREE.CapsuleGeometry(0.24, 0.72, 4, 10), toonMat(0x1b1b22));
+    robe.position.y = 0.75; judgeG.add(robe);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.16, 12, 12), toonMat(0xe2b688));
+    head.position.y = 1.42; judgeG.add(head);
+    for (const s of [-1, 1]) {
+      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.02, 6, 6), toonMat(0x111111));
+      eye.position.set(0.135, 1.45, s * 0.05); judgeG.add(eye);
+      const puff = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), toonMat(0xf2ede1));
+      puff.position.set(-0.02, 1.5, s * 0.13); judgeG.add(puff);
+    }
+    const beard = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.12, 0.1), toonMat(0xf2ede1));
+    beard.position.set(0.13, 1.3, 0); judgeG.add(beard);
+    const whistle = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.025, 0.028), toonMat(0xc9ced6));
+    whistle.position.set(0.17, 1.36, 0.03); judgeG.add(whistle);
+    const tie = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.2, 0.05), toonMat(0xd8b13c));
+    tie.position.set(0.235, 1.05, 0); judgeG.add(tie);
+    judgeG.traverse((m) => { m.castShadow = true; });
+    judgeG.position.set(3.1, 0, -3.6);        // ringside, behind the rail
+    judgeG.rotation.y = 0.5;                  // angled toward the ring
+    judgeG.visible = false;
+    scene.add(judgeG);
+  }
+  const setSpirit = (on) => { spiritG.visible = on; };
+  const setJudge = (on) => { judgeG.visible = on; };
+  const cinePoints = {
+    spirit: () => new THREE.Vector3(spiritG.position.x, spiritG.position.y + 1.85, spiritG.position.z),
+    judge: () => new THREE.Vector3(judgeG.position.x, judgeG.position.y + 1.42, judgeG.position.z),
+  };
+
   // --- world themes: Day Fair / Night Fair / Frozen Lake ---
   // Same geometry, retinted + relit (the ice friction flip lives in ragdoll.js;
   // main.js drives both). Night gets string lanterns along the ring + stars.
@@ -1869,5 +1924,6 @@ export function createStage(canvas) {
     breakBarricade, resetBarricade, isBarricadeBroken: () => barricade.broken,
     sunMood, currentSunMood: () => sunCurrent, cowMoo, kidsCelebrate, spawnConfetti,
     summonSpirits, spawnBeam, spawnSparkles, slapDuel, scareBirds, solids, setWorldTheme,
+    setSpirit, setJudge, cinePoints,
   };
 }
