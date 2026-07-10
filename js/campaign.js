@@ -215,6 +215,23 @@ export const CUTSCENES = {
   ],
 };
 
+// failure beats — short, replayable, a little cruel. Keyed by tour prefix
+// ('a' = Palm, 'f' = Fair); rotated so repeated failure stays fresh-ish.
+export const FAILS = {
+  a: [
+    [{ who: '👻 MASTER SLEE', text: 'We do not speak of that swing. Again.', shot: 'spirit' },
+     { who: 'YOU', text: "...I had it. And then I didn't.", shot: 'player' }],
+    [{ who: '👻 MASTER SLEE', text: 'Sixty years I waited for a student. I can wait one more attempt. Barely.', shot: 'spirit' },
+     { who: 'YOU', text: 'The palm was listening. To the wrong instructions.', shot: 'player' }],
+  ],
+  f: [
+    [{ who: 'JUDGE PENNYWHISTLE', text: 'The court has seen stronger breezes. Motion to try again: granted.', shot: 'judge' },
+     { who: 'YOU', text: '...objection noted.', shot: 'player' }],
+    [{ who: 'JUDGE PENNYWHISTLE', text: 'I have officiated pie-eating contests with more menace in them. Again, champ.', shot: 'judge' },
+     { who: 'YOU', text: 'The fair deserves better. One more swing.', shot: 'player' }],
+  ],
+};
+
 export const enabled = () =>
   CAMPAIGN_LIVE || new URLSearchParams(location.search).get('tour') === '1';
 

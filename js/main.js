@@ -68,6 +68,7 @@ let chosenArch = null;
 // borrow the same banner slot
 let rivalBarText = null;
 let lastClearedId = null; // set when a tour goal clears — an outro may follow
+let failIdx = 0;          // rotates the failure-scene pool
 function restoreBar() { ui.challengeBar(rivalBarText); }
 let pickIndex = 0;
 let pickHighlight = null;
@@ -360,9 +361,15 @@ function goToTitle() {
 
 // cinema mode: letterbox in, HUD out, and the campaign cast steps on stage —
 // Master Slee's ghost materializes for his lines, the Judge stands ringside
-function playScene(lines, after) {
+function playScene(lines, after, opts = {}) {
   const cast = lines.map((l) => l.who).join(' ');
   document.body.classList.add('cine');
+  if (opts.sad) {
+    // the walk of shame: shoulders forward, head hung — held while frozen
+    player.j.spine.a = -0.4; player.j.spine.v = 0;
+    player.j.shoulder.a = 0.3; player.j.shoulder.v = 0;
+    player.pose();
+  }
   if (cast.includes('MASTER SLEE')) stage.setSpirit(true);
   if (cast.includes('BRUCE SLEE')) stage.setBruce(true);   // the partner stands in frame
   if (cast.includes('PENNYWHISTLE') || campaign.active) stage.setJudge(true);
@@ -404,13 +411,6 @@ function openTourMenu() {
   ui.hideCards();
   ui.bubble(null);
   restoreBar();
-  // the prologue: Bruce and the master, and the technique he died 1% short of —
-  // plays once, before the menu ever shows
-  if (campaign.CUTSCENES.palm_prologue && !seenScene('palm_prologue')) {
-    markScene('palm_prologue');
-    playScene(campaign.CUTSCENES.palm_prologue, () => openTourMenu());
-    return;
-  }
   campaign.open((ch) => {
     campaign.setActive(ch);
     campaign.close();
@@ -421,16 +421,22 @@ function openTourMenu() {
       if (arch) { chosenArch = arch; startMatch(); }  // the challenge names its victim
       else openOppPick();                             // "anybody" — player's choice
     };
-    // story beats: every challenge opens with a scene, once (slapp_seen).
-    // Named opponents: launch first so their close-ups have a subject, scene
-    // plays over the frozen faceoff. "Anybody" scenes (player/wide shots only)
-    // play over the open farm, then hand off to the volunteer pick.
+    // story beats, once each (slapp_seen). Entering the Palm campaign for the
+    // FIRST time prepends the prologue (Bruce and the master, and the technique
+    // he died one percent short of). Named opponents launch first so their
+    // close-ups have a subject; the scene plays over the frozen faceoff.
+    let lines = [];
+    if (ch.id[0] === 'a' && campaign.CUTSCENES.palm_prologue && !seenScene('palm_prologue')) {
+      markScene('palm_prologue');
+      lines.push(...campaign.CUTSCENES.palm_prologue);
+    }
     const cine = campaign.CUTSCENES[ch.id];
-    const seen = JSON.parse(localStorage.getItem('slapp_seen') || '[]');
-    if (cine && !seen.includes(ch.id)) {
-      seen.push(ch.id);
-      localStorage.setItem('slapp_seen', JSON.stringify(seen));
-      const lines = cine.map((l) => (l.who === 'YOU' ? { ...l, who: player.look.name } : l));
+    if (cine && !seenScene(ch.id)) {
+      markScene(ch.id);
+      lines.push(...cine);
+    }
+    if (lines.length) {
+      lines = lines.map((l) => (l.who === 'YOU' ? { ...l, who: player.look.name } : l));
       if (arch) { launch(); playScene(lines); }
       else playScene(lines, launch);
     } else launch();
@@ -733,6 +739,9 @@ function advance() {
 }
 
 function setupGlobalPanel(bestAttempt) {
+  // campaign matches stay in the story — no worldwide boards, no score posting;
+  // the rankings belong to quick play
+  if (campaign.active) { ui.showGlobal(false); return; }
   if (!net.configured()) { ui.showGlobal(false); return; }
   ui.showGlobal(true);
   ui.renderGlobal(null);
@@ -793,6 +802,7 @@ function advanceScreens(code) {
     // never lingers as the quick-match default. Final bosses get their payoff
     // scene (the master rests / the verdict) before the menu returns.
     if (campaign.active) {
+      const failedId = !lastClearedId && !campaign.isDone(campaign.active.id) ? campaign.active.id : null;
       campaign.clearActive();
       if (chosenArch && chosenArch.boss) chosenArch = null;
       restoreBar();
@@ -802,6 +812,12 @@ function advanceScreens(code) {
       if (outro && !seenScene(outroId)) {
         markScene(outroId);
         playScene(outro, () => openTourMenu());
+      } else if (failedId) {
+        // the goal stood: a short, humiliating beat — camera on your slumped hero
+        const pool = campaign.FAILS[failedId[0]] || [];
+        const fail = pool.length ? pool[failIdx++ % pool.length] : null;
+        if (fail) playScene(fail.map((l) => (l.who === 'YOU' ? { ...l, who: player.look.name } : l)), () => openTourMenu(), { sad: true });
+        else openTourMenu();
       } else openTourMenu();
       return true;
     }
@@ -954,7 +970,7 @@ function tick(now) {
       if (shot === 'opp') { tgt.copy(opponent.headPos()); off = new THREE.Vector3(-1.35, 0.3, 0.95); }
       else if (shot === 'spirit') { tgt.copy(stage.cinePoints.spirit()); off = new THREE.Vector3(1.4, 0.2, 1.0); }
       else if (shot === 'judge') { tgt.copy(stage.cinePoints.judge()); off = new THREE.Vector3(1.35, 0.3, 1.0); }
-      else if (shot === 'bruce') { tgt.copy(stage.cinePoints.bruce()); off = new THREE.Vector3(1.35, 0.25, 1.0); }
+      else if (shot === 'bruce') { tgt.copy(stage.cinePoints.bruce()); off = new THREE.Vector3(-1.35, 0.25, 1.0); }
       else { player.headMesh.getWorldPosition(tgt); off = new THREE.Vector3(1.35, 0.3, 0.95); }
       camera.position.lerp(tgt.clone().add(off), 1 - Math.exp(-5 * dt));
       camera.lookAt(tgt);

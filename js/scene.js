@@ -1832,7 +1832,7 @@ export function createStage(canvas) {
     beard.rotation.x = Math.PI; beard.position.set(0.12, 1.68, 0); spiritG.add(beard);
     const knot = new THREE.Mesh(new THREE.SphereGeometry(0.055, 8, 8), ghost(0xffffff, 0.9));
     knot.position.set(-0.04, 2.05, 0); spiritG.add(knot);
-    spiritG.position.set(-2.3, 0.55, -1.7);   // floating left of the ring
+    spiritG.position.set(-3.4, 0.75, -2.4);   // hovering, facing his grandson
     spiritG.visible = false;
     scene.add(spiritG);
   }
@@ -1874,8 +1874,10 @@ export function createStage(canvas) {
     const shades = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.05, 0.19), toonMat(0x0a0a10));
     shades.position.set(0.135, 1.57, 0); bruceG.add(shades);
     bruceG.traverse((m) => { m.castShadow = true; });
-    bruceG.position.set(-3.5, 0, -2.8);
-    bruceG.rotation.y = 0.8;
+    // he stands ACROSS from the hovering spirit, facing him — a conversation,
+    // not a totem pole
+    bruceG.position.set(-1.5, 0, -2.4);
+    bruceG.rotation.y = Math.PI;   // his face (+x features) turns toward grandfather
     bruceG.visible = false;
     scene.add(bruceG);
   }
