@@ -1860,11 +1860,32 @@ export function createStage(canvas) {
     judgeG.visible = false;
     scene.add(judgeG);
   }
+  // Bruce Slee — the heir stands beside his grandfather's ghost during scenes
+  const bruceG = new THREE.Group();
+  {
+    const legs = new THREE.Mesh(new THREE.CapsuleGeometry(0.16, 0.5, 4, 8), toonMat(0xf5c518));
+    legs.position.y = 0.5; bruceG.add(legs);
+    const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.2, 0.4, 4, 10), toonMat(0xe0ab7a));
+    torso.position.y = 1.05; bruceG.add(torso);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.155, 12, 12), toonMat(0xe0ab7a));
+    head.position.y = 1.55; bruceG.add(head);
+    const bowl = new THREE.Mesh(new THREE.SphereGeometry(0.165, 12, 10), toonMat(0x14100e));
+    bowl.scale.set(1, 0.8, 1.05); bowl.position.set(-0.02, 1.61, 0); bruceG.add(bowl);
+    const shades = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.05, 0.19), toonMat(0x0a0a10));
+    shades.position.set(0.135, 1.57, 0); bruceG.add(shades);
+    bruceG.traverse((m) => { m.castShadow = true; });
+    bruceG.position.set(-3.5, 0, -2.8);
+    bruceG.rotation.y = 0.8;
+    bruceG.visible = false;
+    scene.add(bruceG);
+  }
   const setSpirit = (on) => { spiritG.visible = on; };
   const setJudge = (on) => { judgeG.visible = on; };
+  const setBruce = (on) => { bruceG.visible = on; };
   const cinePoints = {
     spirit: () => new THREE.Vector3(spiritG.position.x, spiritG.position.y + 1.85, spiritG.position.z),
     judge: () => new THREE.Vector3(judgeG.position.x, judgeG.position.y + 1.42, judgeG.position.z),
+    bruce: () => new THREE.Vector3(bruceG.position.x, 1.55, bruceG.position.z),
   };
 
   // --- world themes: Day Fair / Night Fair / Frozen Lake ---
@@ -1924,6 +1945,6 @@ export function createStage(canvas) {
     breakBarricade, resetBarricade, isBarricadeBroken: () => barricade.broken,
     sunMood, currentSunMood: () => sunCurrent, cowMoo, kidsCelebrate, spawnConfetti,
     summonSpirits, spawnBeam, spawnSparkles, slapDuel, scareBirds, solids, setWorldTheme,
-    setSpirit, setJudge, cinePoints,
+    setSpirit, setJudge, setBruce, cinePoints,
   };
 }

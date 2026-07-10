@@ -364,10 +364,12 @@ function playScene(lines, after) {
   const cast = lines.map((l) => l.who).join(' ');
   document.body.classList.add('cine');
   if (cast.includes('MASTER SLEE')) stage.setSpirit(true);
+  if (cast.includes('BRUCE SLEE')) stage.setBruce(true);   // the partner stands in frame
   if (cast.includes('PENNYWHISTLE') || campaign.active) stage.setJudge(true);
   dlg.play(lines, () => {
     document.body.classList.remove('cine');
     stage.setSpirit(false);
+    stage.setBruce(false);
     stage.setJudge(false);
     if (after) after();
   });
@@ -780,6 +782,9 @@ function advanceScreens(code) {
   if (state === 'TITLE') { openSlapperPick(); return true; }
   if (code && KEYMAP[code]) return false;
   if (state === 'RESULT' && tState > 1.0) { advance(); return true; }
+  // the final scoreboard is for READING — only a click or Enter/Space moves on,
+  // so browsing the rankings can't be lost to a stray keystroke
+  if (state === 'MATCH_END' && code && code !== 'Enter' && code !== 'NumpadEnter' && code !== 'Space') return false;
   if (state === 'MATCH_END' && tState > 1.0) {
     // a tour match hands you back to the tour, checkmark freshly inked; a boss
     // never lingers as the quick-match default. Final bosses get their payoff
@@ -946,6 +951,7 @@ function tick(now) {
       if (shot === 'opp') { tgt.copy(opponent.headPos()); off = new THREE.Vector3(-1.35, 0.3, 0.95); }
       else if (shot === 'spirit') { tgt.copy(stage.cinePoints.spirit()); off = new THREE.Vector3(1.4, 0.2, 1.0); }
       else if (shot === 'judge') { tgt.copy(stage.cinePoints.judge()); off = new THREE.Vector3(1.35, 0.3, 1.0); }
+      else if (shot === 'bruce') { tgt.copy(stage.cinePoints.bruce()); off = new THREE.Vector3(1.35, 0.25, 1.0); }
       else { player.headMesh.getWorldPosition(tgt); off = new THREE.Vector3(1.35, 0.3, 0.95); }
       camera.position.lerp(tgt.clone().add(off), 1 - Math.exp(-5 * dt));
       camera.lookAt(tgt);

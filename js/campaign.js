@@ -91,9 +91,9 @@ export const TOURS = [
 export const CUTSCENES = {
   palm_prologue: [
     { who: '👻 MASTER SLEE', text: 'Sixty years I chased one perfect slap. The Fourth Form. I reached ninety-nine percent.', shot: 'spirit' },
-    { who: 'BRUCE SLEE', text: 'I trained under him from the day I could stand. Every morning, the same words: the last percent is not in the arm.', shot: 'wide' },
+    { who: 'BRUCE SLEE', text: 'I trained under him from the day I could stand. Every morning, the same words: the last percent is not in the arm.', shot: 'bruce' },
     { who: '👻 MASTER SLEE', text: 'I died mid-swing. Undignified. A master who never landed his own technique does not get to rest.', shot: 'spirit' },
-    { who: 'BRUCE SLEE', text: 'He asked me to finish it. I said no. Some doors you don\'t knock on twice.', shot: 'wide' },
+    { who: 'BRUCE SLEE', text: 'He asked me to finish it. I said no. Some doors you don\'t knock on twice.', shot: 'bruce' },
     { who: '👻 MASTER SLEE', text: 'So we find a stranger with an honest palm, and we finish it together. That would be you. Don\'t bow. Listen.', shot: 'spirit' },
   ],
   a1c1: [
@@ -114,10 +114,10 @@ export const CUTSCENES = {
     { who: '👻 MASTER SLEE', text: '...do not miss.', shot: 'spirit' },
   ],
   a2c1: [
-    { who: 'BRUCE SLEE', text: "You're still doing this, grandfather.", shot: 'wide' },
+    { who: 'BRUCE SLEE', text: "You're still doing this, grandfather.", shot: 'bruce' },
     { who: '👻 MASTER SLEE', text: 'Bruce. Watch the stranger. Scroll Two — a feather flies far and proves nothing.', shot: 'spirit' },
     { who: 'BIG BERTHA', text: "Six fairs, sugar. Don't insult me with a light one.", shot: 'opp' },
-    { who: 'BRUCE SLEE', text: 'Six hundred points. The old man used to call Bertha the only honest scale in the county.', shot: 'wide' },
+    { who: 'BRUCE SLEE', text: 'Six hundred points. The old man used to call Bertha the only honest scale in the county.', shot: 'bruce' },
   ],
   a2c2: [
     { who: 'BIG HOSS', text: "The ghost's been tryin' to move me since '86.", shot: 'opp' },
@@ -132,7 +132,7 @@ export const CUTSCENES = {
   a3c1: [
     { who: '👻 MASTER SLEE', text: 'Forget distance. The Maestro will listen to your chain.', shot: 'spirit' },
     { who: 'MAESTRO FORTISSIMO', text: 'I can hear a flat swivel from the parking lot. Ninety percent. In tune.', shot: 'opp' },
-    { who: 'BRUCE SLEE', text: 'This is the part where students quit.', shot: 'wide' },
+    { who: 'BRUCE SLEE', text: 'This is the part where students quit.', shot: 'bruce' },
   ],
   a3c2: [
     { who: '👻 MASTER SLEE', text: 'Anyone can throw a feather over the county line. Throw Hank. Pure form.', shot: 'spirit' },
@@ -145,7 +145,7 @@ export const CUTSCENES = {
   ],
   outro_a3c3: [
     { who: '👻 MASTER SLEE', text: "...so that's what the last percent feels like. It was never in the arm. It was in the letting go.", shot: 'spirit' },
-    { who: 'BRUCE SLEE', text: 'Rest, grandfather.', shot: 'wide' },
+    { who: 'BRUCE SLEE', text: 'Rest, grandfather.', shot: 'bruce' },
     { who: '👻 MASTER SLEE', text: "One more Sunday first. Mabel is owed a 'good.'", shot: 'spirit' },
   ],
   f1c1: [
