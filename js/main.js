@@ -67,6 +67,7 @@ let chosenArch = null;
 // the rival-gauntlet banner text (challenge links) — restored when tour goals
 // borrow the same banner slot
 let rivalBarText = null;
+let lastClearedId = null; // set when a tour goal clears — an outro may follow
 function restoreBar() { ui.challengeBar(rivalBarText); }
 let pickIndex = 0;
 let pickHighlight = null;
@@ -389,12 +390,25 @@ const REF_LINES = [
   'Proceed! Justice is best served open-palmed.',
 ];
 let refLineIdx = 0;
+const seenScene = (id) => JSON.parse(localStorage.getItem('slapp_seen') || '[]').includes(id);
+const markScene = (id) => {
+  const s = JSON.parse(localStorage.getItem('slapp_seen') || '[]');
+  if (!s.includes(id)) { s.push(id); localStorage.setItem('slapp_seen', JSON.stringify(s)); }
+};
+
 function openTourMenu() {
   setState('TOUR');
   ui.showTitle(false);
   ui.hideCards();
   ui.bubble(null);
   restoreBar();
+  // the prologue: Bruce and the master, and the technique he died 1% short of —
+  // plays once, before the menu ever shows
+  if (campaign.CUTSCENES.palm_prologue && !seenScene('palm_prologue')) {
+    markScene('palm_prologue');
+    playScene(campaign.CUTSCENES.palm_prologue, () => openTourMenu());
+    return;
+  }
   campaign.open((ch) => {
     campaign.setActive(ch);
     campaign.close();
@@ -629,6 +643,7 @@ function showResult() {
     });
     if (cleared) {
       line = `🎪 ${cleared.title} — CLEAR! ` + line;
+      lastClearedId = cleared.id;   // an outro may be owed at match end
       sfx.fanfare();
       track('tour_challenge_cleared', { id: cleared.id, title: cleared.title });
     }
@@ -767,12 +782,19 @@ function advanceScreens(code) {
   if (state === 'RESULT' && tState > 1.0) { advance(); return true; }
   if (state === 'MATCH_END' && tState > 1.0) {
     // a tour match hands you back to the tour, checkmark freshly inked; a boss
-    // never lingers as the quick-match default
+    // never lingers as the quick-match default. Final bosses get their payoff
+    // scene (the master rests / the verdict) before the menu returns.
     if (campaign.active) {
       campaign.clearActive();
       if (chosenArch && chosenArch.boss) chosenArch = null;
       restoreBar();
-      openTourMenu();
+      const outro = lastClearedId && campaign.CUTSCENES['outro_' + lastClearedId];
+      const outroId = 'outro_' + lastClearedId;
+      lastClearedId = null;
+      if (outro && !seenScene(outroId)) {
+        markScene(outroId);
+        playScene(outro, () => openTourMenu());
+      } else openTourMenu();
       return true;
     }
     openOppPick();
@@ -788,7 +810,13 @@ addEventListener('keydown', (e) => {
   if (e.code === 'Space') e.preventDefault();
   if (e.repeat) return;
   sfx.ensure();
-  if (dlg.isActive()) { if (e.code === 'Escape') dlg.stop(); else dlg.advance(); return; }
+  // dialogue: ENTER advances, ESC skips — stray S/L/A/P drumming can't blow
+  // through a scene (the box itself stays clickable for touch)
+  if (dlg.isActive()) {
+    if (e.code === 'Escape') dlg.stop();
+    else if (e.code === 'Enter' || e.code === 'NumpadEnter') dlg.advance();
+    return;
+  }
   if (e.code === 'Escape' && state !== 'TITLE') { goToTitle(); return; }
   if (state === 'TITLE' && e.code === 'KeyT' && campaign.enabled()) { openTourMenu(); return; }
   if (state === 'SELECT_SLAPPER' || state === 'SELECT_OPP') {
