@@ -40,6 +40,8 @@ protect the quirk?
 | 8 | Camera & cinematography validator | CAMERA | slap-cam :8988 | ✅ reported |
 | 9 | Scene & boss-arena designer | ARENA | slap-arena :8989 | ✅ reported |
 | 10 | Character creator (bosses/volunteers/slappers) | CREATOR | — | ✅ reported |
+| 11 | Comedy campaign designer (Charlie + Bruce/Chuck) | COMEDY | — | ✅ reported → BUILT (Batch 7) |
+| 12 | Rewards & milestone designer | REWARDS | slap-art :8991 | ✅ reported (ready-spec) |
 
 ## Consolidated findings & dispositions
 
@@ -429,16 +431,28 @@ Everything tonight is on branch **`overnight-polish`** — the live site is unto
 5. **Stripe LIVE key** — unchanged from before: still your action (swap STRIPE_SECRET_KEY→sk_live +
    STRIPE_PRICE_ID in Supabase, redeploy). Until then the 4242 test card "buys" free.
 
+### What shipped tonight (branch `overnight-polish`, 9 commits — all verified, all compile)
+Batch 1 mobile UI blockers · 2 mechanics (weave-graze + dead-code) · 3 campaign story fixes · 4 camera
+reframe + visual polish · 5 two exam bosses + a clown · 6 Ferris wheel + balloon · 7 **two full new
+campaigns** (Wonders/Charlie + Second Wind/Bruce→Chuck) + the CHUCK NORTH boss + the `secondWind`
+empowered-round mechanic · plus roast-pass fixes. Roast verdict on batches 1–6: SHIP-READY.
+
 ### Ready-to-build specs captured here, NOT built tonight (next session)
 Full buildable specs are in the sections above — these are the highest-value remaining expansion:
+- **REWARDS redesign** (role 12, analyzed + documented): the answer to your reward questions — keep the
+  mid-flight/landing SPLIT, keep thresholds identical per world but reskin the flavor, and the top-3 builds:
+  (1) 62m SLAPMASTER ceremony cam + descending spirits (fixes the audio-only bug), (2) relocate the 30m moo
+  to a lane-side cow the flyer sails over, (3) a new **100m "SLAP LEGEND" apex** to reward the rare ice/
+  featherweight monster flights. I stopped short of building it to avoid rushing a "refinement" pass that
+  wants careful per-milestone verification — it's fully specced and ready.
 - **DESERT world** (the marquee "expansion"): needs the `biomeMat`/`applyPalette` unified refactor first
   (~30 mechanical call-sites), then the `desertG` prop group. Full spec under "WORLD (role 6)". BUILD-WITH-
   CHANGES: keep tumbleweeds ambient/low-mass (no launch-deflecting dynamic bodies — GDES). Also Moon
   (low-gravity `setGravity` flip) is the #2-ROI world.
 - **Boss ARENA system** + Quarry/FightTent/Court/Pigpen/Dojo arenas — full spec under "ARENA (role 9)".
   Presentation-only, no rebalance. Would make the 7 bosses feel like bosses.
-- **New-boss campaign home**: MASTER MANTIS + TICK-TOCK TOM render + their mechanics work, but need a tour
-  challenge to appear in-game — CREATOR's "School of Slapping" tour (Trial of Coil/Lunge/Whip/Palm).
+- ~~New-boss campaign home~~ **SOLVED tonight**: MASTER MANTIS + TICK-TOCK TOM now have a home — they're the
+  REEL III / REEL II bosses of the new "Wonders of Slapping" tour (Batch 7).
 - **Remaining ART polish** (all cheap): A2 volunteer footwear (dark stump legs), A3 night-world lift,
   A4 Roy/Victor dark-blob accents, A7 Bruce dragon-tattoo size, A9 ice crowd "lily-pad" discs, A11 title
   HUD label contrast.
