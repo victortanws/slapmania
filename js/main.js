@@ -216,9 +216,15 @@ const SLAPPER_TITLES = ['THE NATURAL', 'THE TECHNICIAN', 'THE VETERAN', 'THE OUT
 // test link and already have entries in localStorage.slapp_unlocks. Flip to true
 // only once Stripe checkout (Phase 2) is actually wired and ready to take payment.
 const DLC_LIVE = false;
+// SHOP: flip with DLC_LIVE at launch; ?shoptest=1 enables the (test-mode)
+// Stripe checkout for end-to-end testing before the public sees a working BUY.
+const SHOP_LIVE = false;
+const shopEnabled = () => SHOP_LIVE || new URLSearchParams(location.search).get('shoptest') === '1';
 let unlocks = [];
 try { unlocks = JSON.parse(localStorage.getItem('slapp_unlocks') || '[]'); } catch { unlocks = []; }
-const owned = (key) => DLC_LIVE && unlocks.includes(key);
+// a VERIFIED purchase (slapp_pack, set only by verify-checkout) legitimately
+// bypasses the kill switch — DLC_LIVE guards the dev backdoors, not real buyers
+const owned = (key) => (DLC_LIVE && unlocks.includes(key)) || localStorage.getItem('slapp_pack') === '1';
 function unlock(key) {
   if (!unlocks.includes(key)) {
     unlocks.push(key);
@@ -248,7 +254,21 @@ function openUnlockModal(char) {
 function closeUnlockModal() { um.modal.classList.add('hidden'); unlockTarget = null; }
 if (um.modal) {
   um.close.onclick = closeUnlockModal;
-  um.buy.onclick = () => { um.msg.textContent = 'Checkout opens soon — hang tight! 🛒'; };
+  um.buy.onclick = async () => {
+    if (!shopEnabled()) { um.msg.textContent = 'Checkout opens soon — hang tight! 🛒'; return; }
+    um.msg.textContent = 'Opening checkout…';
+    try {
+      const r = await fetch(`${window.SLAPP_CONFIG.supabaseUrl}/functions/v1/create-checkout`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${window.SLAPP_CONFIG.supabaseAnonKey}`, apikey: window.SLAPP_CONFIG.supabaseAnonKey },
+      });
+      const d = await r.json();
+      if (d && d.url) { location.href = d.url; return; }  // off to Stripe's hosted page
+      um.msg.textContent = 'Checkout stumbled — try again in a spell.';
+    } catch {
+      um.msg.textContent = 'Checkout stumbled — try again in a spell.';
+    }
+  };
   um.redeem.onclick = () => {
     const code = um.code.value.trim().toUpperCase();
     if (DLC_LIVE && unlockTarget && code === 'SLAPDEV') {   // TEMP dev code — replace with server validation in Phase 2
@@ -1246,6 +1266,24 @@ let challenge = null;
     rivalBarText = `⚔️ ${challenge.by} CHALLENGES YOU — BEAT ${challenge.pts} PTS${oppArch ? ` VS ${oppArch.name}` : ''}`;
     ui.challengeBar(rivalBarText);
     track('challenge_opened', { by: challenge.by, pts: challenge.pts, opp: oppArch ? oppArch.name : null });
+  }
+}
+
+// ---- returning from Stripe: ?session_id= → verify server-side → unlock all ----
+{
+  const sid = new URLSearchParams(location.search).get('session_id');
+  if (sid && net.configured()) {
+    fetch(`${window.SLAPP_CONFIG.supabaseUrl}/functions/v1/verify-checkout?session_id=${encodeURIComponent(sid)}`, {
+      headers: { Authorization: `Bearer ${window.SLAPP_CONFIG.supabaseAnonKey}`, apikey: window.SLAPP_CONFIG.supabaseAnonKey },
+    }).then((r) => r.json()).then((d) => {
+      if (d && d.paid) {
+        localStorage.setItem('slapp_pack', '1');
+        ui.challengeBar('🏆 SUPPORTER PACK UNLOCKED — ALL SIX LEGENDS ARE YOURS. THANK YOU!');
+        sfx.fanfare();
+        track('pack_purchased', {});
+      }
+      history.replaceState(null, '', location.pathname);
+    }).catch(() => {});
   }
 }
 
