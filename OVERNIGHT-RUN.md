@@ -259,6 +259,16 @@ snapExam, coilExam, robe→longSleeves, windKey, paintedGrin, redNose, (dojo, st
 
 ## Improvements implemented
 
+### Batch 6 — always-on fair scenes (ARENA) — DONE + verified
+- **Fairground Ferris wheel** (behind the treeline at (15,6.4,−31)): red rim + 8 evenly-spaced colored
+  gondolas that stay upright while the wheel turns (cars repositioned each frame vs a spinning rim
+  sub-group), A-frame legs. Animated in updateAmbient. Finally makes every match read "COUNTY FAIR" and
+  gives TICK-TOCK TOM his home with zero extra geometry.
+- **Drifting hot-air balloon** (sky, y~30): red envelope + white band + basket + ropes, slow drift across
+  x (−16..76). Fills the frame during SLAPMASTER/EMPEROR arcs — shareable spectacle.
+- Both behind the crowd / high overhead → no colliders, flight lane + perimeter + caps untouched.
+  Verified: renders clean in-world, zero console errors (screenshots).
+
 ### Batch 5 — new cast: complete the S·L·A·P exam set (CREATOR) — DONE + verified
 - **MASTER MANTIS** (boss) — A/whip exam. Mechanic `snapExam`: `!ugly && ag.tier<3 ⇒ power*=0.45`,
   burst "NO SNAP!". Green robe (`robe`→longSleeves), bun topknot, white sage beard. Renders clean

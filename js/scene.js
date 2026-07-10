@@ -1481,8 +1481,73 @@ export function createStage(canvas) {
   ];
 
   // --- ambient life: windmill, wandering animals, clouds, a moody sun ---
+  // --- the fairground midway + a drifting balloon: this IS a county fair, so
+  // give the horizon a Ferris wheel that turns and a balloon crossing the sky
+  // during big launches. All behind the crowd / high overhead — no colliders. ---
+  const ferris = new THREE.Group();
+  const ferrisSpin = new THREE.Group();
+  const ferrisCars = [];
+  const FR = 6;
+  {
+    for (const zz of [-0.45, 0.45]) {
+      const rim = new THREE.Mesh(new THREE.TorusGeometry(FR, 0.16, 8, 30), toonMat(0xc23a3a));
+      rim.position.z = zz;
+      ferrisSpin.add(rim);
+    }
+    for (let i = 0; i < 8; i++) {
+      const spoke = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, FR * 2, 6), toonMat(0xe8e2d5));
+      spoke.rotation.z = (i / 8) * Math.PI;
+      ferrisSpin.add(spoke);
+    }
+    ferris.add(ferrisSpin);
+    const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 1.0, 10), toonMat(0xb0a89a));
+    hub.rotation.x = Math.PI / 2;
+    ferris.add(hub);
+    const carCols = [0xd8404f, 0x3f7fbf, 0xffd23f, 0x5fae5a, 0xe08a3a, 0x9a5fb0, 0xd8404f, 0x3f7fbf];
+    for (let i = 0; i < 8; i++) {
+      const car = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.75, 1.1), toonMat(carCols[i]));
+      car.userData.a = (i / 8) * Math.PI * 2;
+      ferrisCars.push(car);
+      ferris.add(car);
+    }
+    for (const sgn of [-1, 1]) {
+      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.24, 9, 6), toonMat(0x8a6a42));
+      leg.position.set(sgn * 2.6, -4.4, 0);
+      leg.rotation.z = sgn * 0.5;
+      ferris.add(leg);
+    }
+    ferris.position.set(15, 6.4, -31);
+    ferris.traverse((m) => { m.castShadow = true; });
+    scene.add(ferris);
+  }
+  const balloon = new THREE.Group();
+  {
+    const env = new THREE.Mesh(new THREE.SphereGeometry(2.2, 16, 12), toonMat(0xd8404f));
+    env.scale.set(1, 1.25, 1); env.position.y = 2.6;
+    balloon.add(env);
+    const band = new THREE.Mesh(new THREE.TorusGeometry(2.05, 0.28, 8, 20), toonMat(0xf2ede1));
+    band.rotation.x = Math.PI / 2; band.position.y = 2.6;
+    balloon.add(band);
+    const basket = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.6, 0.7), toonMat(0x7a5a34));
+    balloon.add(basket);
+    for (const [sx, sz] of [[-0.3, -0.3], [0.3, -0.3], [-0.3, 0.3], [0.3, 0.3]]) {
+      const rope = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 1.7, 4), toonMat(0x5a4632));
+      rope.position.set(sx, 1.05, sz);
+      balloon.add(rope);
+    }
+    balloon.position.set(40, 30, -6);
+    scene.add(balloon);
+  }
+
   function updateAmbient(dt, time) {
     fan.rotation.z += dt * 1.4;
+    ferrisSpin.rotation.z += dt * 0.22;
+    for (const car of ferrisCars) {
+      const a = car.userData.a + ferrisSpin.rotation.z;
+      car.position.set(Math.cos(a) * FR, Math.sin(a) * FR, 0);
+    }
+    balloon.position.x = 30 + Math.sin(time * 0.045) * 46;
+    balloon.position.y = 30 + Math.sin(time * 0.12) * 1.4;
     if (snowPts.visible) {
       const a = snowGeo2.attributes.position.array;
       for (let i = 0; i < SNOW_N; i++) {
