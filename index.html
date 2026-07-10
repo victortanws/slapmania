@@ -192,6 +192,11 @@ body.cine #dlg{bottom:calc(11vh + 16px);}
 #submitBtn{font-size:13px;padding:9px 14px;}
 #netMsg{font-family:Arial,sans-serif;font-weight:bold;font-size:12px;color:var(--yellow);margin-top:6px;min-height:16px;}
 
+/* ---- social share targets ---- */
+#shareRow{display:inline-flex;gap:8px;}
+.sharetgt{font-size:16px;line-height:1;width:42px;height:42px;padding:0;border-radius:9px;
+  background:#232840;color:#fff;border:3px solid #000;box-shadow:0 4px 0 #000;}
+.sharetgt:active{transform:translateY(3px);box-shadow:0 1px 0 #000;}
 /* ---- buy me a coffee ---- */
 .coffee{pointer-events:auto;display:inline-block;font-family:'Arial Black',Impact,sans-serif;font-size:13px;
   letter-spacing:1px;background:#ffdd57;color:#111;border:3px solid #000;border-radius:9px;padding:8px 16px;
@@ -512,8 +517,14 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
         <div id="netMsg"></div>
       </div>
     </div>
-    <div style="display:flex;gap:14px;align-items:center;">
+    <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center;">
       <button id="shareBtn">COPY BRAG TEXT</button>
+      <span id="shareRow">
+        <button class="sharetgt" data-net="x" title="Share on X">𝕏</button>
+        <button class="sharetgt" data-net="facebook" title="Share on Facebook">f</button>
+        <button class="sharetgt" data-net="whatsapp" title="Share on WhatsApp">🟢</button>
+        <button class="sharetgt" data-net="reddit" title="Share on Reddit">👽</button>
+      </span>
       <a class="coffee" href="https://buymeacoffee.com/victortanws" target="_blank" rel="noopener">☕ BUY ME A COFFEE</a>
     </div>
     <div style="font-family:Arial,sans-serif;font-weight:bold;font-size:9px;letter-spacing:1px;color:rgba(255,255,255,.6);text-shadow:1px 1px 0 #000;">

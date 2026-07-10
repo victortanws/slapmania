@@ -240,12 +240,15 @@ export function showMatch({ bestAttempt, line, board, shareUrl }) {
     ? board.map((b, i) =>
         `<div class="boardrow"><span>#${i + 1}</span><b>${b.pts} PTS</b><span>${b.dist.toFixed(1)}m vs ${b.opp}</span></div>`).join('')
     : '<div class="boardrow">No slaps on record.</div>');
+  // a challenge link carries the score to beat — the share IS the head-to-head
+  const url = shareUrl || document.querySelector('meta[property="og:url"]')?.content || location.href;
+  const txt = `I scored ${bestAttempt.pts} PTS slapping ${bestAttempt.opp} ${bestAttempt.dist.toFixed(1)}m across a farm in SLAPMANIA! Four keys — S·L·A·P. Can you beat it?`;
+  const trackShare = (net) => {
+    try { window.posthog?.capture('share_clicked', { net, pts: bestAttempt.pts, dist: +bestAttempt.dist.toFixed(1), opp: bestAttempt.opp }); } catch {}
+  };
   el.shareBtn.textContent = navigator.share ? 'SHARE MY SLAP' : 'COPY BRAG TEXT';
   el.shareBtn.onclick = async () => {
-    try { window.posthog?.capture('share_clicked', { pts: bestAttempt.pts, dist: +bestAttempt.dist.toFixed(1), opp: bestAttempt.opp }); } catch {}
-    // a challenge link carries the score to beat — the share IS the head-to-head
-    const url = shareUrl || document.querySelector('meta[property="og:url"]')?.content || location.href;
-    const txt = `I scored ${bestAttempt.pts} PTS slapping ${bestAttempt.opp} ${bestAttempt.dist.toFixed(1)}m across a farm in SLAPMANIA! Four keys — S·L·A·P. Can you beat it?`;
+    trackShare(navigator.share ? 'native' : 'copy');
     // native share sheet where available (mobile: Facebook, Messages, WhatsApp…);
     // fall back to clipboard on browsers without the Web Share API.
     if (navigator.share) {
@@ -257,6 +260,20 @@ export function showMatch({ bestAttempt, line, board, shareUrl }) {
       () => { el.shareBtn.textContent = `${txt} ${url}`; }
     );
   };
+  // explicit one-click social targets — desktop has no share sheet, so these
+  // open the network's own composer pre-filled with the brag + challenge link
+  const SHARE_URLS = {
+    x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(txt)}&url=${encodeURIComponent(url)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+    whatsapp: `https://wa.me/?text=${encodeURIComponent(`${txt} ${url}`)}`,
+    reddit: `https://www.reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(txt)}`,
+  };
+  document.querySelectorAll('.sharetgt').forEach((b) => {
+    b.onclick = () => {
+      trackShare(b.dataset.net);
+      window.open(SHARE_URLS[b.dataset.net], '_blank', 'noopener,width=640,height=560');
+    };
+  });
 }
 
 export function hideCards() {
