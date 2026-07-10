@@ -73,6 +73,7 @@ export const SLAPPERS = [
     skin: 0xf0c9a0, shirt: 0xd83a3a, pants: 0x35507a,
     hair: 'short', hairCol: 0xc24a1e, beard: null,
     hat: 'cowboy', bigHat: true, suspenders: 0x2a2f45, freckles: true,
+    slapArm: 3.4,  // the DYNAMITE: one comically enormous slapping arm
     height: 0.85, arm: 0.94, power: 0.80,
     locked: true, price: 4,
   },
@@ -148,6 +149,11 @@ export class Player {
     this._tracked = false;
 
     this.buildMeshes();
+    // pose() integrates armLift/strikeLift — without these the first pose is
+    // NaN and the whole weapon arm vanishes on title/pick/preview screens
+    this.armLift = -1.15;
+    this._armed = false;
+    this.strikeLift = 0;
     this.pose();
   }
 
@@ -162,6 +168,7 @@ export class Player {
     this.scene.add(root);
     const A = this.phys.arm;
     const AR = typeof L.bigArms === 'number' ? L.bigArms : (L.bigArms ? 2.3 : 1);  // arm thickness multiplier
+    const ARR = typeof L.slapArm === 'number' ? L.slapArm : AR;  // the WEAPON arm can outgrow the off arm
 
     for (const s of [-1, 1]) {
       const leg = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.75, 3, 8), T(L.pants)));
@@ -330,13 +337,13 @@ export class Player {
     const shoulderG = this.shoulderG = new THREE.Group();
     shoulderG.position.set(0.02, 0.44, -0.25);
     torsoG.add(shoulderG);
-    const shoulderBall = M(new THREE.Mesh(new THREE.SphereGeometry(0.08 * AR, 10, 10), SM()));
+    const shoulderBall = M(new THREE.Mesh(new THREE.SphereGeometry(0.08 * ARR, 10, 10), SM()));
     shoulderG.add(shoulderBall);
-    const ua = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.055 * AR, 0.24 * A, 3, 8), T(L.skin)));
+    const ua = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.055 * ARR, 0.24 * A, 3, 8), T(L.skin)));
     ua.rotation.z = -Math.PI / 2;
     ua.position.set(0.17 * A, 0, 0);
     shoulderG.add(ua);
-    const sleeveR = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.072 * AR, 0.13, 3, 8), SM()));
+    const sleeveR = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.072 * ARR, 0.13, 3, 8), SM()));
     sleeveR.rotation.z = -Math.PI / 2;
     sleeveR.position.set(0.08 * A, 0, 0);
     shoulderG.add(sleeveR);
@@ -344,9 +351,9 @@ export class Player {
     const elbowG = this.elbowG = new THREE.Group();
     elbowG.position.set(0.34 * A, -0.03, 0);
     shoulderG.add(elbowG);
-    const elbowBall = M(new THREE.Mesh(new THREE.SphereGeometry(0.06 * AR, 10, 10), T(L.skin)));
+    const elbowBall = M(new THREE.Mesh(new THREE.SphereGeometry(0.06 * ARR, 10, 10), T(L.skin)));
     elbowG.add(elbowBall);
-    const fa = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.05 * AR, 0.22 * A, 3, 8), T(L.skin)));
+    const fa = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.05 * ARR, 0.22 * A, 3, 8), T(L.skin)));
     fa.rotation.z = -Math.PI / 2;
     fa.position.set(0.15 * A, 0, 0);
     elbowG.add(fa);
@@ -354,6 +361,7 @@ export class Player {
     // red wristband marks THE slapping hand
     const band = M(new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.1, 0.1), T(0xff4757)));
     band.position.set(0.27 * A, 0, 0);
+    band.scale.setScalar(Math.max(1, ARR * 0.8)); // stays visible on giant forearms
     elbowG.add(band);
 
     // a real mitt: palm + four fingers + thumb. The fingers stay CURLED in a
@@ -362,6 +370,7 @@ export class Player {
     const SKIN2 = new THREE.Color(L.skin).lerp(new THREE.Color(0xffffff), 0.14).getHex();
     const handG = this.handG = new THREE.Group();
     handG.position.set(0.31 * A, 0, 0);
+    handG.scale.setScalar(1 + (ARR - 1) * 0.3); // a giant arm earns a bigger mitt
     elbowG.add(handG);
     const wristBall = M(new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 8), T(SKIN2)));
     handG.add(wristBall);

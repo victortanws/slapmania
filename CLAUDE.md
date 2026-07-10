@@ -335,19 +335,46 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   STRIPE_PRICE_ID secret, redeploy both functions from supabase/functions/.
   World selection is three explicit buttons (.worldOpt, active wears red).
   slap-preview moved to port 8996 (8995 collided with another session).
-- **Frozen Lake winter kit (2026-07-10)**: `setWorldTheme('ice')` now dresses
-  the whole county — `winterG` (horizon mountain ring, 3 snowmen w/ carrot
-  noses + coal eyes + scarves, 2 snow-kids mid-snowball-fight, 2 skaters carving
-  circles on the pond — animated in `updateAmbient`), 850-particle falling snow,
-  pond retinted to blue ice, cowgirl in white fur coat + fur arm-sleeves
-  (`furCuffs` ride her arm groups), crowd instance colors → winter whites.
-  The generic **frost system** (`winterMat(mat, winterHex)` for materials,
-  `winterIM(im, n, winterHex)` for instanced meshes, applied by `setFrost(on)`)
-  freezes corn→straw, tree puffs/orchard canopies→snow, conifers→frost-green,
-  hills→white, sunflowers→dead brown, reeds→straw; summer colors are saved
-  lazily on first frost, restore verified both directions. Wan winter sun =
-  sunFace tint 0xcfdce6 @ 0.6 opacity. Register any NEW greenery with
-  winterMat/winterIM or it will stay summer-green on the lake.
+- **Frozen Lake winter kit v2 (2026-07-10)**: `setWorldTheme('ice')` REPLACES
+  the farm, not just retints it — farmhouses hide and **igloos** stand on their
+  exact spots (physics boxes unchanged, so flyers still bounce off the "buried
+  homes"); ALL fences hide (`fenceBits`, incl. the x26-74 rustic rail fence)
+  with snow drifts along the old lines; laundry cloths hide; the 20m plank
+  barricade swaps for a **pile of snow boulders** (`summerBarricade` /
+  `snowBarricade` visibility pairs — the boulders are pushed into
+  `barricade.pieces`, so breakBarricade blasts them and resetBarricade restacks).
+  Wildlife in `winterG` animated in updateAmbient's snow block: 3 **reindeer**
+  (red-nosed leader circles (29,14), one circles (60,20), one grazes at
+  (48,-17) over a dug patch), 2 **polar bears** (ivory 0xe9e2cf — pure white
+  was invisible on snow; amble x14-50@z29.5, x30-68@z-20), 2 skaters on the
+  pond, 3 snowmen (eyes must sit OUTSIDE the head sphere r=.25 — buried eyes
+  bite), snow-kids + snowballs (blue-gray 0xd4dfe9 to read on snow), mountains.
+  **Conifers get instanced white snow caps** (`coniferCaps`, same matrices,
+  cap center y=3.2+1.75·sy, scale (sc·.55, sy·.5)). Barn roof gets snow-load
+  slabs. Crowd swaps to **muted colored winter coats** (COATS palette — all
+  white read as snowmen). Frost system (`winterMat`/`winterIM`/`setFrost`):
+  hay→snow (shared hayMat/hayEnd = bales AND 62m crash wall), corn→straw,
+  canopies/fruit→snow-white, pumpkins→frosted, hills white, sunflowers dead,
+  reeds straw. Summer colors save lazily; restore verified both directions.
+  **Register any NEW greenery/structure with the frost system or a visibility
+  pair, or it will sit summer-fresh on the lake.** Wan sun = tint 0xcfdce6 @0.6.
+- **Layout guardrails**: quip/judge lines live on `ui.refBar` (bottom:158px,
+  196px mobile) and `#meters` reach that height on mobile (`body.touch`
+  bottom:100px + column layout) — so refBar is **faceoff-only**: it is cleared
+  in tick() at the exact FACEOFF→SWING frame (with bubble/intro). Never show
+  refBar during SWING/FLIGHT. All other overlay bars (coach/challengeBar/intro/
+  clock) are top-anchored and safe.
+- **LIL' DYNAMITE giant arm**: new `slapArm: <num>` look flag scales ONLY the
+  weapon arm (shoulder ball, ua, sleeve, elbow, fa; hand scales 1+(n−1)·0.3,
+  wristband ·0.8) — `bigArms` still scales both. Dynamite = 3.4 (biggest in
+  game; Bruce 1.9, Chuck/Earl 2.3). Physics untouched — visual gag only.
+- **Player pose NaN (fixed, don't regress)**: `armLift/_armed/strikeLift` are
+  initialized in the constructor before the first `pose()` — they used to be
+  set only in `reset()`, so `armLift += …` was NaN and the ENTIRE weapon arm
+  vanished on title/pick/`?preview=` screens (matches were fine — startAttempt
+  resets). `makeTextTexture` has maxWidth 500 (long signs squeezed, not
+  clipped). Farmhouse gable = geometry-rotated prism (rotateY(π) then
+  rotateX(π/2), apex up, ridge along z) — mesh euler + scale gave bat wings.
 - **Influencer selfie stick**: braced-arm eulers are positive (ez 0.5/0.45,
   shoulder→elbow→hand chain) — negative eulers scatter the limb into a "third
   arm". Stick is black 0x15151c, r 0.02 (pale gray vanished against the sky and

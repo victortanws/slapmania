@@ -22,7 +22,7 @@ function makeTextTexture(text, color = '#ffffff') {
   g.textAlign = 'center';
   g.textBaseline = 'middle';
   g.fillStyle = color;
-  g.fillText(text, 256, 68);
+  g.fillText(text, 256, 68, 500); // maxWidth: long names squeeze instead of clipping
   const tex = new THREE.CanvasTexture(cv);
   tex.anisotropy = 4;
   return tex;
@@ -243,10 +243,12 @@ export function createStage(canvas) {
   });
   postIM.castShadow = true;
   scene.add(postIM);
+  const fenceBits = [postIM]; // hidden on the Frozen Lake — snow drifts take over
   for (const s of [-1, 1]) for (const ry of [0.42, 0.8]) {
     const rail = new THREE.Mesh(new THREE.BoxGeometry(66.5, 0.08, 0.06), woodMat);
     rail.position.set(25, ry, s * 2.92);
     scene.add(rail);
+    fenceBits.push(rail);
   }
 
   // festive bunting — kept well clear of the camera's view of the ring
@@ -361,23 +363,27 @@ export function createStage(canvas) {
   scene.add(tractor);
 
   // --- farmhouses: proper homesteads scattered across the county ---
+  const farmhouses = [];
   function farmhouse(x, z, ry, wallCol, s = 1, sign = null) {
     const fh = new THREE.Group();
     const body = new THREE.Mesh(new THREE.BoxGeometry(7, 11, 17), toonMat(wallCol));
     body.position.y = 5.5;
     fh.add(body);
-    const gable = new THREE.Mesh(new THREE.CylinderGeometry(6.2, 6.2, 7, 3, 1), toonMat(wallCol));
-    gable.rotation.set(Math.PI / 2, 0, 0);
-    gable.position.y = 12.5;
-    gable.scale.set(1, 1, 0.55);
+    // gable prism sized to the 7-wide body, ridge running the 17-deep z axis
+    const gGeo = new THREE.CylinderGeometry(3.5, 3.5, 17, 3, 1);
+    gGeo.rotateY(Math.PI);     // put the triangle's apex vertex where...
+    gGeo.rotateX(Math.PI / 2); // ...this tips it to point straight up
+    const gable = new THREE.Mesh(gGeo, toonMat(wallCol));
+    gable.position.y = 11.0;
+    gable.scale.y = 0.75;
     fh.add(gable);
-    const roofL = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.3, 9.6), toonMat(0x5a4632));
-    roofL.position.set(0, 14.2, -4.4);
-    roofL.rotation.x = 0.62;
+    const roofL = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.3, 17.6), toonMat(0x5a4632));
+    roofL.position.set(-1.85, 12.35, 0);
+    roofL.rotation.z = -0.62;
     fh.add(roofL);
     const roofR = roofL.clone();
-    roofR.position.z = 4.4;
-    roofR.rotation.x = -0.62;
+    roofR.position.x = 1.85;
+    roofR.rotation.z = 0.62;
     fh.add(roofR);
     const door = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 4.6), toonMat(0xf2ede1));
     door.position.set(-3.52, 2.3, 0);
@@ -406,6 +412,7 @@ export function createStage(canvas) {
     fh.rotation.y = ry;
     fh.position.set(x, 0, z);
     scene.add(fh);
+    farmhouses.push(fh); // hidden on the Frozen Lake; igloos stand in their spots
     solids.push({ kind: 'box', x, z, ry, hx: 3.6 * s, hy: 5.6 * s, hz: 8.6 * s });
   }
   farmhouse(96, 19, -0.55, 0x9c3a2c, 1, 'SLAPP ACRES');
@@ -464,9 +471,33 @@ export function createStage(canvas) {
     }
   }
 
+  // --- seasonal tinting: greenery that frosts over on the Frozen Lake ---
+  // setWorldTheme('ice') calls setFrost(true); summer colors are saved lazily.
+  const seasonMats = [];
+  const winterMat = (mat, winterHex) => { seasonMats.push({ mat, summer: mat.color.getHex(), winter: winterHex }); return mat; };
+  const seasonIMs = [];
+  const winterIM = (im, n, winterHex) => { seasonIMs.push({ im, n, winterHex, orig: null }); return im; };
+  function setFrost(on) {
+    for (const e of seasonMats) e.mat.color.setHex(on ? e.winter : e.summer);
+    const c = new THREE.Color();
+    for (const e of seasonIMs) {
+      if (!e.im.instanceColor) continue;
+      if (on && !e.orig) e.orig = e.im.instanceColor.array.slice();
+      if (!e.orig) continue;
+      for (let i = 0; i < e.n; i++) {
+        if (on) c.setHex(e.winterHex).offsetHSL(0, 0, -(i % 4) * 0.02);
+        else c.fromArray(e.orig, i * 3);
+        e.im.setColorAt(i, c);
+      }
+      e.im.instanceColor.needsUpdate = true;
+    }
+  }
+
   // --- hay: round bales, a stack, and the crash wall at the end of the lane ---
-  const hayMat = toonMat(0xd9b96a);
-  const hayEnd = toonMat(0xc4a355);
+  // (in winter the shared mats swap to white — every bale becomes a snow drift
+  // and the 62m crash wall becomes a wall of packed snow)
+  const hayMat = winterMat(toonMat(0xd9b96a), 0xeef4f8);
+  const hayEnd = winterMat(toonMat(0xc4a355), 0xe2ebf2);
   function roundBale(x, z, ry) {
     const b = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 1.3, 14), hayMat);
     b.rotation.set(0, ry, Math.PI / 2);
@@ -496,28 +527,6 @@ export function createStage(canvas) {
       b.rotation.y = (Math.random() - 0.5) * 0.3;
       b.castShadow = true;
       scene.add(b);
-    }
-  }
-
-  // --- seasonal tinting: greenery that frosts over on the Frozen Lake ---
-  // setWorldTheme('ice') calls setFrost(true); summer colors are saved lazily.
-  const seasonMats = [];
-  const winterMat = (mat, winterHex) => { seasonMats.push({ mat, summer: mat.color.getHex(), winter: winterHex }); return mat; };
-  const seasonIMs = [];
-  const winterIM = (im, n, winterHex) => { seasonIMs.push({ im, n, winterHex, orig: null }); return im; };
-  function setFrost(on) {
-    for (const e of seasonMats) e.mat.color.setHex(on ? e.winter : e.summer);
-    const c = new THREE.Color();
-    for (const e of seasonIMs) {
-      if (!e.im.instanceColor) continue;
-      if (on && !e.orig) e.orig = e.im.instanceColor.array.slice();
-      if (!e.orig) continue;
-      for (let i = 0; i < e.n; i++) {
-        if (on) c.setHex(e.winterHex).offsetHSL(0, 0, -(i % 4) * 0.02);
-        else c.fromArray(e.orig, i * 3);
-        e.im.setColorAt(i, c);
-      }
-      e.im.instanceColor.needsUpdate = true;
     }
   }
 
@@ -605,12 +614,12 @@ export function createStage(canvas) {
   // pumpkin patch
   for (let i = 0; i < 12; i++) {
     const r = 0.14 + Math.random() * 0.16;
-    const p = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 8), toonMat(0xd8722d));
+    const p = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 8), winterMat(toonMat(0xd8722d), 0xc9a06a));
     p.scale.y = 0.72;
     p.position.set(36 + Math.random() * 8, r * 0.68, -4.6 - Math.random() * 2.8);
     p.castShadow = true;
     scene.add(p);
-    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.03, 0.09, 5), toonMat(0x5c7a3a));
+    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.03, 0.09, 5), winterMat(toonMat(0x5c7a3a), 0x6e5a40));
     stem.position.set(p.position.x, r * 1.15, p.position.z);
     scene.add(stem);
   }
@@ -698,7 +707,7 @@ export function createStage(canvas) {
   for (let i = 0; i < 6; i++) sunflower(56 + i * 2.4, 6.4 + (i % 3) * 0.9, 0.9 + Math.random() * 0.4);
   for (let i = 0; i < 4; i++) sunflower(60 + i * 2.8, -6.8 - (i % 2) * 1.1, 0.9 + Math.random() * 0.4);
 
-  // a rustic rail fence framing the +z edge of the lane
+  // a rustic rail fence framing the +z edge of the lane (gone in winter)
   {
     const fenceMat = toonMat(0x8a6a42);
     for (let x = 26; x <= 74; x += 4) {
@@ -706,11 +715,13 @@ export function createStage(canvas) {
       post.position.set(x, 0.5, 9.6);
       post.castShadow = true;
       scene.add(post);
+      fenceBits.push(post);
     }
     for (const y of [0.5, 0.85]) {
       const rail = new THREE.Mesh(new THREE.BoxGeometry(48, 0.07, 0.06), fenceMat);
       rail.position.set(50, y, 9.6);
       scene.add(rail);
+      fenceBits.push(rail);
     }
   }
 
@@ -827,13 +838,13 @@ export function createStage(canvas) {
     g.add(blob);
     for (let i = 0; i < 6; i++) {
       const a = (i / 6) * Math.PI * 2 + Math.random();
-      const fruit = new THREE.Mesh(new THREE.SphereGeometry(0.09, 7, 7), toonMat(fruitCol));
+      const fruit = new THREE.Mesh(new THREE.SphereGeometry(0.09, 7, 7), winterMat(toonMat(fruitCol), 0xe9f0f4));
       fruit.position.set(Math.cos(a) * 1.15, 2.2 + Math.random() * 0.9, Math.sin(a) * 1.15);
       g.add(fruit);
     }
     // windfall fruit in the grass
     for (let i = 0; i < 2; i++) {
-      const drop = new THREE.Mesh(new THREE.SphereGeometry(0.08, 7, 7), toonMat(fruitCol));
+      const drop = new THREE.Mesh(new THREE.SphereGeometry(0.08, 7, 7), winterMat(toonMat(fruitCol), 0xe9f0f4));
       drop.position.set((Math.random() - 0.5) * 2.4, 0.08, (Math.random() - 0.5) * 2.4);
       g.add(drop);
     }
@@ -878,7 +889,7 @@ export function createStage(canvas) {
 
   // watermelon patch by the ring-side fence
   for (let i = 0; i < 8; i++) {
-    const w = new THREE.Mesh(new THREE.SphereGeometry(0.2 + Math.random() * 0.1, 10, 8), toonMat(0x3f7d3a));
+    const w = new THREE.Mesh(new THREE.SphereGeometry(0.2 + Math.random() * 0.1, 10, 8), winterMat(toonMat(0x3f7d3a), 0xeaf1f6));
     w.scale.set(1.35, 0.8, 1);
     w.rotation.y = Math.random() * Math.PI;
     w.position.set(26 + Math.random() * 6, 0.16, -15.5 - Math.random() * 3);
@@ -909,6 +920,7 @@ export function createStage(canvas) {
 
   // perimeter forest: the TRUE edge of the world, dressed as dense conifers
   // exactly where the physics catches — nobody ever hits an invisible wall
+  let coniferCaps = null;
   {
     const spots = [];
     for (let z = -36; z <= 36; z += 2.4) spots.push([115.5 + Math.random() * 3, z + Math.random()]);        // far treeline
@@ -916,16 +928,26 @@ export function createStage(canvas) {
     for (let x = -18; x <= 113; x += 2.6) spots.push([x + Math.random(), -35.5 - Math.random() * 3]);       // south woods
     for (let z = -34; z <= 34; z += 3.2) spots.push([-20.5 - Math.random() * 2, z + Math.random()]);        // behind the fair
     const conifer = new THREE.InstancedMesh(new THREE.ConeGeometry(1.6, 7, 7), toonMat(0xffffff), spots.length);
+    // matching white caps: the top half of every tree buried in snow (ice only)
+    const caps = new THREE.InstancedMesh(new THREE.ConeGeometry(1.6, 7, 7), toonMat(0xf4f8fb), spots.length);
     for (let i = 0; i < spots.length; i++) {
       pd.position.set(spots[i][0], 3.2, spots[i][1]);
       pd.rotation.y = Math.random() * Math.PI;
       const sc = 0.8 + Math.random() * 0.6;
-      pd.scale.set(sc, sc * (0.9 + Math.random() * 0.4), sc);
+      const sy = sc * (0.9 + Math.random() * 0.4);
+      pd.scale.set(sc, sy, sc);
       pd.updateMatrix();
       conifer.setMatrixAt(i, pd.matrix);
       conifer.setColorAt(i, cc.setHSL(0.32, 0.35, 0.2 + Math.random() * 0.1));
+      pd.position.y = 3.2 + 1.75 * sy;            // cap tip meets the tree tip
+      pd.scale.set(sc * 0.55, sy * 0.5, sc * 0.55); // a touch wider than the trunk cone
+      pd.updateMatrix();
+      caps.setMatrixAt(i, pd.matrix);
     }
     conifer.castShadow = true;
+    caps.visible = false;
+    coniferCaps = caps;
+    scene.add(caps);
     scene.add(winterIM(conifer, spots.length, 0xc9d8d2));
   }
 
@@ -1477,6 +1499,27 @@ export function createStage(canvas) {
         sk.g.rotation.z = dir * 0.14;             // lean into the curve
         sk.g.position.y += Math.abs(Math.sin(time * 2.2 + sk.phase)) * 0.015; // stride bob
       }
+      for (const d of deerList) {
+        if (d.graze) { // head-down nibbling, an occasional look around
+          d.g.rotation.y = (d.ry || 0) + Math.sin(time * 0.23) * 0.3;
+          d.g.rotation.x = Math.max(0, Math.sin(time * 0.7)) * 0.14;
+          continue;
+        }
+        const a = time * d.speed + d.phase;
+        const dir = Math.sign(d.speed);
+        d.g.position.set(d.cx + Math.cos(a) * d.r, Math.abs(Math.sin(time * 3.1 + d.phase)) * 0.03, d.cz + Math.sin(a) * d.r);
+        d.g.rotation.y = -a - dir * Math.PI / 2;
+      }
+      for (const b of bearList) {
+        // amble back and forth between x0 and x1 on a triangle wave
+        const span = b.x1 - b.x0;
+        const ph = ((time * b.speed + b.phase) % 2 + 2) % 2;
+        const fwd = ph < 1;
+        b.g.position.x = b.x0 + span * (fwd ? ph : 2 - ph);
+        b.g.position.y = Math.abs(Math.sin(time * 1.7 + b.phase * 5)) * 0.035; // heavy amble
+        b.g.rotation.y = fwd ? 0 : Math.PI;
+        b.g.rotation.z = Math.sin(time * 1.7 + b.phase * 5) * 0.045;           // shoulder roll
+      }
     }
     if (kidCelebT > 0) kidCelebT -= dt;
     // the sun's reaction wears off back to a contented idle
@@ -1934,6 +1977,8 @@ export function createStage(canvas) {
   // --- FROZEN LAKE winter kit: mountains, snowmen, snowball kids, fur coats,
   // falling snow — all toggled by setWorldTheme('ice') ---
   const iceSkaters = [];
+  const deerList = [];
+  const bearList = [];
   const winterG = new THREE.Group();
   {
     const snowWhite = toonMat(0xf6fafc);
@@ -2019,6 +2064,121 @@ export function createStage(canvas) {
     };
     skater(0xb54a4a, 0xf4f4f0, 3.6, 0.55, 0);
     skater(0x3d7a5c, 0xf0d060, 2.4, -0.42, 2.1);
+
+    // igloos stand exactly where the farmhouses stood (their physics boxes
+    // stay put, so the snow-buried homes still catch long flyers)
+    const iglooMat = toonMat(0xeef4fa);
+    const seamMat = toonMat(0xcfdfeb);
+    const igloo = (x, z, ry, s) => {
+      const g = new THREE.Group();
+      const dome = new THREE.Mesh(new THREE.SphereGeometry(4.4, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2), iglooMat);
+      dome.scale.y = 0.82; g.add(dome);
+      for (const [ringY, ringR] of [[1.15, 4.15], [2.3, 3.35], [3.2, 2.25]]) {
+        const seam = new THREE.Mesh(new THREE.TorusGeometry(ringR, 0.07, 6, 24), seamMat);
+        seam.rotation.x = Math.PI / 2; seam.position.y = ringY * 0.82; g.add(seam);
+      }
+      const tun = new THREE.Mesh(new THREE.SphereGeometry(1.5, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), iglooMat);
+      tun.scale.set(1, 0.9, 1.4); tun.position.set(-4.4, 0, 0); g.add(tun);
+      const doorway = new THREE.Mesh(new THREE.CircleGeometry(0.85, 12), toonMat(0x2a3038));
+      doorway.rotation.y = -Math.PI / 2; doorway.position.set(-5.6, 0.7, 0); g.add(doorway);
+      g.traverse((m) => { m.castShadow = true; });
+      g.scale.setScalar(s); g.rotation.y = ry; g.position.set(x, 0, z);
+      winterG.add(g);
+    };
+    igloo(96, 19, -0.55, 1.15); igloo(84, -27, 0.5, 0.95);
+    igloo(108, -14, -0.2, 1.0); igloo(58, 31, 0.9, 0.85);
+
+    // reindeer — one circles the meadow, one grazes; the leader's nose is red
+    const reindeer = (x, z, opts = {}) => {
+      const g = new THREE.Group();
+      const hide = toonMat(0x8a5a3a);
+      const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.28, 0.6, 4, 10), hide);
+      body.rotation.z = Math.PI / 2; body.position.y = 0.78; g.add(body);
+      for (const [lx, lz] of [[-0.32, -0.14], [-0.32, 0.14], [0.32, -0.14], [0.32, 0.14]]) {
+        const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.045, 0.62, 6), hide);
+        leg.position.set(lx, 0.31, lz); g.add(leg);
+      }
+      const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.12, 0.45, 8), hide);
+      neck.position.set(0.52, 1.05, 0); neck.rotation.z = -0.6; g.add(neck);
+      const head = new THREE.Mesh(new THREE.CapsuleGeometry(0.11, 0.16, 3, 8), hide);
+      head.rotation.z = Math.PI / 2; head.position.set(0.72, 1.24, 0); g.add(head);
+      const nose = new THREE.Mesh(new THREE.SphereGeometry(0.055, 8, 8), toonMat(opts.redNose ? 0xe03434 : 0x2a2018));
+      nose.position.set(0.87, 1.24, 0); g.add(nose);
+      for (const s of [-1, 1]) {
+        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.025, 5, 5), toonMat(0x1a1a1a));
+        eye.position.set(0.74, 1.31, s * 0.09); g.add(eye);
+        const antler = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.03, 0.42, 5), toonMat(0x5f452c));
+        antler.position.set(0.62, 1.5, s * 0.09); antler.rotation.x = s * 0.45; g.add(antler);
+        const tine = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.02, 0.22, 5), toonMat(0x5f452c));
+        tine.position.set(0.66, 1.56, s * 0.17); tine.rotation.z = -0.9; tine.rotation.x = s * 0.5; g.add(tine);
+      }
+      const tail = new THREE.Mesh(new THREE.SphereGeometry(0.07, 6, 6), toonMat(0xe8dcc8));
+      tail.position.set(-0.55, 0.86, 0); g.add(tail);
+      g.traverse((m) => { m.castShadow = true; });
+      g.position.set(x, 0, z);
+      winterG.add(g);
+      deerList.push({ g, x, z, ...opts });
+    };
+    reindeer(29, 14, { redNose: true, cx: 29, cz: 14, r: 4.5, speed: 0.28, phase: 0 });
+    reindeer(60, 20, { cx: 60, cz: 20, r: 4, speed: -0.22, phase: 2.4 });
+    reindeer(48, -17, { graze: true, ry: 2.2 });
+
+    // polar bears amble along the treelines, minding their own business
+    const polarBear = (x0, x1, z, speed, phase) => {
+      const g = new THREE.Group();
+      const furB = toonMat(0xe9e2cf); // warm ivory so he reads against blue-white snow
+      const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.5, 0.9, 4, 10), furB);
+      body.rotation.z = Math.PI / 2; body.position.y = 0.72; g.add(body);
+      for (const [lx, lz] of [[-0.42, -0.24], [-0.42, 0.24], [0.42, -0.24], [0.42, 0.24]]) {
+        const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.15, 0.5, 7), furB);
+        leg.position.set(lx, 0.25, lz); g.add(leg);
+      }
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 12, 12), furB);
+      head.position.set(0.78, 0.95, 0); g.add(head);
+      const snout = new THREE.Mesh(new THREE.CapsuleGeometry(0.11, 0.1, 3, 8), toonMat(0xd6cbb2));
+      snout.rotation.z = Math.PI / 2; snout.position.set(1.02, 0.88, 0); g.add(snout);
+      const noseB = new THREE.Mesh(new THREE.SphereGeometry(0.05, 6, 6), toonMat(0x1a1a1a));
+      noseB.position.set(1.14, 0.88, 0); g.add(noseB);
+      for (const s of [-1, 1]) {
+        const ear = new THREE.Mesh(new THREE.SphereGeometry(0.1, 6, 6), furB);
+        ear.position.set(0.66, 1.22, s * 0.2); g.add(ear);
+        const eyeB = new THREE.Mesh(new THREE.SphereGeometry(0.032, 5, 5), toonMat(0x1a1a1a));
+        eyeB.position.set(0.98, 1.02, s * 0.11); g.add(eyeB);
+      }
+      const tailB = new THREE.Mesh(new THREE.SphereGeometry(0.09, 6, 6), furB);
+      tailB.position.set(-0.78, 0.82, 0); g.add(tailB);
+      g.traverse((m) => { m.castShadow = true; });
+      g.scale.setScalar(1.18);
+      g.position.set(x0, 0, z);
+      winterG.add(g);
+      bearList.push({ g, x0, x1, z, speed, phase });
+    };
+    polarBear(14, 50, 29.5, 0.05, 0);
+    polarBear(30, 68, -20, 0.04, 0.5);
+
+    // snow load on the barn roof (barn at (18,0,-11), slopes at ±2.05 rot ∓0.62)
+    for (const s of [-1, 1]) {
+      const cap = new THREE.Mesh(new THREE.BoxGeometry(4.7, 0.16, 7.0), toonMat(0xf4f8fb));
+      cap.position.set(18 + s * 2.05, 5.62, -11);
+      cap.rotation.z = -s * 0.62;
+      cap.castShadow = true;
+      winterG.add(cap);
+    }
+    // the grazing reindeer has actually dug through to the grass
+    const digPatch = new THREE.Mesh(new THREE.CircleGeometry(0.5, 10), toonMat(0x6e5a40));
+    digPatch.rotation.x = -Math.PI / 2;
+    digPatch.position.set(48.9, 0.02, -17);
+    winterG.add(digPatch);
+
+    // snow drifts soften the line where the summer fences stood
+    const driftMat = toonMat(0xf3f7fa);
+    for (let i = 0; i < 16; i++) {
+      const d = new THREE.Mesh(new THREE.SphereGeometry(0.7 + Math.random() * 0.9, 10, 8), driftMat);
+      d.scale.y = 0.32;
+      d.position.set(-8 + Math.random() * 66, 0.05, (i % 2 ? 1 : -1) * (2.9 + Math.random() * 0.9));
+      d.rotation.y = Math.random() * Math.PI;
+      winterG.add(d);
+    }
     const ball = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), toonMat(0xffffff));
     ball.position.set(25.8, 1.15, 7.6); winterG.add(ball);
     const ballMat = toonMat(0xd4dfe9); // blue-gray so they read against the snow
@@ -2030,6 +2190,33 @@ export function createStage(canvas) {
   }
   winterG.visible = false;
   scene.add(winterG);
+
+  // in winter the CRASH ZONE barricade is a heaped pile of snow. The boulders
+  // join barricade.pieces so a flyer still blasts them apart (and resetBarricade
+  // restacks them); theme switching swaps which set of pieces is visible.
+  const summerBarricade = barricade.pieces.map((p) => p.mesh);
+  const snowBarricade = [];
+  {
+    const bx = START_X + 20;
+    const packTop = toonMat(0xf0f5f9);
+    const packLow = toonMat(0xd6e4ef); // ice-blue base so the pile has a silhouette
+    let seed = 1;
+    const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    for (let layer = 0; layer < 4; layer++) {
+      const count = 7 - layer;
+      for (let i = 0; i < count; i++) {
+        const r = 0.55 + rnd() * 0.35 - layer * 0.06;
+        const m = new THREE.Mesh(new THREE.SphereGeometry(r, 9, 7), layer < 2 ? packLow : packTop);
+        m.position.set(bx + (rnd() - 0.5) * 0.5, 0.35 + layer * 0.72, -2.3 + (i + 0.5) * (4.6 / count) + (rnd() - 0.5) * 0.3);
+        m.scale.y = 0.85;
+        m.castShadow = true;
+        m.visible = false;
+        scene.add(m);
+        snowBarricade.push(m);
+        barricade.pieces.push({ mesh: m, homeP: m.position.clone(), homeQ: m.quaternion.clone() });
+      }
+    }
+  }
 
   // falling snow — drifts down in updateAmbient while the lake is frozen
   const SNOW_N = 850;
@@ -2083,16 +2270,18 @@ export function createStage(canvas) {
       };
     }
     if (!crowdOrig) return;
+    // muted winter coats — colorful enough to read against the snow
+    const COATS = [0x9c4a4a, 0x4a6b8c, 0x5c7a5c, 0x8a7a9c, 0xe8e2d4, 0x7a5a44];
     const c = new THREE.Color();
     for (let i = 0; i < N; i++) {
-      if (on) c.setHex(0xf2f4f6).offsetHSL(0, 0, (i % 5) * -0.015);
+      if (on) c.setHex(COATS[i % COATS.length]).offsetHSL(0, 0, ((i * 7) % 3) * -0.02);
       else c.fromArray(crowdOrig.body, i * 3);
       bodyIM.setColorAt(i, c);
     }
     bodyIM.instanceColor.needsUpdate = true;
     if (skirtIM.instanceColor && crowdOrig.skirt) {
       for (let i = 0; i < femN; i++) {
-        if (on) c.setHex(0xe8ecf2);
+        if (on) c.setHex(COATS[(i + 2) % COATS.length]).offsetHSL(0, -0.1, 0.06);
         else c.fromArray(crowdOrig.skirt, i * 3);
         skirtIM.setColorAt(i, c);
       }
@@ -2154,6 +2343,12 @@ export function createStage(canvas) {
     snowPts.visible = ice;
     furG.visible = ice;
     for (const cf of furCuffs) cf.visible = ice;
+    for (const fh of farmhouses) fh.visible = !ice;      // igloos take their spots
+    for (const fb of fenceBits) fb.visible = !ice;       // drifts take the fence line
+    for (const c of cloths) c.mesh.visible = !ice;       // nobody hangs laundry in a blizzard
+    for (const m of summerBarricade) m.visible = !ice;   // planks ⇄ packed snow
+    for (const m of snowBarricade) m.visible = ice;
+    if (coniferCaps) coniferCaps.visible = ice;          // snow-loaded treetops
     // wan winter sun: pale and half-hidden behind the snow sky
     sunFace.material.color.setHex(ice ? 0xcfdce6 : 0xffffff);
     sunFace.material.opacity = ice ? 0.6 : 1;

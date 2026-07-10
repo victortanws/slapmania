@@ -999,6 +999,7 @@ function tick(now) {
     if (tState > 2.4) {
       ui.bubble(null);
       ui.intro(null);
+      ui.refBar(null); // quip/judge line is faceoff-only — it must never sit on the meters
       ui.showMeters(true);
       opponent.setTargetVisible(true);
       // officiated (campaign) matches: the judge's whistle IS the shot clock —
