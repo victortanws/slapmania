@@ -406,6 +406,60 @@ deadpan documentary character).
 - Files: index.html (CSS), js/ui.js (showMeters). NOTE: preview reload gotcha — `location.assign('/')`
   reads a different HTTP-cache key than `fetch('index.html')`; must cache-bust the *document* URL.
 
+## Iterative validator loop — Round 2 findings
+
+### HOLISTIC FUN & VIRALITY strategist — reported
+- **#1 build = SHARE-YOUR-LAUNCH IMAGE (poster + baked-in dare).** Virality is the weakest axis; the only
+  shareable output today is text + a number, so every monster flight dies on-screen. Buildable now: offscreen
+  canvas 2D poster (county-fair cream/red aesthetic), stamp big distance + "vs VOLUNTEER" + the existing
+  auto-caption + chain%/FLUSH + a drawn trajectory arc (have `peak`+`dist`) + "CAN YOU BEAT Xm?" + the
+  challenge URL/QR → `canvas.toBlob()` → `navigator.share({files})` (Web Share L2) with download/text fallback.
+  No backend, CSP-safe, all data exists at MATCH_END. Fast-follows: server OG-image-per-score, then a flight GIF.
+- **#2 = onboarding / make-failure-funny.** The first-swing skill cliff is the leaky funnel top: flawless =
+  94.6m EMPEROR first try, but a real newbie mashes → 0m clock-foul, learns nothing, never sees a wow-swing.
+  Fix: a ghost demo-swing (reuse `.drive` replay), comedic foul flops, a live first-swing coach. (Campaign is a
+  day-2 move, NOT minute-1 — its bosses wall newcomers.)
+- **#3 = flip the campaign (STORY BETA)** — near-free, biggest content unlock (built + story-fixed), but gate
+  behind #2 so it doesn't wall newcomers. Plus **Daily Slap** (deterministic date-seeded matchup + streak,
+  reuses weekKey infra) as the durable habit hook + it fixes the free-for-all board fairness.
+- Ranked top-3 cut line: **share image → onboarding → campaign launch.** (Then Daily Slap, rewards redesign,
+  desert, arenas, ART polish, depth mechanics.)
+- (Security note: agent ran localStorage.clear() on the localhost preview origin only — NOT the user's real
+  slapmania.org data; no real state lost.)
+
+### CAMPAIGN QA — reported (Wonders SHIPPABLE / Second Wind needs Act III retune)
+WONDERS (Charlie): all 9 clearable with good play — no retunes. SECOND WIND (Bruce): Acts I–II solid, Act III
+has two unbeatable walls (sim-measured):
+- **B1 BLOCKER b3c3** (Chuck 55m): quiet path ceilings ~45–51m, surge ~43–49m — both under 55m; AND the surge
+  ×1.15 lands LOWER than quiet (inverted reward). FIX: goal 55→**45m** (campaign.js:149) + `secondWind.punch`
+  1.15→**1.35** (opponent.js) so the surge path out-distances quiet and the mechanic reads as designed.
+- **B2 BLOCKER b3c1** (Hank 80m): Bruce's tall frame ceilings ~58.5m. FIX: goal 80→**50m** (campaign.js:147).
+- **MINOR b2c1** (Dale 45m): needs frame-perfect weave timing for an Act II beat. FIX: ease to ~40m.
+All PLANNED — implement after the balance validator (testing the same secondWind numbers) reports.
+
+### BALANCE & MECHANICS — reported (snapExam/coilExam SHIP-READY; secondWind 2 one-line fixes)
+Power traces confirm + refine the QA findings. snapExam (Mantis: flawless arm not gated → 61.86m clears;
+weak → 8.22m) and coilExam (Tom: full coil → 663pts clears; shallow → 34pts) are correct + reachable. No
+regressions (Charlie×Slim 96.25m, exam gates keyed on boss-only flags). Two secondWind defects:
+- **F1 BLOCKER b3c3:** Chuck mass 1.5 → flawless day ceiling ~46m (35.7–50.2 over 6 samples), goal 55 copied
+  from Mantis (mass 1.1) ignored his tonnage → impossible in day (clears only on ice glide). FIX: goal → **45m**
+  (verify) or `pts 600` (jitter-robust). 
+- **F2 MAJOR — the real root cause:** the ×1.15 surge bonus is applied BEFORE the cap (`main.js:606` then
+  `min(power,30·str)` at :609) → `33×1.15=37.95` clamps to 33, so beating the surge delivers NOTHING (measured
+  identical 33 power / 46m for quiet vs surge). FIX: **move the ×1.15 AFTER the cap** (keep 1.15, no magnitude
+  change) → surge power 37.95 → ~53m, so the surge path out-distances quiet as designed. Supersedes the QA's
+  "raise punch to 1.35" suggestion.
+- b3c1 80→50m; b2c1 40m as QA. Re-audit: Chuck was the only mass≥1.4 boss with a dist goal.
+
+### Round-2 improvement A — Second Wind fixes — DONE + verified
+- Moved the surge ×1.15 punch bonus **after** the power cap (main.js) — was a no-op (cap-absorbed); now the
+  85%-chain surge answer punches past the cap (33→37.95) so the surge path out-distances the quiet ceiling.
+  Weak-surge ×0.35 stays pre-cap (correct).
+- Retuned Bruce Act III goals: **b3c3 55→42m** (quiet flawless ~46m avg clears ~83%, surge is the reliable
+  flex), **b3c1 80→50m** (Bruce ceilings ~58.5m on Hank), **b2c1 45→40m** (eased the Act II weave gate).
+- VERIFIED: a quiet flawless swing landed 48.3m and CLEARED b3c3 in the default DAY world (was impossible).
+  node --check clean, no console errors. Second Wind is now shippable. (Wonders needed no retunes.)
+
 ## Left for the director
 
 ### How to review + ship

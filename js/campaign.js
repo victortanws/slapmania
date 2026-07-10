@@ -135,7 +135,7 @@ export const TOURS = [
         act: 'ACT II — THE THREE FACETS OF THE LEGEND',
         story: "Chuck's myth has three faces, and each one is a real disciple guarding the road. Unmake them, and you learn the truth: his power was never muscle. It is belief — and in this county, belief is a force with weight.",
         challenges: [
-          { id: 'b2c1', title: '"HE CANNOT BE CAUGHT"', desc: 'Slap DODGY DALE 45m — a slip has a rhythm, and a rhythm is a promise', opp: 'dale', goal: { type: 'dist', v: 45 } },
+          { id: 'b2c1', title: '"HE CANNOT BE CAUGHT"', desc: 'Slap DODGY DALE 40m — a slip has a rhythm, and a rhythm is a promise', opp: 'dale', goal: { type: 'dist', v: 40 } },
           { id: 'b2c2', title: '"HE CANNOT BE GRIPPED"', desc: 'Send GREASED PETE 40m — arrive so perfectly the grease has nothing to refuse', opp: 'grease', goal: { type: 'dist', v: 40 } },
           { id: 'b2c3', title: '☗ BOSS: "HE CANNOT BE MOVED"', desc: 'Move IRON-JAW McGRAW 30m — below 70% chain he grants you nothing', opp: 'ironjaw', goal: { type: 'dist', v: 30 } },
         ],
@@ -144,9 +144,9 @@ export const TOURS = [
         act: 'ACT III — THE PORCH',
         story: 'No more gatekeepers. Only the long road up, the thin air, one certified sign-in sheet, and the man inside the mountain — who is about to hear his crowd start to chant.',
         challenges: [
-          { id: 'b3c1', title: 'THE LONG ROAD UP', desc: 'Send HAYSEED HANK 80m — pure form, no tricks, one long exhale', opp: 'hank', goal: { type: 'dist', v: 80 } },
+          { id: 'b3c1', title: 'THE LONG ROAD UP', desc: 'Send HAYSEED HANK 50m — pure form, no tricks, one long exhale', opp: 'hank', goal: { type: 'dist', v: 50 } },
           { id: 'b3c2', title: 'CERTIFIED', desc: "A 90% chain before SCHOOLMARM SUSIE — Chuck's porch has a sign-in sheet", opp: 'susie', goal: { type: 'chain', v: 90 } },
-          { id: 'b3c3', title: '☗ FINAL BOSS: THE SECOND WIND', desc: 'Slap CHUCK NORTH 55m — strike in the 4-second quiet, or answer his surge with an 85% chain', opp: 'chucknorth', goal: { type: 'dist', v: 55 } },
+          { id: 'b3c3', title: '☗ FINAL BOSS: THE SECOND WIND', desc: 'Slap CHUCK NORTH 42m — strike in the 4-second quiet, or answer his surge with an 85% chain', opp: 'chucknorth', goal: { type: 'dist', v: 42 } },
         ],
       },
     ],

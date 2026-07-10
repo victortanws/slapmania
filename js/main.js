@@ -601,12 +601,15 @@ function onContact(hit) {
   if (unwound) power *= 0.40;
   // secondWind (CHUCK NORTH): mortal for the first `delay` seconds of the swing —
   // strike in that quiet for full power. Once the crowd chants (tState past delay)
-  // he becomes a STORY: an 85%+ chain punches THROUGH (bonus), anything less is shrugged.
+  // he becomes a STORY: a weak chain is shrugged (pre-cap), an 85%+ chain punches
+  // THROUGH the legend — applied POST-cap so the bonus isn't just absorbed by it.
   const sw = opponent.arch.secondWind;
-  if (sw && !ugly && tState >= sw.delay) power *= (chainPct >= sw.gate) ? sw.punch : sw.weak;
+  const surging = !!(sw && !ugly && tState >= sw.delay);
+  if (surging && chainPct < sw.gate) power *= sw.weak;
   // the cap scales with muscle: a perfect chain caps everyone, but the strong
   // cap HIGHER — strength genuinely moves tonnage instead of dying at 30
   power = Math.min(power, 30 * player.strength);
+  if (surging && chainPct >= sw.gate) power *= sw.punch; // the 85%-chain surge answer punches past the cap
 
   // he flies down the lane, carrying a hint of the sideways sweep — and the
   // arc follows the strike angle: an upward slap at a tall victim launches
