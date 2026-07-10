@@ -344,4 +344,49 @@ snapExam, coilExam, robe→longSleeves, windKey, paintedGrin, redNose, (dojo, st
 
 ## Left for the director
 
-_(morning: what to review, what needs a human decision, what to merge)_
+### How to review + ship
+Everything tonight is on branch **`overnight-polish`** — the live site is untouched.
+- Review: `git diff main..overnight-polish` (6 commits). Every module passes `node --check`;
+  no stale refs; each batch was preview/sim-verified (notes above).
+- Ship: merge `overnight-polish` → `main` (auto-deploys via GitHub Pages) when satisfied. You can
+  cherry-pick batches — each commit is a self-contained, verified unit.
+- Pending roast pass: an adversarial validator is re-checking the whole branch; its must-fix items
+  (if any) are applied before this section is finalized.
+
+### Decisions that are YOURS (I deliberately did NOT auto-do these)
+1. **Ship the campaign (`CAMPAIGN_LIVE`)** — GDES calls the hidden campaign the single biggest retention
+   hole (20 challenges, 7 bosses, 2 arcs, all built). I improved its story (Batch 3) but left the flag
+   flip to you; recommend shipping as "STORY (BETA)". [G-B1]
+2. **DLC leaderboard fairness** — paid Chuck (1.42) / Earl (1.34) out-stat free Roy (1.20), and power
+   multiplies the score cap on a SHARED board. Options: normalize strength out of the global board, split
+   free/paid boards, or nerf DLC power + sell on joke. Monetization call. [G-B4]
+3. **Auntie/Influencer bust size** — ART flagged it as edge-of-tone for store/OG thumbnails; you
+   explicitly designed it, so I left it. Trim `bust` 1.6→~1.25 only if you want it tamer. [A12]
+4. **EMPEROR ascension pose** — CAMERA couldn't confirm on a real emperor run whether the rising body
+   reads dignified or tumbling; eyeball one live and tell me if it needs an upright pin. [C3]
+5. **Stripe LIVE key** — unchanged from before: still your action (swap STRIPE_SECRET_KEY→sk_live +
+   STRIPE_PRICE_ID in Supabase, redeploy). Until then the 4242 test card "buys" free.
+
+### Ready-to-build specs captured here, NOT built tonight (next session)
+Full buildable specs are in the sections above — these are the highest-value remaining expansion:
+- **DESERT world** (the marquee "expansion"): needs the `biomeMat`/`applyPalette` unified refactor first
+  (~30 mechanical call-sites), then the `desertG` prop group. Full spec under "WORLD (role 6)". BUILD-WITH-
+  CHANGES: keep tumbleweeds ambient/low-mass (no launch-deflecting dynamic bodies — GDES). Also Moon
+  (low-gravity `setGravity` flip) is the #2-ROI world.
+- **Boss ARENA system** + Quarry/FightTent/Court/Pigpen/Dojo arenas — full spec under "ARENA (role 9)".
+  Presentation-only, no rebalance. Would make the 7 bosses feel like bosses.
+- **New-boss campaign home**: MASTER MANTIS + TICK-TOCK TOM render + their mechanics work, but need a tour
+  challenge to appear in-game — CREATOR's "School of Slapping" tour (Trial of Coil/Lunge/Whip/Palm).
+- **Remaining ART polish** (all cheap): A2 volunteer footwear (dark stump legs), A3 night-world lift,
+  A4 Roy/Victor dark-blob accents, A7 Bruce dragon-tattoo size, A9 ice crowd "lily-pad" discs, A11 title
+  HUD label contrast.
+- **Mechanics depth:** G-B2 featherweight speed-cap `lightnessBonus` (so "light flies farther" is true at
+  expert level — needs sim-verify vs the 117m perimeter / 130 cap); G-B3 widen cq to ±18% + pulse the
+  target ring at the breath extremes to teach it.
+- **Shareability (GDES's top idea):** a one-tap **"share your launch" auto-image** — a canvas result card
+  stamped with distance + volunteer + the ragdoll's arc. The viral act is "watch this person fly," but the
+  only shareable output today is a text URL. Highest-leverage single feature for reach.
+
+### Sanity notes
+- New localStorage/keys: none. New flags (opponent look): robe/windKey/paintedGrin/redNose. Distances +
+  leaderboard caps unchanged (no launch-lane geometry added). Quirk preserved throughout.
