@@ -1044,6 +1044,8 @@ function tick(now) {
       surgeFired = true;
       opponent.setSurge(true);
       sfx.crowd(3);
+      stage.shake(0.5);          // the surge HITS — a real power-up jolt
+      stage.sunMood('meh', 3);   // even the sun braces
       ui.slapBurst('SECOND WIND!', `STRIKE WAS IN THE QUIET — NOW BRING A ${swArch.gate}% CHAIN`);
     }
 

@@ -460,6 +460,19 @@ regressions (Charlie×Slim 96.25m, exam gates keyed on boss-only flags). Two sec
 - VERIFIED: a quiet flawless swing landed 48.3m and CLEARED b3c3 in the default DAY world (was impossible).
   node --check clean, no console errors. Second Wind is now shippable. (Wonders needed no retunes.)
 
+### VISUAL & JUICE — reported (1 MAJOR bug + juice); Round-2B fixes DONE
+- **MAJOR (fixed):** `chucknorth` KEY COLLISION — the new boss and the DLC slapper (Chuck Norris parody)
+  shared the key, so `?preview=chucknorth` showed the slapper and the boss was un-previewable. FIX: boss key
+  `chucknorth`→`chuckboss` (name stays CHUCK NORTH — same legend in boss form); updated the campaign `opp:` ref.
+  VERIFIED `?preview=chuckboss` now shows the boss. Bosses Mantis/Tom/Chuckles/Chuck all render clean.
+- **Surge juice (fixed):** the Second Wind surge didn't FEEL like a power-up (static ring). Added `stage.shake(0.5)`
+  + sun-brace on the surge frame, and the aura ring now PULSES (scale-breathe in Opponent.update) as an energy
+  field. VERIFIED: aura visible + pulsing (scale 1.18), no console errors.
+- **Still open (documented for next builds):** MINOR Ferris/balloon colors clash on ice (biome-retint or accept);
+  ART backlog A11 title-label contrast (dimmed by the card overlay — needs z-order or a pill bg), A3 night lift,
+  A4 Roy/Victor dark blobs, A2 volunteer footwear, A9 ice lily-pad discs, A7 Bruce dragon. JUICE backlog:
+  impact white-flash + hit-sparks on head hits (#1 feel win), sweat/spit spray, hitstop, milestone pass-through pop.
+
 ## Left for the director
 
 ### How to review + ship

@@ -191,7 +191,9 @@ export const ROSTER = [
     taunts: ['Tick... tick... not yet.', 'Half a wind is no wind at all.'],
   },
   {
-    key: 'chucknorth', name: 'CHUCK NORTH', tag: 'BOSS · THE SECOND WIND', boss: true,
+    // key is 'chuckboss' (NOT 'chucknorth') — the DLC slapper already owns that key;
+    // this is the same legend in boss form, so the display NAME stays CHUCK NORTH
+    key: 'chuckboss', name: 'CHUCK NORTH', tag: 'BOSS · THE SECOND WIND', boss: true,
     w: 1.25, h: 1.10, mass: 1.5, noStache: true,
     // a broad frontier legend: auburn full beard, powers up mid-match ("the crowd chants")
     skin: 0xd6a878, shirt: 0x3a5a3f, pants: 0x2f3b2f,
@@ -816,7 +818,7 @@ export class Opponent {
     this.hatMesh.quaternion.copy(this.hatBody.quaternion);
   }
 
-  setSurge(on) { if (this.auraRing) this.auraRing.visible = on; } // Chuck's Second Wind power-up glow
+  setSurge(on) { this.surging = on; if (this.auraRing) this.auraRing.visible = on; } // Chuck's Second Wind power-up glow
   headPos() { return new THREE.Vector3().copy(this.rag.parts.head.body.position); }
   torsoPos() { return new THREE.Vector3().copy(this.rag.parts.torso.body.position); }
   pelvisPos() { return new THREE.Vector3().copy(this.rag.parts.pelvis.body.position); }
@@ -865,6 +867,10 @@ export class Opponent {
 
   update(dt = 0) {
     this.time += dt;
+    if (this.surging && this.auraRing) {
+      const p = 1 + Math.sin(this.time * 9) * 0.2; // breathe like an energy field, not a decal
+      this.auraRing.scale.set(p, p, 1);
+    }
     if (this.launched) {
       this.rag.sync();
       this.syncHat();

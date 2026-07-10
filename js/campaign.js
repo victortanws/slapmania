@@ -146,7 +146,7 @@ export const TOURS = [
         challenges: [
           { id: 'b3c1', title: 'THE LONG ROAD UP', desc: 'Send HAYSEED HANK 50m — pure form, no tricks, one long exhale', opp: 'hank', goal: { type: 'dist', v: 50 } },
           { id: 'b3c2', title: 'CERTIFIED', desc: "A 90% chain before SCHOOLMARM SUSIE — Chuck's porch has a sign-in sheet", opp: 'susie', goal: { type: 'chain', v: 90 } },
-          { id: 'b3c3', title: '☗ FINAL BOSS: THE SECOND WIND', desc: 'Slap CHUCK NORTH 42m — strike in the 4-second quiet, or answer his surge with an 85% chain', opp: 'chucknorth', goal: { type: 'dist', v: 42 } },
+          { id: 'b3c3', title: '☗ FINAL BOSS: THE SECOND WIND', desc: 'Slap CHUCK NORTH 42m — strike in the 4-second quiet, or answer his surge with an 85% chain', opp: 'chuckboss', goal: { type: 'dist', v: 42 } },
         ],
       },
     ],
