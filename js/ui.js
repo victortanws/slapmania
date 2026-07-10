@@ -332,6 +332,10 @@ export function renderGlobal(rows, extra = {}) {
   html += rows && rows.length
     ? rows.map((b, i) => row(b, i, (x) => ` vs ${esc(x.opp)} — ${esc(x.name)}`)).join('')
     : `<div class="boardrow">${extra.week ? 'Nobody this week. Be first.' : 'Nobody worldwide yet. Be first.'}</div>`;
+  if (extra.allTime && extra.allTime.length) {
+    html += '<div class="boardhead" style="margin-top:8px;">🏆 ALL-TIME LEGENDS</div>'
+      + extra.allTime.map((b, i) => row(b, i, (x) => ` vs ${esc(x.opp)} — ${esc(x.name)}`)).join('');
+  }
   if (extra.matchup && extra.matchup.length) {
     html += `<div class="boardhead" style="margin-top:8px;">THIS MATCHUP${extra.matchTitle ? ` — ${esc(extra.matchTitle)}` : ''}</div>`
       + extra.matchup.map((b, i) => row(b, i, (x) => ` — ${esc(x.name)}`)).join('');

@@ -58,6 +58,16 @@ export async function fetchTop(n = 10) {
   return r.json();
 }
 
+// the all-time greats — unfiltered by week, shown alongside the weekly race
+export async function fetchAllTime(n = 5) {
+  const r = await fetch(
+    `${cfg().supabaseUrl}/rest/v1/slapp_scores?select=name,pts,dist,opp&order=pts.desc&limit=${n}`,
+    { headers: headers() }
+  );
+  if (!r.ok) throw new Error(`fetchAllTime ${r.status}`);
+  return r.json();
+}
+
 // last week's #1 — the reigning county champion, shown atop this week's board
 export async function fetchChampion() {
   if (!(await supportsSeasons())) return null;

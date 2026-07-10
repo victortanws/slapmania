@@ -744,11 +744,14 @@ function setupGlobalPanel(bestAttempt) {
     net.fetchChampion().catch(() => null),
     net.fetchMatchup(player.look?.name, bestAttempt.opp).catch(() => null),
     net.supportsSeasons().catch(() => false),
-  ]).then(([rows, champion, matchup, seasonal]) => {
+    net.fetchAllTime(5).catch(() => null),
+  ]).then(([rows, champion, matchup, seasonal, allTime]) => {
     ui.renderGlobal(rows, {
       week: seasonal ? net.weekKey() : null,
       champion, matchup,
       matchTitle: matchup ? `${player.look?.name} vs ${bestAttempt.opp}` : null,
+      // pre-migration the weekly board IS the all-time board — don't show it twice
+      allTime: seasonal ? allTime : null,
     });
   });
   refreshBoards().then(() => ui.netMsg(''))
