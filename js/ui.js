@@ -105,6 +105,9 @@ export function showDistance(d) {
 export function showMeters(on) {
   el.meters.classList.toggle('hidden', !on);
   el.keysbar.classList.toggle('hidden', !on);
+  // the meters own the lower band during play — the faceoff quip/judge line must
+  // never share it (structural guard so the refBar-over-meters overlap can't recur)
+  if (on) refBar(null);
   if (!on) coach(null);
 }
 

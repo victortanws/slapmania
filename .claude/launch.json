@@ -14,6 +14,42 @@
       "port": 8996
     },
     {
+      "name": "slap-phys",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8990", "-d", "."],
+      "port": 8990
+    },
+    {
+      "name": "slap-art",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8991", "-d", "."],
+      "port": 8991
+    },
+    {
+      "name": "slap-uiux",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8992", "-d", "."],
+      "port": 8992
+    },
+    {
+      "name": "slap-story",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8993", "-d", "."],
+      "port": 8993
+    },
+    {
+      "name": "slap-cam",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8988", "-d", "."],
+      "port": 8988
+    },
+    {
+      "name": "slap-arena",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8989", "-d", "."],
+      "port": 8989
+    },
+    {
       "name": "vibe-coder-sim",
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8997", "-d", "/Users/victortan/vibe-coder-sim"],
