@@ -473,6 +473,12 @@ regressions (Charlie×Slim 96.25m, exam gates keyed on boss-only flags). Two sec
   A4 Roy/Victor dark blobs, A2 volunteer footwear, A9 ice lily-pad discs, A7 Bruce dragon. JUICE backlog:
   impact white-flash + hit-sparks on head hits (#1 feel win), sweat/spit spray, hitstop, milestone pass-through pop.
 
+### Round-2C — impact flash juice — DONE + verified
+Added the validator's #1 juice: a white impact FLASH on clean head hits (`#flash` overlay, `ui.flash()` scaled
+by power 0.16–0.55, fades over 0.22s across the slow-mo). Upgrades the feel of EVERY head slap — the game's
+highest-frequency moment. VERIFIED: flash pops to 0.55 at contact, fades cleanly to 0, no console errors.
+Remaining juice backlog (documented): hit-sparks, sweat/spit spray, hitstop, milestone pass-through pop.
+
 ## Left for the director
 
 ### How to review + ship

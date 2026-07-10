@@ -15,8 +15,20 @@ const el = {
   pickRow: $('pickRow'), pickHint: $('pickHint'), pickGo: $('pickGo'),
   globalWrap: $('globalWrap'), gboard: $('gboard'),
   nameInput: $('nameInput'), submitBtn: $('submitBtn'), netMsg: $('netMsg'),
-  challengeBar: $('challengeBar'), refBar: $('refBar'),
+  challengeBar: $('challengeBar'), refBar: $('refBar'), flash: $('flash'),
 };
+
+// impact flash — a white pop at the contact frame that fades over the slow-mo,
+// selling "the slap CRACKED". strength ~0.2..0.55 by power.
+export function flash(strength = 0.5) {
+  if (!el.flash) return;
+  el.flash.style.transition = 'none';
+  el.flash.style.opacity = String(strength);
+  requestAnimationFrame(() => {
+    el.flash.style.transition = 'opacity 0.22s ease-out';
+    el.flash.style.opacity = '0';
+  });
+}
 
 // low, non-blocking bar for the judge's remarks / slapper quips — the intro
 // name plate stays fully readable above it

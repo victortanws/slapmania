@@ -237,6 +237,8 @@ body.touch #keysbar{display:none;} /* the buttons ARE the legend on touch */
 .card h1{font-size:84px;margin:0;color:var(--red);-webkit-text-stroke:3px #000;
   text-shadow:6px 6px 0 var(--yellow),10px 10px 0 #000;transform:rotate(-4deg);letter-spacing:2px;}
 
+/* ---- impact flash: a white pop on a hard hit, fades over the slow-mo ---- */
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:18;}
 /* ---- the SLAPMANIA impact burst ---- */
 #smack{position:absolute;top:14%;left:0;right:0;display:flex;flex-direction:column;align-items:center;pointer-events:none;}
 #smack svg{width:min(58vw,520px);filter:drop-shadow(8px 10px 0 rgba(0,0,0,.45));}
@@ -371,6 +373,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
   <div id="refBar" class="hidden"></div>
   <div id="distance" class="hidden"></div>
   <div id="banner" class="hidden"><div class="big"></div><div class="sub"></div></div>
+  <div id="flash"></div>
   <div id="smack" class="hidden">
     <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
       <polygon fill="#e8352e" stroke="#000" stroke-width="7" stroke-linejoin="round"

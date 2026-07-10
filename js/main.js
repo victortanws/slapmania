@@ -634,6 +634,7 @@ function onContact(hit) {
   sfx.gasp();
   sfx.whoosh(0);
   stage.shake(Math.min(0.5, power / 40));
+  if (!ugly && hit.part === 'head') ui.flash(Math.min(0.55, 0.16 + power / 55)); // the CRACK — a white pop on a clean cheek hit
   excite = Math.min(1, power / 20);
   player.leanV += power * 0.04; // a monster follow-through rocks YOU too
   // the sun judges TECHNIQUE, not tonnage — chain quality decides its mood
