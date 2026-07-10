@@ -935,7 +935,7 @@ function updateCamera(dt) {
     // trail straighter behind and look DOWNRANGE of the flyer: keeps the ring's
     // barn/conifers at the frame edge and drops the flyer into the lower third
     // with the open lane + horizon ahead — every launch reads as "going somewhere"
-    p = V(b.x - 6.5, Math.max(2.8, b.y + 1.4), b.z + 3.0);
+    p = V(b.x - 6.5, Math.max(2.8, b.y + 1.4), b.z + 4.0);
     l = V(b.x + 3, Math.max(b.y, 0.7), b.z);
   } else { // FOULED / RESULT / MATCH_END — linger where the action ended
     if (opponent.launched) {

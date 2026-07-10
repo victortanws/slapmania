@@ -177,7 +177,7 @@ export const ROSTER = [
     w: 0.85, h: 1.06, mass: 1.1, snapExam: true, robe: true,
     // a lean kung-fu sage in a mantis-green robe (shirt = pants = robe), topknot + white sage beard
     skin: 0xd9a066, shirt: 0x2e7d4f, pants: 0x2e7d4f,
-    hair: 'bun', hairCol: 0x1a1a1f, whiteBeard: true, arena: 'dojo',
+    hair: 'bun', hairCol: 0x1a1a1f, whiteBeard: true, arena: 'dojo', // arena: consumed once the ARENA system ships (see OVERNIGHT-RUN.md); inert until then
     pickLine: 'The Whip Form. A slap without snap is a caress.',
     taunts: ['Your arm is asleep. Wake it.', 'Faster. The mantis does not lecture twice.'],
   },

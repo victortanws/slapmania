@@ -33,16 +33,14 @@ export function challengeBar(text) {
   el.challengeBar.classList.remove('hidden');
 }
 
+// only 'footing' and 'clock' are ever produced (see main.js foul() calls);
+// the old 'punch'/'fingertips' fouls were removed with the dead onContact code
 export const FOUL_LINES = {
-  punch: 'UPON REVIEW: the palm never opened. That is a PUNCH, sir. This is a slapping establishment.',
-  fingertips: 'UPON REVIEW: limp fingertip contact. Pathetic. No slap registered.',
   footing: 'He wound up so hard he slapped himself off his own feet.',
   clock: 'Ten seconds of nothing. The crowd is booing. The opponent is chewing wheat.',
 };
 
 export const FOUL_BANNERS = {
-  punch: ['FOUL!', 'THAT IS A PUNCH, SIR'],
-  fingertips: ['FOUL!', 'LIMP FINGERTIPS. DISGRACEFUL.'],
   footing: ['FOUL!', 'HE HAS SLAPPED HIMSELF OFF HIS OWN FEET'],
   clock: ['FORFEIT!', 'FROZEN BY THE MAGNITUDE OF THE MOMENT'],
 };

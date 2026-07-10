@@ -259,6 +259,19 @@ snapExam, coilExam, robe→longSleeves, windKey, paintedGrin, redNose, (dojo, st
 
 ## Improvements implemented
 
+### ROAST PASS (role 7) — VERDICT: SHIP-READY — done + fixes applied
+Adversarial re-validation of all 6 batches on the branch (desktop + mobile 375×812, day/night). Result:
+**No BLOCKERs, no MAJORs, no regressions, zero console errors; every module node --check clean.** Confirmed
+solid: mobile MATCH_END scrolls (all controls reachable), desktop cards unaffected, mechanics provably
+unchanged (contactSpeed 10.8→×1.0), story rename complete + no stale refs, exam gates never false-trigger
+on flawless / fire on imperfect, scenes add no colliders. 4 MINORs — dispositions:
+- **M3 FIXED** — deleted orphaned `punch`/`fingertips` FOUL_LINES + FOUL_BANNERS (only footing/clock produced).
+- **M1 FIXED** — flight cam briefly clipped a ringside figure in the first ~0.4s; softened lateral offset
+  `b.z 3.0→4.0` (keeps the down-lane look-ahead reframe, clears the crowd line).
+- **M4 ANNOTATED** — Master Mantis `arena:'dojo'` is inert until the ARENA system ships; added a comment.
+- **M2 ACCEPTED** — Greased Pete sheen is front-facing (the side the in-match camera sees); fine.
+Branch is merge-ready for the 6 batches.
+
 ### Batch 6 — always-on fair scenes (ARENA) — DONE + verified
 - **Fairground Ferris wheel** (behind the treeline at (15,6.4,−31)): red rim + 8 evenly-spaced colored
   gondolas that stay upright while the wheel turns (cars repositioned each frame vs a spinning rim
