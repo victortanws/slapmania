@@ -893,7 +893,7 @@ function updateCamera(dt) {
   let p = null, l = null, snapRate = 5;
   if (state === 'SELECT_SLAPPER') {
     p = V(1.75, 1.6, 1.75);
-    l = V(0.05, 1.25, 0);
+    l = V(0.05, 1.15, 0); // lower target so tall/hatted slappers clear the top bubble
     snapRate = 6;
   } else if (state === 'SELECT_OPP') {
     // portrait framing: the player is behind the camera, the volunteer's face
@@ -924,8 +924,11 @@ function updateCamera(dt) {
     // the camera STAYS with the flyer: rises with high arcs, slides with
     // sideways drift — you never lose sight of the person you just launched
     const b = opponent.pelvisPos();
-    p = V(b.x - 5, Math.max(2.8, b.y + 1.3), b.z + 5.4);
-    l = V(b.x, Math.max(b.y, 0.7), b.z);
+    // trail straighter behind and look DOWNRANGE of the flyer: keeps the ring's
+    // barn/conifers at the frame edge and drops the flyer into the lower third
+    // with the open lane + horizon ahead — every launch reads as "going somewhere"
+    p = V(b.x - 6.5, Math.max(2.8, b.y + 1.4), b.z + 3.0);
+    l = V(b.x + 3, Math.max(b.y, 0.7), b.z);
   } else { // FOULED / RESULT / MATCH_END — linger where the action ended
     if (opponent.launched) {
       const b = opponent.pelvisPos();

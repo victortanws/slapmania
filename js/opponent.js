@@ -129,8 +129,9 @@ export const ROSTER = [
   {
     key: 'grease', name: 'GREASED PETE', tag: 'BOSS · UNGRIPPABLE', boss: true,
     w: 0.9, h: 1.0, mass: 0.85, noStache: true, grease: true,
-    // glistening and proud of it: bare slicked torso, work shorts, plastered hair
-    skin: 0xeab890, shirt: 0xeab890, pants: 0x3c4048,
+    // glistening and proud of it: oiled yellow-tan torso + sheen streaks (below),
+    // work shorts, plastered hair — so "greased" reads at a glance, not just in the mechanic
+    skin: 0xf2c88a, shirt: 0xf2c88a, pants: 0x3c4048,
     hair: 'flat', hairCol: 0x14100c,
     pickLine: 'Pig-grease champion, nine years running. Slaps slide RIGHT off.',
     taunts: ['Slippery is a lifestyle.', 'That one slid clean into the trough.'],
@@ -268,8 +269,8 @@ export class Opponent {
     }
     if (arch.brow) {
       // one heavy, disapproving unibrow
-      const brow = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.035, 0.17), toonMat(0x241a12));
-      brow.position.set(-0.138 * hr, 0.08 * hr, 0);
+      const brow = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.024, 0.17), toonMat(0x241a12));
+      brow.position.set(-0.138 * hr, 0.105 * hr, 0); // thinner + higher so it reads as a brow, not a visor over the eyes
       brow.scale.setScalar(hr);
       head.add(brow);
     }
@@ -517,6 +518,17 @@ export class Opponent {
     }
 
     // wardrobe extras that ride the torso (and fly with it)
+    if (arch.grease) {
+      // pale sheen streaks down the bare oiled torso — a flat toon material can't
+      // shine, so paint the glisten on. Gives Pete a one-glance "greased" read.
+      const tr = 0.38 * w * 0.52;
+      for (const [sy, sz] of [[0.15 * h, 0.05], [0.0, 0.09], [-0.13 * h, 0.02]]) {
+        const sheen = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 8), toonMat(0xfdf3da));
+        sheen.scale.set(0.4, 1.6, 0.4);
+        sheen.position.set(-(tr + 0.004), sy, sz);
+        P.torso.mesh.add(sheen);
+      }
+    }
     if (arch.stripes) {
       const tr = 0.38 * w * 0.52 + 0.008;
       for (const sy of [-0.13 * h, 0.01 * h, 0.15 * h]) {

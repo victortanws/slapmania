@@ -234,6 +234,7 @@ export function showResult({ dist, pts, arch, part, foul, chain, line, n }) {
 }
 
 export function showMatch({ bestAttempt, line, board, shareUrl }) {
+  coach(null); // clear any lingering ceremony line (SLAPMASTER/EMPEROR) so it doesn't stack on the verdict header
   el.match.classList.remove('hidden');
   el.matchDist.textContent = `${bestAttempt.pts} PTS`;
   el.matchLine.textContent = bestAttempt.pts > 0

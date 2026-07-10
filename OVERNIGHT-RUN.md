@@ -32,14 +32,14 @@ protect the quirk?
 |---|------|-------|----------------|--------|
 | 1 | Physicality & reality validator | PHYS | slap-phys :8990 | ✅ reported |
 | 2 | Game-design validator (confirms/disconfirms #1) | GDES | slap-phys :8990 | ✅ reported |
-| 3 | Visual & appearance critic | ART | slap-art :8991 | running |
+| 3 | Visual & appearance critic | ART | slap-art :8991 | ✅ reported |
 | 4 | Story & causality / believability critic | STORY | slap-story :8993 | ✅ reported |
 | 5 | UI/UX blocking critic | UIUX | slap-uiux :8992 | ✅ reported → FIXES SHIPPED (branch) |
 | 6 | Environments & bosses ideator (desert+) | WORLD | slap-game :8994 | ✅ reported |
 | 7 | Roast → feedback → re-code orchestrator | (me + roast agent) | slap-preview :8996 | active |
 | 8 | Camera & cinematography validator | CAMERA | slap-cam :8988 | ✅ reported |
 | 9 | Scene & boss-arena designer | ARENA | slap-arena :8989 | ✅ reported |
-| 10 | Character creator (bosses/volunteers/slappers) | CREATOR | — | queued (synthesizes all others) |
+| 10 | Character creator (bosses/volunteers/slappers) | CREATOR | — | ✅ reported |
 
 ## Consolidated findings & dispositions
 
@@ -213,7 +213,65 @@ readability; SELECT_OPP framing; all cutscene ¾ shots match the speaker. Findin
 | C4 | MINOR | TITLE hero buried behind the rules card (`main.js:905`) | PLANNED — offset orbit/card so slapper is beside not behind |
 | C5 | MINOR | SELECT_SLAPPER head grazes the instruction bubble (`main.js:894`) | PLANNED — drop look-target y 1.25→1.15 or pull cam back 0.3 |
 
+### ART (role 3) — VERDICT: SHIP (with polish) — reported
+
+Working (don't touch): day comp, the ice rework, Dynamite's arm gag, fixed Influencer stick, most bosses'
+instant hooks, cards. Findings:
+
+| # | Sev | Finding | Disposition |
+|---|-----|---------|-------------|
+| A1 | MAJOR | GREASED PETE has no visual hook — reads as generic shirtless volunteer (toon mat can't shine) | PLANNED — oiled skin `0xf2c88a` + pale sheen blobs / grease-tin prop / puddle decal |
+| A2 | MINOR | Footwear mismatch: volunteers have dark stump legs (ragdoll llL/llR `0x1d2138`), no feet, vs slappers' boots | PLANNED — add foot boxes + soften shin to boot brown (touches all 18 volunteers/bosses) |
+| A3 | MINOR | Night world murky — flattest of the three | PLANNED — lift/warm night hemi+ambient, bigger stars, moon disc |
+| A4 | MINOR | Roy + Victor read as dark monochrome blobs | PLANNED — one mid-value accent each |
+| A5 | MINOR | WhatsApp share button `🟢` reads as empty placeholder | PLANNED — swap to `💬`/WA monogram |
+| A6 | MINOR | Final-verdict header overlaps leftover SLAPMASTER ceremony banner | PLANNED — clear banner on MATCH_END mount |
+| A7 | MINOR | Bruce dragon tattoo too small to read | PLANNED — enlarge decal 0.3², thicker strokes, raise |
+| A8 | MINOR | Bob/Iron-Jaw unibrow reads like a visor | PLANNED — thin/raise brow so eyes stay visible |
+| A9 | MINOR | Ice crowd stands on white "lily-pad" discs | PLANNED — merge into drifts / soften edges |
+| A11 | MINOR | Title HUD labels (ATTEMPTS/BEST) low-contrast on dark cards | PLANNED — lift color / add shadow |
+| A10 | MINOR | preview-only weapon-arm stiff | LOW — optional idle pose |
+| A12 | MINOR | Auntie/Influencer bust very large (taste/store) | FLAG (director) — user explicitly designed this; trim to 1.25 only on his call |
+
+### CREATOR (role 10) — new cast that completes the S·L·A·P exam set — reported
+
+Mandate: grease=P-exam, chainGate=whole, WORLD's sandblast=L-exam → the open slots are **A** and **S**.
+CREATOR designed exactly those, mirroring the shipped mechanic idiom byte-for-byte. **Build these 3:**
+
+1. **TICK-TOCK TOM** (S/coil exam) — brass wind-up automaton. Mechanic `coilExam:85`:
+   `!ugly && coilFrac < arch.coilExam/100 ⇒ power*=0.40`, burst "UNWOUND! WIND THE COIL PAST 85%…".
+   Look: brass `skin 0xc9a24b/shirt 0x9a7a34/pants 0x6e5626`, `windKey` (NEW — brass key on the back,
+   the signature gag, ~4 meshes on P.torso.mesh), `paintedGrin:0xc0202a` (NEW, 1 mesh), `brow`, w1.1/h1.02/
+   mass1.3. Arena: NONE — he's a fairground exhibit (sells on the always-on midway → zero new geometry).
+2. **MASTER MANTIS** (A/whip exam) — lean kung-fu sage, exact grease-mirror one link earlier. Mechanic
+   `snapExam`: `!ugly && ag.tier<3 ⇒ power*=0.45`, burst "NO SNAP! ONLY A CRACKING ARM…". Look: mantis-green
+   `robe` (NEW → `longSleeves` w/o suit shirtfront), `bun` topknot, `whiteBeard`, w0.85/h1.06/mass1.1.
+   Arena: `dojo` (cheap ~8-mesh new group) or reuse fightTent.
+3. **RODEO CLOWN CHUCKLES** (volunteer) — shareable silhouette. `redNose:0xe0242a` (NEW 1 mesh),
+   `paintedGrin` (shared w/ Tom), `frizz` red fro, `stripes` circus bands, greasepaint skin 0xf2ece6,
+   w1.05/h0.98/mass1.1.
+
+These two bosses + sandblast + grease = a **"SCHOOL OF SLAPPING" campaign** (Trial of Coil/Lunge/Whip/Palm)
+that literally teaches the mechanic — directly answers GDES-B1 (dark campaign + skill legibility).
+CUT: SIDEWINDER SID (collides with TREMENDOUS DON). Defer: DUSTY DAN (2nd featherweight), OL' SCARECROW
+(free reach-specialist slapper, power 0.85 — build only with slack). New flags inventory:
+snapExam, coilExam, robe→longSleeves, windKey, paintedGrin, redNose, (dojo, strawTufts optional).
+
 ## Improvements implemented
+
+### Batch 4 — presentation polish (ART + CAMERA) — DONE + verified
+- **CAMERA C1 (marquee):** FLIGHT cam trails straighter + looks 3m downrange
+  (`p=V(b.x-6.5,max(2.8,b.y+1.4),b.z+3.0)`, `l.x=b.x+3`) — barn/conifers to the frame edge, flyer in the
+  lower third with open lane ahead. **CAMERA C5:** SELECT_SLAPPER look-target y 1.25→1.15 (tall/hatted heads
+  clear the bubble). Verified: game runs clean, flawless 94m, contactSpeed 10.8 (no mechanic regression).
+- **ART A1 (MAJOR):** GREASED PETE oiled skin `0xf2c88a` + 3 pale sheen streaks on the torso (new `grease`
+  builder branch) — now reads "glistening" at a glance (verified via ?preview=grease).
+- **ART A8:** unibrow thinner (0.035→0.024) + higher (0.08→0.105·hr) so it reads as a brow not a visor
+  (Bob/Iron-Jaw/Assessor).
+- **ART A5:** WhatsApp share glyph `🟢`→`💬` (was reading as an empty placeholder).
+- **ART A6:** `ui.showMatch` now clears the lingering ceremony line so SLAPMASTER/EMPEROR text doesn't
+  stack on the verdict header.
+- Files: js/main.js, js/opponent.js, js/ui.js, index.html. `node --check` clean, no console errors.
 
 ### Batch 3 — campaign story fixes (STORY S1–S8, S12) — DONE + loads clean
 - **S4** Mabel "fifty years"→"forty years" (fixes the 40-yr-dead-master timeline contradiction).
