@@ -18,7 +18,7 @@ import map. ES modules require HTTP (not `file://`):
 python3 -m http.server 8994 -d .    # then open http://localhost:8994
 ```
 
-There's a `.claude/launch.json` entry named `slap-game` for the preview tooling.
+There's a `.Codex/launch.json` entry named `slap-game` for the preview tooling.
 
 ## Repo layout
 
@@ -327,11 +327,3 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   campaign challenge names its volunteer (no free pick in tours) and cleared
   challenges are replayable (↻, no re-clear). VICTOR SEPUP: black cap with a
   ▽ mark (player 'cap' hat + capMark flag) + black jacket.
-- **SHOP IS LIVE (2026-07-10)**: `DLC_LIVE = true`, `SHOP_LIVE = true`; the
-  SLAPDEV code and `?unlockall=1` backdoors are REMOVED (comments only remain).
-  Unlock paths: verified Stripe purchase (`slapp_pack`) or future server codes.
-  create-checkout reads `STRIPE_PRICE_ID` from env (falls back to the test
-  price) — going fully live = swap STRIPE_SECRET_KEY to sk_live, add live
-  STRIPE_PRICE_ID secret, redeploy both functions from supabase/functions/.
-  World selection is three explicit buttons (.worldOpt, active wears red).
-  slap-preview moved to port 8996 (8995 collided with another session).

@@ -63,6 +63,9 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
   #tour{overflow-y:auto;justify-content:flex-start;padding-top:52px;}
 }
 
+/* ---- world selector: the active world wears the red ---- */
+.worldOpt.on{background:var(--red);color:#fff;}
+
 /* ---- ref bar: the judge's remarks / slapper quips — LOW, never over the intro ---- */
 #refBar{position:absolute;bottom:158px;left:0;right:0;margin:0 auto;width:fit-content;max-width:88vw;
   background:rgba(10,12,26,.78);border:2px solid rgba(255,210,63,.5);color:#ffe9a0;font-size:13px;
@@ -450,7 +453,11 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
     </div>
     <div class="tagline" style="font-size:12px;">FIRE 'EM IN THAT ORDER — TIMING IS EVERYTHING</div>
     <div class="pressany blink">PRESS ANY KEY TO MOSEY ON UP</div>
-    <button id="worldBtn" style="font-size:13px;padding:8px 16px;">🌞 DAY FAIR ▸</button>
+    <div id="worldRow" style="display:flex;gap:8px;justify-content:center;">
+      <button class="worldOpt" data-world="day" style="font-size:12px;padding:7px 13px;">🌞 DAY FAIR</button>
+      <button class="worldOpt" data-world="night" style="font-size:12px;padding:7px 13px;">🌙 NIGHT FAIR</button>
+      <button class="worldOpt" data-world="ice" style="font-size:12px;padding:7px 13px;">❄️ FROZEN LAKE</button>
+    </div>
     <button id="tourBtn" class="hidden" style="font-size:14px;padding:9px 18px;">🎪 THE COUNTY FAIR TOUR</button>
     <div id="creditBar">MADE BY VICTOR TAN<span class="sep">·</span>© 2026 ALL RIGHTS RESERVED<span class="sep">·</span><a href="https://www.youtube.com/@VictorTan" target="_blank" rel="noopener">▶ YOUTUBE</a><span class="sep">·</span><a href="https://buymeacoffee.com/victortanws" target="_blank" rel="noopener">☕ BUY ME A COFFEE</a></div>
   </div>

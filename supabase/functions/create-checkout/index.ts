@@ -5,7 +5,9 @@
 import Stripe from 'npm:stripe@14';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') ?? '');
-const PRICE_ID = 'price_1TrZ04EQTIgrDf8XdgVNX54t'; // Supporter Pack $6.99
+// Set the STRIPE_PRICE_ID secret to the LIVE price when going live;
+// falls back to the test-mode Supporter Pack price otherwise.
+const PRICE_ID = Deno.env.get('STRIPE_PRICE_ID') ?? 'price_1TrZ04EQTIgrDf8XdgVNX54t';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',

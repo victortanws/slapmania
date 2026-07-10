@@ -10,8 +10,8 @@
     {
       "name": "slap-preview",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8995", "-d", "."],
-      "port": 8995
+      "runtimeArgs": ["-m", "http.server", "8996", "-d", "."],
+      "port": 8996
     },
     {
       "name": "vibe-coder-sim",

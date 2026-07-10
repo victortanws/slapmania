@@ -215,10 +215,10 @@ const SLAPPER_TITLES = ['THE NATURAL', 'THE TECHNICIAN', 'THE VETERAN', 'THE OUT
 // stays locked on every device — even ones that visited an old ?unlockall=1 / SLAPDEV
 // test link and already have entries in localStorage.slapp_unlocks. Flip to true
 // only once Stripe checkout (Phase 2) is actually wired and ready to take payment.
-const DLC_LIVE = false;
-// SHOP: flip with DLC_LIVE at launch; ?shoptest=1 enables the (test-mode)
-// Stripe checkout for end-to-end testing before the public sees a working BUY.
-const SHOP_LIVE = false;
+// LIVE since 2026-07-10: the shop is open. The dev backdoors (SLAPDEV code,
+// ?unlockall) were REMOVED when these flipped — purchases are the only path.
+const DLC_LIVE = true;
+const SHOP_LIVE = true;
 const shopEnabled = () => SHOP_LIVE || new URLSearchParams(location.search).get('shoptest') === '1';
 let unlocks = [];
 try { unlocks = JSON.parse(localStorage.getItem('slapp_unlocks') || '[]'); } catch { unlocks = []; }
@@ -269,16 +269,10 @@ if (um.modal) {
       um.msg.textContent = 'Checkout stumbled — try again in a spell.';
     }
   };
+  // gift/promo codes will be server-validated when they exist; no client codes,
+  // ever — the shop is live and the old SLAPDEV backdoor is gone
   um.redeem.onclick = () => {
-    const code = um.code.value.trim().toUpperCase();
-    if (DLC_LIVE && unlockTarget && code === 'SLAPDEV') {   // TEMP dev code — replace with server validation in Phase 2
-      const c = unlockTarget;
-      unlock(c.key);
-      um.msg.textContent = 'UNLOCKED! 🎉';
-      setTimeout(() => { closeUnlockModal(); openSlapperPick(); pickHighlight(SLAPPERS.indexOf(c)); }, 700);
-    } else {
-      um.msg.textContent = "That code isn't active yet — the shop opens soon.";
-    }
+    um.msg.textContent = 'No active codes right now — codes come from giveaways!';
   };
 }
 
@@ -468,19 +462,18 @@ document.getElementById('tourBack').onclick = () => goToTitle();
 // ---------- worlds: Day Fair / Night Fair / Frozen Lake (public) ----------
 // Theme + (for ice) ground friction, persisted. Distances still end at the
 // forest perimeter (~117m), so the DB dist cap (130) holds even on ice.
-const WORLDS = [['day', '🌞 DAY FAIR'], ['night', '🌙 NIGHT FAIR'], ['ice', '❄️ FROZEN LAKE']];
-let worldIdx = Math.max(0, WORLDS.findIndex((w) => w[0] === (localStorage.getItem('slapp_world') || 'day')));
-function applyWorld() {
-  const [key, label] = WORLDS[worldIdx];
+// three explicit buttons — pick the world you want, the active one wears red
+function applyWorld(key) {
   stage.setWorldTheme(key);
   phys.setIce(key === 'ice');
-  // reads as a STATUS ("you are here"), not a destination — tapping cycles onward
-  document.getElementById('worldBtn').textContent = `WORLD: ${label} — TAP TO CHANGE ▸`;
+  document.querySelectorAll('.worldOpt').forEach((b) => b.classList.toggle('on', b.dataset.world === key));
   localStorage.setItem('slapp_world', key);
   track('world_selected', { world: key });
 }
-document.getElementById('worldBtn').onclick = () => { worldIdx = (worldIdx + 1) % WORLDS.length; applyWorld(); sfx.ensure(); };
-applyWorld();
+document.querySelectorAll('.worldOpt').forEach((b) => {
+  b.onclick = () => { sfx.ensure(); applyWorld(b.dataset.world); };
+});
+applyWorld(localStorage.getItem('slapp_world') || 'day');
 if (campaign.enabled()) {
   const b = document.getElementById('tourBtn');
   b.classList.remove('hidden');
@@ -1241,11 +1234,8 @@ window.__slapp = {
   },
 };
 
-// ?unlockall=1 — dev/preview: unlock every DLC slapper so they can all be played.
-// Gated behind DLC_LIVE like everything else — inert while DLC isn't on sale.
-if (DLC_LIVE && new URLSearchParams(location.search).get('unlockall')) {
-  SLAPPERS.filter((s) => s.locked).forEach((s) => unlock(s.key));
-}
+// (the old ?unlockall=1 dev param was removed when the shop went live —
+// purchases and server-validated codes are the only unlock paths now)
 
 // ?preview=<key> renders any slapper (incl. locked DLC) in the pick showcase, so a
 // look can be shared before it's unlockable — without exposing it in the pick list.
@@ -1282,6 +1272,8 @@ let challenge = null;
         ui.challengeBar('🏆 SUPPORTER PACK UNLOCKED — ALL SIX LEGENDS ARE YOURS. THANK YOU!');
         sfx.fanfare();
         track('pack_purchased', {});
+        // if the roster is on screen, re-render it so the locks fall off NOW
+        if (state === 'SELECT_SLAPPER') openSlapperPick();
       }
       history.replaceState(null, '', location.pathname);
     }).catch(() => {});
