@@ -80,6 +80,22 @@ export const ROSTER = [
     pickLine: 'Wait — is this thing recording? Hi besties!',
     taunts: ["Don't forget to like and subscribe!", 'This is SO going on my story.'],
   },
+  {
+    key: 'susie', name: 'SCHOOLMARM SUSIE', tag: 'FACULTY',
+    w: 0.85, h: 1.02, mass: 0.8, female: true,
+    skin: 0xeec39c, shirt: 0x5e6a8a, pants: 0x4a4458, skirt: 0x4a4458,
+    hair: 'bun', hairCol: 0x6e4a2c, glasses: true,
+    pickLine: 'Grades your form in red ink. Docks marks for posture.',
+    taunts: ['See me after class.', 'This goes on your PERMANENT RECORD.'],
+  },
+  {
+    key: 'maestro', name: 'MAESTRO FORTISSIMO', tag: 'VIRTUOSO',
+    w: 1.05, h: 1.05, mass: 1.15, noStache: true,
+    skin: 0xdcb08c, shirt: 0x2a2a35, pants: 0x1f1f28,
+    hair: 'frizz', hairCol: 0x4a4a52, cello: true,
+    pickLine: 'Interrupted mid-sonata. Furious. Extremely resonant.',
+    taunts: ['You call that TEMPO?', 'My cello has survived three world tours.'],
+  },
   // ---- BOSSES (boss: true): campaign-only — never listed in the public
   // volunteer pick; tour challenges summon them by key ----
   {
@@ -237,6 +253,19 @@ export class Opponent {
       brow.position.set(-0.138 * hr, 0.08 * hr, 0);
       brow.scale.setScalar(hr);
       head.add(brow);
+    }
+    if (arch.glasses) {
+      // proper schoolteacher spectacles: two rims and a bridge
+      for (const sgn of [-1, 1]) {
+        const lens = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.052, 0.058), toonMat(0x15151a));
+        lens.position.set(-0.152 * hr, 0.03 * hr, sgn * 0.056 * hr);
+        lens.scale.setScalar(hr);
+        head.add(lens);
+      }
+      const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.016, 0.012, 0.05), toonMat(0x15151a));
+      bridge.position.set(-0.152 * hr, 0.038 * hr, 0);
+      bridge.scale.setScalar(hr);
+      head.add(bridge);
     }
     if (arch.whistleProp) {
       // the famous silver whistle, on its cord at the lips
@@ -429,6 +458,32 @@ export class Opponent {
           head.add(side);
         }
       }
+    }
+    if (arch.cello) {
+      // his beloved cello, held out front mid-lesson — it flies WITH him
+      const tr = 0.38 * w * 0.52;
+      const cello = new THREE.Group();
+      const bodyC = new THREE.Mesh(new THREE.CapsuleGeometry(0.17, 0.24, 4, 12), toonMat(0x7a4520));
+      bodyC.scale.set(0.5, 1, 1);
+      cello.add(bodyC);
+      const neck = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.4, 0.05), toonMat(0x452510));
+      neck.position.y = 0.44;
+      cello.add(neck);
+      const scroll = new THREE.Mesh(new THREE.SphereGeometry(0.038, 6, 6), toonMat(0x452510));
+      scroll.position.y = 0.66;
+      cello.add(scroll);
+      for (const sgn of [-1, 1]) {
+        const str = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.58, 0.005), toonMat(0xe8e2d0));
+        str.position.set(-0.088, 0.18, sgn * 0.012);
+        cello.add(str);
+      }
+      const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.16, 5), toonMat(0x9aa2ad));
+      pin.position.y = -0.42;
+      cello.add(pin);
+      cello.position.set(-(tr + 0.15), -0.1 * h, 0.03);
+      cello.rotation.z = -0.14;
+      cello.traverse((m) => { m.castShadow = true; });
+      P.torso.mesh.add(cello);
     }
     if (arch.beltCol) {
       // a champion's belt around the waist, gold buckle out front
@@ -705,6 +760,19 @@ export class Opponent {
     } else if (this.showcaseMode) {
       this.animateShowcase();
     } else {
+      if (!this.arch.weave) {
+        // every volunteer BREATHES: a slow, readable rise-and-fall of the cheek
+        // (~4.5s period, ±5cm). Never enough to whiff — but a flush hit wants
+        // the head level with your swing plane, so watching the ring pays.
+        // Deterministic sine; sin(0)=0 so the strike plane is set at rest height.
+        const breathe = Math.sin(this.time * 1.4) * 0.05;
+        const P = this.rag.parts;
+        P.head.body.position.y = this.basePose.head.p.y + breathe;
+        P.torso.body.position.y = this.basePose.torso.p.y + breathe * 0.35;
+        if (this.hatBody && this.hatOff) this.hatBody.position.copy(P.head.body.position.vadd(this.hatOff));
+        this.rag.sync();
+        this.syncHat();
+      }
       if (this.arch.weave) {
         // bob & weave: the head slips side to side on the LIVE physics bodies, so
         // the swept-segment hit test genuinely misses off-center — the only added

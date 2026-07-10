@@ -210,8 +210,13 @@ export function showResult({ dist, pts, arch, part, foul, chain, line, n }) {
       ? 'BODY BLOW: −55% POWER. THE CHEEK PAYS FULL PRICE.'
       : 'CLEAN CHEEK CONTACT ✓';
   }
+  // contact flushness: FLUSH = struck level through the cheek's center; GRAZE =
+  // skimmed high/low. Teaches the read-the-heights game without a new meter.
+  const cqNote = chain && chain.cq != null
+    ? (chain.cq >= 106 ? ` · FLUSH +${chain.cq - 100}%` : chain.cq <= 94 ? ` · GRAZE −${100 - chain.cq}%` : '')
+    : '';
   el.resChain.textContent = chain
-    ? `CHAIN ${chain.pct}% OF PERFECT — SWIVEL ${chain.coil}% · LUNGE ${chain.l} · ARM ${chain.a} · PALM ${chain.p}${chain.ugly ? ' · (REBOUND FLAIL −70%)' : ''}${chain.bal != null && chain.bal < 95 ? ` · OFF-BALANCE −${100 - chain.bal}%` : ''}`
+    ? `CHAIN ${chain.pct}% OF PERFECT — SWIVEL ${chain.coil}% · LUNGE ${chain.l} · ARM ${chain.a} · PALM ${chain.p}${cqNote}${chain.ugly ? ' · (REBOUND FLAIL −70%)' : ''}${chain.bal != null && chain.bal < 95 ? ` · OFF-BALANCE −${100 - chain.bal}%` : ''}`
     : '';
   el.resLine.textContent = line;
   el.resNext.textContent = n >= 3 ? 'CLICK / ENTER → FINAL VERDICT' : `CLICK / ENTER → ATTEMPT ${n + 1} OF 3`;

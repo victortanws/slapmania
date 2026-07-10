@@ -283,3 +283,16 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   SLIM (speed-cap saturation) but +64% vs BERTHA — precision pays on tonnage.
   Micro-timing: ±45ms on P swings ±14%; lazy L (-36%) via coil leak; holding
   the coil past full costs nothing (leak starts at release).
+- **Contact quality (`cq`, public engine)**: head hits are graded on vertical
+  flushness (|pt.y−center.y| over 45% of the hit envelope, weighted 0.7) plus
+  velocity-into-cheek incidence (0.3) → multiplier 0.88–1.12 on the sweet spot,
+  pre-cap, head-only. Stored as `slap.chain.cq` (100 = square); the result card
+  appends `FLUSH +n%` / `GRAZE −n%`. All volunteers now BREATHE (±5cm head sine,
+  ~4.5s period, deterministic, in `Opponent.update`; weave bosses excluded —
+  their slip replaces it). Timing the breath vs BERTHA measured 29.2m mistimed
+  vs 42.1m flush-timed with the same swing. Study note: first-frame contact
+  always lands near the envelope RIM (offFrac .74–.98) — raw centering is
+  approach geometry, not skill; the vertical component is the real signal.
+- **Volunteers 13** (public pick 11): + SCHOOLMARM SUSIE (glasses flag now on
+  the opponent builder too) and MAESTRO FORTISSIMO (`cello: true` — rides the
+  torso mesh, flies with him; visual only, no collider).

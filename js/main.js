@@ -442,7 +442,22 @@ function onContact(hit) {
   // the palm never fired: that rigid folded arm is a punch, sir
   const foulType = player.pUnlocked ? null : 'punch';
 
-  const sweet = hit.part === 'head' ? 1.35 : 0.6;
+  // CONTACT QUALITY (head only) — real slap physics: a blow that lands level
+  // with the cheek's center and drives INTO it transfers square; a high/low
+  // graze skims off. Rewards reading heights (matchups) and the volunteer's
+  // breathing sway — watch the ring, strike level. Deterministic, capped ±12%.
+  let cq = 1;
+  if (hit.part === 'head') {
+    // vertical flushness normalized to the inner 45% of the envelope so it
+    // actually discriminates (post-reach-fix planes are all near-level), and
+    // weighted 70/30 over incidence: height-reading is the skill being paid.
+    const R = opponent.rHead + 0.26;
+    const vAlign = 1 - Math.min(1, Math.abs(hit.point.y - hit.center.y) / (R * 0.45));
+    const into = new THREE.Vector3().subVectors(hit.center, hit.point).normalize();
+    const incidence = Math.max(0, velDir.dot(into));
+    cq = 0.88 + 0.24 * (0.7 * vAlign + 0.3 * incidence);
+  }
+  const sweet = (hit.part === 'head' ? 1.35 : 0.6) * cq;
   // real slap physics: force comes up from the ground through a BRACED stance.
   // A teetering slapper can't drive the blow — the worse the visible lean at
   // contact, the softer the slap (up to −45% at the tipping point)
@@ -482,6 +497,7 @@ function onContact(hit) {
     chain: {
       coil: Math.round(Math.min(1, coilFrac) * 100), l: lg.label, a: ag.label, p: pg.label, ugly,
       bal: Math.round(balF * 100),
+      cq: hit.part === 'head' ? Math.round(cq * 100) : null, // contact flushness (100 = level+square)
       pct: chainPct, // % of theoretical max — same number the boss gates judge
     },
   };
