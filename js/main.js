@@ -463,6 +463,9 @@ function openTourMenu() {
   track('tour_opened', { cleared: campaign.progress().length });
 }
 document.getElementById('tourBack').onclick = () => goToTitle();
+// the ONLY tap that advances the final scoreboard — so tapping the boards to
+// browse/scroll never steals the "next round" transition (Enter/Space also work)
+document.getElementById('matchNext').onclick = () => { sfx.ensure(); advanceScreens('Enter'); };
 
 // ---------- worlds: Day Fair / Night Fair / Frozen Lake (public) ----------
 // Theme + (for ice) ground friction, persisted. Distances still end at the
@@ -830,9 +833,9 @@ function advanceScreens(code) {
   if (state === 'TITLE') { openSlapperPick(); return true; }
   if (code && KEYMAP[code]) return false;
   if (state === 'RESULT' && tState > 1.0) { advance(); return true; }
-  // the final scoreboard is for READING — only a click or Enter/Space moves on,
-  // so browsing the rankings can't be lost to a stray keystroke
-  if (state === 'MATCH_END' && code && code !== 'Enter' && code !== 'NumpadEnter' && code !== 'Space') return false;
+  // the final scoreboard is for BROWSING — a bare tap/click must NOT advance (it
+  // would steal a scroll), so only Enter/Space or the explicit NEXT button moves on.
+  if (state === 'MATCH_END' && code !== 'Enter' && code !== 'NumpadEnter' && code !== 'Space') return false;
   if (state === 'MATCH_END' && tState > 1.0) {
     // a tour match hands you back to the tour, checkmark freshly inked; a boss
     // never lingers as the quick-match default. Final bosses get their payoff

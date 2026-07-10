@@ -479,6 +479,16 @@ by power 0.16–0.55, fades over 0.22s across the slow-mo). Upgrades the feel of
 highest-frequency moment. VERIFIED: flash pops to 0.55 at contact, fades cleanly to 0, no console errors.
 Remaining juice backlog (documented): hit-sparks, sweat/spit spray, hitstop, milestone pass-through pop.
 
+### SHIP prep — MATCH_END browse fix + CAMPAIGN_LIVE flip — DONE + verified
+- **Scoreboard browse bug (director report):** a bare tap anywhere on the final verdict card advanced to the
+  next round, so the (now-scrollable) leaderboard couldn't be browsed. FIX: MATCH_END now advances ONLY via
+  Enter/Space or an explicit "PICK YOUR NEXT VOLUNTEER ▶" button — a bare tap/scroll never advances. VERIFIED
+  (mobile 375×812): tapping the board/card stays on MATCH_END; the button + Enter advance. Only MATCH_END
+  affected (RESULT per-attempt cards unchanged; no gameplay impact). UX: browsing went from impossible → free;
+  advancing stays one deliberate action.
+- **CAMPAIGN_LIVE = true** (campaign.js:9) — the County Fair Tour (4 campaigns) is now public via the
+  "🎪 THE COUNTY FAIR TOUR" title button. Rollback target recorded: **main @ 86ff553**.
+
 ## Left for the director
 
 ### How to review + ship

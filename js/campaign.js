@@ -6,7 +6,7 @@
 // the guardians → the Fourth Form → an outro where the master finally rests.
 // Progress: localStorage.slapp_tour; scene seen-flags: localStorage.slapp_seen.
 
-const CAMPAIGN_LIVE = false; // flip when the campaigns should appear for everyone
+const CAMPAIGN_LIVE = true; // SHIPPED 2026-07-11 — the County Fair Tour is public
 
 export const TOURS = [
   {
