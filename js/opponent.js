@@ -128,6 +128,16 @@ export const ROSTER = [
     taunts: ['Was that the wind?', 'My chin has retired better hands than yours.'],
   },
   {
+    key: 'pennywhistle', name: 'JUDGE PENNYWHISTLE', tag: 'BOSS · CONTEMPT OF COURT', boss: true,
+    w: 1.0, h: 0.98, mass: 1.15, shotClock: 6, chainGate: 50, whistleProp: true,
+    // the county's beloved judge-referee-notary-hot-dog-inspector — bought.
+    // Black robe, gold tie, the famous silver whistle still on its cord.
+    skin: 0xe2b688, shirt: 0x1b1b22, pants: 0x1b1b22, suit: true, tie: 0xd8b13c,
+    whiteBeard: true, hair: 'bun', hairCol: 0xd8d2c6,
+    pickLine: 'His Honor will officiate his OWN trial. Six seconds a swing.',
+    taunts: ['I rule that slap... inadmissible!', 'Bribes? I prefer “expedited filing fees.”', 'Objection sustained. Cheek presented.'],
+  },
+  {
     key: 'granny', name: 'GRANNY THUNDER', tag: 'BOSS · RETIRED CHAMPION', boss: true,
     w: 0.95, h: 0.96, mass: 1.4, female: true, weave: true, chainGate: 60,
     // the 1987 county champion: storm-grey dress, white bun, still slips like a pro
@@ -227,6 +237,18 @@ export class Opponent {
       brow.position.set(-0.138 * hr, 0.08 * hr, 0);
       brow.scale.setScalar(hr);
       head.add(brow);
+    }
+    if (arch.whistleProp) {
+      // the famous silver whistle, on its cord at the lips
+      const wh = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.028, 0.03), toonMat(0xc9ced6));
+      wh.position.set(-0.185 * hr, -0.06 * hr, 0.035 * hr);
+      wh.scale.setScalar(hr);
+      head.add(wh);
+      const cord = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.16, 5), toonMat(0x8a2f2f));
+      cord.position.set(-0.13 * hr, -0.11 * hr, 0.07 * hr);
+      cord.rotation.z = 0.5;
+      cord.rotation.x = 0.4;
+      head.add(cord);
     }
     if (arch.ironJaw) {
       // a riveted steel chin — the no-sell hardware itself

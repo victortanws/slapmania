@@ -338,6 +338,22 @@ function goToTitle() {
 }
 
 // ---------- the county fair tour (campaign — hidden until CAMPAIGN_LIVE) ----------
+// Judge Pennywhistle officiates every campaign match: a one-liner at the faceoff,
+// then his whistle starts the shot clock. (In the Save the Fair epilogue, the
+// gavel case gives him up — and His Honor becomes slappable.)
+const REF_LINES = [
+  'Rule one: the cheek must remain attached to the volunteer.',
+  'I once disqualified a man for slapping with LOVE. Never again.',
+  'No slapping before the whistle. The whistle is very sensitive about this.',
+  'As county judge, notary, and hot-dog inspector, I declare this LEGAL.',
+  "I'll be watching that elbow. I am ALWAYS watching the elbow.",
+  'The record will show the volunteer smiled first.',
+  'Keep it clean, keep it loud, and keep it away from my lemonade.',
+  'A foul today is a story tomorrow. Still a foul, though.',
+  'My gavel is in the shop. The whistle will preside.',
+  'Proceed! Justice is best served open-palmed.',
+];
+let refLineIdx = 0;
 function openTourMenu() {
   setState('TOUR');
   ui.showTitle(false);
@@ -393,6 +409,8 @@ function startAttempt() {
   ui.showMeters(false);
   ui.intro(arch);
   ui.bubble(arch.taunts[Math.floor(Math.random() * arch.taunts.length)]);
+  // campaign matches are officiated — His Honor has remarks
+  if (campaign.active) ui.coach(`🎺 JUDGE PENNYWHISTLE: “${REF_LINES[refLineIdx++ % REF_LINES.length]}”`);
   excite = Math.max(excite, 0.28); // the crowd greets the volunteer
   setState('FACEOFF');
 }
@@ -806,6 +824,9 @@ function tick(now) {
       ui.intro(null);
       ui.showMeters(true);
       opponent.setTargetVisible(true);
+      // officiated (campaign) matches: the judge's whistle IS the shot clock —
+      // one long blast at the exact frame the 10 seconds start running
+      if (campaign.active) { sfx.whistle('start'); ui.coach(null); }
       setState('SWING');
     }
   } else if (state === 'SWING') {

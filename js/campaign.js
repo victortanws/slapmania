@@ -76,6 +76,14 @@ export const TOURS = [
           { id: 'f3c3', title: '☗ BOSS: GRANNY THUNDER', desc: 'Send the retired champion 35m — she slips, and weak form bores her', opp: 'granny', goal: { type: 'dist', v: 35 } },
         ],
       },
+      {
+        act: 'EPILOGUE — THE VERDICT',
+        story: 'The council voted 6–1 to save the fair. Then the blueprints for Parking Structure Seven turned up in Judge Pennywhistle\'s gavel case — signed three weeks ago, witnessed by a hot dog. His Honor has agreed to settle this "like gentlemen." He will be officiating.',
+        challenges: [
+          { id: 'f4c1', title: 'FOLLOW THE MONEY', desc: 'Score 400 off TREMENDOUS DON — the briefcase has a cheek too', opp: 'don', goal: { type: 'pts', v: 400 } },
+          { id: 'f4c2', title: '☗ FINAL BOSS: CONTEMPT OF COURT', desc: 'Score 350 off JUDGE PENNYWHISTLE — six seconds a swing, and he only respects a 50% case', opp: 'pennywhistle', goal: { type: 'pts', v: 350 } },
+        ],
+      },
     ],
   },
 ];

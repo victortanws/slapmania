@@ -273,3 +273,13 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   chain% ⇒ power ×0.12, "NO-SOLD!"), `weave` (Dale, Granny). Feedback bursts
   go through `ui.slapBurst` (the **banner**, not `#smack` — don't confuse them
   when testing). New look flags: `ironJaw` (steel chin), `brow`, `frizz` hair.
+- **Judge Pennywhistle** officiates every campaign match: a REF_LINES one-liner
+  (main.js) during FACEOFF, then `sfx.whistle('start')` — one long blast, vs
+  the 3-pip foul whistle — fires at the exact FACEOFF→SWING frame the shot
+  clock starts. Campaign-only (`campaign.active`); public matches untouched.
+  He turns out corrupt in the Save the Fair EPILOGUE (act 4) and becomes the
+  final boss (`pennywhistle`: shotClock 6 + chainGate 50 + whistleProp look).
+- **Technique↔matchup depth (verified)**: perfecting the chain gains ~+1% vs
+  SLIM (speed-cap saturation) but +64% vs BERTHA — precision pays on tonnage.
+  Micro-timing: ±45ms on P swings ±14%; lazy L (-36%) via coil leak; holding
+  the coil past full costs nothing (leak starts at release).

@@ -293,9 +293,31 @@ export class Sfx {
     }
   }
 
-  whistle() {
+  // 'foul' (default): three sharp pips. 'start': one long authoritative blast —
+  // the referee's "clock is running" call, distinct from the foul by shape.
+  whistle(kind = 'foul') {
     if (!this.ctx) return;
     const ctx = this.ctx, t = ctx.currentTime;
+    if (kind === 'start') {
+      const osc = ctx.createOscillator();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(1900, t);
+      osc.frequency.exponentialRampToValueAtTime(2350, t + 0.05); // the blow "catches"
+      const vib = ctx.createOscillator();
+      vib.frequency.value = 32;
+      const vg = ctx.createGain();
+      vg.gain.value = 110;
+      vib.connect(vg).connect(osc.frequency);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.15, t + 0.03);
+      g.gain.setValueAtTime(0.15, t + 0.3);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.48);
+      osc.connect(g).connect(this.master);
+      osc.start(t); vib.start(t);
+      osc.stop(t + 0.5); vib.stop(t + 0.5);
+      return;
+    }
     for (let i = 0; i < 3; i++) {
       const osc = ctx.createOscillator();
       osc.type = 'square';
