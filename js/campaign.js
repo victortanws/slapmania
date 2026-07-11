@@ -11,6 +11,7 @@ const CAMPAIGN_LIVE = true; // SHIPPED 2026-07-11 — the County Fair Tour is pu
 export const TOURS = [
   {
     key: 'palm', title: '🖐 THE LEGEND OF THE OPEN PALM',
+    slapper: 'bruceslee', // Bruce IS this legend — the scrolls are his story (free campaign-use of the DLC look)
     blurb: 'A dead master. An unfinished technique. One last student.',
     acts: [
       {
@@ -944,7 +945,7 @@ export const WINS = {
 // storyline next, with the Master Slee scrolls beneath it.
 // Olympic Bid leads (free), Wonders second, the Open Palm third (free) —
 // then the Fair, then the supporter storylines.
-const TOUR_ORDER = ['olympicbid', 'wonders', 'palm', 'fair', 'secondwind', 'nightofslaps', 'slaptherapy', 'slopvalley'];
+const TOUR_ORDER = ['wonders', 'fair', 'palm', 'olympicbid', 'secondwind', 'nightofslaps', 'slaptherapy', 'slopvalley'];
 // unknown keys sink to the bottom instead of floating to the top (indexOf −1)
 const tourRank = (k) => { const i = TOUR_ORDER.indexOf(k); return i < 0 ? TOUR_ORDER.length : i; };
 TOURS.sort((a, b) => tourRank(a.key) - tourRank(b.key));
