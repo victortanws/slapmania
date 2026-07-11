@@ -351,22 +351,23 @@ export const ROSTER = [
     taunts: ['I AM SORRY YOU FEEL THAT WAY.', 'YOUR SLAP HAS BEEN LOGGED AS FEEDBACK.', 'AS A LARGE SLAP MODEL, I CANNOT BE MOVED.'],
   },
   {
-    key: 'ava', name: 'AVALANCHE AVA', tag: 'BOSS · THE PHENOM', boss: true,
+    key: 'ava', name: 'AVALANCHE EILEEN', tag: 'BOSS · THE PHENOM', boss: true,
     w: 0.8, h: 1.0, mass: 0.85, female: true, weave: true, noStache: true, busty: true,
-    // RED race jumpsuit w/ white speed stripes, blonde ponytail, goggles pushed UP
-    // (was ice-blue + dark hair — read as neither blonde nor a jumpsuit; and the
-    // default rose skirt is suppressed so the suit reads as a one-piece)
-    skin: 0xeecfa8, shirt: 0xd8232e, pants: 0xd8232e, stripes: 0xf2ede1, noSkirt: true,
-    hair: 'pony', hairCol: 0xf0cf6a, goggles: 0xff8c1a,
+    // RED race jumpsuit w/ white speed stripes; GOLD ponytail + fringe under a
+    // white ski beanie (pale blonde on pale skin read as bald, hence the deeper gold)
+    skin: 0xeecfa8, shirt: 0xd8232e, pants: 0xd8232e, noSkirt: true, // solid red — hoop stripes read as Waldo
+    hair: 'pony', hairCol: 0xd9a441, fringe: true, hat: 'beanie', hatCol: 0xf2ede1, bandCol: 0xd8232e,
+    goggles: 0xff8c1a,
     pickLine: 'Four golds. Three world records. One energy drink. Zero slaps taken.',
     taunts: ['I dodge trees at eighty. You are slower than a tree.', 'Is the county in slow motion, or is that just you?'],
   },
   {
-    key: 'avaskis', name: 'AVALANCHE AVA', tag: 'BOSS · FULL SEND', boss: true,
+    key: 'avaskis', name: 'AVALANCHE EILEEN', tag: 'BOSS · FULL SEND', boss: true,
     w: 0.8, h: 1.0, mass: 0.9, female: true, noStache: true, busty: true,
-    // same red jumpsuit, goggles DOWN, skis on — the skirt would hide the skis
-    skin: 0xeecfa8, shirt: 0xd8232e, pants: 0xd8232e, stripes: 0xf2ede1, noSkirt: true,
-    hair: 'pony', hairCol: 0xf0cf6a, goggles: 0xff8c1a, gogglesDown: true,
+    // same red jumpsuit + beanie, goggles DOWN, skis on (skirt suppressed so they show)
+    skin: 0xeecfa8, shirt: 0xd8232e, pants: 0xd8232e, noSkirt: true, // solid red — hoop stripes read as Waldo
+    hair: 'pony', hairCol: 0xd9a441, fringe: true, hat: 'beanie', hatCol: 0xf2ede1, bandCol: 0xd8232e,
+    goggles: 0xff8c1a, gogglesDown: true,
     skis: true, skiRun: { speed: 1.7, startX: 9, exitX: -8 },
     pickLine: 'She is DONE being slapped. One run, straight past you, out the gate.',
     taunts: ['Grass is just slow snow.', "Don't take it personally — I'm not dodging you. I'm LEAVING you."],
@@ -732,6 +733,15 @@ export class Opponent {
       // faces -X; hairFlow pushes the cap up & back so it never drapes over the face
       cap.position.set((arch.hairFlow ? 0.09 : 0.025) * hr, (arch.hairFlow ? 0.07 : 0.03) * hr, 0);
       head.add(cap);
+      if (arch.fringe) {
+        // a hair fringe across the forehead — reads as HAIR even under a hat
+        // (a pale scalp cap alone read as a bald head from the play camera)
+        const fr = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.07, 0.23), hm);
+        fr.position.set(-0.145 * hr, 0.1 * hr, 0);
+        fr.rotation.z = 0.12;
+        fr.scale.setScalar(hr);
+        head.add(fr);
+      }
       if (arch.hair === 'pony') {
         const tail = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.28, 0.06), hm);
         tail.position.set(0.17 * hr, -0.07 * hr, 0);
@@ -938,16 +948,24 @@ export class Opponent {
       }
     }
     if (arch.skis) {
-      // the skis stay ON — boards ride the lower legs, so they fly with her
+      // the skis stay ON — boards ride the lower legs, so they fly with her.
+      // Bright gold with a red stripe: the old suit-red boards vanished against
+      // her suit and the dirt ("I don't think she has skis at this point")
       for (const leg of [P.llL, P.llR]) {
-        const ski = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.045, 1.35), toonMat(0xe8352e));
-        ski.position.set(0, -0.3, 0.18);
+        const ski = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.05, 1.4), toonMat(0xffd23f));
+        ski.position.set(0, -0.31, 0.18);
         ski.castShadow = true;
         leg.mesh.add(ski);
-        const tip = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.045, 0.16), toonMat(0xe8352e));
-        tip.position.set(0, -0.25, 0.9);
+        const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.125, 0.02, 0.5), toonMat(0xd8232e));
+        stripe.position.set(0, -0.3, 0.1);
+        leg.mesh.add(stripe);
+        const tip = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.05, 0.18), toonMat(0xffd23f));
+        tip.position.set(0, -0.255, 0.92);
         tip.rotation.x = -0.5;
         leg.mesh.add(tip);
+        const binding = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.07, 0.12), toonMat(0x17171d));
+        binding.position.set(0, -0.27, 0.02);
+        leg.mesh.add(binding);
       }
     }
     if (arch.windKey) {
@@ -1174,6 +1192,19 @@ export class Opponent {
         const band = new THREE.Mesh(new THREE.CylinderGeometry(0.153, 0.153, 0.06, 14), T(arch.bandCol || 0xd8b13c));
         band.position.y = -0.005;
         hat.add(band);
+      } else if (arch.hat === 'beanie') {
+        // a knit ski beanie: soft dome, folded band, pom on top — pops off on
+        // impact like every real hat
+        const col = arch.hatCol || 0xf2ede1;
+        const dome = new THREE.Mesh(new THREE.SphereGeometry(0.17, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), T(col));
+        dome.position.y = -0.04;
+        hat.add(dome);
+        const band = new THREE.Mesh(new THREE.CylinderGeometry(0.175, 0.18, 0.075, 14), T(arch.bandCol || 0xd8232e));
+        band.position.y = -0.045;
+        hat.add(band);
+        const pom = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 8), T(arch.bandCol || 0xd8232e));
+        pom.position.y = 0.14;
+        hat.add(pom);
       } else { // straw
         const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.03, 14), T(0xd9b96a));
         brim.position.y = -0.05;

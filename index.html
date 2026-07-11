@@ -73,6 +73,10 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
    of crushing a child (the world chips once collapsed to an 8px sliver) */
 .card>*{flex-shrink:0;}
 /* world chips: one scrollable row that scales to every world, DLC wears a 🔒 */
+#worldWrap{display:flex;align-items:center;gap:2px;max-width:min(96vw,820px);}
+.worldArrow{pointer-events:auto;background:var(--ink);color:var(--yellow);border:3px solid #000;
+  border-radius:9px;font-size:20px;line-height:1;padding:4px 9px;box-shadow:0 3px 0 #000;flex-shrink:0;}
+.worldArrow:disabled{opacity:.25;}
 #worldRow{display:flex;gap:6px;overflow-x:auto;max-width:min(92vw,760px);padding:4px 6px;
   scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 #worldRow::-webkit-scrollbar{display:none;}
@@ -481,7 +485,6 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
   <div id="title" class="card">
     <h1>SLAPMANIA</h1>
     <div class="tagline">THE COUNTY FAIR'S FRIENDLIEST FULL-CONTACT PASTIME</div>
-    <button id="tourBtn" class="hidden" style="font-size:15px;padding:10px 22px;background:var(--red);color:#fff;">🎪 CAMPAIGN MODE — THE COUNTY FAIR TOUR</button>
     <div class="verdict" style="max-width:820px;">Well howdy, sugar! Mosey on up, roll them sleeves,
       and get your slapping chops ready — our volunteers signed the waivers and waxed their cheeks,
       and the whole county's here to watch 'em fly. No experience needed. Just four keys and a dream.</div>
@@ -503,7 +506,14 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
     </div>
     <div class="tagline" style="font-size:12px;">FIRE 'EM IN THAT ORDER — TIMING IS EVERYTHING</div>
     <div class="pressany blink">ENTER / TAP TO MOSEY ON UP</div>
-    <div id="worldRow"></div>
+    <!-- campaign sits low: quick play is the front door, the tour is the destination
+         you graduate to — and down here it never crowds the how-to-play spine -->
+    <button id="tourBtn" class="hidden" style="font-size:15px;padding:10px 22px;background:var(--red);color:#fff;">🎪 CAMPAIGN MODE — THE COUNTY FAIR TOUR</button>
+    <div id="worldWrap">
+      <button id="worldPrev" class="worldArrow" aria-label="More worlds">‹</button>
+      <div id="worldRow"></div>
+      <button id="worldNext" class="worldArrow" aria-label="More worlds">›</button>
+    </div>
     <div id="creditBar">MADE BY VICTOR TAN<span class="sep">·</span>© 2026 ALL RIGHTS RESERVED<span class="sep">·</span><a href="https://www.youtube.com/@VictorTan" target="_blank" rel="noopener">▶ YOUTUBE</a><span class="sep">·</span><a href="https://buymeacoffee.com/victortanws" target="_blank" rel="noopener">☕ BUY ME A COFFEE</a></div>
   </div>
 

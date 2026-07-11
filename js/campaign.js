@@ -121,11 +121,11 @@ export const TOURS = [
     ],
   },
   {
-    key: 'secondwind', title: '🐉 THE SECOND WIND',
+    key: 'secondwind', title: '🐉 BRUCE VS CHUCK: THE LAST LEGEND',
     dlc: true,           // rides with the Supporter Pack (Bruce's own storyline)
     world: 'dojo',       // fought in the martial-arts dojo world once it ships (guarded)
     slapper: 'bruceslee', // pin Bruce (grants free campaign-use of the locked DLC); martial 'YOU' voice
-    blurb: 'Bruce Slee climbs to the one slap the county calls a myth. Chuck North has never been slapped. Strike in the quiet — before the legend hardens.',
+    blurb: 'Two legends. One cheek. Chuck North has never been slapped; Bruce Slee has never missed twice. The county holds its breath — strike in the quiet, before the myth hardens.',
     acts: [
       {
         act: 'ACT I — THE TRAILHEAD',
@@ -263,7 +263,7 @@ export const TOURS = [
   },
   {
     key: 'olympicbid', title: '🥇 THE OLYMPIC BID',
-    dlc: true,
+    // FREE and first — the front-door storyline every new player can finish
     slapper: 'victor',
     blurb: 'The county wants slapping in the Olympics. The Committee has questions. The county has answers, and they are open-palmed.',
     acts: [
@@ -282,7 +282,7 @@ export const TOURS = [
         challenges: [
           { id: 'o2c1', title: 'TEACHING MOMENT', desc: 'An 80% chain before SCHOOLMARM SUSIE — show the Committee what instruction looks like', opp: 'susie', goal: { type: 'chain', v: 80 } },
           { id: 'o2c2', title: 'THE EXHIBITION BOUT', desc: 'Send GRANNY THUNDER 30m — you swing, she slips; she swings, you take it. THAT is the exchange.', opp: 'granny', goal: { type: 'dist', v: 30 } },
-          { id: 'o2c3', title: '☗ MINI-BOSS: THE PHENOM', desc: 'Send AVALANCHE AVA 40m — she took the skis off. Free lesson.', opp: 'ava', goal: { type: 'dist', v: 40 } },
+          { id: 'o2c3', title: '☗ MINI-BOSS: THE PHENOM', desc: 'Send AVALANCHE EILEEN 40m — she took the skis off. Free lesson.', opp: 'ava', goal: { type: 'dist', v: 40 } },
         ],
       },
       {
@@ -291,7 +291,7 @@ export const TOURS = [
         challenges: [
           { id: 'o3c1', title: 'THE ANTHEM', desc: 'Score 550 off BIG BERTHA — when she gets moved, the county sings', opp: 'bertha', goal: { type: 'pts', v: 550 } },
           { id: 'o3c2', title: 'WORLD RECORD PACE', desc: 'Send HAYSEED HANK 50m — every Olympic sport arrives with a record to chase', opp: 'hank', goal: { type: 'dist', v: 50 } },
-          { id: 'o3c3', title: '☗ FINAL BOSS: THE GREAT ESCAPE', desc: 'AVALANCHE AVA is skiing for the exit gate — catch her mid-pass and send her 6m. If she makes the gate, she is GONE.', opp: 'avaskis', goal: { type: 'dist', v: 6 } },
+          { id: 'o3c3', title: '☗ FINAL BOSS: THE GREAT ESCAPE', desc: 'AVALANCHE EILEEN is skiing for the exit gate — catch her mid-pass and send her 6m. If she makes the gate, she is GONE.', opp: 'avaskis', goal: { type: 'dist', v: 6 } },
         ],
       },
     ],
@@ -784,12 +784,12 @@ export const CUTSCENES = {
     { who: 'GRANNY THUNDER', text: 'Ask the last commissioner. Left with one cheek red as a stop sign and gave slapping a 9.8. Time the slip, builder — make it a BOUT.', shot: 'opp' },
   ],
   o2c3: [
-    { who: '⛷️ AVALANCHE AVA', text: 'Hold the vote! Avalanche Ava — four golds, three world records, one energy drink with my face on it. The Committee asked me, an ACTUAL athlete, to evaluate... whatever this is.', shot: 'opp' },
+    { who: '⛷️ AVALANCHE EILEEN', text: 'Hold the vote! Avalanche Eileen — four golds, three world records, one energy drink with my face on it. The Committee asked me, an ACTUAL athlete, to evaluate... whatever this is.', shot: 'opp' },
     { who: 'YOU', text: "You're welcome to observe.", shot: 'player' },
-    { who: '⛷️ AVALANCHE AVA', text: 'Observe? Nah. I dodge slalom gates at eighty miles an hour. If your "sport" can\'t touch a STANDING skier, it\'s a raffle with extra steps. I\'ll even take the skis off. Free lesson.', shot: 'opp' },
+    { who: '⛷️ AVALANCHE EILEEN', text: 'Observe? Nah. I dodge slalom gates at eighty miles an hour. If your "sport" can\'t touch a STANDING skier, it\'s a raffle with extra steps. I\'ll even take the skis off. Free lesson.', shot: 'opp' },
   ],
   o3c1: [
-    { who: '🏅 COMMISSIONER QUIBBLE', text: "The footage of Ms. Ava's evaluation has been viewed... four hundred million times. The vote moves to a live final. We will need pageantry. An anthem moment.", shot: 'wide' },
+    { who: '🏅 COMMISSIONER QUIBBLE', text: "The footage of Ms. Eileen's evaluation has been viewed... four hundred million times. The vote moves to a live final. We will need pageantry. An anthem moment.", shot: 'wide' },
     { who: 'BIG BERTHA', text: "Sugar, when I get moved, the county SINGS. Five hundred fifty points — that's a key change.", shot: 'opp' },
     { who: 'YOU', text: "I poured that grandstand's foundation. Let's make it shake.", shot: 'player' },
   ],
@@ -798,19 +798,19 @@ export const CUTSCENES = {
     { who: 'HAYSEED HANK', text: 'Fifty meters. If this makes the record books, spell it H-A-N-K. Cheek included.', shot: 'opp' },
   ],
   o3c3: [
-    { who: '⛷️ AVALANCHE AVA', text: "You know what? No. I did the wipeout. I did the apology tour. I did the energy drink with my OWN crying face on it. I'm done. I don't want to get slapped anymore. I'm getting out of here.", shot: 'opp' },
+    { who: '⛷️ AVALANCHE EILEEN', text: "You know what? No. I did the wipeout. I did the apology tour. I did the energy drink with my OWN crying face on it. I'm done. I don't want to get slapped anymore. I'm getting out of here.", shot: 'opp' },
     { who: 'YOU', text: 'The exit gate is behind me.', shot: 'player' },
-    { who: '⛷️ AVALANCHE AVA', text: "I KNOW the gate is behind you. That's the run. One line, full send, straight past your shoulder and out of this sport forever. Don't take it personally — I'm not dodging you. I'm LEAVING you.", shot: 'opp' },
+    { who: '⛷️ AVALANCHE EILEEN', text: "I KNOW the gate is behind you. That's the run. One line, full send, straight past your shoulder and out of this sport forever. Don't take it personally — I'm not dodging you. I'm LEAVING you.", shot: 'opp' },
     { who: '🏅 COMMISSIONER QUIBBLE', text: 'For the minutes: the exhibit is... fleeing. The Committee has no form for this. The Committee is riveted.', shot: 'wide' },
-    { who: '⛷️ AVALANCHE AVA', text: 'You get one pass, builder. One heartbeat as I cross. Miss it, and the last thing your Olympics ever sees is my back. FULL SEND!', shot: 'opp' },
+    { who: '⛷️ AVALANCHE EILEEN', text: 'You get one pass, builder. One heartbeat as I cross. Miss it, and the last thing your Olympics ever sees is my back. FULL SEND!', shot: 'opp' },
   ],
   outro_o3c3: [
-    { who: '⛷️ AVALANCHE AVA', text: "...I was OUT. I was nine feet from the gate. I could FEEL the retirement — it felt like a hot tub. And the slap just... found me. Mid-air. Like weather.", shot: 'opp' },
+    { who: '⛷️ AVALANCHE EILEEN', text: "...I was OUT. I was nine feet from the gate. I could FEEL the retirement — it felt like a hot tub. And the slap just... found me. Mid-air. Like weather.", shot: 'opp' },
     { who: 'YOU', text: 'I built that gate. I know exactly how long a heartbeat lasts on grass.', shot: 'player' },
-    { who: '⛷️ AVALANCHE AVA', text: "Four golds, and this county taught me the last thing I'll ever learn about sports: you can leave the slap. The slap is not in a hurry. The slap arrives regardless. ...okay it's kind of beautiful. I hate it. Sign me up.", shot: 'opp' },
+    { who: '⛷️ AVALANCHE EILEEN', text: "Four golds, and this county taught me the last thing I'll ever learn about sports: you can leave the slap. The slap is not in a hurry. The slap arrives regardless. ...okay it's kind of beautiful. I hate it. Sign me up.", shot: 'opp' },
     { who: '🏅 COMMISSIONER QUIBBLE', text: 'The Committee is satisfied on all three questions — and moved by a fourth it never thought to ask: INEVITABILITY. The Olympic motto is Faster, Higher, Stronger. Your county has proposed an amendment: Regardless.', shot: 'wide' },
     { who: 'YOU', text: 'Regardless. Stamp it. Slapping is Olympic.', shot: 'player' },
-    { who: '🏅 COMMISSIONER QUIBBLE', text: 'PROVISIONALLY Olympic — the rulebook remains, and I shall be writing it here, at this fair, near the pie stand. The cello enters the Cultural Olympiad; the Maestro wept in D minor. And Ms. Ava has filed the first event proposal: slap-biathlon. You ski, you get slapped, you ski ANGRIER. The Committee... did not hate it.', shot: 'wide' },
+    { who: '🏅 COMMISSIONER QUIBBLE', text: 'PROVISIONALLY Olympic — the rulebook remains, and I shall be writing it here, at this fair, near the pie stand. The cello enters the Cultural Olympiad; the Maestro wept in D minor. And Ms. Eileen has filed the first event proposal: slap-biathlon. You ski, you get slapped, you ski ANGRIER. The Committee... did not hate it.', shot: 'wide' },
   ],
 };
 
@@ -871,7 +871,7 @@ export const FAILS = {
 // the one fail that isn't a whiff: Ava made the exit gate (skiRun). Played
 // directly by main.js instead of rotating through FAILS.o.
 export const ESCAPE_FAIL = [
-  { who: '⛷️ AVALANCHE AVA', text: 'WOOOO! SO LONG, BUILDER! Tell the Committee the phenom retires UNSLAAAAPPED—', shot: 'wide' },
+  { who: '⛷️ AVALANCHE EILEEN', text: 'WOOOO! SO LONG, BUILDER! Tell the Committee the phenom retires UNSLAAAAPPED—', shot: 'wide' },
   { who: 'YOU', text: "...she'll be back. Nobody quits a sport this loudly unless they need it to watch them go.", shot: 'player' },
 ];
 
@@ -930,7 +930,9 @@ export const WINS = {
 
 // director's ordering: Charlie's documentary leads, then the Fair; Bruce's DLC
 // storyline next, with the Master Slee scrolls beneath it.
-const TOUR_ORDER = ['wonders', 'fair', 'palm', 'secondwind', 'nightofslaps', 'slaptherapy', 'slopvalley', 'olympicbid'];
+// Olympic Bid leads (free), Wonders second, the Open Palm third (free) —
+// then the Fair, then the supporter storylines.
+const TOUR_ORDER = ['olympicbid', 'wonders', 'palm', 'fair', 'secondwind', 'nightofslaps', 'slaptherapy', 'slopvalley'];
 // unknown keys sink to the bottom instead of floating to the top (indexOf −1)
 const tourRank = (k) => { const i = TOUR_ORDER.indexOf(k); return i < 0 ? TOUR_ORDER.length : i; };
 TOURS.sort((a, b) => tourRank(a.key) - tourRank(b.key));

@@ -453,7 +453,7 @@ const TOUR_STARS = {
   wonders: { slapper: 'charlie' },
   fair: { opp: 'don' },
   palm: { slapper: 'bruceslee' },
-  secondwind: { opp: 'chuckboss' },
+  secondwind: { slapper: 'chucknorth' }, // the DLC Chuck — the boss build read as "some random character" in the card
   nightofslaps: { opp: 'reaper' },      // future tours resolve as their cast ships
   slaptherapy: { slapper: 'carlgustav' },
   slopvalley: { opp: 'slopunit' },
@@ -622,6 +622,20 @@ function buildWorldRow() {
     };
     row.appendChild(b);
   }
+  // scroll affordance: chevrons page the strip — a hidden scrollbar alone said
+  // "this is all the worlds" to anyone without a wheel over the row
+  const prev = document.getElementById('worldPrev'), next = document.getElementById('worldNext');
+  const syncArrows = () => {
+    prev.disabled = row.scrollLeft <= 4;
+    next.disabled = row.scrollLeft >= row.scrollWidth - row.clientWidth - 4;
+    const overflow = row.scrollWidth > row.clientWidth + 8;
+    prev.style.display = next.style.display = overflow ? '' : 'none';
+  };
+  prev.onclick = () => { row.scrollBy({ left: -220, behavior: 'smooth' }); };
+  next.onclick = () => { row.scrollBy({ left: 220, behavior: 'smooth' }); };
+  row.addEventListener('scroll', syncArrows, { passive: true });
+  addEventListener('resize', syncArrows);
+  setTimeout(syncArrows, 50); // after layout
 }
 buildWorldRow();
 // if the saved world is DLC and the pack was refunded/cleared, fall back to day
@@ -1140,6 +1154,9 @@ addEventListener('pointerdown', (e) => {
 addEventListener('pointerup', (e) => {
   const s = tapStart; tapStart = null;
   if (!s || dlg.isActive() || e.target.closest('button, a, input')) return;
+  // dismissing the unlock modal (backdrop click) is NOT a "tap to advance" —
+  // cancelling a purchase pitch used to warp you straight into the volunteer pick
+  if (e.target.closest('#unlockModal')) return;
   const moved = Math.hypot(e.clientX - s.x, e.clientY - s.y);
   const held = performance.now() - s.t;
   if (moved < 14 && held < 500) advanceScreens(null); // a real tap: in place + quick

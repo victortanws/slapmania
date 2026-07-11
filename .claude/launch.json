@@ -50,6 +50,12 @@
       "port": 8989
     },
     {
+      "name": "slap-mech",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8987", "-d", "."],
+      "port": 8987
+    },
+    {
       "name": "vibe-coder-sim",
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8997", "-d", "/Users/victortan/vibe-coder-sim"],
