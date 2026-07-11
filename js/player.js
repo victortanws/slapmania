@@ -210,7 +210,10 @@ export class Player {
     // (τ=I·α, so it's slower to accelerate through a full arc). Normal arms = 1
     // on both; only the giant-armed (Dynamite slapArm 3.4, bigArms) diverge. The
     // tradeoff — slow to wind up, brutal in a short committed strike — falls out.
-    this.armMass = 1 + 0.2 * (ARR - 1);      // effective impact mass of the hand
+    // armMass slope tuned so a giant arm's extra impact mass OVER-pays below the
+    // power cap — a big-armed slapper is a forgiving, low-ceiling BRUISER: brutal
+    // even on a sloppy/short strike, but str still clamps the PERFECT ceiling low.
+    this.armMass = 1 + 0.35 * (ARR - 1);     // effective impact mass of the hand
     this.armInertia = 1 + 0.5 * (ARR - 1);   // rotational inertia of the weapon arm
 
     for (const s of [-1, 1]) {
