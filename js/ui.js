@@ -306,7 +306,8 @@ export function showMatch({ bestAttempt, line, board, shareUrl, tour }) {
   coach(null); // clear any lingering ceremony line (SLAPMASTER/EMPEROR) so it doesn't stack on the verdict header
   el.match.classList.remove('hidden');
   const tag = $('matchTag'), hint = $('matchHint'), shareRow = $('matchShare'),
-        boards = $('boards'), next = $('matchNext');
+        boards = $('boards'), next = $('matchNext'), back = $('matchBack');
+  back.style.display = 'none'; // only the campaign FAIL card offers an explicit "no, leave" button
   if (tour) {
     // CAMPAIGN VERDICT: the card restates the goal and says CLEARED or FAILED —
     // no county boards, no share row, no volunteer-picking talk. The story beat
@@ -319,8 +320,18 @@ export function showMatch({ bestAttempt, line, board, shareUrl, tour }) {
       : ' — Three attempts, zero contact. The clipboard has seen things.');
     boards.style.display = 'none';
     shareRow.style.display = 'none';
-    next.textContent = tour.cleared ? 'CONTINUE THE TOUR ▶' : 'RETRY THE CHALLENGE ↻';
-    hint.textContent = tour.cleared ? 'ENTER = onward' : 'ENTER = retry · ESC = back to the fairgrounds';
+    if (tour.cleared) {
+      next.textContent = 'CONTINUE THE TOUR ▶';
+      hint.textContent = 'ENTER = onward';
+    } else {
+      // FAILED: an explicit two-choice prompt — try the SAME challenge again, or
+      // bail back to the tour menu. Both are buttons so touch players get a real
+      // "no", not just an ESC only keyboards have.
+      next.textContent = '↻ TRY AGAIN';
+      back.textContent = '↩ BACK TO TOUR';
+      back.style.display = '';
+      hint.textContent = 'ENTER = try again · ESC = back to the tour';
+    }
     return;
   }
   tag.textContent = 'FINAL VERDICT OF THE COUNTY FAIR';

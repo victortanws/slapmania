@@ -72,6 +72,7 @@ let chosenArch = null;
 let rivalBarText = null;
 let lastClearedId = null; // set when a tour goal clears — an outro may follow
 let failIdx = 0;          // rotates the failure-scene pool
+const failSceneShown = new Set(); // challenge ids whose humiliating beat has already played — retries skip straight back in
 let winIdx = 0;           // rotates the victory-beat pool
 let prevHandSeg = null;   // last frame's palm segment — the contact test sweeps from it
 let tookTakedown = false; // Slopberg caught a slap mid-REACH this match — the fail beat knows
@@ -635,6 +636,8 @@ document.getElementById('tourBack').onclick = () => goToTitle();
 // the ONLY tap that advances the final scoreboard — so tapping the boards to
 // browse/scroll never steals the "next round" transition (Enter/Space also work)
 document.getElementById('matchNext').onclick = () => { sfx.ensure(); advanceScreens('Enter'); };
+// "BACK TO TOUR" — the explicit "no" on a failed campaign verdict (shown only there)
+document.getElementById('matchBack').onclick = () => { sfx.ensure(); if (campaign.active) campaign.clearActive(); openTourMenu(); };
 
 // ---------- worlds: Day Fair / Night Fair / Frozen Lake (public) ----------
 // Theme + (for ice) ground friction, persisted. Distances still end at the
@@ -1329,13 +1332,17 @@ function advanceScreens(code) {
       lastClearedId = null;
       const you = (l) => (l.who === 'YOU' ? { ...l, who: player.look.name } : l);
       if (!clearedNow) {
-        // FAILED: a short, humiliating beat — then straight back into the SAME
-        // challenge (the card's button said RETRY; ESC from the card = leave)
+        // FAILED → TRY AGAIN: a short, humiliating beat the FIRST time you fail
+        // this challenge, then straight back into the SAME challenge. Repeat
+        // retries skip the scene (nobody wants the sad cutscene on loop). The
+        // card's other button / ESC leaves to the tour menu (handled elsewhere).
+        const retry = () => startTourChallenge(ch);
+        if (failSceneShown.has(ch.id)) { retry(); return true; }
+        failSceneShown.add(ch.id);
         const escapeBeat = chosenArch && chosenArch.skiRun; // she made the gate — her victory lap plays, not a whiff joke
         const takedownBeat = chosenArch && chosenArch.bjj && tookTakedown; // he folded you like a term sheet
         const pool = campaign.FAILS[ch.id[0]] || [];
         const fail = takedownBeat ? campaign.TAKEDOWN_FAIL : escapeBeat ? campaign.ESCAPE_FAIL : (pool.length ? pool[failIdx++ % pool.length] : null);
-        const retry = () => startTourChallenge(ch);
         if (fail) playScene(fail.map(you), retry, { sad: true });
         else retry();
         return true;
@@ -1343,6 +1350,7 @@ function advanceScreens(code) {
       // CLEARED: finales get their payoff scene (the master rests / the verdict);
       // every other clear earns a quick victory beat before the menu returns
       campaign.clearActive();
+      failSceneShown.delete(ch.id); // a future replay of this cleared challenge earns its beat again
       if (chosenArch && chosenArch.boss) chosenArch = null;
       restoreBar();
       const outroId = 'outro_' + ch.id;
@@ -1378,6 +1386,9 @@ addEventListener('keydown', (e) => {
     else if (e.code === 'Enter' || e.code === 'NumpadEnter') dlg.advance();
     return;
   }
+  // ESC out of a campaign verdict returns to the TOUR menu (campaign selection),
+  // not all the way to the title — you're still inside the storyline.
+  if (e.code === 'Escape' && state === 'MATCH_END' && campaign.active) { campaign.clearActive(); openTourMenu(); return; }
   if (e.code === 'Escape' && state !== 'TITLE') { goToTitle(); return; }
   if (state === 'TITLE' && e.code === 'KeyT' && campaign.enabled()) { openTourMenu(); return; }
   if (state === 'SELECT_SLAPPER' || state === 'SELECT_OPP') {

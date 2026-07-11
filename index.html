@@ -581,7 +581,10 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
       MADE BY VICTOR TAN · © 2026 ·
       <a href="https://www.youtube.com/@VictorTan" target="_blank" rel="noopener" style="color:var(--yellow);text-decoration:none;">▶ YOUTUBE.COM/@VICTORTAN</a>
     </div>
-    <button id="matchNext" class="blink" style="margin-top:6px;font-size:16px;">PICK YOUR NEXT VOLUNTEER ▶</button>
+    <div id="matchBtns" style="display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:6px;">
+      <button id="matchNext" class="blink" style="font-size:16px;">PICK YOUR NEXT VOLUNTEER ▶</button>
+      <button id="matchBack" style="font-size:14px;display:none;background:transparent;border:2px solid rgba(255,210,63,.55);color:var(--yellow);">↩ BACK TO TOUR</button>
+    </div>
     <div id="matchHint" class="pressany" style="font-size:11px;letter-spacing:2px;opacity:.75;margin-top:4px;">scroll the boards to browse · ENTER = next</div>
   </div>
 
