@@ -225,6 +225,15 @@ export const TOURS = [
           { id: 't3c2', title: '☗ BOSS: THE TALKING CURE', desc: 'Score 480 off DR. FREUDENSCHADE — below 75% form he interprets the slap away', opp: 'freuden', goal: { type: 'pts', v: 480 } },
         ],
       },
+      {
+        act: 'SESSION IV — THE DARK NIGHT OF THE SOUL',
+        story: 'The last patient left cured. The doctor stayed. At midnight the Haunted Fair opened its gate for him — and his shadow walked in alongside. Unattached. Unbilled. Physician, analyze thyself.',
+        challenges: [
+          { id: 't4c1', title: 'THE PERSONA', desc: "A flush cheek strike on JACK O'LANTERN JOE at 30m — the mask must be met head-on", opp: 'joe', world: 'haunted', goal: { type: 'headdist', v: 30 } },
+          { id: 't4c2', title: 'MEMENTO MORI', desc: 'Send BONY TONY 70m — what remains, once everything is stripped away, had better fly', opp: 'tony', world: 'haunted', goal: { type: 'dist', v: 70 } },
+          { id: 't4c3', title: '☗ BOSS: THE SHADOW AT DAWN', desc: 'Score 500 off THE GREEN REAPER — 7 seconds a swing, 65% form, and this appointment cannot be deferred again', opp: 'reaper', world: 'haunted', goal: { type: 'pts', v: 500 } },
+        ],
+      },,
     ],
   },
   {
@@ -253,11 +262,13 @@ export const TOURS = [
       },
       {
         act: 'SPRINT III — THE AGI REVEAL',
-        story: 'Out of money, out of founders, out of excuses, Vance announces AGI is already here — and wheels out a robot the size of a shed. It mostly generates apologies.',
+        story: 'Out of money, out of founders, out of excuses, Vance announces AGI is already here — and wheels out a robot the size of a shed. It mostly generates apologies. And when the dust settles, the man who owns the whole valley invites you up the hill to meet his cows.',
         challenges: [
           { id: 'v3c1', title: 'HUMAN EVAL', desc: 'An 88% chain before SCHOOLMARM SUSIE — the opposite of slop, every link handwritten', opp: 'susie', goal: { type: 'chain', v: 88 } },
           { id: 'v3c2', title: 'THE LAST PIVOT', desc: 'Send VISIONARY VANCE 75m — the most authentic content this valley has ever produced', opp: 'vance', goal: { type: 'dist', v: 75 } },
-          { id: 'v3c3', title: '☗ FINAL BOSS: S.L.O.P. UNIT-1', desc: 'Score 480 off the robot — 6 seconds of compute a swing; sub-70% slaps get discarded as training data', opp: 'slopunit', goal: { type: 'pts', v: 480 } },
+          { id: 'v3c3', title: '☗ BOSS: S.L.O.P. UNIT-1', desc: 'Score 480 off the robot — 6 seconds of compute a swing; sub-70% slaps get discarded as training data', opp: 'slopunit', goal: { type: 'pts', v: 480 } },
+          { id: 'v3c3g', title: 'THE GARDEN TOUR', desc: 'Send MARK SLOPBERG 45m over his own palm trees — he wants to see the herd from above', opp: 'slopberg', goal: { type: 'dist', v: 45 } },
+          { id: 'v3c4', title: '☗ FINAL BOSS: MARK SLOPBERG', desc: 'Slap MARK SLOPBERG 40m — when the arms come UP he is reaching, and a slap into the reach gets TAKEN DOWN', opp: 'slopbergboss', goal: { type: 'dist', v: 40 } },
         ],
       },
     ],
@@ -288,7 +299,7 @@ export const TOURS = [
       },
       {
         act: 'RING III — THE VERDICT',
-        story: 'Ava\'s "evaluation" has 400 million views and the vote moves to a live final. The county needs an anthem moment, an official record — and then the phenom comes back wearing the skis.',
+        story: 'Eileen\'s "evaluation" has 400 million views and the vote moves to a live final. The county needs an anthem moment, an official record — and then the phenom comes back wearing the skis.',
         challenges: [
           { id: 'o3c1', title: 'THE ANTHEM', desc: 'Score 550 off BIG BERTHA — when she gets moved, the county sings', opp: 'bertha', goal: { type: 'pts', v: 550 } },
           { id: 'o3c2', title: 'WORLD RECORD PACE', desc: 'Send HAYSEED HANK 50m — every Olympic sport arrives with a record to chase', opp: 'hank', goal: { type: 'dist', v: 50 } },
@@ -297,6 +308,41 @@ export const TOURS = [
       },
     ],
   },
+  {
+    key: 'commedia', title: '📜 THE DIVINE COMEDY',
+    dlc: true,
+    slapper: 'dante',
+    blurb: 'Three worlds. Nine stops. In every circle, one soul waits on exactly one honest slap. A retired county surveyor knows the way.',
+    acts: [
+      {
+        act: 'CANTICLE I — INFERNO',
+        story: "Midway upon the journey of the county fair, the poet took a wrong turn at the parking lot and came out underneath everything. The good news: there's a guide. The better news: everyone down here is one honest slap from moving on.",
+        challenges: [
+          { id: 'c1c1', title: 'ABANDON ALL WHIFF', desc: 'A clean head slap on LOW-LEVEL LARRY — 400 years in complaints, one witnessed slap from his transfer', opp: 'larry', world: 'hell', goal: { type: 'head' } },
+          { id: 'c1c2', title: 'THE FOURTH CIRCLE', desc: 'Score 400 off TREMENDOUS DON — he is not damned, he is INVESTED', opp: 'don', world: 'hell', goal: { type: 'pts', v: 400 } },
+          { id: 'c1c3', title: '☗ BOSS: THE HONORABLE DAMNED', desc: 'Score 360 off JUDGE PENNYWHISTLE — community service, six seconds a swing, and nothing down here is expedited', opp: 'pennywhistle', world: 'hell', goal: { type: 'pts', v: 360 } },
+        ],
+      },
+      {
+        act: 'CANTICLE II — PURGATORIO',
+        story: 'Out of the pit and onto the smoking foothills of the mountain. Every terrace holds a volunteer working off one last thing, and the custodian at the gate does not abide sloppy form.',
+        challenges: [
+          { id: 'c2c1', title: 'THE TERRACE OF PRIDE', desc: 'An 85% chain before MAESTRO FORTISSIMO — one honest slap, in tempo, releases him upward', opp: 'maestro', world: 'lava', goal: { type: 'chain', v: 85 } },
+          { id: 'c2c2', title: 'THE TERRACE OF SLOTH', desc: "Send RAVIN' RAY 32m — on this terrace, momentum counts as hustle", opp: 'ravinray', world: 'lava', goal: { type: 'dist', v: 32 } },
+          { id: 'c2c3', title: '☗ BOSS: THE MOUNTAIN GATE', desc: 'Move CUSTODIAN CATO 28m — below 65% form you are litter, and he sweeps litter DOWN', opp: 'cato', world: 'lava', goal: { type: 'dist', v: 28 } },
+        ],
+      },
+      {
+        act: 'CANTICLE III — PARADISO',
+        story: 'The cloud country. Floaty gravity, gentle souls, and paperwork all the way up. At the very top, the guide who walked everyone home discovers the one line he never crossed: his own.',
+        challenges: [
+          { id: 'c3c1', title: 'FLIGHT APTITUDE', desc: 'Send HALO HAL 60m — clear him for his wings; he highlighted the relevant paragraph', opp: 'hal', world: 'heaven', goal: { type: 'dist', v: 60 } },
+          { id: 'c3c2', title: 'CLOSEST TO THE DOOR', desc: 'Send GRANDPA CLETUS 45m — the nearest to flying an old man gets', opp: 'cletus', world: 'heaven', goal: { type: 'dist', v: 45 } },
+          { id: 'c3c3', title: "☗ FINAL BOSS: THE SURVEYOR'S LINE", desc: 'Slap VIRGIL 40m — 60% form minimum, and mind the sidestep; he invented the sidestep', opp: 'virgil', world: 'heaven', goal: { type: 'dist', v: 40 } },
+        ],
+      },
+    ],
+  },,
 ];
 
 // ---- cutscenes: { who, text, shot } — shots: player | opp | spirit | judge | wide.
@@ -349,8 +395,9 @@ export const CUTSCENES = {
     { who: 'BRUCE SLEE', text: 'This is the part where students quit.', shot: 'bruce' },
   ],
   a3c2: [
-    { who: '👻 MASTER SLEE', text: 'Anyone can throw a feather over the county line. Throw Hank. Pure form.', shot: 'spirit' },
-    { who: 'HAYSEED HANK', text: 'Again with the honest work.', shot: 'opp' },
+    { who: '👻 MASTER SLEE', text: 'Anyone can throw a feather over the county line. The Third Scroll throws HANK. No featherweights, no wind, no excuses.', shot: 'spirit' },
+    { who: 'HAYSEED HANK', text: "Seventy-five meters. My scarecrow is gonna think I'm showin' off.", shot: 'opp' },
+    { who: '👻 MASTER SLEE', text: 'Tell the scarecrow it is next.', shot: 'spirit' },
   ],
   a3c3: [
     { who: '👻 MASTER SLEE', text: "The last guardian. I taught him to dodge, the year before I died. He's been dodging ever since.", shot: 'spirit' },
@@ -385,9 +432,9 @@ export const CUTSCENES = {
     { who: "RAVIN' RAY", text: '...they glow so good. Thirty meters and I recant everything.', shot: 'opp' },
   ],
   f2c2: [
-    { who: 'JUDGE PENNYWHISTLE', text: "Legal defense funds grow on points, champ. And nobody draws a paying crowd like the big man.", shot: 'judge' },
-    { who: 'BIG HOSS', text: "Folks do love watchin' me not move.", shot: 'opp' },
-    { who: 'JUDGE PENNYWHISTLE', text: 'Five hundred points. One slap. Make the county open its wallet.', shot: 'judge' },
+    { who: 'JUDGE PENNYWHISTLE', text: 'Legal defense funds grow on points, champ — and our biggest draw is the big man. Folks pay just to watch him not move.', shot: 'judge' },
+    { who: 'BIG HOSS', text: "Twenty years I've been the fair's north wall, sugar. Tonight I'm the fundraiser.", shot: 'opp' },
+    { who: 'JUDGE PENNYWHISTLE', text: 'Five hundred points. If Hoss travels, the county opens its wallet out of sheer disbelief.', shot: 'judge' },
   ],
   f2c3: [
     { who: 'JUDGE PENNYWHISTLE', text: "Don's 'conflict-resolution specialist.' Nine-year pig-grease champion. HR could not hold him. Soap could not hold him.", shot: 'judge' },
@@ -547,9 +594,9 @@ export const CUTSCENES = {
     { who: 'YOU', text: 'Form is not decoration, iron man. Form is the whole sentence. I will speak it clearly — and you will feel thirty meters of it.', shot: 'player' },
   ],
   b3c1: [
-    { who: '👻 MASTER SLEE', text: 'No gatekeepers now. Only the long road, the thin air, and your own honesty. Send Hank to the county line — pure form, no tricks.', shot: 'spirit' },
-    { who: 'HAYSEED HANK', text: 'Eighty meters. From a man who talks like a folded-up fortune. And somehow I believe him.', shot: 'opp' },
-    { who: 'YOU', text: 'The road up is the same as the road in. Breathe. Coil. Become present. Eighty meters is only a long exhale.', shot: 'player' },
+    { who: '👻 MASTER SLEE', text: 'No gatekeepers now. Only the long road, the thin air, and your own honesty. Send Hank fifty meters down the open lane — pure form, no tricks.', shot: 'spirit' },
+    { who: 'HAYSEED HANK', text: 'Fifty meters. From a man who talks like a folded-up fortune. And somehow I believe him.', shot: 'opp' },
+    { who: 'YOU', text: 'The road up is the same as the road in. Breathe. Coil. Become present. Fifty meters is only a long exhale.', shot: 'player' },
   ],
   b3c2: [
     { who: 'SCHOOLMARM SUSIE', text: "Chuck's porch has a sign-in sheet, and I am the sign-in sheet. Ninety percent, in red ink, or you do not pass. I have never once passed anyone.", shot: 'opp' },
@@ -678,7 +725,7 @@ export const CUTSCENES = {
   ],
   t3c1: [
     { who: 'HAYSEED HANK', text: "Doc, I keep havin' the same dream. I'm flyin' over the barn, over the corn, over the county line... then I wake up face-down in the pond.", shot: 'opp' },
-    { who: 'YOU', text: 'A recurring dream is the unconscious filing a complaint. Yours is refreshingly literal: the barn is the barn, the corn is the corn, and the flight, Hank, is a FLIGHT. Some dreams require interpretation. Yours requires seventy meters.', shot: 'player' },
+    { who: 'YOU', text: 'A recurring dream is the unconscious filing a complaint. Yours is refreshingly literal: the barn is the barn, the corn is the corn, and the flight, Hank, is a FLIGHT. Some dreams require interpretation. Yours requires forty-five meters.', shot: 'player' },
     { who: 'HAYSEED HANK', text: 'And the pond?', shot: 'opp' },
     { who: 'YOU', text: 'Try to clear it. Dreams are not always kind.', shot: 'player' },
   ],
@@ -800,7 +847,8 @@ export const CUTSCENES = {
   ],
   o3c2: [
     { who: '🏅 COMMISSIONER QUIBBLE', text: 'Every Olympic sport arrives with a record for the next generation to chase. Set one. Officially. I have brought the good clipboard.', shot: 'wide' },
-    { who: 'HAYSEED HANK', text: 'Fifty meters. If this makes the record books, spell it H-A-N-K. Cheek included.', shot: 'opp' },
+    { who: 'HAYSEED HANK', text: "A world record. Me. Ma said this cheek would go places — she meant CHURCH.", shot: 'opp' },
+    { who: 'YOU', text: 'Fifty meters, Hank. The book will spell it H-A-N-K.', shot: 'player' },
   ],
   o3c3: [
     { who: '⛷️ AVALANCHE EILEEN', text: "You know what? No. I did the wipeout. I did the apology tour. I did the energy drink with my OWN crying face on it. I'm done. I don't want to get slapped anymore. I'm getting out of here.", shot: 'opp' },
@@ -822,6 +870,121 @@ export const CUTSCENES = {
     { who: 'JUDGE PENNYWHISTLE', text: '...', shot: 'judge' },
     { who: '⛷️ AVALANCHE EILEEN', text: 'Slapping has no nationality, boys. The cheek does not check your passport. That is the whole sport — I get it now.', shot: 'opp' },
     { who: '🏅 COMMISSIONER QUIBBLE', text: 'The Committee will be quoting that. On the rings. In eleven languages. Provisionally.', shot: 'wide' },
+  ],
+
+
+  // ===== SLAP THERAPY, SESSION IV — the analyst analyzes himself =====
+  t4c1: [
+    { who: 'YOU', text: 'Session notes, midnight. The fair is closed. The Haunted Fair is not. I came to study the night terrors of others and found, at the gate, an opening in my own schedule.', shot: 'player' },
+    { who: 'YOU', text: 'My shadow arrived separately. It is standing to my left. I did not authorize this. Fifty years I interpreted shadows — tonight mine has requested a session. The couch is en route. The cat walked here. The cat KNEW.', shot: 'player' },
+    { who: "🎃 JACK O'LANTERN JOE", text: "Evenin', doc. First visit? Face like yours — fixed smile, professional, nothin' behind the eyes — you'll fit right in. Mine's carved on too.", shot: 'opp' },
+    { who: 'YOU', text: 'The persona, literalized in gourd. Patient presents as a mask that GREW here. Flush on the carved cheek, thirty meters — and note, in red ink: when I strike the mask, we find out whose face I kept underneath mine.', shot: 'player' },
+  ],
+  t4c2: [
+    { who: '💀 BONY TONY', text: "Heard there's a doctor on the grounds! Forty years dead and my back still hurts. What's your rate?", shot: 'opp' },
+    { who: 'YOU', text: 'The subtraction case. No license, no tenure, no boat. I have spent fifty years dreading the day I become him — and he is standing here CHEERFUL.', shot: 'player' },
+    { who: '💀 BONY TONY', text: "Cheerful? Doc, I'm UNBURDENED. No lungs, no drag, no fear. You want to know what's left when everything's stripped away? Seventy meters. Watch what's left FLY.", shot: 'opp' },
+    { who: 'YOU', text: 'Prescription: altitude. Note for the Red Book — the bones, freed of the flesh of the curriculum vitae, remain aerodynamic. There is hope for the profession.', shot: 'player' },
+  ],
+  t4c3: [
+    { who: 'YOU', text: 'Dawn is near. One appointment remains, and it is my own. The shadow did not come here to be analyzed. It came to be MET.', shot: 'player' },
+    { who: '💀 THE GREEN REAPER', text: "Doctor. I was your next slide all along — every hourglass in your books, every boat you couldn't afford. Four hundred years I keep this lawn, and tonight, apparently, I'm a METAPHOR. I charge extra for metaphor.", shot: 'opp' },
+    { who: 'YOU', text: 'You are the appointment every analyst defers, groundskeeper. I have written three books about avoiding you, and billed for all three. Tonight I settle the invoice — five hundred points, form legible, before your shift ends.', shot: 'player' },
+    { who: '💀 THE GREEN REAPER', text: 'Seven seconds a swing, sixty-five percent, and doctor — the lawn takes cancellations. It does not GIVE them.', shot: 'opp' },
+  ],
+  outro_t4c3: [
+    { who: '💀 THE GREEN REAPER', text: '...slapped. By my own analyst. On my own lawn. That integration was FLUSH, doctor. What do I owe you?', shot: 'opp' },
+    { who: 'YOU', text: 'Nothing. The patient tonight was never you.', shot: 'player' },
+    { who: 'YOU', text: 'The sun is up. The shadow is back at my heels — attached, quiet, where a shadow belongs. Diagnosis: the analyst avoided himself for fifty years. Treatment: one night at the Haunted Fair. Outcome: integrated.', shot: 'player' },
+    { who: 'YOU', text: 'The bill is drafted. "Dr. C. Gustav, for services rendered unto Dr. C. Gustav: one (1) dark night of the soul, plus couch freight. Payable to myself, in full." I am my own least cooperative patient, and my finest result. The cat has countersigned.', shot: 'player' },
+    { who: 'YOU', text: 'NEXT PATIENT.', shot: 'player' },
+  ],
+
+  // ===== THE DIVINE COMEDY (Dante the Pilgrim; Virgil, county surveyor, ret.) =====
+  commedia_prologue: [
+    { who: 'YOU', text: 'Midway upon the journey of this county fair, I found myself within a parking lot so dark that the straightforward path to the pie stand was wholly lost.', shot: 'player' },
+    { who: '👻 VIRGIL', text: "Evenin'. Virgil. County surveyor, retired. I've staked every acre of the hereafter — the pit, the mountain, the cloud country. All of it is off by three feet, and nobody will hear it from me.", shot: 'wide' },
+    { who: 'YOU', text: 'A guide! Sent by providence!', shot: 'player' },
+    { who: '👻 VIRGIL', text: "Sent by boredom. Here's the survey, poet: three worlds, nine stops, and at every one of 'em somebody's stuck — waiting on exactly one honest slap to move along. You bring the palm. I'll bring the map.", shot: 'wide' },
+    { who: 'YOU', text: 'Then downward first, that I may afterward ascend! I shall compose one hundred cantos upon it!', shot: 'player' },
+    { who: '👻 VIRGIL', text: "Keep it to three acts. Trust me. I've read the long version.", shot: 'wide' },
+  ],
+  c1c1: [
+    { who: '👻 VIRGIL', text: "First stop: the complaints department. Larry's transfer request has been pending four hundred years — it needs a witnessed slap, and nobody down here gives an HONEST one.", shot: 'wide' },
+    { who: 'LOW-LEVEL LARRY', text: "You're my appeal? Cheek's right here. One clean strike, notarized by the sting, and I finally get promoted to Purgatory. Mail room. It's a step UP.", shot: 'opp' },
+    { who: 'YOU', text: 'Abandon all whiff, ye who slap through here.', shot: 'player' },
+  ],
+  c1c2: [
+    { who: 'YOU', text: 'The fourth circle — the hoarders, straining at great weights for all eternity. And there, atop the largest weight... no. It cannot be.', shot: 'player' },
+    { who: 'TREMENDOUS DON', text: "Timeshare! It's a TIMESHARE. Beautiful circle. Very exclusive. The flames are gold-plated — I had them done.", shot: 'opp' },
+    { who: '👻 VIRGIL', text: "He's not damned, exactly. He toured the place and made an offer. Four hundred points, poet — down here that's a security deposit.", shot: 'wide' },
+    { who: 'YOU', text: 'Even in the pit, he closes.', shot: 'player' },
+  ],
+  c1c3: [
+    { who: 'JUDGE PENNYWHISTLE', text: 'Order! ORDER IN THE UNDERWORLD! ...Community service. Six thousand hours. It transpires that accepting blueprints in a gavel case is frowned upon in EVERY jurisdiction.', shot: 'opp' },
+    { who: 'YOU', text: 'The corrupt judge, condemned to judge the condemned. The poetry writes itself. I shall not attempt to improve upon it.', shot: 'player' },
+    { who: 'JUDGE PENNYWHISTLE', text: 'One honest slap reduces my sentence, champ — form 666-B, I checked. Six seconds a swing, half your form minimum, and NOTHING in this circle is expedited. I filed a complaint. It joined the queue.', shot: 'opp' },
+  ],
+  c2c1: [
+    { who: '👻 VIRGIL', text: "Out of the pit and onto the foothills. Still smokin', but it's UP from here — the mountain works in terraces. First terrace: pride.", shot: 'wide' },
+    { who: 'MAESTRO FORTISSIMO', text: 'I am here VOLUNTARILY. Purging the sin of pride. It is taking DECADES, because — and I say this humbly — mine is the finest pride on the mountain.', shot: 'opp' },
+    { who: 'YOU', text: 'Eighty-five percent, maestro, every link in tune. Not for the terrace. For the tempo.', shot: 'player' },
+    { who: 'MAESTRO FORTISSIMO', text: 'For the TEMPO! You see? He learns. One honest slap, in time, and I ascend — to the next terrace, where I shall be humble about THAT.', shot: 'opp' },
+  ],
+  c2c2: [
+    { who: "RAVIN' RAY", text: "Sloth terrace, man. The penance is you gotta HUSTLE, forever. They put me here 'cause I sleep all day. That's not sloth. That's SCHEDULING.", shot: 'opp' },
+    { who: '👻 VIRGIL', text: "He's appealed it three times. The mountain don't do appeals. It does do momentum — thirty-two meters counts as hustle, and up he goes.", shot: 'wide' },
+    { who: 'YOU', text: 'Then rise, nocturnal one, upon the wings of a single honest slap!', shot: 'player' },
+    { who: "RAVIN' RAY", text: 'See, THAT guy gets it. Drop it on the downbeat.', shot: 'opp' },
+  ],
+  c2c3: [
+    { who: 'CUSTODIAN CATO', text: 'VIRGIL. Still telling folk my gate is three feet east?', shot: 'opp' },
+    { who: '👻 VIRGIL', text: 'It IS three feet east, Cato. I have the stakes.', shot: 'wide' },
+    { who: 'CUSTODIAN CATO', text: 'The GATE decides where the gate is. Pilgrim — sixty-five percent form, twenty-eight meters, and I open it. Anything less is litter, and litter gets swept DOWN.', shot: 'opp' },
+    { who: 'YOU', text: 'Two old men and a property line. Even Purgatory is a county.', shot: 'player' },
+  ],
+  c3c1: [
+    { who: 'HALO HAL', text: "Poet! You made it! Big news: my wings review is TODAY. If a visitor clears me sixty meters, that's 'demonstrated flight aptitude.' It's in the manual. I highlighted it.", shot: 'opp' },
+    { who: '👻 VIRGIL', text: 'The cloud country runs on paperwork too. Told you. Everything is a county.', shot: 'wide' },
+    { who: 'YOU', text: 'Then soar, apprentice! One honest slap, and heaven itself must file your promotion!', shot: 'player' },
+  ],
+  c3c2: [
+    { who: 'GRANDPA CLETUS', text: "Sonny. Been visitin' up here since '61 — they let me nap on the clouds, on account of I'm 'closest to the door.' Their words. I choose to take it kindly.", shot: 'opp' },
+    { who: 'YOU', text: 'The veteran, serene upon the summit of all things. Why volunteer, elder?', shot: 'player' },
+    { who: 'GRANDPA CLETUS', text: "Forty-five meters, up HERE, with the floaty gravity? That's the closest to flyin' an old man gets while still buyin' green bananas. Mind the suspenders.", shot: 'opp' },
+  ],
+  c3c3: [
+    { who: '👻 VIRGIL', text: "Well. Here's the top. Everyone I ever guided went through that gate. Job's done, poet — I'll just wait here. Like always. Somebody's got to mind the stakes.", shot: 'wide' },
+    { who: 'YOU', text: 'Guide. In every circle, one soul waits on a single honest slap. You surveyed all three worlds — and never once crossed your own line. Whose slap do YOU await?', shot: 'player' },
+    { who: '👻 VIRGIL', text: "...seven hundred years of boundaries, and the poet finds the one I drew around myself. Fine. FINE. But I stand still for nobody — sixty percent form, forty meters, and mind the sidestep. I invented the sidestep.", shot: 'opp' },
+    { who: 'YOU', text: 'Then hold still exactly as much as you are able, old friend. This canto ends with you THROUGH the gate.', shot: 'player' },
+  ],
+  outro_c3c3: [
+    { who: '👻 VIRGIL', text: "...I'm through. I'm THROUGH the gate. The far side of my own property line. You know what's over here, poet? Three more feet. I KNEW it.", shot: 'opp' },
+    { who: 'HALO HAL', text: 'Wings came through! I filed his transfer myself — first stamp of the new job. Welcome home, Mr. Virgil!', shot: 'wide' },
+    { who: 'YOU', text: 'And thus the surveyor was moved — the final measurement, taken upon his own cheek. I shall write one hundred cantos!', shot: 'player' },
+    { who: '👻 VIRGIL', text: 'Three acts, poet. We talked about this.', shot: 'opp' },
+    { who: 'YOU', text: 'The love that moves the sun, the other stars, and — chiefly — the open palm. Very well. Three acts. But the epilogue rhymes.', shot: 'player' },
+  ],
+
+  v3c3g: [
+    { who: 'MARK SLOPBERG', text: "Hey. Mark. I bought the crater. And SynerCorn. And the robot — it does birthdays now. Come up to the house, I'll show you the cows. This is my normal voice.", shot: 'opp' },
+    { who: 'YOU', text: 'The house has a gate, a guard, and a pool that pretends the horizon works for it.', shot: 'player' },
+    { who: 'MARK SLOPBERG', text: "Infinity pool. Technically it never ends, which the lawyers love. Look — the valley says your slap can't be acquired. I respect that SO much I'd like to acquire the experience. Forty-five meters, over the palms. I want to see my herd from above.", shot: 'opp' },
+  ],
+  v3c4: [
+    { who: 'MARK SLOPBERG', text: 'Welcome to the living room. Normal living room. The couch seats forty. The fireplace is load-bearing content.', shot: 'opp' },
+    { who: 'YOU', text: 'Why the headset?', shot: 'player' },
+    { who: 'MARK SLOPBERG', text: "I'm in both rooms right now — this one, and a better one where I've already won. Also, full disclosure, it's a legal thing: I've been training BJJ for two years. Blue belt. Two stripes. My coach says I'm coachable, which at my level of wealth means terrifying.", shot: 'opp' },
+    { who: 'MARK SLOPBERG', text: 'House rules: when my arms come UP, I am reaching. Reach means takedown. Between reaches I am just a normal guy with a normal cheek. ...You should meet the cows after this. Henrietta does a trick.', shot: 'opp' },
+    { who: 'YOU', text: 'Swing between the reaches. Understood. Your move, normal guy.', shot: 'player' },
+  ],
+  outro_v3c4: [
+    { who: 'MARK SLOPBERG', text: "The headset came off. I'm only in ONE room now. Huh. It's a good room. Nobody has landed a hand on me since the board meeting of 2019 — and that was a handshake.", shot: 'opp' },
+    { who: 'YOU', text: 'You held the reach a half-second too long.', shot: 'player' },
+    { who: 'MARK SLOPBERG', text: "Coach is going to clip that. It's fine. It's FINE. I'm fine. ...Hey. Do you want to see the cows? Nobody ever wants to see the cows. They just want the term sheet.", shot: 'opp' },
+    { who: 'YOU', text: 'I genuinely want to see the cows.', shot: 'player' },
+    { who: 'MARK SLOPBERG', text: "THIS is why your slap can't be acquired. Henrietta first — she does a trick. And take some smoked meats for the road. I smoked them myself, at 4 a.m., on the wakeboard. Don't ask how. It tested well.", shot: 'opp' },
   ],
 };
 
@@ -866,6 +1029,8 @@ export const FAILS = {
      { who: 'YOU', text: 'Physician, slap thyself. Later. First: the patient.', shot: 'player' }],
     [{ who: 'YOU', text: 'Curious. Your shadow ducked; you did not. The slap followed the shadow. We resume when the two of you reconcile.', shot: 'player' },
      { who: 'YOU', text: 'The cat saw everything. The cat is withholding judgment. The cat is better at this than I am. Again.', shot: 'player' }],
+    [{ who: 'YOU', text: 'A miss. At midnight. In front of my own shadow. It is taking notes now — in MY notation.', shot: 'player' },
+     { who: 'YOU', text: 'Countertransference with an entire fairground. Fascinating. Unbillable. Again.', shot: 'player' }],
   ],
   v: [
     [{ who: 'VISIONARY VANCE', text: 'Interesting! We\'d call that "pre-revenue." Iterate and re-ship, friend.', shot: 'wide' },
@@ -879,6 +1044,12 @@ export const FAILS = {
     [{ who: '🏅 COMMISSIONER QUIBBLE', text: 'Note for the minutes: gravity one, applicant nil. A retry is permitted. The pie stand permits me a consolation slice.', shot: 'wide' },
      { who: 'YOU', text: 'Chalk the hands. Square the stance. This county gets its rings.', shot: 'player' }],
   ],
+  c: [
+    [{ who: '👻 VIRGIL', text: "Missed by three feet. I'd know — measuring is the whole job.", shot: 'wide' },
+     { who: 'YOU', text: 'Midway upon the journey of that swing, the straightforward path was lost. Again!', shot: 'player' }],
+    [{ who: 'YOU', text: 'O muse, o high genius, aid me now! ...The muse says my hips fired early.', shot: 'player' },
+     { who: '👻 VIRGIL', text: 'The muse is right. Hips, THEN hands, poet. Same as the last seven centuries.', shot: 'wide' }],
+  ],
 };
 
 // the one fail that isn't a whiff: Ava made the exit gate (skiRun). Played
@@ -887,6 +1058,15 @@ export const ESCAPE_FAIL = [
   { who: '⛷️ AVALANCHE EILEEN', text: 'WOOOO! SO LONG, BUILDER! Tell the Committee the phenom retires UNSLAAAAPPED—', shot: 'wide' },
   { who: 'YOU', text: "...she'll be back. Nobody quits a sport this loudly unless they need it to watch them go.", shot: 'player' },
 ];
+
+// campaign.js — the one fail that isn't a whiff: Mark caught the slap mid-REACH.
+// Played directly by main.js instead of rotating FAILS.v — the ESCAPE_FAIL idiom.
+export const TAKEDOWN_FAIL = [
+  { who: 'MARK SLOPBERG', text: "Single-leg. Side control. It is done. My coach makes me say 'it is done' — it builds the brand.", shot: 'opp' },
+  { who: 'YOU', text: '...he folded me like a term sheet.', shot: 'player' },
+  { who: 'MARK SLOPBERG', text: "You okay? Here, water — it's from the ranch. The water is also grass-fed. Go again. I need the reps.", shot: 'opp' },
+];
+
 
 // victory beats — short, replayable, played after clearing a NON-final
 // challenge (outro_* scenes own the finales). Keyed by tour prefix; rotated.
@@ -939,13 +1119,19 @@ export const WINS = {
     [{ who: '🏅 COMMISSIONER QUIBBLE', text: 'The stopwatch concurs. The tape measure concurs. And my heart — strictly ex officio — also concurs.', shot: 'wide' },
      { who: 'YOU', text: 'Stamp it and cue the anthem.', shot: 'player' }],
   ],
+  c: [
+    [{ who: 'YOU', text: 'And one soul, freed by a single honest slap, moved on! I shall render it in eleven syllables!', shot: 'player' },
+     { who: '👻 VIRGIL', text: 'Render it in eight. Onward — the map says up.', shot: 'wide' }],
+    [{ who: '👻 VIRGIL', text: 'Clean strike. Surveyed it myself: flush, square, and three feet farther than you needed. Showoff.', shot: 'wide' },
+     { who: 'YOU', text: 'The poem demanded a margin.', shot: 'player' }],
+  ],
 };
 
 // director's ordering: Charlie's documentary leads, then the Fair; Bruce's DLC
 // storyline next, with the Master Slee scrolls beneath it.
 // Olympic Bid leads (free), Wonders second, the Open Palm third (free) —
 // then the Fair, then the supporter storylines.
-const TOUR_ORDER = ['wonders', 'fair', 'palm', 'olympicbid', 'secondwind', 'nightofslaps', 'slaptherapy', 'slopvalley'];
+const TOUR_ORDER = ['wonders', 'fair', 'palm', 'olympicbid', 'secondwind', 'nightofslaps', 'slaptherapy', 'slopvalley', 'commedia'];
 // unknown keys sink to the bottom instead of floating to the top (indexOf −1)
 const tourRank = (k) => { const i = TOUR_ORDER.indexOf(k); return i < 0 ? TOUR_ORDER.length : i; };
 TOURS.sort((a, b) => tourRank(a.key) - tourRank(b.key));

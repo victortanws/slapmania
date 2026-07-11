@@ -51,12 +51,14 @@ export const FOUL_LINES = {
   footing: 'He wound up so hard he slapped himself off his own feet.',
   clock: 'Ten seconds of nothing. The crowd is booing. The opponent is chewing wheat.',
   escape: 'She made the exit gate. The last thing this attempt saw was her back.',
+  takedown: 'Single-leg, side control, term sheet. He warned you about the reach.',
 };
 
 export const FOUL_BANNERS = {
   footing: ['FOUL!', 'HE HAS SLAPPED HIMSELF OFF HIS OWN FEET'],
   clock: ['FORFEIT!', 'FROZEN BY THE MAGNITUDE OF THE MOMENT'],
   escape: ["SHE'S GONE!", 'THE PHENOM MADE THE GATE — UNSLAPPED'],
+  takedown: ['TAKEDOWN!', "HE'S BEEN TRAINING FOR THIS — NEVER SLAP THE REACH"],
 };
 
 // the commentary knows who flew: pronouns follow the volunteer (fem = arch.female),

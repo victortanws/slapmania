@@ -72,6 +72,7 @@ let lastClearedId = null; // set when a tour goal clears — an outro may follow
 let failIdx = 0;          // rotates the failure-scene pool
 let winIdx = 0;           // rotates the victory-beat pool
 let prevHandSeg = null;   // last frame's palm segment — the contact test sweeps from it
+let tookTakedown = false; // Slopberg caught a slap mid-REACH this match — the fail beat knows
 function restoreBar() { ui.challengeBar(rivalBarText); }
 let pickIndex = 0;
 let pickHighlight = null;
@@ -368,6 +369,7 @@ function openOppPick() {
 }
 
 function startMatch() {
+  tookTakedown = false;
   attempts = [];
   submitted = false;
   if (!chosenArch) chosenArch = ROSTER[1];
@@ -468,6 +470,7 @@ const TOUR_STARS = {
   slaptherapy: { slapper: 'carlgustav' },
   slopvalley: { opp: 'slopunit' },
   olympicbid: { slapper: 'victor' },
+  commedia: { slapper: 'dante' },
 };
 const tourPortraits = {};
 function capturePortraits() {
@@ -684,6 +687,7 @@ function startAttempt() {
   shotClock = arch.shotClock || 10; // bosses may run a tighter courtroom
   timeScale = 1;
   prevHandSeg = null; // no stale sweep across attempts
+  // (tookTakedown persists across attempts — the match-end beat wants to know it happened)
   // the goal banner returns for the swing (it hides at contact so it never
   // sits on top of the flight distance ticker)
   if (campaign.active) ui.challengeBar(campaign.goalText());
@@ -727,6 +731,14 @@ function onContact(hit, fist) {
   // a real slap's follow-through. A fast palm driving into the head counts even
   // with little +x left; without this the PERFECT swing whiffed and a 2.8 m/s
   // rebound flail scored the "hit" instead.
+  // BLUE BELT, TWO STRIPES: any contact during Slopberg's REACH is a takedown —
+  // the attempt is consumed, not the slap (the telegraph warned you)
+  if (opponent.arch.bjj && opponent.inReach()) {
+    if (speed < 2.2) return; // a resting hand isn't a slap OR a takedown
+    tookTakedown = true;
+    foul('takedown');
+    return;
+  }
   if (speed < 2.2) return;
   if (velDir.x < 0.15) {
     // ≥3.5 m/s (not the full 6): on the deepest matchups the wrap is where the
@@ -1092,8 +1104,9 @@ function advanceScreens(code) {
         // FAILED: a short, humiliating beat — then straight back into the SAME
         // challenge (the card's button said RETRY; ESC from the card = leave)
         const escapeBeat = chosenArch && chosenArch.skiRun; // she made the gate — her victory lap plays, not a whiff joke
+        const takedownBeat = chosenArch && chosenArch.bjj && tookTakedown; // he folded you like a term sheet
         const pool = campaign.FAILS[ch.id[0]] || [];
-        const fail = escapeBeat ? campaign.ESCAPE_FAIL : (pool.length ? pool[failIdx++ % pool.length] : null);
+        const fail = takedownBeat ? campaign.TAKEDOWN_FAIL : escapeBeat ? campaign.ESCAPE_FAIL : (pool.length ? pool[failIdx++ % pool.length] : null);
         const retry = () => startTourChallenge(ch);
         if (fail) playScene(fail.map(you), retry, { sad: true });
         else retry();

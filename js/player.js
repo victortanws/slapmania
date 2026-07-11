@@ -122,6 +122,15 @@ export const SLAPPERS = [
     height: 0.90, arm: 0.92, power: 1.08,
     locked: true, price: 4,
   },
+  {
+    key: 'dante', name: 'DANTE THE PILGRIM', desc: 'Halfway through the journey. Fully through with it.',
+    skin: 0xe0b088, shirt: 0x8a1f2e, pants: 0x6e1a26,   // the red robe reads through shirt+pants
+    hair: 'flat', hairCol: 0x2a1f18,
+    cassock: 0x8a1f2e,   // the pilgrim's red robe (the reverend/Carl cassock idiom)
+    laurel: 0x2e7d4f,    // traveler's laurel wreath — a thin leaf ring above the hairline
+    height: 1.0, arm: 1.02, power: 0.96,   // an everyman — the campaign is about honesty, not tonnage
+    locked: true, price: 4,
+  },
 ];
 
 // The slapper. Pre-contact he is NOT physics-engine driven: each joint is a scalar
@@ -591,6 +600,19 @@ export class Player {
         const curl = new THREE.Mesh(new THREE.SphereGeometry(0.048, 8, 8), h());
         curl.position.set(x, y, z);
         g.add(curl);
+      }
+    }
+    if (L.laurel) {
+      // the poet's laurel: a thin leaf ring resting above the hairline
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.155, 0.022, 6, 16), toonMat(L.laurel));
+      ring.rotation.x = Math.PI / 2;
+      ring.position.y = 0.09;
+      this.headMesh.add(ring);
+      for (let i = 0; i < 6; i++) {
+        const leaf = new THREE.Mesh(new THREE.SphereGeometry(0.028, 6, 6), toonMat(L.laurel));
+        const a = (i / 6) * Math.PI * 2;
+        leaf.position.set(Math.cos(a) * 0.155, 0.1, Math.sin(a) * 0.155);
+        this.headMesh.add(leaf);
       }
     }
     if (L.glasses) {

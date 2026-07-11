@@ -225,6 +225,21 @@ export const ROSTER = [
     pickLine: 'One drop of slop can do anything. Sworn testimony pending.',
     taunts: ['The product works. In an environment of belief.', 'My voice is two octaves of credibility.'],
   },
+  {
+    key: 'slopberg', name: 'MARK SLOPBERG', tag: 'JUST A NORMAL GUY', world: 'techcampus',
+    w: 0.95, h: 1.02, mass: 1.0, noStache: true,
+    skin: 0xf0dcc2, shirt: 0x8a8f98, pants: 0x4a6fa5,   // sunscreen-pale, gray tee, jeans
+    hair: 'frizz', hairCol: 0x4a3018,                    // tight curls
+    pickLine: 'Owns the valley, the mansion, and nine cows. Will mention the cows.',
+    taunts: [
+      'Have you met my cows? Their names are longer than yours.',
+      'I smoke my own meats. The meats are grass-fed. The grass is also mine.',
+      "Just a normal guy. Normal house. Forty bathrooms. Normal.",
+      'I wakeboard at dawn holding a flag. It tested well.',
+      "My cows have never been slapped. It's a culture thing.",
+      'The tee is gray because choices are friction. Also I own the color.',
+    ],
+  },
   // ---- BOSSES (boss: true): campaign-only — never listed in the public
   // volunteer pick; tour challenges summon them by key ----
   {
@@ -372,6 +387,34 @@ export const ROSTER = [
     pickLine: 'She is DONE being slapped. One run, straight past you, out the gate.',
     taunts: ['Grass is just slow snow.', "Don't take it personally — I'm not dodging you. I'm LEAVING you."],
   },
+  // ROSTER, js/opponent.js — commedia bosses
+  {
+    key: 'cato', name: 'CUSTODIAN CATO', tag: 'BOSS · THE MOUNTAIN GATE', boss: true,
+    w: 1.35, h: 1.06, mass: 1.5, chainGate: 65, brow: true, robe: true, noStache: true,
+    skin: 0xc9a06a, shirt: 0x8a8578, pants: 0x6e6a5e, whiteBeard: true,
+    hair: 'bun', hairCol: 0xdcd6ca,
+    broomProp: true,   // NEW look flag (optional, cheap): push-broom held on the Reaper's scythe mount
+    pickLine: 'Sweeps the mountain gate. Sloppy form is litter, and he does not abide litter.',
+    taunts: ['The mountain does not do appeals.', 'Sixty-five percent, or back down the switchbacks.', 'I swept out better form this morning.'],
+  },
+  {
+    key: 'virgil', name: '👻 VIRGIL', tag: 'BOSS · THE RETIRED SURVEYOR', boss: true,
+    w: 0.9, h: 1.0, mass: 0.9, weave: true, chainGate: 60, noStache: true,
+    skin: 0xdcc4a8, shirt: 0x8a8f98, pants: 0x5a5f6a, suit: true, tie: 0x6e5a3a,
+    hat: 'straw', whiteBeard: true,   // OUR Virgil: a county surveyor, not a toga
+    pickLine: 'Guided everyone through. Never crossed his own line. Time the sidestep.',
+    taunts: ['I surveyed this dodge in 1911.', 'You are three feet east of the truth, poet.', 'The stake moves. The stake is me.'],
+  },
+  {
+    key: 'slopbergboss', name: 'MARK SLOPBERG', tag: 'BOSS · BLUE BELT, TWO STRIPES', boss: true,
+    w: 0.95, h: 1.02, mass: 1.0, noStache: true,
+    skin: 0xf0dcc2, shirt: 0x8a8f98, pants: 0x4a6fa5,
+    hair: 'frizz', hairCol: 0x4a3018,
+    vrHeadset: 0xe8e8ee,                          // NEW look flag: chunky pale visor over the eyes (reuse the goggles mount, scaled up)
+    bjj: { period: 3.0, reach: 1.2, telegraph: 0.35 },   // NEW mechanic — see spec
+    pickLine: "He took up BJJ 'for fun.' The fun is takedowns.",
+    taunts: ['My coach says I am coachable. At my net worth, that means TERRIFYING.', 'Reach is a gift. I reach every three seconds.', 'This is round one. I have acquired all subsequent rounds.'],
+  },
 ];
 
 // every volunteer speaks with their own voice, and has enough lines that
@@ -409,7 +452,7 @@ export const WORLD_ROSTERS = {
   therapy: { allow: ['inkblot', 'don', 'influencer', 'bertha', 'slim', 'hank', 'maestro'] }, // the client list
   heaven:  { allow: ['hal', 'cletus', 'mabel', 'susie'] },                // the gentle
   hell:    { allow: ['larry', 'don', 'ravinray', 'maestro'] },            // reserved parking
-  techcampus: { allow: ['vance', 'mira', 'influencer', 'don', 'susie', 'slim'] }, // whoever badges in
+  techcampus: { allow: ['vance', 'mira', 'slopberg', 'influencer', 'don', 'susie', 'slim'] }, // whoever badges in
 };
 
 function segSphere(p0, p1, c, r) {
@@ -550,6 +593,18 @@ export class Opponent {
       const bobble = new THREE.Mesh(new THREE.SphereGeometry(0.03, 6, 6), new THREE.MeshBasicMaterial({ color: 0xff3030 }));
       bobble.position.y = 0.36 * hr;
       head.add(bobble);
+    }
+    if (arch.vrHeadset) {
+      // a chunky pale visor over the eyes — he is in two rooms at once
+      const visor = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.13, 0.3), toonMat(arch.vrHeadset));
+      visor.position.set(-0.13 * hr, 0.02 * hr, 0);
+      visor.scale.setScalar(hr);
+      visor.castShadow = true;
+      head.add(visor);
+      const strap = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.36), toonMat(0x2a2a33));
+      strap.position.set(0.02 * hr, 0.02 * hr, 0);
+      strap.scale.setScalar(hr);
+      head.add(strap);
     }
     if (arch.goggles) {
       // mirrored racing goggles: DOWN over the eyes for the run, UP on the brow otherwise
@@ -1307,6 +1362,12 @@ export class Opponent {
     // past the exit gate behind the player — the attempt is dead the instant this is true
     return !!(this.arch.skiRun && !this.launched && this.runX !== undefined && this.runX < this.arch.skiRun.exitX);
   }
+  inReach() {
+    // bjj: true only during the REACH segment (the telegraph is the warning)
+    if (!this.arch.bjj || this.launched) return false;
+    const b = this.arch.bjj;
+    return (this.time % b.period) >= b.period - b.reach;
+  }
   headFacing() {
     // headTurn bosses: how square the face is to the palm right now.
     // 1.1 = caught the turn flush; 0.25 = the back of the head. Deterministic.
@@ -1375,7 +1436,7 @@ export class Opponent {
       this.animateShowcase();
     } else {
       const A = this.arch;
-      const gimmick = A.weave || A.skiRun || A.hop || A.sway || A.headTurn;
+      const gimmick = A.weave || A.skiRun || A.hop || A.sway || A.headTurn || A.bjj;
       if (!gimmick) {
         // every volunteer BREATHES: a slow, readable rise-and-fall of the cheek
         // (~4.5s period, ±5cm). Never enough to whiff — but a flush hit wants
@@ -1455,6 +1516,29 @@ export class Opponent {
         const breathe = Math.sin(this.time * 1.4) * 0.05; // he still breathes — the turn is the exam
         P.head.body.position.y = this.basePose.head.p.y + breathe;
         P.torso.body.position.y = this.basePose.torso.p.y + breathe * 0.35;
+        if (this.hatBody && this.hatOff) this.hatBody.position.copy(P.head.body.position.vadd(this.hatOff));
+        this.rag.sync();
+        this.syncHat();
+      }
+      if (A.bjj) {
+        // BLUE BELT, TWO STRIPES: a fixed, readable grappling cycle. 1.45s
+        // square in the pocket (safe), a 0.35s TELEGRAPH as both arms rise,
+        // then 1.2s of REACH — contact during the reach is a TAKEDOWN (main.js
+        // consumes the attempt). Deterministic; a full chain fits the safe
+        // window if you start as his arms drop.
+        const b = A.bjj;
+        const t = this.time % b.period;
+        const tele = b.period - b.reach - b.telegraph; // 1.45
+        const k = t < tele ? 0 : t < tele + b.telegraph ? (t - tele) / b.telegraph : 1;
+        this._reachK = k;
+        const P = this.rag.parts;
+        for (const n of ['uaL', 'faL']) {
+          P[n].body.position.x = this.basePose[n].p.x - 0.28 * k; // arms extend toward you
+          P[n].body.position.y = this.basePose[n].p.y + (n === 'faL' ? 0.1 : 0.04) * k;
+        }
+        P.torso.body.position.x = this.basePose.torso.p.x - 0.04 * k;  // leans into the shot
+        P.head.body.position.x = this.basePose.head.p.x - 0.04 * k;   // a hint forward — the cheek STAYS honest
+        P.head.body.position.y = this.basePose.head.p.y - 0.03 * k;   // the wrestler's crouch
         if (this.hatBody && this.hatOff) this.hatBody.position.copy(P.head.body.position.vadd(this.hatOff));
         this.rag.sync();
         this.syncHat();
