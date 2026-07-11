@@ -845,6 +845,7 @@ export function createStage(canvas) {
   scene.add(biomeIM(fieldCornIM, 420, { ice: 0xd9cfa8, desert: 0xcbb187, lava: 0x2a2220, hell: 0x2a1a18, heaven: 0xf0d060, dojo: 0xa8b86a, therapy: 0x7a6a94, haunted: 0x5a5244, tech: 0x4a5560 }));
 
   // fruit trees: apples red, oranges orange, both delicious at 30 m/s
+  const orchardTrees = []; // hidden on non-fair worlds (no apple groves on the lava sea)
   function fruitTree(x, z, fruitCol, leafCol, s = 1) {
     const g = new THREE.Group();
     const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.28, 1.9, 8), toonMat(0x6b4a2e));
@@ -870,6 +871,7 @@ export function createStage(canvas) {
     g.scale.setScalar(s);
     g.position.set(x, 0, z);
     scene.add(g);
+    orchardTrees.push(g);
     solids.push({ kind: 'cyl', x, z, r: 0.3 * s, h: 2.0 * s });
   }
   // apple orchard, north-east of the corn
@@ -1617,11 +1619,36 @@ export function createStage(canvas) {
       for (const gy of geysers) {
         // a fixed 4s rhythm, phase-offset — deterministic, like the weave
         const cyc = (time + gy.ph) % 4;
-        gy.m.scale.y = cyc < 0.7 ? Math.sin((cyc / 0.7) * Math.PI) : 0.01;
+        gy.m.scale.y = cyc < 0.8 ? Math.max(0.01, Math.sin((cyc / 0.8) * Math.PI)) : 0.01;
+      }
+      for (const fl of lavaFlames) {          // fire flicker
+        fl.g.scale.y = fl.base * (0.7 + Math.abs(Math.sin(time * 7 + fl.ph)) * 0.7);
+        fl.g.scale.x = fl.g.scale.z = 0.85 + Math.sin(time * 9 + fl.ph) * 0.15;
+      }
+      for (const mp of magmaPools) {          // bubbling magma
+        mp.m.position.y = mp.y0 + Math.abs(Math.sin(time * 2.5 + mp.ph)) * 0.3;
+        mp.m.scale.setScalar(0.7 + Math.abs(Math.sin(time * 2.5 + mp.ph)) * 0.6);
+      }
+      for (const ej of emberJets) {           // crater ember fountain
+        ej.m.position.y = ej.base + ((time * 4 + ej.ph) % 3) * 3;
+        ej.m.scale.setScalar(Math.max(0.05, 1 - ((time * 4 + ej.ph) % 3) / 3));
+      }
+      for (const sm of lavaSmoke) {           // rising, fading smoke plume
+        const t2 = (time * 2 + sm.ph) % 21;
+        sm.m.position.y = sm.base + t2 * 1.6;
+        sm.m.material.opacity = Math.max(0, 0.5 - t2 / 42);
+      }
+      const k = 0.5 + Math.sin(time * 1.3) * 0.5;   // molten shimmer across the sea
+      for (const sea of seaMats) sea.color.setRGB(1, 0.30 + k * 0.14, 0.06 + k * 0.06);
+      for (const dm of lavaDemons) {          // basalt brutes amble the flanks
+        const ph = ((time * dm.spd + dm.ph0) % 2 + 2) % 2, fwd = ph < 1;
+        dm.g.position.x = dm.x0 + dm.span * (fwd ? ph : 2 - ph);
+        dm.g.rotation.y = fwd ? 0 : Math.PI;
+        dm.g.position.y = Math.abs(Math.sin(time * 3 + dm.ph0)) * 0.06;
       }
       if (salamander) {
-        const span = 40, ph = ((time * 0.045) % 2 + 2) % 2, fwd = ph < 1;
-        salamander.position.x = 30 + span * (fwd ? ph : 2 - ph);
+        const span = 22, ph = ((time * 0.05) % 2 + 2) % 2, fwd = ph < 1;
+        salamander.position.x = 24 + span * (fwd ? ph : 2 - ph);
         salamander.rotation.y = fwd ? 0 : Math.PI;
       }
     }
@@ -2764,73 +2791,155 @@ export function createStage(canvas) {
   // --- 🌋 LAVA LAND ---
   const lavaG = new THREE.Group();
   const geysers = [];
+  const lavaFlames = [], lavaDemons = [], magmaPools = [], lavaSmoke = [], seaMats = [], emberJets = [];
   let salamander = null;
   {
-    const obsMat = toonMat(0x1f1a1e);
-    lavaG.add(mkBelt((g, x, z, i) => {
-      const h = 4.5 + (i % 4);
-      const shard = new THREE.Mesh(new THREE.ConeGeometry(1.1, h, 5), obsMat);
-      shard.position.set(x, h / 2, z);
-      shard.rotation.y = i;
-      g.add(shard);
-      if (i % 6 === 0) {
-        const tip = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.08, 6, 10), glowMat(0xff6a20));
-        tip.rotation.x = Math.PI / 2;
-        tip.position.set(x, h * 0.55, z);
-        g.add(tip);
+    const rock = toonMat(0x241c1e);        // cooled basalt crust
+    const rockDk = toonMat(0x160f10);
+    const crackMat = () => new THREE.MeshBasicMaterial({ color: 0xff5a18 });
+    const emberMat = () => new THREE.MeshBasicMaterial({ color: 0xff9a30 });
+    // a small flame = stacked cones, base→tip hotter (flickers in updateAmbient)
+    const mkFlame = (h = 0.9) => {
+      const f = new THREE.Group();
+      const c1 = new THREE.Mesh(new THREE.ConeGeometry(0.26, h, 7), new THREE.MeshBasicMaterial({ color: 0xff4a10 }));
+      c1.position.y = h / 2; f.add(c1);
+      const c2 = new THREE.Mesh(new THREE.ConeGeometry(0.17, h * 0.72, 7), new THREE.MeshBasicMaterial({ color: 0xff8a20 }));
+      c2.position.y = h * 0.42; f.add(c2);
+      const c3 = new THREE.Mesh(new THREE.ConeGeometry(0.08, h * 0.44, 6), new THREE.MeshBasicMaterial({ color: 0xffd23f }));
+      c3.position.y = h * 0.5; f.add(c3);
+      return f;
+    };
+
+    // ---- THE SEA OF FIRE: molten planes flank the lane and fill the far
+    // ground. The lane corridor (z ±6) stays a dark crust causeway so the
+    // slap reads; everything around it glows. Crust chunks float on the sea so
+    // the light shows as flowing lava between cooled slabs. ----
+    for (const [x0, x1, z0, z1] of [[-22, 136, -42, -6.5], [-22, 136, 6.5, 42], [100, 136, -6.5, 6.5]]) {
+      const w = x1 - x0, d = z1 - z0;
+      const sea = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ color: 0xff5215 }));
+      sea.rotation.x = -Math.PI / 2;
+      sea.position.set((x0 + x1) / 2, 0.015, (z0 + z1) / 2);
+      lavaG.add(sea); seaMats.push(sea.material);
+      const chunks = Math.floor(w * Math.abs(d) / 120);
+      for (let i = 0; i < chunks; i++) {
+        const cx = x0 + Math.random() * w, cz = z0 + Math.random() * d;
+        const plate = new THREE.Mesh(new THREE.CircleGeometry(0.6 + Math.random() * 1.5, 5 + (i % 3)), i % 2 ? rock : rockDk);
+        plate.rotation.x = -Math.PI / 2; plate.rotation.z = Math.random() * 3;
+        plate.position.set(cx, 0.03 + Math.random() * 0.05, cz);
+        lavaG.add(plate);
+        if (i % 5 === 0) {
+          const bub = new THREE.Mesh(new THREE.SphereGeometry(0.2, 8, 8), emberMat());
+          bub.position.set(cx, 0.06, cz);
+          lavaG.add(bub); magmaPools.push({ m: bub, ph: Math.random() * 6, y0: 0.06 });
+        }
       }
-    }));
-    lavaG.children[0].visible = true;
-    // volcanoes on the mesa/mountain ring
-    const volcMat = toonMat(0x3a2a28);
-    for (const [x, z, h, r] of [[-30, -55, 24, 20], [5, -62, 30, 24], [45, -58, 26, 22], [90, -64, 32, 26], [128, -54, 24, 20], [-25, 56, 26, 22], [20, 62, 32, 24], [65, 58, 26, 22], [108, 62, 30, 24], [138, 18, 28, 22]]) {
-      const cone = new THREE.Mesh(new THREE.ConeGeometry(r, h, 7), volcMat);
-      cone.position.set(x, h / 2 - 1.5, z);
-      lavaG.add(cone);
-      const crater = new THREE.Mesh(new THREE.CircleGeometry(r * 0.22, 7), glowMat(0xff7a20));
-      crater.rotation.x = -Math.PI / 2;
-      crater.position.set(x, h - 1.4, z);
-      lavaG.add(crater);
     }
-    // glowing lane cracks + lava-pool crust plates
-    for (const [cx, cz, cl] of [[28, 1, 4], [46, -1.4, 6], [62, 0.8, 5], [81, -0.6, 7], [95, 1.2, 4]]) {
-      const crack = new THREE.Mesh(new THREE.PlaneGeometry(cl, 0.35), glowMat(0xff8a30));
-      crack.rotation.x = -Math.PI / 2;
-      crack.rotation.z = (cx % 3) * 0.4;
+    // glowing cracks running across the causeway itself — molten underneath
+    for (const [cx, cz, cl, rot] of [[24, 0, 5, 0.5], [44, 1, 6, -0.4], [63, -1, 5, 0.7], [82, 0.6, 7, -0.3], [96, -0.8, 4, 0.5]]) {
+      const crack = new THREE.Mesh(new THREE.PlaneGeometry(cl, 0.4), crackMat());
+      crack.rotation.x = -Math.PI / 2; crack.rotation.z = rot;
       crack.position.set(cx, 0.02, cz);
       lavaG.add(crack);
     }
-    for (let i = 0; i < 5; i++) {
-      const plate = new THREE.Mesh(new THREE.CircleGeometry(0.8 + Math.random() * 0.7, 6), toonMat(0x2a2224));
-      plate.rotation.x = -Math.PI / 2;
-      const a = Math.random() * Math.PI * 2, rr = Math.random() * 4;
-      plate.position.set(40 + Math.cos(a) * rr, 0.06, 24 + Math.sin(a) * rr);
-      lavaG.add(plate);
+
+    // ---- obsidian spire belt: a horizon wall of black glass, seams aglow ----
+    lavaG.add(mkBelt((g, x, z, i) => {
+      const h = 4.5 + (i % 4);
+      const shard = new THREE.Mesh(new THREE.ConeGeometry(1.1, h, 5), rockDk);
+      shard.position.set(x, h / 2, z); shard.rotation.y = i;
+      g.add(shard);
+      if (i % 5 === 0) {
+        const seam = new THREE.Mesh(new THREE.PlaneGeometry(0.16, h * 0.7), crackMat());
+        seam.position.set(x + 1.05, h * 0.42, z); seam.rotation.y = Math.PI / 2;
+        g.add(seam);
+      }
+    }));
+
+    // ---- THE GREAT VOLCANO: a smoking, spewing giant beyond the lane ----
+    const volc = new THREE.Group();
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(34, 46, 9), toonMat(0x2a201e));
+    cone.position.y = 23; volc.add(cone);
+    for (let i = 0; i < 6; i++) {          // molten runoff streaks down the flanks
+      const a = (i / 6) * Math.PI * 2;
+      const streak = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 26), crackMat());
+      streak.position.set(Math.cos(a) * 12, 20, Math.sin(a) * 12);
+      streak.lookAt(Math.cos(a) * 40, 0, Math.sin(a) * 40);
+      volc.add(streak);
     }
-    // geysers on a fixed 4s rhythm (deterministic, like the weave)
-    for (const [gx, gz, ph] of [[32, -6, 0], [55, 8, 1.3], [78, -5, 2.6]]) {
-      const jet = new THREE.Mesh(new THREE.ConeGeometry(0.5, 3.2, 7), glowMat(0xff8a30));
-      jet.position.set(gx, 0, gz);
-      jet.scale.y = 0.01;
-      lavaG.add(jet);
-      geysers.push({ m: jet, ph });
+    const crater = new THREE.Mesh(new THREE.CylinderGeometry(11, 13, 3, 9), new THREE.MeshBasicMaterial({ color: 0xffc030 }));
+    crater.position.y = 45.5; volc.add(crater);
+    volc.position.set(132, 0, 2);
+    lavaG.add(volc);
+    for (let i = 0; i < 5; i++) {           // ember fountain from the crater
+      const jet = new THREE.Mesh(new THREE.ConeGeometry(1.4, 8, 6), emberMat());
+      jet.position.set(132 + (Math.random() - 0.5) * 8, 46, 2 + (Math.random() - 0.5) * 8);
+      lavaG.add(jet); emberJets.push({ m: jet, ph: Math.random() * 3, base: 46 });
     }
-    // the fire salamander ambles the south line
+    for (let i = 0; i < 7; i++) {           // a rising smoke plume
+      const puff = new THREE.Mesh(new THREE.SphereGeometry(4 + Math.random() * 3, 8, 8),
+        new THREE.MeshBasicMaterial({ color: 0x2e211f, transparent: true, opacity: 0.5 }));
+      puff.position.set(132, 50 + i * 6, 2);
+      lavaG.add(puff); lavaSmoke.push({ m: puff, ph: i * 3, base: 50 });
+    }
+    for (const [x, z, h, r] of [[-18, -50, 24, 16], [70, 60, 30, 20]]) {  // two lesser volcanoes
+      const c = new THREE.Mesh(new THREE.ConeGeometry(r, h, 7), toonMat(0x2a201e));
+      c.position.set(x, h / 2 - 1.5, z); lavaG.add(c);
+      const cr = new THREE.Mesh(new THREE.CircleGeometry(r * 0.24, 7), new THREE.MeshBasicMaterial({ color: 0xffb020 }));
+      cr.rotation.x = -Math.PI / 2; cr.position.set(x, h - 1.4, z); lavaG.add(cr);
+    }
+
+    // ---- lane-side flames licking up along both edges ----
+    for (let i = 0; i < 14; i++) {
+      const side = i % 2 ? 1 : -1;
+      const fl = mkFlame(0.8 + Math.random() * 0.8);
+      fl.position.set(-16 + i * 8.5, 0, side * (6.6 + Math.random() * 1.5));
+      lavaG.add(fl); lavaFlames.push({ g: fl, ph: Math.random() * 6, base: fl.scale.y });
+    }
+
+    // ---- lane geysers on a fixed 4s rhythm (deterministic, like the weave) ----
+    for (const [gx, gz, ph] of [[36, -4, 0], [58, 5, 1.3], [88, -4, 2.6]]) {
+      const jet = mkFlame(3.4);
+      jet.position.set(gx, 0, gz); jet.scale.y = 0.01;
+      lavaG.add(jet); geysers.push({ m: jet, ph });
+    }
+
+    // ---- LAVA DEMONS: two basalt brutes ambling the flanks, cracks aglow ----
+    const mkDemon = () => {
+      const dg = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.42, 0.9, 4, 8), toonMat(0x241c20));
+      body.position.y = 1.0; dg.add(body);
+      for (const sy of [1.15, 0.85]) {
+        const seam = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.09), crackMat());
+        seam.position.set(-0.42, sy, 0); seam.rotation.y = Math.PI / 2; dg.add(seam);
+      }
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.34, 8, 8), toonMat(0x2a2024));
+      head.position.y = 1.75; dg.add(head);
+      for (const sgn of [-1, 1]) {
+        const horn = new THREE.Mesh(new THREE.ConeGeometry(0.09, 0.34, 6), toonMat(0x14100e));
+        horn.position.set(-0.1, 2.0, sgn * 0.18); horn.rotation.z = 0.4; dg.add(horn);
+        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.06, 6, 6), new THREE.MeshBasicMaterial({ color: 0xffd23f }));
+        eye.position.set(-0.32, 1.78, sgn * 0.12); dg.add(eye);
+        const leg = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.5, 0.24), toonMat(0x160f10));
+        leg.position.set(0, 0.25, sgn * 0.2); dg.add(leg);
+      }
+      return dg;
+    };
+    for (const [x, z, span, spd, ph0] of [[20, -16, 44, 0.05, 0], [60, 17, 40, 0.042, 1]]) {
+      const dm = mkDemon(); dm.position.set(x, 0, z);
+      lavaG.add(dm); lavaDemons.push({ g: dm, x0: x, span, spd, ph0 });
+    }
+    // the fire salamander stays, on the near south crust edge
     salamander = new THREE.Group();
-    const sBody = new THREE.Mesh(new THREE.CapsuleGeometry(0.3, 1.1, 4, 8), toonMat(0xff6a30));
-    sBody.rotation.z = Math.PI / 2;
-    sBody.position.y = 0.4;
-    salamander.add(sBody);
-    const sHead = new THREE.Mesh(new THREE.SphereGeometry(0.26, 8, 8), toonMat(0xff8a40));
-    sHead.position.set(0.85, 0.45, 0);
-    salamander.add(sHead);
-    const sTail = new THREE.Mesh(new THREE.ConeGeometry(0.16, 1.0, 6), toonMat(0xffa050));
-    sTail.rotation.z = Math.PI / 2;
-    sTail.position.set(-1.15, 0.4, 0);
-    salamander.add(sTail);
-    salamander.position.set(30, 0, -21);
-    lavaG.add(salamander);
-    lavaG.traverse((m) => { m.castShadow = true; });
+    const sBody = new THREE.Mesh(new THREE.CapsuleGeometry(0.3, 1.1, 4, 8), new THREE.MeshBasicMaterial({ color: 0xff6a20 }));
+    sBody.rotation.z = Math.PI / 2; sBody.position.y = 0.4; salamander.add(sBody);
+    const sHead = new THREE.Mesh(new THREE.SphereGeometry(0.26, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffa040 }));
+    sHead.position.set(0.85, 0.45, 0); salamander.add(sHead);
+    const sTail = new THREE.Mesh(new THREE.ConeGeometry(0.16, 1.0, 6), new THREE.MeshBasicMaterial({ color: 0xffc060 }));
+    sTail.rotation.z = Math.PI / 2; sTail.position.set(-1.15, 0.4, 0); salamander.add(sTail);
+    salamander.position.set(30, 0, -6.2); lavaG.add(salamander);
+
+    // only opaque toon meshes cast shadows — the glowing lava/flames don't
+    lavaG.traverse((m) => { if (m.isMesh && m.material.type !== 'MeshBasicMaterial') m.castShadow = true; });
     lavaG.visible = false;
     scene.add(lavaG);
   }
@@ -3661,9 +3770,9 @@ export function createStage(canvas) {
     dojo: { fog: [0xe8dfd0, 50, 170], skyTint: 0xf4e6d0, hemi: [0xf5e8d5, 0x8a7a5c, 0.95], sun: [0xffe8c0, 1.8], fill: 0.3, cloud: 0xfff4e2, maps: false, grass: 0xd9c9a8, lane: 0xc9b490, night: false, sunFace: true,
       group: 'dojo', biome: 'dojo', crowd: 'dojo', pond: 0x4a7a8a,
       hideFarm: true, hideCloths: true, barricade: 'shoji' },
-    lava: { fog: [0x40201a, 36, 125], skyTint: 0x33161a, hemi: [0xff9a5a, 0x401a10, 0.98], sun: [0xff7a30, 1.7], fill: 0.32, cloud: 0x5a2a22, maps: false, grass: 0x3a2f2c, lane: 0x55403a, night: false, sunFace: false,
+    lava: { fog: [0x5a2414, 48, 165], skyTint: 0x3a1810, hemi: [0xffb070, 0x5a2410, 1.12], sun: [0xff8a3a, 1.9], fill: 0.4, cloud: 0x6a2e1e, maps: false, grass: 0x201613, lane: 0x2a201c, night: false, sunFace: false,
       group: 'lava', biome: 'lava', crowd: 'lava', pond: 0xff7a20,
-      hideFarm: true, hideCloths: true, hideFences: true, barricade: 'boulders' },
+      hideFarm: true, hideBarn: true, hideFair: true, hideCloths: true, hideFences: true, barricade: 'boulders' },
     therapy: { fog: [0xe6dff0, 40, 130], skyTint: 0xd9cfec, hemi: [0xece2f4, 0x9a8fb0, 0.95], sun: [0xfff0e0, 1.5], fill: 0.35, cloud: 0xf6f0fa, maps: false, grass: 0xb9aed4, lane: 0x8f82b8, night: false, sunFace: true,
       group: 'therapy', biome: 'therapy', crowd: 'therapy', pond: 0x14141c, sunTint: [0xf0e4ff, 0.9],
       hideFarm: true, hideCloths: true, hideBarn: true, barricade: 'books' },
@@ -3730,7 +3839,11 @@ export function createStage(canvas) {
     for (const [k, g] of Object.entries(WORLD_GROUPS)) g.visible = k === t.group;
     for (const [k, fn] of Object.entries(WORLD_FX)) fn(k === t.group);
     if (coniferIM) coniferIM.visible = !BELT_WORLDS.has(t.group); // pine ⇄ the world's own belt
-    barn.visible = !t.hideBarn;                                    // therapy trades it for the couch
+    barn.visible = !t.hideBarn && !t.hideFair;                     // therapy trades it for the couch
+    // hideFair strips the WHOLE midway (barn/silo/windmill/tractor/ferris) —
+    // not just the farmhouses hideFarm hides — for worlds that aren't a fair
+    for (const s of [silo, mill, tractor, ferris]) s.visible = !t.hideFair;
+    for (const tr of orchardTrees) tr.visible = !t.hideFair;
     for (const fh of farmhouses) fh.visible = !t.hideFarm;
     for (const fb of fenceBits) fb.visible = !t.hideFences;
     for (const c of cloths) c.mesh.visible = !t.hideCloths;
