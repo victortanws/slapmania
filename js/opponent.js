@@ -969,21 +969,27 @@ export class Opponent {
       // the skis stay ON — boards ride the lower legs, so they fly with her.
       // Bright gold with a red stripe: the old suit-red boards vanished against
       // her suit and the dirt ("I don't think she has skis at this point")
+      // boards sit AT grade (they were spawning 0.11 below the dirt — invisible)
+      // and run along the LANE (−x, her escape line), not side-on to the camera
       for (const leg of [P.llL, P.llR]) {
+        const skiG = new THREE.Group();
+        skiG.rotation.y = Math.PI / 2; // length along x — the direction she skis
+        skiG.position.y = -0.16;
+        leg.mesh.add(skiG);
         const ski = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.05, 1.4), toonMat(0xffd23f));
-        ski.position.set(0, -0.31, 0.18);
+        ski.position.set(0, 0, -0.18);
         ski.castShadow = true;
-        leg.mesh.add(ski);
+        skiG.add(ski);
         const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.125, 0.02, 0.5), toonMat(0xd8232e));
-        stripe.position.set(0, -0.3, 0.1);
-        leg.mesh.add(stripe);
+        stripe.position.set(0, 0.01, -0.1);
+        skiG.add(stripe);
         const tip = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.05, 0.18), toonMat(0xffd23f));
-        tip.position.set(0, -0.255, 0.92);
-        tip.rotation.x = -0.5;
-        leg.mesh.add(tip);
-        const binding = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.07, 0.12), toonMat(0x17171d));
-        binding.position.set(0, -0.27, 0.02);
-        leg.mesh.add(binding);
+        tip.position.set(0, 0.055, -0.92);
+        tip.rotation.x = 0.5;
+        skiG.add(tip);
+        const binding = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.07, 0.14), toonMat(0x17171d));
+        binding.position.set(0, 0.04, -0.02);
+        skiG.add(binding);
       }
     }
     if (arch.windKey) {

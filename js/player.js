@@ -824,7 +824,10 @@ export class Player {
     // while still coiled is how you slap yourself off your own feet
     const coil = Math.max(0, this.j.spine.a) / 2.35;
     const earlyL = keys.l && this.j.spine.a > 1.0;
-    const drive = (keys.s ? -(0.35 + 1.5 * coil * coil) : 0)
+    // 1.4 (was 1.5): at full coil the old drive (1.85) beat max righting (1.84)
+    // by a hair — holding S while reading the coach line was an automatic
+    // backward foul at ~3s. Full coil is still tense, no longer auto-lethal.
+    const drive = (keys.s ? -(0.35 + 1.4 * coil * coil) : 0)
       + (keys.l ? (earlyL ? 3.6 : 1.0) : 0)
       + (keys.a ? 0.4 : 0);
     this.leanV += drive * dt;
@@ -885,9 +888,13 @@ export class Player {
   collapse(dir) {
     this.fallen = true;
     this.root.visible = false;
+    // the ragdoll spawns WHERE HE STANDS, already leaning the way he was
+    // tipping — the swap used to teleport a neutral mannequin to x:0 in one
+    // frame, which read as "Charlie disappeared" mid-swing
     this.rag = createRagdoll({
       world: this.world, scene: this.scene, mat: this.mat,
-      x: 0, z: 0, skin: this.look.skin, shirt: this.look.shirt, pants: this.look.pants,
+      x: this.root.position.x, z: this.root.position.z,
+      skin: this.look.skin, shirt: this.look.shirt, pants: this.look.pants,
       hScale: this.phys.h, massScale: this.phys.str,
     });
     this.decorateHead(this.rag.parts.head.mesh, 0.17);

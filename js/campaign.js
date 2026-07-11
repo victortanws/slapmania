@@ -953,9 +953,11 @@ TOURS.sort((a, b) => tourRank(a.key) - tourRank(b.key));
 // stamp each challenge with its tour's pinned slapper + tour key so the match
 // launcher can force the avatar and prepend the right prologue (see main.js).
 TOURS.forEach((tour) => tour.acts.forEach((act) => act.challenges.forEach((c) => {
-  c.slapper = tour.slapper || null;
+  // a challenge's OWN pin wins (a single act can visit another fair — the
+  // Dark Night of the Soul plays therapy's story on haunted ground)
+  c.slapper = c.slapper || tour.slapper || null;
   c.tourKey = tour.key;
-  c.world = tour.world || null;
+  c.world = c.world || tour.world || null;
 })));
 
 export const enabled = () =>
@@ -999,7 +1001,11 @@ export function checkAttempt({ dist, pts, part, chainPct, oppKey }) {
 // ---- the tour menu card ----
 const $ = (id) => document.getElementById(id);
 export function open(onStart, opts = {}) {
-  const ownsDlc = !!opts.ownsDlc;
+  // devAll (?tourdev=1): the owner's testing lens — every storyline open,
+  // every act unsealed, every scene replayable. Content is client-side anyway;
+  // this views it, it does not grant any purchasable unlock outside the tour.
+  const devAll = !!opts.devAll;
+  const ownsDlc = !!opts.ownsDlc || devAll;
   const wrap = $('tourActs');
   wrap.innerHTML = '';
   let total = 0;
@@ -1027,7 +1033,7 @@ export function open(onStart, opts = {}) {
       total += act.challenges.length;
       const box = document.createElement('div');
       box.className = 'tourAct';
-      const unlocked = actUnlocked(tour, ai);
+      const unlocked = devAll || actUnlocked(tour, ai);
       if (!unlocked) {
         box.innerHTML = `<h3>${act.act.split('—')[0].trim()} 🔒</h3>
           <div class="tourStory">This chapter is sealed. Clear the act before it to break the wax.</div>`;

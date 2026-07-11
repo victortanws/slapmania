@@ -446,8 +446,13 @@ const REF_LINES = [
   'Proceed! Justice is best served open-palmed.',
 ];
 let refLineIdx = 0;
-const seenScene = (id) => JSON.parse(localStorage.getItem('slapp_seen') || '[]').includes(id);
+// ?tourdev=1 — the owner's campaign-testing lens: every tour/act open in the
+// menu and every cutscene replays (nothing marked seen), so the whole story is
+// viewable end to end without clearing progress or owning the pack.
+const TOURDEV = new URLSearchParams(location.search).get('tourdev') === '1';
+const seenScene = (id) => !TOURDEV && JSON.parse(localStorage.getItem('slapp_seen') || '[]').includes(id);
 const markScene = (id) => {
+  if (TOURDEV) return; // the testing lens never consumes first-views
   const s = JSON.parse(localStorage.getItem('slapp_seen') || '[]');
   if (!s.includes(id)) { s.push(id); localStorage.setItem('slapp_seen', JSON.stringify(s)); }
 };
@@ -558,6 +563,7 @@ function openTourMenu() {
   campaign.open(startTourChallenge, {
     portraits: tourPortraits,
     ownsDlc: owned('bruceslee'),
+    devAll: TOURDEV,
     onLocked: (tour) => openUnlockModal({
       name: tour.title.replace(/^\S+\s/, ''),
       desc: `${tour.acts.length} acts of "${tour.blurb}" — this storyline, every legend and every world ride with the Supporter Pack.`,
@@ -712,7 +718,7 @@ function foul(type) {
   setState('FOULED');
 }
 
-function onContact(hit) {
+function onContact(hit, fist) {
   const speed = player.handSpeed;
   const velDir = player.handVel.clone().normalize();
   // slow grazes and backhand drift don't count as an attempt at a slap.
@@ -742,7 +748,7 @@ function onContact(hit) {
   // graze skims off. Rewards reading heights (matchups) and the volunteer's
   // breathing sway — watch the ring, strike level. Deterministic, capped ±12%.
   let cq = 1;
-  if (hit.part === 'head') {
+  if (hit.part === 'head' && !fist) {
     // vertical flushness normalized to the inner 45% of the envelope so it
     // actually discriminates (post-reach-fix planes are all near-level), and
     // weighted 70/30 over incidence: height-reading is the skill being paid.
@@ -752,7 +758,8 @@ function onContact(hit) {
     const incidence = Math.max(0, velDir.dot(into));
     cq = 0.88 + 0.24 * (0.7 * vAlign + 0.3 * incidence);
   }
-  const sweet = (hit.part === 'head' ? 1.35 : 0.6) * cq;
+  // a punch has no sweet spot — the fist pays body-blow rate even on the head
+  const sweet = (fist ? 0.6 : (hit.part === 'head' ? 1.35 : 0.6)) * cq;
   // real slap physics: force comes up from the ground through a BRACED stance.
   // A teetering slapper can't drive the blow — the worse the visible lean at
   // contact, the softer the slap (up to −45% at the tipping point)
@@ -760,6 +767,9 @@ function onContact(hit) {
   // muscle is a multiplier, not a substitute: the cap means brute strength only
   // pays off against tonnage — technique still decides everything else
   let power = 12.5 * player.strength * balF * coilF * lg.g * ag.g * pg.g * sweet;
+  // the closed-fist thud: a real reaction (lesson #6) but a visible dud —
+  // ×0.25 pre-cap means a perfect-chain punch can never rival a mediocre slap
+  if (fist) power *= 0.25;
   // a slow "cleanup" graze that sneaks past the 2.2 gate (e.g. catching a weave
   // boss on the pop-up frame) shouldn't launch full power off a crawling hand:
   // taper below 6 m/s of real contact speed. Normal swings land ~10.8 → untouched.
@@ -831,7 +841,8 @@ function onContact(hit) {
   // the sun judges TECHNIQUE, not tonnage — chain quality decides its mood
   if (ugly || hit.part === 'torso' || slap.chain.pct < 25) stage.sunMood('meh', 3.5);
   else if (slap.chain.pct >= 60) stage.sunMood('happy', 5);
-  if (ugly) ui.slapBurst('SLOPPY SLAP!', 'THE CHAIN WAS LONG GONE');
+  if (fist) { ui.slapBurst("THAT'S A PUNCH, NOT A SLAP!", 'HOUSE RULE 2: OPEN PALM ONLY — ×0.25 POWER'); sfx.whistle(); }
+  else if (ugly) ui.slapBurst('SLOPPY SLAP!', 'THE CHAIN WAS LONG GONE');
   else if (noSold) ui.slapBurst('NO-SOLD!', `HE NEEDS A ${opponent.arch.chainGate}% CHAIN TO EVEN BLINK`);
   else if (greased) ui.slapBurst('IT SLID OFF!', 'ONLY A PERFECT PALM GRIPS THE GREASE');
   else if (noSnap) ui.slapBurst('NO SNAP!', 'ONLY A CRACKING ARM — A FAST WHIP — MOVES THE MASTER');
@@ -1371,24 +1382,29 @@ function tick(now) {
     if (player.fallen) foul('footing');
     else if (opponent.escaped()) foul('escape'); // she made the gate — instant fail, no 10s grace
     else if (shotClock <= 0 && !opponent.arch.skiRun) foul('clock');
-    else if (player.handSeg && player.pUnlocked) {
-      // OPEN PALM ONLY, literally: a closed hand doesn't register at all —
-      // the referee starts counting the instant the palm opens.
-      // rHand = the hand's TRUE reach past the wrist path (palm + fingers ≈ 0.14m).
-      // It was 0.26 — a beach-ball hand that launched volunteers from visibly
-      // short of the cheek. Contact now happens where contact LOOKS like it happens.
-      // The honest radius needs an honest SWEEP: at 14 m/s the hand crosses
-      // 0.24m between frames — more than the contact margin on deep matchups —
-      // so we also test the tip's and heel's paths since last frame. Without
-      // this, whether Roy's perfect swing touched Hoss was 60fps roulette.
+    else if (player.handSeg && (player.pUnlocked || (player.aUnlocked && player.handSpeed >= 3))) {
+      // a CLOSED fist is not a ghost (lesson #6: whatever touches, reacts) —
+      // a fast fist lands as a discounted, disapproved punch (onContact fist
+      // path). The ≥3 m/s gate keeps a parked fist from re-triggering while
+      // it rests inside someone's face.
+      const fist = !player.pUnlocked;
+      // rHand = the hand's TRUE reach past the wrist path (palm + fingers ≈
+      // 0.14m; knuckles ≈ 0.10). It was 0.26 — a beach-ball hand that launched
+      // volunteers from visibly short of the cheek. Contact happens where
+      // contact LOOKS like it happens. The honest radius needs an honest
+      // SWEEP: at 14 m/s the hand crosses 0.24m between frames — more than
+      // the contact margin on deep matchups — so we also test the tip's and
+      // heel's paths since last frame. Without this, whether Roy's perfect
+      // swing touched Hoss was 60fps roulette.
+      const rh = fist ? 0.10 : 0.14;
       const { p0, p1 } = player.handSeg;
-      const hit = opponent.checkHit(p0, p1, 0.14)
-        || (prevHandSeg && opponent.checkHit(prevHandSeg.p1, p1, 0.14))
-        || (prevHandSeg && opponent.checkHit(prevHandSeg.p0, p0, 0.14));
+      const hit = opponent.checkHit(p0, p1, rh)
+        || (prevHandSeg && opponent.checkHit(prevHandSeg.p1, p1, rh))
+        || (prevHandSeg && opponent.checkHit(prevHandSeg.p0, p0, rh));
       if (prevHandSeg) { prevHandSeg.p0.copy(p0); prevHandSeg.p1.copy(p1); }
       else prevHandSeg = { p0: p0.clone(), p1: p1.clone() };
-      if (hit) onContact(hit);
-    } else prevHandSeg = null; // fist closed (or re-armed): never sweep across that gap
+      if (hit) onContact(hit, fist);
+    } else prevHandSeg = null; // hand idle (or re-armed): never sweep across that gap
   } else if (state === 'IMPACT') {
     player.update(dts, keys);
     if (tState > 0.55) {
