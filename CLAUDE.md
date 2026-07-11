@@ -57,14 +57,22 @@ angle integrated with key-held torques (in `player.js`). The four keys form a
 
 A fresh **S** after a spent/whiffed swing re-arms the whole chain
 (`player.rearm()` + `resetChain()`) — every S is an independent attempt within
-the 10s shot clock.
+the shot clock (**30s standard**, **20s** for time-limited bosses; `arch.shotClock`).
 
 ## Power & grading (see `main.js` `onContact` for exact code)
 
 ```
 power = 12.5 × strength × balF × coilF × gradeL × gradeA × gradeP × sweetspot
-power = min(power, 30 × strength)          // cap scales with muscle
+power = min(power, 30 × strength)           // cap scales with muscle
+power *= momentumF                          // hand mass × speed clamp (pre-cap)
+power *= cq                                  // contact flushness 0.88–1.12 (head, pre-cap)
+power *= extF                                // arm-extension bell (POST-cap: under-extension can't reach the ceiling)
 ```
+
+The **on-screen CHAIN % is only `coilF·gradeL·gradeA·gradeP/1.8`** — it does **not**
+include balF, cq, extF, sweetspot or momentum. So identical chains give different
+distances; the result card now shows the full lever breakdown (CHAIN · BALANCE ·
+FLUSH · REACH) + the weakest link, keyed off `slap.chain.{pct,bal,cq,extPct}`.
 
 - `strength` = the slapper's `power` stat. `balF = 1 − 0.45·min(1,|lean|/1.05)²`
   — a teetering stance delivers up to 45% less force (real slap physics), and a
