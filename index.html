@@ -388,6 +388,24 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
   text-transform:uppercase;text-align:center;}
 #unlockRedeemBtn{font-size:13px;}
 #unlockMsg{font-weight:bold;font-size:13px;color:var(--red);min-height:18px;margin-top:10px;}
+/* ---- DLC gallery: one place to browse every slapper, world & legend ---- */
+#dlcGallery{position:absolute;inset:0;display:flex;align-items:safe center;justify-content:center;background:rgba(6,7,16,.86);pointer-events:auto;z-index:60;padding:16px;overflow-y:auto;}
+.dlcCard{position:relative;box-sizing:border-box;width:100%;max-width:min(600px,calc(100vw - 24px));max-height:calc(100dvh - 32px);overflow-y:auto;background:#fffbe8;color:#1b1d33;border:5px solid #000;border-radius:16px;padding:22px 24px;box-shadow:8px 8px 0 rgba(0,0,0,.55);font-family:Arial,sans-serif;text-align:center;}
+.dlcTitle{font-family:'Arial Black',Impact,sans-serif;font-size:26px;letter-spacing:1px;color:var(--red);}
+.dlcSub{font-size:12px;color:#5a5f7d;margin:4px 0 14px;line-height:1.35;}
+#dlcCta{margin-bottom:14px;}
+#dlcCta button{background:var(--red);color:#fff;font-size:15px;width:100%;}
+.dlcOwned{background:#1f8a3b;color:#fff;font-weight:bold;font-size:13px;letter-spacing:1px;padding:10px;border-radius:8px;}
+.dlcSection{text-align:left;margin:16px 0 4px;}
+.dlcSection h4{font-family:'Arial Black',Impact,sans-serif;font-size:13px;letter-spacing:1px;color:#1b1d33;margin:0 0 8px;border-bottom:2px solid #e6dcb4;padding-bottom:4px;}
+.dlcGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:8px;}
+.dlcItem{position:relative;text-align:left;background:#fff;border:2px solid #000;border-radius:10px;padding:8px 26px 8px 10px;box-shadow:2px 2px 0 rgba(0,0,0,.35);}
+.dlcItem .ic{font-size:20px;line-height:1;}
+.dlcItem .nm{font-weight:bold;font-size:12px;letter-spacing:.2px;margin-top:3px;}
+.dlcItem .ds{font-size:10px;color:#5a5f7d;line-height:1.28;margin-top:2px;}
+.dlcItem .bdg{position:absolute;top:7px;right:8px;font-size:13px;}
+.dlcItem.owned{border-color:#1f8a3b;} .dlcItem.owned .bdg{color:#1f8a3b;}
+.dlcItem.locked{cursor:pointer;} .dlcItem.locked:hover{background:#fff6d8;} .dlcItem.locked .bdg{opacity:.55;}
 </style>
 <script type="importmap">
 {"imports":{
@@ -486,6 +504,16 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
     </div>
   </div>
 
+  <div id="dlcGallery" class="hidden">
+    <div class="dlcCard">
+      <button id="dlcClose" class="unlockX">✕</button>
+      <div class="dlcTitle">✨ SUPPORTER PACK</div>
+      <div class="dlcSub">One pack unlocks every slapper, world &amp; legend below — and keeps the fair free for everyone.</div>
+      <div id="dlcCta"></div>
+      <div id="dlcBody"></div>
+    </div>
+  </div>
+
   <div id="title" class="card">
     <h1>SLAPMANIA</h1>
     <div class="tagline">THE COUNTY FAIR'S FRIENDLIEST FULL-CONTACT PASTIME</div>
@@ -514,6 +542,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
          you graduate to — and down here it never crowds the how-to-play spine -->
     <button id="tourBtn" class="hidden" style="font-size:15px;padding:10px 22px;background:var(--red);color:#fff;">🎪 CAMPAIGN MODE — THE COUNTY FAIR TOUR</button>
     <div id="tourNudge" class="hidden" style="font-family:Arial,sans-serif;font-weight:bold;font-size:12px;color:var(--yellow);margin-top:-2px;text-shadow:1px 1px 0 #000;">🔰 NEW HERE? THE TOUR TEACHES YOU TO SLAP — ONE STEP AT A TIME ↑</div>
+    <button id="dlcBtn" style="font-size:13px;padding:8px 18px;background:var(--ink);color:var(--yellow);border:3px solid #000;">✨ SUPPORTER PACK — SLAPPERS · WORLDS · LEGENDS</button>
     <div id="worldWrap">
       <button id="worldPrev" class="worldArrow" aria-label="More worlds">‹</button>
       <div id="worldRow"></div>

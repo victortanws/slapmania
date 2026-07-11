@@ -727,6 +727,58 @@ if (campaign.enabled()) {
   if (!localStorage.getItem('slapp_master')) document.getElementById('tourNudge').classList.remove('hidden');
 }
 
+// ---------- DLC GALLERY: one place to browse every DLC slapper, world & legend ----------
+// Built from the live data (SLAPPERS/WORLDS/campaign.TOURS) so it grows automatically
+// as content ships. One Supporter Pack unlocks everything, so ownership is uniform:
+// owned(key) is true for any item once the pack is bought (or that item is in unlocks).
+const leadEmoji = (s) => { const m = (s || '').match(/^\s*(\p{Emoji}️?)/u); return m ? m[1] : null; };
+const stripEmoji = (s) => (s || '').replace(/^\s*\p{Emoji}️?\s*/u, '').trim();
+function buildDlcGallery() {
+  const packOwned = owned('bruceslee');
+  const cta = document.getElementById('dlcCta');
+  if (packOwned) {
+    cta.innerHTML = '<div class="dlcOwned">✓ SUPPORTER — thank you! Everything below is yours.</div>';
+  } else {
+    cta.innerHTML = '<button>❤️ UNLOCK EVERYTHING — ONE SUPPORTER PACK</button>';
+    cta.querySelector('button').onclick = () => openUnlockModal({ name: 'THE SUPPORTER PACK', desc: 'Every slapper, every world and every legend below — one pack, one price. And it keeps the fair free for everyone.' });
+  }
+  const mkItem = (icon, name, desc, isOwned, onLock) => {
+    const el = document.createElement('div');
+    el.className = 'dlcItem ' + (isOwned ? 'owned' : 'locked');
+    el.innerHTML = `<div class="ic">${icon}</div><div class="nm">${name}</div><div class="ds">${desc}</div><div class="bdg">${isOwned ? '✓' : '🔒'}</div>`;
+    if (!isOwned) el.onclick = onLock;
+    return el;
+  };
+  const mkSection = (heading, items) => {
+    const wrap = document.createElement('div'); wrap.className = 'dlcSection';
+    const h = document.createElement('h4'); h.textContent = heading; wrap.appendChild(h);
+    const grid = document.createElement('div'); grid.className = 'dlcGrid';
+    items.forEach((i) => grid.appendChild(i)); wrap.appendChild(grid);
+    return wrap;
+  };
+  const body = document.getElementById('dlcBody'); body.innerHTML = '';
+
+  const dlcSlappers = SLAPPERS.filter((s) => s.locked);
+  body.appendChild(mkSection(`🖐 SLAPPERS · ${dlcSlappers.length}`, dlcSlappers.map((s) =>
+    mkItem('🖐', stripEmoji(s.name), (s.desc || '').slice(0, 64), owned(s.key), () => openUnlockModal(s)))));
+
+  const dlcWorlds = WORLDS.filter((w) => w.dlc);
+  body.appendChild(mkSection(`🌍 WORLDS · ${dlcWorlds.length}`, dlcWorlds.map((w) =>
+    mkItem(leadEmoji(w.label) || '🌍', stripEmoji(w.label),
+      'Its own theme, physics & local characters — atop the 15 fair regulars.',
+      owned(w.key), () => openUnlockModal({ name: stripEmoji(w.label), desc: 'This world — and every DLC world, slapper and legend — rides with the Supporter Pack.' })))));
+
+  const dlcTours = campaign.TOURS.filter((t) => t.dlc);
+  body.appendChild(mkSection(`📜 LEGENDS · ${dlcTours.length}`, dlcTours.map((t) =>
+    mkItem(leadEmoji(t.title) || '📜', stripEmoji(t.title), (t.blurb || '').slice(0, 80),
+      owned(t.key), () => openUnlockModal({ name: stripEmoji(t.title), desc: (t.blurb || '').slice(0, 120) + ' — unlocks with the Supporter Pack.' })))));
+}
+function openDlcGallery() { buildDlcGallery(); document.getElementById('dlcGallery').classList.remove('hidden'); }
+function closeDlcGallery() { document.getElementById('dlcGallery').classList.add('hidden'); }
+document.getElementById('dlcBtn').onclick = () => { sfx.ensure(); openDlcGallery(); };
+document.getElementById('dlcClose').onclick = closeDlcGallery;
+document.getElementById('dlcGallery').onclick = (e) => { if (e.target.id === 'dlcGallery') closeDlcGallery(); }; // click backdrop to dismiss
+
 function startAttempt() {
   const arch = chosenArch;
   player.reset();
@@ -1387,6 +1439,11 @@ addEventListener('keydown', (e) => {
   if (dlg.isActive()) {
     if (e.code === 'Escape') dlg.stop();
     else if (e.code === 'Enter' || e.code === 'NumpadEnter') dlg.advance();
+    return;
+  }
+  // the DLC gallery is modal on the title: ESC closes it, everything else is swallowed
+  if (!document.getElementById('dlcGallery').classList.contains('hidden')) {
+    if (e.code === 'Escape') closeDlcGallery();
     return;
   }
   // ESC out of a campaign verdict returns to the TOUR menu (campaign selection),
