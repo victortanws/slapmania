@@ -11,6 +11,7 @@ const CAMPAIGN_LIVE = true; // SHIPPED 2026-07-11 — the County Fair Tour is pu
 export const TOURS = [
   {
     key: 'palm', title: '🖐 THE LEGEND OF THE OPEN PALM',
+    world: 'day',         // the legend lives at the county fairground — its cast are the fair regulars, and Master Slee's spirit appears among them (a free tour stays on a free world)
     slapper: 'bruceslee', // Bruce IS this legend — the scrolls are his story (free campaign-use of the DLC look)
     blurb: 'A dead master. An unfinished technique. One last student.',
     acts: [
@@ -98,6 +99,7 @@ export const TOURS = [
   },
   {
     key: 'wonders', title: '🎥 THE WONDERS OF SLAPPING',
+    world: 'day',       // a NATURE DOCUMENTARY — shot in the bright field where the specimens live
     slapper: 'charlie', // pin the deadpan narrator — the 'YOU' cutscene voice depends on it
     blurb: 'A nature documentary about the palm. The narrator will not, under any circumstances, emote.',
     acts: [
@@ -245,7 +247,7 @@ export const TOURS = [
           { id: 't4c2', title: 'MEMENTO MORI', desc: 'Send BONY TONY 63m — what remains, once everything is stripped away, had better fly', opp: 'tony', world: 'haunted', goal: { type: 'dist', v: 63 } },
           { id: 't4c3', title: '☗ BOSS: THE SHADOW AT DAWN', desc: 'SCORE 450 off THE GREEN REAPER inside 20 seconds a swing, with 65%+ form on every slap that counts — this appointment cannot be deferred again', opp: 'reaper', world: 'haunted', goal: { type: 'pts', v: 450 } },
         ],
-      },,
+      },
     ],
   },
   {
@@ -290,6 +292,7 @@ export const TOURS = [
   {
       key: 'olympicbid', title: '🥇 THE OLYMPIC BID',
       // FREE and first — the front-door storyline every new player can finish
+      world: 'ice',      // the WINTER games — a freeskier phenom is the centerpiece, and her ski-runs belong on the frozen lake
       slapper: 'victor',
       blurb: 'The county wants slapping in the Olympics. The Committee sent its three questions — and its phenom: an America-trained skier who competes for China, and who has out-filed every federation on Earth.',
       acts: [
@@ -322,7 +325,7 @@ export const TOURS = [
           ],
         },
       ],
-    },,
+    },
   {
     key: 'commedia', title: '📜 THE DIVINE COMEDY',
     dlc: true,
@@ -358,7 +361,7 @@ export const TOURS = [
         ],
       },
     ],
-  },,
+  },
 ];
 
 // ---- cutscenes: { who, text, shot } — shots: player | opp | spirit | judge | wide.
