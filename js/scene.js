@@ -4579,7 +4579,11 @@ export function createStage(canvas) {
     therapy: { fog: [0x4a3524, 85, 260], skyTint: 0x3a2a1c, hemi: [0xffe4b8, 0x6a4e34, 1.45], sun: [0xfff0d4, 1.8], fill: 0.6, cloud: 0x4a3524, maps: false, grass: 0x7a5636, lane: 0x8a2530, night: false, sunFace: false,
       group: 'therapy', biome: 'therapy', crowd: 'therapy', pond: 0x14141c, sunTint: [0xf0e4ff, 0.9], hideCrowd: true,
       hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, hideBarn: true, barricade: 'books' },
-    heaven: { fog: [0xdcecf8, 44, 150], skyTint: 0x7ab0e8, hemi: [0xfff4dc, 0xb0bcd0, 0.85], sun: [0xfff2c8, 2.6], fill: 0.18, cloud: 0xffffff, maps: false, grass: 0xe4e0d0, lane: 0xefc85a, night: false, sunFace: true,
+    // was WASHED OUT — sun 2.6 + near-white ground + fog at 44m blew everything to
+    // white. Toned the sun down, lifted the fill for midtones, pushed the fog back
+    // (distant pillars were lost in white), and gave the ground a cooler cloud tone
+    // so it reads against the sky and the pale souls stand out.
+    heaven: { fog: [0xc6dcf2, 85, 240], skyTint: 0x6aa6e6, hemi: [0xfff0d8, 0x9fb2cc, 0.9], sun: [0xfff2cc, 1.7], fill: 0.42, cloud: 0xf4f8ff, maps: false, grass: 0xd4dEEc, lane: 0xe8bE4a, night: false, sunFace: true,
       group: 'heaven', biome: 'heaven', crowd: 'heaven', pond: 0xbfe0f4,
       hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, hideFences: true, barricade: 'cloud' },
     // Dante's NINTH CIRCLE is FROZEN (Cocytus), not fire: an icy blue-white lake

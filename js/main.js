@@ -1535,11 +1535,11 @@ function meltRow() {
     if (t >= 1.5) { clearInterval(iv); cubes.forEach((m) => { m.visible = false; cubePool.push(m); }); }
   }, 50);
 }
-const CATCH_PERIOD = 1.35, CATCH_DUR = 0.85;
+const CATCH_PERIOD = 1.7, CATCH_DUR = 1.2; // slower cadence + flight so the throw is trackable
 function makeCube() {
   const m = new THREE.Mesh(
-    new THREE.BoxGeometry(0.17, 0.17, 0.17),
-    new THREE.MeshStandardMaterial({ color: 0xbfe9ff, transparent: true, opacity: 0.82, roughness: 0.08, metalness: 0.15, emissive: 0x3a6a88, emissiveIntensity: 0.3 }));
+    new THREE.BoxGeometry(0.3, 0.3, 0.3), // bigger so the throw READS across the arena
+    new THREE.MeshStandardMaterial({ color: 0xbfe9ff, transparent: true, opacity: 0.85, roughness: 0.08, metalness: 0.15, emissive: 0x5ab0e0, emissiveIntensity: 0.55 }));
   m.visible = false; scene.add(m);
   return m;
 }
@@ -1552,8 +1552,12 @@ function resetCatch() {
 function throwCube() {
   const mesh = cubePool.pop() || makeCube();
   mesh.visible = true;
-  const to = opponent.headPos().clone();                 // the strike zone — where a swung palm arrives
-  const from = opponent.torsoPos().clone(); from.y -= 0.05; // handed up from Carmine's fist
+  const hc = opponent.headPos();
+  // Carmine HURLS it: from high up and beyond his shoulder, in a big arc, down to
+  // a CATCH ZONE in front of the player (at the palm's reach) — a clear throw
+  // across the arena, not a lob at his own head.
+  const from = new THREE.Vector3(hc.x + 0.7, hc.y + 1.6, -0.3);
+  const to = new THREE.Vector3(player.root.position.x + 0.55, 1.4, 0);
   iceCubes.push({ mesh, t: 0, from, to, caught: false, live: true });
   catchThrown++;
 }
@@ -1565,15 +1569,17 @@ function segSphereClosest(p0, p1, c) {
   return p0.clone().addScaledVector(d, t);
 }
 function updateCatch(dt) {
+  // the toll is a fixed WAVE of ice — not a countdown. End when it's caught or spent.
+  const wave = (campaign.active && campaign.active.goal && campaign.active.goal.type === 'catch') ? campaign.active.goal.v + 5 : 8;
   catchThrowT += dt;
-  if (catchThrowT >= CATCH_PERIOD) { catchThrowT = 0; throwCube(); }
+  if (catchThrowT >= CATCH_PERIOD && catchThrown < wave) { catchThrowT = 0; throwCube(); }
   const seg = player.handSeg; // {p0,p1} — the hand's SWEPT path this frame (beats tunneling)
   for (const c of iceCubes) {
     if (!c.live) continue;
     c.t += dt / CATCH_DUR;
     const k = Math.min(1, c.t);
     const p = c.from.clone().lerp(c.to, k);
-    p.y += Math.sin(Math.PI * k) * 0.4; // a little toss-arc
+    p.y += Math.sin(Math.PI * k) * 1.1; // a big, readable toss-arc
     c.mesh.position.copy(p);
     c.mesh.rotation.x += dt * 7; c.mesh.rotation.y += dt * 5;
     // cube velocity, analytically from its path (deterministic — no dynamic body)
@@ -1614,6 +1620,8 @@ function updateCatch(dt) {
     }
   }
   for (let i = iceCubes.length - 1; i >= 0; i--) if (!iceCubes[i].live) iceCubes.splice(i, 1);
+  // the whole wave has been thrown and resolved and the toll wasn't met → verdict
+  if (catchThrown >= wave && iceCubes.length === 0) finishCatchStage();
 }
 // a catch stage ends the instant the toll is paid (or the clock runs out) — one
 // verdict, no 3-attempt loop: you either filed the row or you didn't
@@ -1745,16 +1753,23 @@ function tick(now) {
     else if (!chain.p && snapCue) wanted = 'p';
     ui.setKeys(keys, wanted);
     opponent.setTargetHot(snapLvl);
-    if (chain.tRel === null) {
-      if (keys.s) ui.coach(coilPct >= 90 ? 'FULL SWIVEL! LET GO OF [S]!' : `SWIVELING... ${coilPct}% — HOLD [S], DEEPER!`);
-      else ui.coach('STEP 1: HOLD [S] — SWIVEL THE SPINE');
-    } else if (!chain.l) ui.coach('TAP [L] — LUNGE THE HIPS! (SWIVEL IS DRAINING)');
-    else if (!chain.a) ui.coach('PRESS [A] — THROW THE ARM!');
-    else if (!chain.p) ui.coach(snapCue ? '[P]!! PALM!!' : 'WAIT FOR THE GREEN RING... THEN [P]');
-    else ui.coach(null);
-
-    shotClock -= dts;
-    ui.setClock(opponent.arch.skiRun ? null : shotClock); // her run IS the clock
+    if (opponent.arch.throwIce) {
+      // CATCH STAGE: no slapping, no countdown — the toll is a WAVE of ice to catch.
+      const need = (campaign.active && campaign.active.goal && campaign.active.goal.type === 'catch') ? campaign.active.goal.v : 3;
+      ui.coach(`❄️ CATCH THE ICE — OPEN THE PALM [P] AS IT ARRIVES, DON'T SLAP  ·  CAUGHT ${catchCount}/${need}`);
+      ui.setClock(null);
+      ui.showMeters(false); // NO slap HUD (S·L·A·P keys / chain / balance) — this isn't a slap
+    } else {
+      if (chain.tRel === null) {
+        if (keys.s) ui.coach(coilPct >= 90 ? 'FULL SWIVEL! LET GO OF [S]!' : `SWIVELING... ${coilPct}% — HOLD [S], DEEPER!`);
+        else ui.coach('STEP 1: HOLD [S] — SWIVEL THE SPINE');
+      } else if (!chain.l) ui.coach('TAP [L] — LUNGE THE HIPS! (SWIVEL IS DRAINING)');
+      else if (!chain.a) ui.coach('PRESS [A] — THROW THE ARM!');
+      else if (!chain.p) ui.coach(snapCue ? '[P]!! PALM!!' : 'WAIT FOR THE GREEN RING... THEN [P]');
+      else ui.coach(null);
+      shotClock -= dts;
+      ui.setClock(opponent.arch.skiRun ? null : shotClock); // her run IS the clock
+    }
     if (player.fallen) foul('footing');
     else if (opponent.escaped()) foul('escape'); // she made the gate — instant fail, no 10s grace
     else if (shotClock <= 0 && !opponent.arch.skiRun) { if (opponent.arch.throwIce) finishCatchStage(); else foul('clock'); }
