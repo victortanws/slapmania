@@ -128,7 +128,7 @@ export const TOURS = [
           { id: 'w3c1', title: 'PEER REVIEW', desc: 'LAND a 90% chain before MAESTRO FORTISSIMO — the specimen grades the observer; give him nothing to mark', opp: 'maestro', goal: { type: 'chain', v: 90 } },
           { id: 'w3c2', title: 'TERMINAL VELOCITY', desc: 'Send SLIM PETE 88m — the featherweight achieves escape velocity on camera', opp: 'slim', goal: { type: 'dist', v: 88 } },
           { id: 'w3c4', title: 'THE LIGHTHOUSE EFFECT', desc: "CATCH HEAD-TURNING HORTON's face mid-turn, incoming, and SEND him 30m — flush on the sweep, like greeting a lighthouse", opp: 'horton', goal: { type: 'headdist', v: 30 } },
-          { id: 'w3c3', title: '☗ FINAL BOSS: THE UNSLAPPABLE SPECIMEN', desc: "DRAIN TICK-TOCK TOM's IMMOVABILITY from 100% to zero — every point you land stays landed, across all three attempts", opp: 'clockwork', goal: { type: 'bulwark', v: 900 } },
+          { id: 'w3c3', title: '☗ FINAL BOSS: THE UNSLAPPABLE SPECIMEN', desc: "DRAIN TICK-TOCK TOM's IMMOVABILITY to zero — every point you land STAYS landed, so two good swings out of three does it (one off attempt is forgiven)", opp: 'clockwork', goal: { type: 'bulwark', v: 600 } },
         ],
       },
     ],

@@ -377,7 +377,7 @@ export const ROSTER = [
       // BULWARK: cumulative points across the match's 3 attempts fill a hidden
       // meter; the HUD chip shows the inverse ('IMMOVABILITY: 97%'). At zero the
       // mainspring lets go and he BLOWS AWAY downrange on a stored impulse.
-      bulwark: { threshold: 900, label: 'IMMOVABILITY' },
+      bulwark: { threshold: 600, label: 'IMMOVABILITY' }, // 900→600: drainable in 2 of 3 good swings (one off attempt is forgiven), not 3/3
       skin: 0xc9a24b, shirt: 0x9a7a34, pants: 0x6e5626,
       windKey: true, paintedGrin: 0xc0202a, brow: true,
       pickLine: 'Declares himself UNSLAPPABLE. The meter disagrees. Slowly.',

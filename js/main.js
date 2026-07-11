@@ -1759,6 +1759,15 @@ function tick(now) {
       ui.coach(`❄️ CATCH THE ICE — OPEN THE PALM [P] AS IT ARRIVES, DON'T SLAP  ·  CAUGHT ${catchCount}/${need}`);
       ui.setClock(null);
       ui.showMeters(false); // NO slap HUD (S·L·A·P keys / chain / balance) — this isn't a slap
+    } else if (opponent.arch.bodyBlow) {
+      // BODY-BLOW boss (THE CLOSED FIST school): a PUNCH, not a slap. Guide the
+      // chain but WARN OFF the palm — an open palm is no-sold here.
+      if (chain.tRel === null) ui.coach(keys.s ? `WINDING UP... ${coilPct}% — HOLD [S]` : 'HOLD [S] — WIND UP (this one takes a FIST, not a slap)');
+      else if (!chain.l) ui.coach('TAP [L] — LUNGE THE HIPS!');
+      else if (!chain.a) ui.coach('PRESS [A] — THROW THE FIST!  ·  do NOT press [P] — keep it CLOSED');
+      else ui.coach('LAND THE CLOSED FIST — opening the palm [P] just slides off him');
+      shotClock -= dts;
+      ui.setClock(shotClock);
     } else {
       if (chain.tRel === null) {
         if (keys.s) ui.coach(coilPct >= 90 ? 'FULL SWIVEL! LET GO OF [S]!' : `SWIVELING... ${coilPct}% — HOLD [S], DEEPER!`);
