@@ -41,6 +41,17 @@ export const TOURS = [
           { id: 'a3c3', title: '☗ BOSS: CALL THE FOURTH FORM', desc: 'CATCH DODGY DALE on the half he calls — chin UP means LOW cheek, crouch means HIGH — and SEND him 50m. The wrong half slides off his grin (×0.2)', opp: 'dale', goal: { type: 'dist', v: 50 } },
         ],
       },
+      {
+        // HIDDEN CODA — unseals only after the whole legend is cleared. The dark
+        // mirror of the Open Palm: to reach these men you must BREAK the one rule.
+        act: 'SCROLL IV — THE FORBIDDEN FORM',
+        story: 'The Fourth Form is finished; the master went to rest. Then a fifth scroll he sealed sixty years ago cracks open — and the man he expelled for closing his fist walks back into the fair. Their cheeks have felt ten thousand open palms and forgotten every one. To reach them you must do the one thing the legend forbade: CLOSE the hand. Do NOT press [P].',
+        challenges: [
+          { id: 'a4c1', title: 'THE CLOSED HAND', desc: 'CALLUS CAL cannot feel an open palm (TOO SOFT, ×0.12). Do the forbidden thing — CLOSE the fist (do NOT press [P]) and land ONE honest body blow', opp: 'callus_cal', goal: { type: 'fist' } },
+          { id: 'a4c2', title: 'THE SLAP-EATER', desc: 'GRISTLE ate open palms for a nickel apiece and kept the nickels. A palm is his pension — a FIST is his problem. SEND him 30m, closed-handed (still coil · lunge · arm — heresy is not sloppiness)', opp: 'gristle', goal: { type: 'fistdist', v: 30 } },
+          { id: 'a4c3', title: '☗ BOSS: THE CLOSED FIST', desc: 'MASTER GNARL made his face a shield — an open palm slides off (TOO SOFT). Only the forbidden fist reaches him. SEND him 45m closed-handed, six seconds a swing', opp: 'gnarl', goal: { type: 'fistdist', v: 45 } },
+        ],
+      },
     ],
   },
   {
@@ -413,6 +424,36 @@ export const CUTSCENES = {
     { who: '👻 MASTER SLEE', text: "...so that's what the last percent feels like. The Fourth Form. It was never in the arm — it's the hand you finally unclench.", shot: 'spirit' },
     { who: 'BRUCE SLEE', text: "I couldn't knock on that door, grandfather. The stranger did.", shot: 'bruce' },
     { who: '👻 MASTER SLEE', text: "Rest, he says. One more Sunday first — Mabel is owed a 'good.'", shot: 'spirit' },
+  ],
+  // SCROLL IV — THE FORBIDDEN FORM (hidden coda)
+  a4c1: [
+    { who: '👻 MASTER SLEE', text: 'You finished my Fourth Form. I went to rest. Then the wax cracked on a fifth scroll — one I sealed sixty years ago and prayed no one would open.', shot: 'spirit' },
+    { who: 'BRUCE SLEE', text: 'Grandfather. There was never a fifth scroll.', shot: 'bruce' },
+    { who: '👻 MASTER SLEE', text: 'There was. I burned the pages and kept the shame. It has a name, and the name just walked back into the fair.', shot: 'spirit' },
+    { who: 'CALLUS CAL', text: "Slee. Still floating. Still preaching the OPEN hand. Go on — slap me. Flat. Flush. Perfect. I've felt ten thousand open palms and forgotten every one.", shot: 'opp' },
+    { who: '👻 MASTER SLEE', text: 'He speaks true, student. Cal made his face a callus. The palm you spent three scrolls perfecting, he cannot feel. To reach him you must do the one thing I forbade. Close your hand. Do NOT press the palm.', shot: 'spirit' },
+    { who: 'YOU', text: 'Everything you taught me was to open it.', shot: 'player' },
+    { who: '👻 MASTER SLEE', text: 'And now you must understand the hand well enough to break my rule. Close it. Strike Cal once, honestly. Heresy begins with a single knuckle.', shot: 'spirit' },
+  ],
+  a4c2: [
+    { who: '👻 MASTER SLEE', text: 'Cal was the doorway. This is the wall. Gristle ate open palms for a living — a nickel a slap, county to county, and he kept the nickels.', shot: 'spirit' },
+    { who: 'GRISTLE', text: 'Best money I ever made. Folks line up to slap the man who don\'t flinch. Your dainty palm is my PENSION, friend. Bring a fist or bring a chair.', shot: 'opp' },
+    { who: 'YOU', text: 'A fist, then. Thirty meters of it.', shot: 'player' },
+    { who: '👻 MASTER SLEE', text: 'The closed hand still needs the chain, student — coil, lunge, arm. Heresy is not sloppiness. Wind it and DRIVE.', shot: 'spirit' },
+  ],
+  a4c3: [
+    { who: '👻 MASTER SLEE', text: 'There he is. Gnarl. My first student — before Mabel, before all of them. I taught him the open palm. He asked what force lived in the CLOSED one. I expelled him for asking.', shot: 'spirit' },
+    { who: 'MASTER GNARL', text: 'Sixty years, Slee, and you finally admit the question was fair. The open palm is a bow. I stopped bowing. Look at my face — every flat slap in the county, and not one moved me.', shot: 'opp' },
+    { who: 'BRUCE SLEE', text: 'His cheek is a shield, stranger. A palm slides off a bow. Only a fist has a POINT.', shot: 'bruce' },
+    { who: 'YOU', text: "You expelled a man for a question, master. I'll answer it for you. Closed hand. Full chain. Forty-five meters.", shot: 'player' },
+    { who: 'MASTER GNARL', text: 'Six seconds a swing, heretic — a slap dawdles, a fist DECIDES. Show me the force you kept in your palm all this time.', shot: 'opp' },
+  ],
+  outro_a4c3: [
+    { who: 'MASTER GNARL', text: '...moved. Sixty years unmoved, and the boy CLOSED his hand and moved me. So it was in the fist the whole—', shot: 'opp' },
+    { who: '👻 MASTER SLEE', text: 'No, Gnarl. It was in the CHOICE. The open palm was never the rule. The rule was knowing WHEN to break it. You closed your hand and never opened it again. He did both.', shot: 'spirit' },
+    { who: 'YOU', text: 'You taught me to unclench, master. Then you taught me why it mattered — by making me clench once, on purpose, for a man who\'d forgotten how a kind hand feels.', shot: 'player' },
+    { who: '👻 MASTER SLEE', text: "Rise, Gnarl. The scroll is unsealed and answered. Come to Sunday's field. Mabel is owed a 'good,' and you are owed a 'sorry.' Sixty years late, both.", shot: 'spirit' },
+    { who: 'BRUCE SLEE', text: "Two old ghosts arguing about hands. ...I'll bring chairs.", shot: 'bruce' },
   ],
   f1c1: [
     { who: '🎈 A FAIR KID', text: "It's the SIXTIETH season! The mayor's cutting the ribbon and — is that a HELICOPTER? Why is the helicopter GOLD?", shot: 'wide' },
@@ -1204,7 +1245,7 @@ export const clearActive = () => { active = null; };
 export const goalText = () =>
   active ? `🎪 ${active.title} — ${active.desc.toUpperCase()}` : null;
 
-export function checkAttempt({ dist, pts, part, chainPct, oppKey, bulwarkPts }) {
+export function checkAttempt({ dist, pts, part, fist, chainPct, oppKey, bulwarkPts }) {
   if (!active) return null;
   if (active.opp && active.opp !== oppKey) return null;
   const g = active.goal;
@@ -1213,6 +1254,9 @@ export function checkAttempt({ dist, pts, part, chainPct, oppKey, bulwarkPts }) 
     (g.type === 'pts' && pts >= g.v) ||
     (g.type === 'head' && part === 'head' && pts > 0) ||
     (g.type === 'headdist' && part === 'head' && dist >= g.v) ||
+    // THE FORBIDDEN FORM: a CLOSED-FIST body blow — land one (fist), or send them a distance closed-handed (fistdist)
+    (g.type === 'fist' && fist && part && pts > 0) ||
+    (g.type === 'fistdist' && fist && dist >= g.v) ||
     (g.type === 'bulwark' && (bulwarkPts || 0) >= g.v) ||
     (g.type === 'chain' && part && chainPct >= g.v && pts > 0);
   if (!met) return null;

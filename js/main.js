@@ -804,8 +804,11 @@ function onContact(hit, fist) {
     const incidence = Math.max(0, velDir.dot(into));
     cq = 0.88 + 0.24 * (0.7 * vAlign + 0.3 * incidence);
   }
-  // a punch has no sweet spot — the fist pays body-blow rate even on the head
-  const sweet = (fist ? 0.6 : (hit.part === 'head' ? 1.35 : 0.6)) * cq;
+  // a punch has no sweet spot — the fist pays body-blow rate even on the head.
+  // EXCEPT on a bodyBlow boss (THE CLOSED FIST school): there the forbidden FIST
+  // IS the flush hit (lands like a good palm), and the open palm is no-sold below.
+  const fistSweet = (fist && opponent.arch.bodyBlow) ? (hit.part === 'head' ? 1.15 : 0.7) : 0.6;
+  const sweet = (fist ? fistSweet : (hit.part === 'head' ? 1.35 : 0.6)) * cq;
   // real slap physics: force comes up from the ground through a BRACED stance.
   // A teetering slapper can't drive the blow — the worse the visible lean at
   // contact, the softer the slap (up to −45% at the tipping point)
@@ -861,6 +864,10 @@ function onContact(hit, fist) {
   // chainGate: below the posted chain% he no-sells the hit (whole-chain exam)
   const noSold = !!(opponent.arch.chainGate && !ugly && chainPct < opponent.arch.chainGate);
   if (noSold) power *= 0.12;
+  // bodyBlow (THE CLOSED FIST school): his cheek is a shield — the OPEN palm is
+  // TOO SOFT, only a closed fist reaches him. The exact inverse of the house rule.
+  const tooSoft = !!(opponent.arch.bodyBlow && !ugly && !fist);
+  if (tooSoft) power *= 0.12;
   // snapExam: only a PERFECT arm-whip lands — a lazy arm has no crack (A-timing exam)
   const noSnap = !!(opponent.arch.snapExam && !ugly && ag.tier < 3);
   if (noSnap) power *= 0.45;
@@ -978,7 +985,7 @@ function onContact(hit, fist) {
 
   opponent.launch(dir, power, spin);
   slap = {
-    foul: null, part: hit.part, // a landed contact is never a foul (fouls use the FOULED path)
+    foul: null, part: hit.part, fist, // a landed contact is never a foul (fouls use the FOULED path)
     chain: {
       coil: Math.round(Math.min(1, coilFrac) * 100), l: lg.label, a: ag.label, p: pg.label, ugly,
       bal: Math.round(balF * 100),
@@ -1007,7 +1014,9 @@ function onContact(hit, fist) {
   // the sun judges TECHNIQUE, not tonnage — chain quality decides its mood
   if (ugly || hit.part === 'torso' || slap.chain.pct < 25) stage.sunMood('meh', 3.5);
   else if (slap.chain.pct >= 60) stage.sunMood('happy', 5);
-  if (fist) { ui.slapBurst('BODY BLOW — CLOSED FIST!', 'A REAL HIT — OPEN THE PALM [P] FOR THE FLUSH SLAP + THE SWEET SPOT'); sfx.whistle(); }
+  if (fist && opponent.arch.bodyBlow) ui.slapBurst('FIST FLUSH!', 'THE CLOSED HAND BREAKS THROUGH — HE FELT THAT ONE');
+  else if (fist) { ui.slapBurst('BODY BLOW — CLOSED FIST!', 'A REAL HIT — OPEN THE PALM [P] FOR THE FLUSH SLAP + THE SWEET SPOT'); sfx.whistle(); }
+  else if (tooSoft) ui.slapBurst('TOO SOFT!', "HE ONLY FEELS A FIST — CLOSE THE HAND, DON'T PRESS [P]");
   else if (ugly) ui.slapBurst('SLOPPY SLAP!', 'THE CHAIN WAS LONG GONE');
   else if (noSold) ui.slapBurst('NO-SOLD!', `HE NEEDS A ${opponent.arch.chainGate}% CHAIN TO EVEN BLINK`);
   else if (greased) ui.slapBurst('IT SLID OFF!', 'ONLY A PERFECT PALM GRIPS THE GREASE');
@@ -1090,6 +1099,7 @@ function showResult() {
     const cleared = campaign.checkAttempt({
       dist, pts,
       part: slap && !isFoul ? slap.part : null,
+      fist: slap && !isFoul ? !!slap.fist : false,
       chainPct: slap && slap.chain ? slap.chain.pct : 0,
       oppKey: arch.key,
       bulwarkPts,

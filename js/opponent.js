@@ -269,6 +269,33 @@ export const ROSTER = [
     taunts: ['Mountains ask ME for advice.', 'I have never taken a single step.'],
   },
   {
+    // SCROLL IV — THE FORBIDDEN FORM. bodyBlow bosses: the open palm is TOO SOFT
+    // (no-sold ×0.12); only a CLOSED FIST reaches them. Campaign-only (boss:true).
+    key: 'callus_cal', name: 'CALLUS CAL', tag: 'BOSS · FEELS NO PALM', boss: true,
+    w: 1.0, h: 1.02, mass: 0.9, bodyBlow: true,
+    // a lifetime of catching open palms turned his face to one big callus
+    skin: 0xc99a72, shirt: 0x4a4038, pants: 0x2c2824, hair: 'short', hairCol: 0x1a1512, brow: true,
+    pickLine: 'Ten thousand open palms. Forgot every one.',
+    taunts: ['Slap me. Flat. Flush. I dare you to make me feel it.', 'The open hand is a handshake. I do not shake hands.'],
+  },
+  {
+    key: 'gristle', name: 'GRISTLE', tag: 'BOSS · THE SLAP-EATER', boss: true,
+    w: 1.25, h: 1.04, mass: 1.6, bodyBlow: true,
+    // carnival slap-eater — a nickel a slap, county to county, never flinched
+    skin: 0xba8259, shirt: 0x6b3a2a, pants: 0x33302b, bald: true, beard: 'stache',
+    pickLine: 'A nickel a slap. Your palm is my pension.',
+    taunts: ['Folks line up to slap the man who don\'t flinch.', 'Bring a fist or bring a chair.'],
+  },
+  {
+    key: 'gnarl', name: 'MASTER GNARL', tag: 'BOSS · THE CLOSED FIST', boss: true,
+    w: 1.2, h: 1.08, mass: 1.3, bodyBlow: true, shotClock: 6,
+    // Slee's FIRST student — expelled 60 years ago for asking what force lived in
+    // the closed hand. Renounced the robe; a bare-knuckle brawler with a shield cheek
+    skin: 0xb98a63, shirt: 0x5a5048, pants: 0x3a352e, whiteBeard: true, brow: true, beltCol: 0x2e2a24,
+    pickLine: 'The open palm is a bow. I stopped bowing.',
+    taunts: ['Every flat slap in the county. Not one moved me.', 'A slap dawdles. A fist DECIDES.'],
+  },
+  {
     key: 'dale', name: 'DODGY DALE', tag: 'BOSS · CALLS HIS CHEEK', boss: true,
     w: 0.85, h: 1.02, mass: 0.9, noStache: true, weave: true, calledShot: { margin: 0.02, cqMin: 95 },
     skin: 0xdcae85, shirt: 0x2b2b33, pants: 0xd83a3a,
