@@ -293,6 +293,25 @@ export class Sfx {
     }
   }
 
+  // a ghost's put-upon wail (haunted fair): two detuned sines sliding down
+  wail() {
+    if (!this.ctx) return;
+    const ctx = this.ctx, t = ctx.currentTime;
+    for (const det of [0, 7]) {
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(260 + det, t);
+      osc.frequency.exponentialRampToValueAtTime(150 + det, t + 0.9);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.07, t + 0.1);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.95);
+      osc.connect(g).connect(this.master);
+      osc.start(t);
+      osc.stop(t + 1);
+    }
+  }
+
   // THE GREAT GONG (dojo): deep inharmonic bell partials + a mallet strike,
   // long decay — rung when a flyer reaches the 62m wall in the dojo world
   gong() {

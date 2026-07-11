@@ -514,8 +514,8 @@ export function createStage(canvas) {
   // --- hay: round bales, a stack, and the crash wall at the end of the lane ---
   // (in winter the shared mats swap to white — every bale becomes a snow drift
   // and the 62m crash wall becomes a wall of packed snow)
-  const hayMat = biomeMat(toonMat(0xd9b96a), { ice: 0xeef4f8, desert: 0xd8b878, lava: 0x3a2f2a, hell: 0x3a2320, heaven: 0xf2eede, dojo: 0xd9c9a8, therapy: 0x9a8ab0 });
-  const hayEnd = biomeMat(toonMat(0xc4a355), { ice: 0xe2ebf2, desert: 0xc9a86a, lava: 0x322824, hell: 0x2f1e1c, heaven: 0xe8e2d4, dojo: 0xc9b490, therapy: 0x8a7aa8 });
+  const hayMat = biomeMat(toonMat(0xd9b96a), { ice: 0xeef4f8, desert: 0xd8b878, lava: 0x3a2f2a, hell: 0x3a2320, heaven: 0xf2eede, dojo: 0xd9c9a8, therapy: 0x9a8ab0, haunted: 0x6a6a5e, tech: 0xd0d4da });
+  const hayEnd = biomeMat(toonMat(0xc4a355), { ice: 0xe2ebf2, desert: 0xc9a86a, lava: 0x322824, hell: 0x2f1e1c, heaven: 0xe8e2d4, dojo: 0xc9b490, therapy: 0x8a7aa8, haunted: 0x565648, tech: 0xb4bac4 });
   function roundBale(x, z, ry) {
     const b = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 1.3, 14), hayMat);
     b.rotation.set(0, ry, Math.PI / 2);
@@ -559,7 +559,7 @@ export function createStage(canvas) {
     cornIM.setMatrixAt(i, pd.matrix);
     cornIM.setColorAt(i, cc.setHSL(0.24, 0.5, 0.32 + Math.random() * 0.12));
   }
-  scene.add(biomeIM(cornIM, 180, { ice: 0xd9cfa8, desert: 0xcbb187, lava: 0x2a2220, hell: 0x2a1a18, heaven: 0xf0d060, dojo: 0xa8b86a, therapy: 0x7a6a94 }));
+  scene.add(biomeIM(cornIM, 180, { ice: 0xd9cfa8, desert: 0xcbb187, lava: 0x2a2220, hell: 0x2a1a18, heaven: 0xf0d060, dojo: 0xa8b86a, therapy: 0x7a6a94, haunted: 0x5a5244, tech: 0x4a5560 }));
 
   // --- trees ---
   function tree(x, z, s = 1) {
@@ -569,7 +569,7 @@ export function createStage(canvas) {
     trunk.castShadow = true;
     g.add(trunk);
     for (const [ox, oy, oz, r] of [[0, 3.1, 0, 1.5], [0.9, 2.5, 0.3, 1.0], [-0.9, 2.6, -0.2, 1.1]]) {
-      const puff = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 10), biomeMat(toonMat(0x4e7d3a), { ice: 0xe9f0f4, desert: 0x8a8f5a, lava: 0x3a2a26, hell: 0x33201e, heaven: 0xf6f2e8, therapy: 0x8a7aa8 }));
+      const puff = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 10), biomeMat(toonMat(0x4e7d3a), { ice: 0xe9f0f4, desert: 0x8a8f5a, lava: 0x3a2a26, hell: 0x33201e, heaven: 0xf6f2e8, therapy: 0x8a7aa8, haunted: 0x3a4438, tech: 0x4f9e4f }));
       puff.position.set(ox, oy, oz);
       puff.castShadow = true;
       g.add(puff);
@@ -597,7 +597,7 @@ export function createStage(canvas) {
     edgeCornIM.setMatrixAt(i, pd.matrix);
     edgeCornIM.setColorAt(i, cc.setHSL(0.23, 0.5, 0.3 + Math.random() * 0.14));
   }
-  scene.add(biomeIM(edgeCornIM, 280, { ice: 0xd9cfa8, desert: 0xcbb187, lava: 0x2a2220, hell: 0x2a1a18, heaven: 0xf0d060, dojo: 0xa8b86a, therapy: 0x7a6a94 }));
+  scene.add(biomeIM(edgeCornIM, 280, { ice: 0xd9cfa8, desert: 0xcbb187, lava: 0x2a2220, hell: 0x2a1a18, heaven: 0xf0d060, dojo: 0xa8b86a, therapy: 0x7a6a94, haunted: 0x5a5244, tech: 0x4a5560 }));
 
   function scarecrow(x, z, ry = 0) {
     const g = new THREE.Group();
@@ -842,7 +842,7 @@ export function createStage(canvas) {
     fieldCornIM.setMatrixAt(i, pd.matrix);
     fieldCornIM.setColorAt(i, cc.setHSL(0.23, 0.5, 0.3 + Math.random() * 0.14));
   }
-  scene.add(biomeIM(fieldCornIM, 420, { ice: 0xd9cfa8, desert: 0xcbb187, lava: 0x2a2220, hell: 0x2a1a18, heaven: 0xf0d060, dojo: 0xa8b86a, therapy: 0x7a6a94 }));
+  scene.add(biomeIM(fieldCornIM, 420, { ice: 0xd9cfa8, desert: 0xcbb187, lava: 0x2a2220, hell: 0x2a1a18, heaven: 0xf0d060, dojo: 0xa8b86a, therapy: 0x7a6a94, haunted: 0x5a5244, tech: 0x4a5560 }));
 
   // fruit trees: apples red, oranges orange, both delicious at 30 m/s
   function fruitTree(x, z, fruitCol, leafCol, s = 1) {
@@ -850,7 +850,7 @@ export function createStage(canvas) {
     const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.28, 1.9, 8), toonMat(0x6b4a2e));
     trunk.position.y = 0.95;
     g.add(trunk);
-    const blob = new THREE.Mesh(new THREE.SphereGeometry(1.35, 10, 10), biomeMat(toonMat(leafCol), { ice: 0xe9f0f4, desert: 0x8a8f5a, lava: 0x3a2a26, hell: 0x33201e, heaven: 0xf6f2e8, therapy: 0x8a7aa8 }));
+    const blob = new THREE.Mesh(new THREE.SphereGeometry(1.35, 10, 10), biomeMat(toonMat(leafCol), { ice: 0xe9f0f4, desert: 0x8a8f5a, lava: 0x3a2a26, hell: 0x33201e, heaven: 0xf6f2e8, therapy: 0x8a7aa8, haunted: 0x3a4438, tech: 0x4f9e4f }));
     blob.scale.set(1, 0.85, 1);
     blob.position.y = 2.6;
     g.add(blob);
@@ -1006,7 +1006,7 @@ export function createStage(canvas) {
 
   // distant hills close the horizon — the county rolls on to ~200m
   for (const [hx, hz, hr, hh] of [[190, -60, 90, 26], [170, 80, 80, 20], [-90, -120, 100, 24], [40, 190, 110, 26], [230, 40, 100, 30]]) {
-    const hill = new THREE.Mesh(new THREE.SphereGeometry(hr, 16, 12), biomeMat(toonMat(0x6e8f5a), { ice: 0xe6edf5, desert: 0xc9a05e, lava: 0x2a2024, hell: 0x2a1518, heaven: 0xf2efe4, therapy: 0x9a8fc0 }));
+    const hill = new THREE.Mesh(new THREE.SphereGeometry(hr, 16, 12), biomeMat(toonMat(0x6e8f5a), { ice: 0xe6edf5, desert: 0xc9a05e, lava: 0x2a2024, hell: 0x2a1518, heaven: 0xf2efe4, therapy: 0x9a8fc0, haunted: 0x27352c, tech: 0x8aa88e }));
     hill.scale.set(1, hh / hr, 1);
     hill.position.set(hx, -hr * 0.35, hz);
     scene.add(hill);
@@ -1642,6 +1642,28 @@ export function createStage(canvas) {
         cerberus.rotation.y = fwd ? 0 : Math.PI;
         cerberus.position.y = Math.abs(Math.sin(time * 2.2)) * 0.04;
       }
+    }
+    if (hauntedG.visible) {
+      for (const gh of ghosts) {
+        const a = time * gh.sp + gh.ph;
+        const spook = Math.max(0, gh.spookT);
+        if (gh.spookT > 0) gh.spookT -= dt;
+        gh.g.position.set(gh.cx + Math.cos(a) * gh.r, Math.sin(time * 1.1 + gh.ph) * 0.25 + spook * 2.2, gh.cz + Math.sin(a) * gh.r);
+        gh.g.rotation.y = -a;
+        gh.ecto.opacity = 0.45 - spook * 0.28;
+      }
+    }
+    if (techG.visible) {
+      const a = time * 0.35;
+      drone.position.set(45 + Math.cos(a) * 22, 9 + Math.sin(time * 1.3) * 0.5, Math.sin(a) * 12);
+      drone.rotation.y = -a;
+      for (const r2 of droneRotors) r2.rotation.y += dt * 30;
+      const span2 = 22, ph2 = ((time * 0.06) % 2 + 2) % 2, fwd2 = ph2 < 1;
+      roomba.position.x = 4 + span2 * (fwd2 ? ph2 : 2 - ph2);
+      roomba.position.z = 3.5 + Math.sin(time * 0.9) * 0.4;
+      roomba.rotation.y = time * 0.8;
+      mastTips.forEach((t2, i2) => { t2.visible = Math.sin(time * 3 + i2 * 1.7) > 0; });
+      lakePackets.forEach((p2, i2) => { p2.position.y = 0.12 + Math.abs(Math.sin(time * 1.2 + i2)) * 0.08; });
     }
     if (therapyG.visible && countSheep) {
       // one sheep, hopping the rail forever — deterministic 2.4s loop
@@ -3161,6 +3183,352 @@ export function createStage(canvas) {
     }
   });
 
+  // --- 👻 HAUNTED FAIR: the night fair gone to seed. Graveyard rows, a green
+  // moon, and the fair-goers' spectral echoes drifting between the stones. ---
+  const hauntedG = new THREE.Group();
+  const ghosts = [];
+  {
+    const deadWood = toonMat(0x3a3630);
+    hauntedG.add(mkBelt((g, x, z, i) => {
+      const h = 5 + (i % 3);
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.45, h, 6), deadWood);
+      trunk.position.set(x, h / 2, z);
+      g.add(trunk);
+      for (const sgn of [-1, 1]) {
+        const branch = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.12, 2.2, 5), deadWood);
+        branch.rotation.z = sgn * 0.9;
+        branch.position.set(x + sgn * 0.7, h * 0.78, z);
+        g.add(branch);
+      }
+    }));
+    hauntedG.children[0].visible = true;
+    // THE MOON — pale green-white, craters and all
+    const moon = new THREE.Mesh(new THREE.CircleGeometry(7, 24), new THREE.MeshBasicMaterial({ color: 0xdcecc8, fog: false }));
+    moon.position.set(150, 42, -35);
+    moon.lookAt(0, 2, 0);
+    hauntedG.add(moon);
+    for (const [cx, cy, cr] of [[151, 44, 1.2], [148, 40, 0.8]]) {
+      const crater = new THREE.Mesh(new THREE.CircleGeometry(cr, 12), new THREE.MeshBasicMaterial({ color: 0xbcd0a8, fog: false }));
+      crater.position.set(cx, cy, -34.8);
+      crater.lookAt(0, 2, 0);
+      hauntedG.add(crater);
+    }
+    // graveyard gate over the lane
+    const iron = toonMat(0x22262c);
+    for (const sgn of [-1, 1]) {
+      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.18, 5.8, 6), iron);
+      post.position.set(12, 2.9, sgn * 3.4);
+      hauntedG.add(post);
+      const finial = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.4, 5), iron);
+      finial.position.set(12, 6, sgn * 3.4);
+      hauntedG.add(finial);
+    }
+    const gateArch = new THREE.Mesh(new THREE.TorusGeometry(3.6, 0.1, 6, 14, Math.PI), iron);
+    gateArch.rotation.y = Math.PI / 2;
+    gateArch.position.set(12, 5.6, 0);
+    hauntedG.add(gateArch);
+    const gateSign = new THREE.Mesh(new THREE.PlaneGeometry(6, 1),
+      new THREE.MeshBasicMaterial({ map: makeTextTexture('THE FOREVER FAIR', '#9ab5a0'), transparent: true, side: THREE.DoubleSide }));
+    gateSign.rotation.y = -Math.PI / 2;
+    gateSign.position.set(12, 4.9, 0);
+    hauntedG.add(gateSign);
+    // tombstone rows — off the flight lane
+    const stone = toonMat(0x8a9298), stoneLt = toonMat(0x9aa2ad);
+    for (let i = 0; i < 24; i++) {
+      const gx = 22 + (i % 8) * 7 + ((i * 3) % 4);
+      const gz = (i < 12 ? 1 : -1) * (6 + Math.floor((i % 12) / 8) * 5 + ((i * 5) % 4));
+      if (i % 6 === 5) {
+        const v = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.0, 0.16), stoneLt);
+        v.position.set(gx, 0.5, gz);
+        hauntedG.add(v);
+        const hbar = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.14, 0.55), stoneLt);
+        hbar.position.set(gx, 0.72, gz);
+        hauntedG.add(hbar);
+      } else {
+        const slab = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.9, 0.7), stone);
+        slab.position.set(gx, 0.45, gz);
+        slab.rotation.x = (((i * 7) % 5) - 2) * 0.05;
+        hauntedG.add(slab);
+        const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.14, 10), stone);
+        cap.rotation.z = Math.PI / 2;
+        cap.position.set(gx, 0.9, gz);
+        hauntedG.add(cap);
+      }
+    }
+    // mausoleum + crypts on the farmhouse footprints
+    const mstone = toonMat(0x7a8288);
+    const mg = new THREE.Group();
+    const mbody = new THREE.Mesh(new THREE.BoxGeometry(6, 4.5, 7), mstone);
+    mbody.position.y = 2.25;
+    mg.add(mbody);
+    const mped = new THREE.Mesh(new THREE.BoxGeometry(6.6, 1.2, 7.6), mstone);
+    mped.position.y = 4.9;
+    mg.add(mped);
+    for (const sgn of [-1, 1]) {
+      const pil = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.4, 4, 8), mstone);
+      pil.position.set(-3.2, 2, sgn * 2.2);
+      mg.add(pil);
+    }
+    const mdoor = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2.6, 1.6), toonMat(0x0c0e10));
+    mdoor.position.set(-3.05, 1.3, 0);
+    mg.add(mdoor);
+    mg.position.set(96, 0, 19);
+    mg.rotation.y = -0.55;
+    hauntedG.add(mg);
+    for (const [cx2, cz2, cry] of [[84, -27, 0.5], [108, -14, -0.2], [58, 31, 0.9]]) {
+      const crypt = new THREE.Group();
+      const cbody = new THREE.Mesh(new THREE.BoxGeometry(3, 2.2, 3.5), mstone);
+      cbody.position.y = 1.1;
+      crypt.add(cbody);
+      const cv = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.7, 0.12), stoneLt);
+      cv.position.y = 2.55;
+      crypt.add(cv);
+      const ch2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.12, 0.4), stoneLt);
+      ch2.position.y = 2.7;
+      crypt.add(ch2);
+      crypt.position.set(cx2, 0, cz2);
+      crypt.rotation.y = cry;
+      hauntedG.add(crypt);
+    }
+    // glowing jack-o'-lanterns light the paths
+    const glowFace = glowMat(0xffb347);
+    for (const [px2, pz2] of [[18, 4], [26, -5], [34, 6], [46, -6], [62, 5], [80, -5], [93.5, 17]]) {
+      const p2 = new THREE.Mesh(new THREE.SphereGeometry(0.35, 8, 7), toonMat(0xd8722d));
+      p2.scale.y = 0.8;
+      p2.position.set(px2, 0.28, pz2);
+      hauntedG.add(p2);
+      const grin = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.05, 0.2), glowFace);
+      grin.position.set(px2 - 0.34, 0.26, pz2);
+      hauntedG.add(grin);
+      for (const sgn of [-1, 1]) {
+        const eye = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.08, 3), glowFace);
+        eye.rotation.z = Math.PI / 2;
+        eye.position.set(px2 - 0.33, 0.42, pz2 + sgn * 0.1);
+        hauntedG.add(eye);
+      }
+    }
+    // the pond gone black + one polite skeletal hand
+    const bone2 = toonMat(0xe8e4da);
+    const palm2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.14, 0.12), bone2);
+    palm2.position.set(38.5, 0.12, 23.2);
+    palm2.rotation.z = -0.3;
+    hauntedG.add(palm2);
+    for (const fz of [-0.05, 0, 0.05]) {
+      const fing = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.22, 4), bone2);
+      fing.position.set(38.5, 0.28, 23.2 + fz);
+      hauntedG.add(fing);
+    }
+    // THE GHOSTS: four fair-goers' spectral echoes, outfits and all
+    const mkGhost = (cx3, cz3, r3, sp3, ph3, outfit) => {
+      const ecto = new THREE.MeshBasicMaterial({ color: 0xe8f0f4, transparent: true, opacity: 0.45, depthWrite: false });
+      const g3 = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 0.42, 4, 10), ecto);
+      body.position.y = 0.9;
+      g3.add(body);
+      const head3 = new THREE.Mesh(new THREE.SphereGeometry(0.16, 8, 8), ecto);
+      head3.position.y = 1.42;
+      g3.add(head3);
+      const tail = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.5, 8), ecto);
+      tail.rotation.x = Math.PI;
+      tail.position.y = 0.42;
+      g3.add(tail);
+      if (outfit === 'sunhat' || outfit === 'cowboy') {
+        const brim = new THREE.Mesh(new THREE.CylinderGeometry(outfit === 'cowboy' ? 0.24 : 0.3, outfit === 'cowboy' ? 0.24 : 0.3, 0.03, 12), ecto);
+        brim.position.y = 1.56;
+        g3.add(brim);
+        const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, 0.14, 10), ecto);
+        crown.position.y = 1.64;
+        g3.add(crown);
+      } else if (outfit === 'skirt') {
+        const sk = new THREE.Mesh(new THREE.ConeGeometry(0.32, 0.45, 10), ecto);
+        sk.position.y = 0.72;
+        g3.add(sk);
+      } else if (outfit === 'balloon') {
+        const line = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.9, 4), ecto);
+        line.position.set(0.25, 1.6, 0);
+        g3.add(line);
+        const bal = new THREE.Mesh(new THREE.SphereGeometry(0.14, 8, 8), ecto);
+        bal.position.set(0.25, 2.1, 0);
+        g3.add(bal);
+      }
+      hauntedG.add(g3);
+      ghosts.push({ g: g3, ecto, cx: cx3, cz: cz3, r: r3, sp: sp3, ph: ph3, spookT: 0 });
+    };
+    mkGhost(30, 6, 4, 0.18, 0, 'sunhat');
+    mkGhost(52, -8, 5, 0.22, 2.1, 'cowboy');
+    mkGhost(70, 7, 3.5, 0.15, 4.2, 'skirt');
+    mkGhost(24, -10, 4.5, 0.2, 1.0, 'balloon');
+    hauntedG.traverse((m) => { if (m.material && !m.material.transparent) m.castShadow = true; });
+    hauntedG.visible = false;
+    scene.add(hauntedG);
+  }
+  const coffinsBarricade = mkBarricade((arr, bx) => {
+    for (let i = 0; i < 5; i++) {
+      const g = new THREE.Group();
+      const lid = new THREE.Mesh(new THREE.BoxGeometry(0.16, 1.75, 0.6), toonMat(0x5a4030));
+      g.add(lid);
+      const foot = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.7, 0.4), toonMat(0x5a4030));
+      foot.position.y = -1.1;
+      g.add(foot);
+      const cv = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.5, 0.09), toonMat(0xc9ced6));
+      cv.position.y = 0.3;
+      g.add(cv);
+      const chb = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.09, 0.3), toonMat(0xc9ced6));
+      chb.position.y = 0.42;
+      g.add(chb);
+      g.position.set(bx, 1.1, -1.9 + i * 0.95);
+      g.rotation.x = (i % 2 ? 1 : -1) * 0.06;
+      arr.push(g);
+    }
+  });
+
+  // --- 💻 SLOP VALLEY: the tech campus. Glass, lawns, lanyards, a data lake. ---
+  const techG = new THREE.Group();
+  let drone = null, droneRotors = [], roomba = null;
+  const mastTips = [];
+  const lakePackets = [];
+  {
+    const hedge = toonMat(0x4a7a3a), steel = toonMat(0x9aa2ad), glass = toonMat(0x7ab0d8);
+    techG.add(mkBelt((g, x, z, i) => {
+      if (i % 10 === 0) {
+        const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.12, 9, 6), steel);
+        mast.position.set(x, 4.5, z);
+        g.add(mast);
+        const tip = new THREE.Mesh(new THREE.SphereGeometry(0.14, 6, 6), glowMat(0xff3030));
+        tip.position.set(x, 9.1, z);
+        g.add(tip);
+        mastTips.push(tip);
+        return;
+      }
+      const block = new THREE.Mesh(new THREE.BoxGeometry(2.6, 2.2, 2.4), hedge);
+      block.position.set(x, 1.1, z);
+      g.add(block);
+    }));
+    techG.children[0].visible = true;
+    // glass HQ blocks on the footprints
+    const mullion = toonMat(0x3a4a5a);
+    const hq = (x, z, wdt, hgt, dep, ry) => {
+      const g = new THREE.Group();
+      const slab = new THREE.Mesh(new THREE.BoxGeometry(wdt, hgt, dep), glass);
+      slab.position.y = hgt / 2;
+      g.add(slab);
+      for (let m2 = -1; m2 <= 1; m2++) {
+        const strip = new THREE.Mesh(new THREE.BoxGeometry(0.15, hgt, 0.3), mullion);
+        strip.position.set(-wdt / 2 - 0.02, hgt / 2, m2 * dep / 4);
+        g.add(strip);
+      }
+      g.position.set(x, 0, z);
+      g.rotation.y = ry;
+      techG.add(g);
+      return g;
+    };
+    const flag2 = hq(96, 19, 7, 12, 9, -0.55);
+    const logo = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.22, 8, 18), toonMat(0xf2f2f0));
+    logo.position.y = 13.2;
+    flag2.add(logo);
+    const fsign = new THREE.Mesh(new THREE.PlaneGeometry(6, 1.5),
+      new THREE.MeshBasicMaterial({ map: makeTextTexture('SLOPCORP', '#ffffff'), transparent: true }));
+    fsign.position.set(-3.6, 10.5, 0);
+    fsign.rotation.y = -Math.PI / 2;
+    flag2.add(fsign);
+    hq(84, -27, 5, 8, 7, 0.5);
+    hq(108, -14, 5.5, 10, 6, -0.2);
+    hq(58, 31, 6, 4, 8, 0.9);
+    // the slogan gate over the lane
+    for (const sgn of [-1, 1]) {
+      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.2, 5.5, 7), steel);
+      post.position.set(12, 2.75, sgn * 3.4);
+      techG.add(post);
+    }
+    const banner = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.5, 8.2), toonMat(0x2a3a5a));
+    banner.position.set(12, 5, 0);
+    techG.add(banner);
+    const slogan = new THREE.Mesh(new THREE.PlaneGeometry(8, 1.4),
+      new THREE.MeshBasicMaterial({ map: makeTextTexture('MOVING FAST · BREAKING CHEEKS', '#ffffff'), transparent: true, side: THREE.DoubleSide }));
+    slogan.rotation.y = -Math.PI / 2;
+    slogan.position.set(11.9, 5, 0);
+    techG.add(slogan);
+    // THE DATA LAKE: infinity edge + bobbing packets + the sign
+    const rim2 = new THREE.Mesh(new THREE.RingGeometry(6, 6.5, 24), toonMat(0xe8ecf0));
+    rim2.rotation.x = -Math.PI / 2;
+    rim2.position.set(40, 0.045, 24);
+    techG.add(rim2);
+    const lakeSign = new THREE.Mesh(new THREE.PlaneGeometry(3, 0.7),
+      new THREE.MeshBasicMaterial({ map: makeTextTexture('DATA LAKE', '#40ff80'), transparent: true, side: THREE.DoubleSide }));
+    lakeSign.position.set(43, 1.2, 19.5);
+    techG.add(lakeSign);
+    const lsPost = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 1.2, 5), steel);
+    lsPost.position.set(43, 0.6, 19.5);
+    techG.add(lsPost);
+    for (let i = 0; i < 4; i++) {
+      const packet = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.18, 0.18), glowMat(0x40ff80));
+      const a = (i / 4) * Math.PI * 2;
+      packet.position.set(40 + Math.cos(a) * 3, 0.12, 24 + Math.sin(a) * 3);
+      techG.add(packet);
+      lakePackets.push(packet);
+    }
+    // e-scooters: mint, abandoned, one per OSHA violation
+    const mint = toonMat(0x2ad0a0);
+    for (const [sx2, sz2, fallen] of [[16, 5, 0], [24, -4, 1], [33, 6, 0], [47, -5, 1], [57, 4, 0]]) {
+      const sg = new THREE.Group();
+      const deck = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.06, 0.14), mint);
+      sg.add(deck);
+      const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.9, 5), mint);
+      stem.position.set(0.32, 0.45, 0);
+      sg.add(stem);
+      const tbar = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.36, 5), mint);
+      tbar.rotation.x = Math.PI / 2;
+      tbar.position.set(0.32, 0.9, 0);
+      sg.add(tbar);
+      if (fallen) { sg.rotation.z = Math.PI / 2; sg.position.set(sx2, 0.12, sz2); }
+      else sg.position.set(sx2, 0.08, sz2);
+      techG.add(sg);
+    }
+    // the delivery drone (built here, flown in updateAmbient)
+    drone = new THREE.Group();
+    const dbody = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.12, 0.35), toonMat(0x2a2a33));
+    drone.add(dbody);
+    for (const [dx2, dz2] of [[-0.22, -0.22], [0.22, -0.22], [-0.22, 0.22], [0.22, 0.22]]) {
+      const rotor = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.02, 8), toonMat(0x9aa2ad));
+      rotor.position.set(dx2, 0.1, dz2);
+      drone.add(rotor);
+      droneRotors.push(rotor);
+    }
+    const parcel = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.16, 0.2), toonMat(0xc9a468));
+    parcel.position.y = -0.3;
+    drone.add(parcel);
+    techG.add(drone);
+    // the robot vacuum, diligently cleaning a fairground
+    roomba = new THREE.Group();
+    const rbody = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.12, 14), toonMat(0x2a2a33));
+    rbody.position.y = 0.06;
+    roomba.add(rbody);
+    const rdot = new THREE.Mesh(new THREE.SphereGeometry(0.04, 6, 6), glowMat(0x40ff80));
+    rdot.position.y = 0.15;
+    roomba.add(rdot);
+    roomba.position.set(4, 0, 3.5);
+    techG.add(roomba);
+    techG.traverse((m) => { m.castShadow = true; });
+    techG.visible = false;
+    scene.add(techG);
+  }
+  const boxesBarricade = mkBarricade((arr, bx) => {
+    for (const [by, count] of [[0.4, 4], [1.15, 3], [1.9, 2]]) {
+      for (let i = 0; i < count; i++) {
+        const g = new THREE.Group();
+        const carton = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.75, 1.05), toonMat(0xc9a468));
+        g.add(carton);
+        const tape = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.14, 1.07), toonMat(0x5a8ac0));
+        g.add(tape);
+        const label = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.3, 0.4), toonMat(0xf2f2f0));
+        label.position.set(-0.46, 0, 0.2);
+        g.add(label);
+        g.position.set(bx, by, -1.8 + i * (3.6 / Math.max(1, count - 1)));
+        arr.push(g);
+      }
+    }
+  });
+
   // falling snow — drifts down in updateAmbient while the lake is frozen
   const SNOW_N = 850;
   const snowArr = new Float32Array(SNOW_N * 3);
@@ -3213,6 +3581,8 @@ export function createStage(canvas) {
     therapy:[0x8a9cb0, 0xb0a08a, 0x6e7a8a, 0xc9c2b5, 0x5c6a7a, 0x9a8ab0], // waiting-room neutrals
     heaven: [0xf2efe4, 0xe8e2d4, 0xd8e4f0, 0xf0e8c9, 0xe4d8f0, 0xffffff], // robes, all of them
     hell:   [0x8a2a2a, 0x5a1a1a, 0xb54a2a, 0x3a2a2a, 0x6e2a3a, 0x2a1a1a], // various shades of regret
+    haunted:[0x2a2a33, 0x3a2a3a, 0x4a3a2e, 0x33333c, 0x5a4a5a, 0x262e2a], // mourners' Sunday best
+    tech:   [0x3a3f4a, 0x2a2a33, 0x4a5a6e, 0x2a6a6a, 0x6e7a8a, 0x1f2a3a], // hoodies, all of them
   };
   let crowdOrig = null;
   function setCrowdPalette(key) {
@@ -3273,7 +3643,12 @@ export function createStage(canvas) {
   // dressing hides, and which barricade stands at 20m.
   const WORLD_THEMES = {
     day:   { fog: [0xdce9f2, 45, 160], skyTint: 0xffffff, hemi: [0xcfe2ff, 0x4f6b3a, 0.9], sun: [0xfff2d8, 1.9], fill: 0.35, cloud: 0xfff6ea, maps: true,  grass: 0xffffff, lane: 0xffffff, night: false, sunFace: true },
-    night: { fog: [0x151b32, 40, 130], skyTint: 0x28325e, hemi: [0x8093c9, 0x243048, 0.5], sun: [0xbfd4ff, 0.7], fill: 0.12, cloud: 0x3a4668, maps: true,  grass: 0x7d88b8, lane: 0x8d94b8, night: true,  sunFace: false },
+    haunted: { fog: [0x121a16, 34, 118], skyTint: 0x141f1a, hemi: [0x7a9c8a, 0x18221c, 0.55], sun: [0xbfe0c8, 0.75], fill: 0.12, cloud: 0x2a3a30, maps: true, grass: 0x55705f, lane: 0x6a7268, night: true, sunFace: false,
+      group: 'haunted', biome: 'haunted', crowd: 'haunted', pond: 0x0e1418,
+      hideFarm: true, barricade: 'coffins' },
+    techcampus: { fog: [0xdde6ee, 52, 175], skyTint: 0xcfe0f2, hemi: [0xe8f0f8, 0x8aa08a, 0.95], sun: [0xf2f6ff, 1.9], fill: 0.38, cloud: 0xf4f8fc, maps: false, grass: 0x86b45e, lane: 0xb8bcc2, night: false, sunFace: true,
+      group: 'techcampus', biome: 'tech', crowd: 'tech', pond: 0x2a8ae0, sunTint: [0xeef4ff, 0.7],
+      hideFarm: true, hideFences: true, hideCloths: true, barricade: 'boxes' },
     ice:   { fog: [0xe8f1fa, 45, 150], skyTint: 0xdfeafc, hemi: [0xdfeaff, 0x9fb2c8, 0.95], sun: [0xeaf4ff, 1.6], fill: 0.3, cloud: 0xf4f8ff, maps: false, grass: 0xe8f2f8, lane: 0xcfe6f2, night: false, sunFace: true,
       group: 'ice', biome: 'ice', crowd: 'winter', pond: 0xaed4ec, sunTint: [0xcfdce6, 0.6],
       hideFarm: true, hideFences: true, hideCloths: true, barricade: 'snow' },
@@ -3302,10 +3677,11 @@ export function createStage(canvas) {
   const WORLD_GROUPS = {
     ice: winterG, desert: desertG, jungle: jungleG, dojo: dojoG,
     lava: lavaG, heaven: heavenG, hell: hellG, therapy: therapyG,
+    haunted: hauntedG, techcampus: techG,
   };
   // every non-farm world re-dresses the perimeter, so pine hides whenever any
   // kit with its own belt is up (each belt lives inside its kit group)
-  const BELT_WORLDS = new Set(['desert', 'jungle', 'dojo', 'lava', 'heaven', 'hell', 'therapy']);
+  const BELT_WORLDS = new Set(['desert', 'jungle', 'dojo', 'lava', 'heaven', 'hell', 'therapy', 'haunted', 'techcampus']);
   const WORLD_FX = {                                 // per-world extras beyond the kit
     ice: (on) => {
       snowPts.visible = on;
@@ -3319,6 +3695,7 @@ export function createStage(canvas) {
     planks: summerBarricade, snow: snowBarricade, barrels: barrelBarricade,
     bamboo: bambooBarricade, shoji: shojiBarricade, boulders: boulderBarricade,
     cloud: cloudBarricade, redtape: redtapeBarricade, books: booksBarricade,
+    coffins: coffinsBarricade, boxes: boxesBarricade,
   };
   const hasWorld = (n) => !!WORLD_THEMES[n];
 
@@ -3371,6 +3748,15 @@ export function createStage(canvas) {
     summonSpirits, spawnBeam, spawnSparkles, slapDuel, scareBirds, solids, setWorldTheme, hasWorld,
     // strike the dojo's Great Gong: a big wobble that decays in updateAmbient
     ringGong: () => { if (gongDisc) gongDisc.rotation.x = 0.45; },
+    // the flyer passing through a ghost sends it darting skyward, briefly faded
+    spookGhosts: (pt) => {
+      let hit = false;
+      for (const gh of ghosts) {
+        if (gh.spookT <= 0 && gh.g.position.distanceTo(pt) < 2.4) { gh.spookT = 1.5; hit = true; }
+      }
+      return hit;
+    },
+    isHauntedUp: () => hauntedG.visible,
     isDojoUp: () => dojoG.visible,
     setSpirit, setJudge, setBruce, cinePoints,
   };

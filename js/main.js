@@ -555,7 +555,7 @@ document.getElementById('matchNext').onclick = () => { sfx.ensure(); advanceScre
 // until the Supporter Pack is owned; chips render only once their theme ships.
 const WORLDS = [
   { key: 'day',     label: '🌞 DAY FAIR' },
-  { key: 'night',   label: '🌙 NIGHT FAIR' },
+  { key: 'haunted', label: '👻 HAUNTED FAIR', dlc: true },
   { key: 'ice',     label: '❄️ FROZEN LAKE' },
   { key: 'desert',  label: '🌵 DESERT' },
   { key: 'jungle',  label: '🌴 JUNGLE' },
@@ -564,6 +564,7 @@ const WORLDS = [
   { key: 'therapy', label: '🛋️ THERAPY ROOM', dlc: true },
   { key: 'heaven',  label: '😇 HEAVEN', dlc: true },
   { key: 'hell',    label: '🔥 HELL', dlc: true },
+  { key: 'techcampus', label: '💻 SLOP VALLEY', dlc: true },
 ];
 // theme + that world's ONE physics quirk, together — used by the selector,
 // the tour world-pin, and the return-to-title restore, so visuals and physics
@@ -819,6 +820,10 @@ function showResult() {
       : slap && slap.chain.pct >= 90 ? 'DIAGNOSIS: a BREAKTHROUGH. Same time next week.'
       : slap && slap.chain.pct < 40 ? 'DIAGNOSIS: a repressed follow-through.'
       : 'DIAGNOSIS: unresolved. The couch is ready when you are.');
+  } else if (worldNow === 'techcampus') {
+    line += isFoul
+      ? ' VC VERDICT: FUNDING SECURED. (The SEC has questions.)'
+      : ` VC VERDICT: ${dist < 20 ? 'PIVOT TO AI.' : dist < 45 ? 'SERIES A.' : dist < 70 ? 'UNICORN.' : 'IPO. RING THE BELL.'}`;
   } else if (worldNow === 'hell') {
     // Hell loves failure: fouls get a standing ovation, excellence gets silence
     if (isFoul) {
@@ -1342,6 +1347,7 @@ function tick(now) {
       stage.spawnConfetti(pel);
     }
     // a flyer barging through the flock: feathers, outrage, evacuation
+    if (stage.isHauntedUp() && stage.spookGhosts(pel)) sfx.wail();
     if (stage.scareBirds(pel)) sfx.squawk();
     if (opponent.rag.maxSpeed() < 0.6) settleT += dt; else settleT = 0;
     // never call the result while he's still visibly travelling — a monster slap

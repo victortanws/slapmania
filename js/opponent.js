@@ -155,6 +155,40 @@ export const ROSTER = [
     pickLine: '400 years in the complaints department. This is his lunch break.',
     taunts: ['Your form has been escalated to my supervisor.', 'File a grievance. The window closes never.'],
   },
+  {
+    key: 'joe', name: "JACK O'LANTERN JOE", tag: 'NIGHT GREETER', world: 'haunted',
+    w: 1.0, h: 1.0, mass: 0.95, noStache: true,
+    // vine-green hands, patched night-shift flannel; the head IS the costume
+    skin: 0x9aa858, shirt: 0x5a3a28, pants: 0x3a3a2c, pumpkinHead: true,
+    pickLine: 'Grows back from seeds. Has the best face at the fair, and it is carved.',
+    taunts: ['Smashing me is a Halloween TRADITION.', 'I have a hundred cousins in that patch. All watching.'],
+  },
+  {
+    key: 'tony', name: 'BONY TONY', tag: 'FLYWEIGHT (LITERALLY)', world: 'haunted',
+    w: 0.62, h: 1.04, mass: 0.35, noStache: true,
+    // bone-white on grave-black — lighter than Slim Pete, and it is ALL he talks about
+    skin: 0xe8e4da, shirt: 0x1a1a20, pants: 0x1a1a20, skullFace: true, ribs: 0xe8e4da,
+    pickLine: 'Lighter than Slim Pete. It is ALL he talks about.',
+    taunts: ['No lungs, no fear.', 'I keep my landing teeth in a cup.'],
+  },
+  {
+    key: 'vance', name: 'VISIONARY VANCE', tag: 'FOUNDER MODE', world: 'techcampus',
+    w: 0.9, h: 1.02, mass: 0.85, noStache: true,
+    // grey hoodie, jeans; the lanyard never comes off
+    skin: 0xe4c09a, shirt: 0x3a3f4a, pants: 0x4a6fa5,
+    hair: 'flat', hairCol: 0x3a2e22, hoodie: 0x3a3f4a, lanyard: 0x2f6fe0,
+    pickLine: 'Says "scale" the way other men breathe. AGI next quarter. The quarter is load-bearing.',
+    taunts: ['This slap does not scale.', 'We A/B tested your palm. B won.', 'I pivot faster than you swing.'],
+  },
+  {
+    key: 'mira', name: 'MIRACLE MIRA', tag: 'DISRUPTOR', world: 'techcampus',
+    w: 0.85, h: 1.02, mass: 0.8, female: true, busty: true,
+    // the white suit, the blonde ponytail, the red lipstick, the baritone certainty
+    skin: 0xeecfa8, shirt: 0xf4f0ea, pants: 0xf4f0ea, suit: true, tie: 0xf4f0ea, skirt: 0xf4f0ea,
+    hair: 'pony', hairCol: 0xf0cf6a, lipstick: 0xc0202a,
+    pickLine: 'One drop of slop can do anything. Sworn testimony pending.',
+    taunts: ['The product works. In an environment of belief.', 'My voice is two octaves of credibility.'],
+  },
   // ---- BOSSES (boss: true): campaign-only — never listed in the public
   // volunteer pick; tour challenges summon them by key ----
   {
@@ -252,6 +286,52 @@ export const ROSTER = [
     pickLine: "Never been slapped. Not once. Ask the tornado — it'll tell you the same.",
     taunts: ['I once counted to infinity. Twice.', "Four seconds of quiet, son. You won't take 'em.", 'This beard has its own zip code.'],
   },
+  {
+    key: 'reaper', name: 'THE GREEN REAPER', tag: 'BOSS · MOWING TIME', boss: true,
+    w: 1.15, h: 1.12, mass: 1.35, noStache: true, robe: true,
+    shotClock: 7, chainGate: 65,
+    // moss-green work robe, hood up; the scythe is FOR THE LAWN
+    skin: 0x141a14, shirt: 0x2e6b3a, pants: 0x24522e,
+    reaperHood: 0x24522e, scythe: true,
+    pickLine: 'Night-shift groundskeeper, 400 years. The scythe is for the LAWN.',
+    taunts: ['You are ON the lawn.', 'Grass grows at night. So does my patience. One of those is a lie.'],
+  },
+  {
+    key: 'freuden', name: 'DR. FREUDENSCHADE', tag: 'BOSS · THE TALKING CURE', boss: true,
+    w: 0.95, h: 1.0, mass: 1.2, chainGate: 75,
+    // charcoal three-piece, oxblood tie, white beard, round glasses — the rival school in person
+    skin: 0xe0bb92, shirt: 0x2a2a35, pants: 0x2a2a35, suit: true, tie: 0x6e2231,
+    whiteBeard: true, glasses: true, hair: 'flat', hairCol: 0xdcd6ca,
+    pickLine: 'Any slap below 75% form, he interprets away as displaced aggression.',
+    taunts: ['Tell me about the whiff. When did the whiffing begin?', 'Interesting. VERY interesting. Unbillable, but interesting.'],
+  },
+  {
+    key: 'slopunit', name: 'S.L.O.P. UNIT-1', tag: 'BOSS · ARTIFICIAL GENERAL APOLOGIES', boss: true,
+    w: 1.9, h: 1.25, mass: 3.2, noStache: true,
+    shotClock: 6, chainGate: 70,
+    // gunmetal chassis, panel-grey plating — the manifestation of AGI (allegedly)
+    skin: 0x9aa2ad, shirt: 0x6e7683, pants: 0x4a515c, robot: true,
+    pickLine: 'The manifestation of AGI. Mostly generates apologies.',
+    taunts: ['I AM SORRY YOU FEEL THAT WAY.', 'YOUR SLAP HAS BEEN LOGGED AS FEEDBACK.', 'AS A LARGE SLAP MODEL, I CANNOT BE MOVED.'],
+  },
+  {
+    key: 'ava', name: 'AVALANCHE AVA', tag: 'BOSS · THE PHENOM', boss: true,
+    w: 0.8, h: 1.0, mass: 0.85, female: true, weave: true, noStache: true,
+    // ice-blue race suit w/ white speed stripes, dark ponytail, goggles pushed UP
+    skin: 0xe8c2a0, shirt: 0x2f6fe0, pants: 0x2f6fe0, stripes: 0xf2ede1,
+    hair: 'pony', hairCol: 0x1a1a1f, goggles: 0xff8c1a,
+    pickLine: 'Four golds. Three world records. One energy drink. Zero slaps taken.',
+    taunts: ['I dodge trees at eighty. You are slower than a tree.', 'Is the county in slow motion, or is that just you?'],
+  },
+  {
+    key: 'avaskis', name: 'AVALANCHE AVA', tag: 'BOSS · FULL SEND', boss: true,
+    w: 0.8, h: 1.0, mass: 0.9, female: true, noStache: true,
+    skin: 0xe8c2a0, shirt: 0x2f6fe0, pants: 0x2f6fe0, stripes: 0xf2ede1,
+    hair: 'pony', hairCol: 0x1a1a1f, goggles: 0xff8c1a, gogglesDown: true,
+    skis: true, skiEscape: { period: 3.2, window: 0.9, span: 2.4 },
+    pickLine: 'Winter rules. The skis stay ON. Catch her in the crossing.',
+    taunts: ['Grass is just slow snow.', 'You had your window. It skied away.'],
+  },
 ];
 
 // every volunteer speaks with their own voice, and has enough lines that
@@ -335,10 +415,96 @@ export class Opponent {
     // --- face (children of the head mesh, so they fly with him) ---
     const head = P.head.mesh;
     const hr = this.rHead / 0.17;
-    for (const s of [-1, 1]) {
-      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.022, 6, 6), toonMat(0x111111));
-      eye.position.set(-0.145 * hr, 0.035 * hr, s * 0.055 * hr);
-      head.add(eye);
+    if (!arch.pumpkinHead && !arch.skullFace && !arch.robot) {
+      for (const s of [-1, 1]) {
+        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.022, 6, 6), toonMat(0x111111));
+        eye.position.set(-0.145 * hr, 0.035 * hr, s * 0.055 * hr);
+        head.add(eye);
+      }
+    }
+    if (arch.pumpkinHead) {
+      // the head IS the pumpkin: ridged orange gourd + carved glowing face
+      const gourd = new THREE.Mesh(new THREE.SphereGeometry(0.22 * hr, 10, 9), toonMat(0xe07820));
+      gourd.scale.y = 0.85;
+      gourd.castShadow = true;
+      head.add(gourd);
+      const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.045, 0.1, 5), toonMat(0x5c7a3a));
+      stem.position.y = 0.2 * hr;
+      head.add(stem);
+      const glow = new THREE.MeshBasicMaterial({ color: 0xffb347 });
+      for (const sgn of [-1, 1]) {
+        const eye = new THREE.Mesh(new THREE.ConeGeometry(0.045, 0.06, 3), glow);
+        eye.rotation.z = Math.PI / 2;
+        eye.position.set(-0.21 * hr, 0.05 * hr, sgn * 0.08 * hr);
+        head.add(eye);
+      }
+      const grin = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.05, 0.17), glow);
+      grin.position.set(-0.215 * hr, -0.07 * hr, 0);
+      head.add(grin);
+    }
+    if (arch.skullFace) {
+      // hollow sockets, nasal notch, the fixed grin — the skin is already bone
+      const dark = toonMat(0x0c0c0c);
+      for (const sgn of [-1, 1]) {
+        const socket = new THREE.Mesh(new THREE.SphereGeometry(0.038, 6, 6), dark);
+        socket.position.set(-0.14 * hr, 0.04 * hr, sgn * 0.055 * hr);
+        socket.scale.setScalar(hr);
+        head.add(socket);
+      }
+      const nose = new THREE.Mesh(new THREE.ConeGeometry(0.02, 0.04, 3), dark);
+      nose.rotation.z = Math.PI / 2;
+      nose.position.set(-0.16 * hr, -0.02 * hr, 0);
+      head.add(nose);
+      for (const tz of [-0.04, 0, 0.04]) {
+        const tooth = new THREE.Mesh(new THREE.BoxGeometry(0.014, 0.035, 0.018), dark);
+        tooth.position.set(-0.155 * hr, -0.085 * hr, tz * hr);
+        head.add(tooth);
+      }
+    }
+    if (arch.reaperHood) {
+      // the groundskeeper's cowl: open-front shell, face in shadow, pinprick eyes
+      const hood = new THREE.Mesh(new THREE.SphereGeometry(0.21 * hr, 9, 8), toonMat(arch.reaperHood));
+      hood.position.x = 0.035 * hr;
+      hood.castShadow = true;
+      head.add(hood);
+      const peak = new THREE.Mesh(new THREE.ConeGeometry(0.09, 0.2, 6), toonMat(arch.reaperHood));
+      peak.rotation.z = 0.5;
+      peak.position.set(0.1 * hr, 0.18 * hr, 0);
+      head.add(peak);
+      const glow = new THREE.MeshBasicMaterial({ color: 0x8aff8a });
+      for (const sgn of [-1, 1]) {
+        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.022, 5, 5), glow);
+        eye.position.set(-0.15 * hr, 0.03 * hr, sgn * 0.055 * hr);
+        head.add(eye);
+      }
+    }
+    if (arch.robot) {
+      // gunmetal head shell + one glowing eye bar + antenna: AGI, allegedly
+      const shell = new THREE.Mesh(new THREE.BoxGeometry(0.36 * hr, 0.32 * hr, 0.36 * hr), toonMat(0x9aa2ad));
+      shell.castShadow = true;
+      head.add(shell);
+      const visor = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.05, 0.26 * hr), new THREE.MeshBasicMaterial({ color: 0xff3030 }));
+      visor.position.set(-0.185 * hr, 0.03 * hr, 0);
+      head.add(visor);
+      const aerial = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.2, 5), toonMat(0x4a515c));
+      aerial.position.y = 0.25 * hr;
+      head.add(aerial);
+      const bobble = new THREE.Mesh(new THREE.SphereGeometry(0.03, 6, 6), new THREE.MeshBasicMaterial({ color: 0xff3030 }));
+      bobble.position.y = 0.36 * hr;
+      head.add(bobble);
+    }
+    if (arch.goggles) {
+      // mirrored racing goggles: DOWN over the eyes for the run, UP on the brow otherwise
+      const gy = arch.gogglesDown ? 0.035 : 0.14;
+      const band = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.07, 0.26), new THREE.MeshBasicMaterial({ color: arch.goggles }));
+      band.position.set(-0.155 * hr, gy * hr, 0);
+      band.scale.setScalar(hr);
+      head.add(band);
+      const strap = new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.018, 6, 14), toonMat(0x1a1a1f));
+      strap.rotation.x = Math.PI / 2;
+      strap.position.y = gy * hr;
+      strap.scale.setScalar(hr);
+      head.add(strap);
     }
     if (arch.horns) {
       // two little devil horns — regulation issue, demon 3rd class and up
@@ -669,6 +835,78 @@ export class Opponent {
         P.torso.mesh.add(blob);
       }
     }
+    if (arch.ribs) {
+      // painted rib bands — mostly xylophone, occasionally person
+      const tr = 0.38 * w * 0.52;
+      for (const ry of [0.12, 0.0, -0.12]) {
+        const rib = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.035, 0.34 * w), toonMat(arch.ribs));
+        rib.position.set(-(tr + 0.004), ry * h, 0);
+        P.torso.mesh.add(rib);
+      }
+    }
+    if (arch.scythe) {
+      // the groundskeeper's scythe — FOR THE LAWN. Rides the arm, flies with him.
+      const fa = P.faR.mesh;
+      const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.024, 1.5, 6), toonMat(0x8a6844));
+      shaft.position.set(0, 0.45, 0);
+      fa.add(shaft);
+      const blade = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.035, 6, 10, Math.PI * 0.75), toonMat(0xc9ced6));
+      blade.position.set(0.1, 1.15, 0);
+      blade.rotation.z = -0.6;
+      fa.add(blade);
+      const tuft = new THREE.Mesh(new THREE.SphereGeometry(0.05, 5, 5), toonMat(0x5c7a3a));
+      tuft.position.set(0.3, 1.05, 0);
+      fa.add(tuft);
+    }
+    if (arch.hoodie) {
+      // the hood ring behind the neck + two drawstring dots: founder mode
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.13 * w + 0.06, 0.05, 7, 14), toonMat(arch.hoodie));
+      ring.rotation.x = Math.PI / 2;
+      ring.position.y = 0.22 * h;
+      P.torso.mesh.add(ring);
+      const tr = 0.38 * w * 0.52;
+      for (const sgn of [-1, 1]) {
+        const dot = new THREE.Mesh(new THREE.SphereGeometry(0.018, 5, 5), toonMat(0xf2f2f0));
+        dot.position.set(-(tr + 0.01), 0.14 * h, sgn * 0.05);
+        P.torso.mesh.add(dot);
+      }
+    }
+    if (arch.lanyard) {
+      // the badge never comes off
+      const tr = 0.38 * w * 0.52;
+      const strap = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.3 * h, 0.02), toonMat(typeof arch.lanyard === 'number' ? arch.lanyard : 0x2f6fe0));
+      strap.position.set(-(tr + 0.006), 0.12 * h, 0);
+      P.torso.mesh.add(strap);
+      const badge = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.11, 0.08), toonMat(0xf2f2f0));
+      badge.position.set(-(tr + 0.012), -0.05 * h, 0);
+      P.torso.mesh.add(badge);
+    }
+    if (arch.robot) {
+      // chassis plating + vent bars on the torso
+      const tr = 0.38 * w * 0.52;
+      const plate = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.34 * h, 0.42 * w), toonMat(0x7a828c));
+      plate.position.set(-(tr + 0.01), 0.05 * h, 0);
+      plate.castShadow = true;
+      P.torso.mesh.add(plate);
+      for (const vy of [0.14, 0.05, -0.04]) {
+        const vent = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.03, 0.3 * w), toonMat(0x2a2a33));
+        vent.position.set(-(tr + 0.045), vy * h, 0);
+        P.torso.mesh.add(vent);
+      }
+    }
+    if (arch.skis) {
+      // the skis stay ON — boards ride the lower legs, so they fly with her
+      for (const leg of [P.llL, P.llR]) {
+        const ski = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.045, 1.35), toonMat(0xe8352e));
+        ski.position.set(0, -0.3, 0.18);
+        ski.castShadow = true;
+        leg.mesh.add(ski);
+        const tip = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.045, 0.16), toonMat(0xe8352e));
+        tip.position.set(0, -0.25, 0.9);
+        tip.rotation.x = -0.5;
+        leg.mesh.add(tip);
+      }
+    }
     if (arch.windKey) {
       // a brass wind-up key out the back (+x) — the whole joke: you can see he's a wind-up.
       // Rides the torso, so it flies with him on launch.
@@ -967,7 +1205,7 @@ export class Opponent {
     } else if (this.showcaseMode) {
       this.animateShowcase();
     } else {
-      if (!this.arch.weave) {
+      if (!this.arch.weave && !this.arch.skiEscape) {
         // every volunteer BREATHES: a slow, readable rise-and-fall of the cheek
         // (~4.5s period, ±5cm). Never enough to whiff — but a flush hit wants
         // the head level with your swing plane, so watching the ring pays.
@@ -976,6 +1214,26 @@ export class Opponent {
         const P = this.rag.parts;
         P.head.body.position.y = this.basePose.head.p.y + breathe;
         P.torso.body.position.y = this.basePose.torso.p.y + breathe * 0.35;
+        if (this.hatBody && this.hatOff) this.hatBody.position.copy(P.head.body.position.vadd(this.hatOff));
+        this.rag.sync();
+        this.syncHat();
+      }
+      if (this.arch.skiEscape) {
+        // FULL SEND: she carves laterally across the strike pocket on a fixed,
+        // readable loop — the cheek only exists mid-line for a heartbeat. Outside
+        // the crossing the swept-segment test genuinely whiffs (no foul; a fresh
+        // S re-arms, the shot clock keeps running). Deterministic — zero RNG.
+        const se = this.arch.skiEscape;
+        const zOff = Math.sin((this.time / se.period) * Math.PI * 2) * se.span;
+        const lean = Math.cos((this.time / se.period) * Math.PI * 2) * 0.25;
+        const P = this.rag.parts;
+        P.head.body.position.z = this.basePose.head.p.z + zOff;
+        P.head.body.position.y = this.basePose.head.p.y;
+        P.torso.body.position.z = this.basePose.torso.p.z + zOff * 0.85;
+        P.pelvis.body.position.z = this.basePose.pelvis.p.z + zOff * 0.7;
+        P.llL.body.position.z = this.basePose.llL.p.z + zOff * 0.6;
+        P.llR.body.position.z = this.basePose.llR.p.z + zOff * 0.6;
+        P.head.body.position.x = this.basePose.head.p.x + lean * 0.1;
         if (this.hatBody && this.hatOff) this.hatBody.position.copy(P.head.body.position.vadd(this.hatOff));
         this.rag.sync();
         this.syncHat();

@@ -106,6 +106,14 @@ export const SLAPPERS = [
     locked: true, price: 4,
   },
   {
+    key: 'carlgustav', name: 'DR. CARL GUSTAV', desc: 'Fifty years of analysis. One cure: the palm.',
+    skin: 0xe6c2a0, shirt: 0xf4efe6, pants: 0x3a3f4a,
+    hair: 'short', hairCol: 0xdcd6ca, beard: 'stache',
+    glasses: true, cassock: 0x5a4632,
+    height: 1.0, arm: 1.02, power: 0.98,
+    locked: true, price: 4,
+  },
+  {
     key: 'auntie', name: 'AUNTIE', desc: 'Aiyah! Sit down and get slapped.',
     skin: 0xe8c19a, shirt: 0xf4efe6, pants: 0xe8c19a,   // white dress top, bare (skin) legs
     hair: 'short', hairCol: 0x241a14, female: true, busty: true, bust: 1.6, vneck: true,
