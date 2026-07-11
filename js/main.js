@@ -261,6 +261,17 @@ function openUnlockModal(char) {
   um.modal.classList.remove('hidden');
 }
 function closeUnlockModal() { um.modal.classList.add('hidden'); unlockTarget = null; }
+// grant the Supporter Pack (from a verified purchase OR a redeemed code) and
+// remember the code so the buyer can re-unlock on any device without friction
+function unlockPack(code, how) {
+  localStorage.setItem('slapp_pack', '1');
+  if (code) localStorage.setItem('slapp_code', code);
+  closeUnlockModal();
+  ui.challengeBar('🏆 SUPPORTER PACK UNLOCKED — ALL SIX LEGENDS ARE YOURS. THANK YOU!');
+  sfx.fanfare();
+  track(how === 'redeem' ? 'pack_redeemed' : 'pack_purchased', {});
+  if (state === 'SELECT_SLAPPER') openSlapperPick();
+}
 if (um.modal) {
   um.close.onclick = closeUnlockModal;
   // clicking the dark backdrop closes too — on landscape phones the ✕ can sit
@@ -284,10 +295,32 @@ if (um.modal) {
       um.msg.textContent = 'Checkout stumbled — try again in a spell.';
     }
   };
-  // gift/promo codes will be server-validated when they exist; no client codes,
-  // ever — the shop is live and the old SLAPDEV backdoor is gone
-  um.redeem.onclick = () => {
-    um.msg.textContent = 'No active codes right now — codes come from giveaways!';
+  // ONE box, two jobs: type a CODE to redeem, or type your PURCHASE EMAIL to
+  // recover a lost code. Both are server-validated (redeem-code / recover-code);
+  // there is no client-side unlock — the anon key can't read the codes table.
+  const fn = (path) => `${window.SLAPP_CONFIG.supabaseUrl}/functions/v1/${path}`;
+  const auth = { Authorization: `Bearer ${window.SLAPP_CONFIG.supabaseAnonKey}`, apikey: window.SLAPP_CONFIG.supabaseAnonKey };
+  um.redeem.onclick = async () => {
+    const raw = (um.code.value || '').trim();
+    if (!raw) { um.msg.textContent = 'Enter your code — or your purchase email to recover it.'; return; }
+    if (raw.includes('@')) {
+      // "I lost my code" — look it up by the email they paid with
+      um.msg.textContent = 'Looking up your code…';
+      try {
+        const r = await fetch(fn(`recover-code?email=${encodeURIComponent(raw)}`), { headers: auth });
+        const d = await r.json();
+        if (d && d.ok && d.codes && d.codes.length) { um.code.value = d.codes[0]; um.msg.textContent = `Found it: ${d.codes[0]} — hit REDEEM again to unlock.`; }
+        else um.msg.textContent = 'No purchase found for that email. Check the address you paid with?';
+      } catch { um.msg.textContent = 'Recovery hiccuped — try again in a spell.'; }
+      return;
+    }
+    um.msg.textContent = 'Checking your code…';
+    try {
+      const r = await fetch(fn('redeem-code'), { method: 'POST', headers: { ...auth, 'Content-Type': 'application/json' }, body: JSON.stringify({ code: raw }) });
+      const d = await r.json();
+      if (d && d.ok) unlockPack(raw.toUpperCase(), 'redeem');
+      else um.msg.textContent = "That code didn't take. Double-check it, or paste your purchase email to recover it.";
+    } catch { um.msg.textContent = 'Redeem hiccuped — try again in a spell.'; }
   };
 }
 
@@ -1815,12 +1848,10 @@ let challenge = null;
       headers: { Authorization: `Bearer ${window.SLAPP_CONFIG.supabaseAnonKey}`, apikey: window.SLAPP_CONFIG.supabaseAnonKey },
     }).then((r) => r.json()).then((d) => {
       if (d && d.paid) {
-        localStorage.setItem('slapp_pack', '1');
-        ui.challengeBar('🏆 SUPPORTER PACK UNLOCKED — ALL SIX LEGENDS ARE YOURS. THANK YOU!');
-        sfx.fanfare();
-        track('pack_purchased', {});
-        // if the roster is on screen, re-render it so the locks fall off NOW
-        if (state === 'SELECT_SLAPPER') openSlapperPick();
+        unlockPack(d.code, 'purchase');
+        // surface the code so the buyer can SAVE it — it's their re-unlock key on
+        // any device (also emailed on their Stripe receipt; recoverable by email)
+        if (d.code) ui.challengeBar(`🏆 SUPPORTER PACK UNLOCKED! YOUR CODE: ${d.code} — SAVE IT (unlocks on any device). THANK YOU!`);
       }
       history.replaceState(null, '', location.pathname);
     }).catch(() => {});
