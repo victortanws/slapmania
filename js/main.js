@@ -1284,7 +1284,10 @@ function tick(now) {
     else if (player.handSeg && player.pUnlocked) {
       // OPEN PALM ONLY, literally: a closed hand doesn't register at all —
       // the referee starts counting the instant the palm opens
-      const hit = opponent.checkHit(player.handSeg.p0, player.handSeg.p1, 0.26);
+      // rHand = the hand's TRUE reach past the wrist path (palm + fingers ≈ 0.14m).
+      // It was 0.26 — a beach-ball hand that launched volunteers from visibly
+      // short of the cheek. Contact now happens where contact LOOKS like it happens.
+      const hit = opponent.checkHit(player.handSeg.p0, player.handSeg.p1, 0.14);
       if (hit) onContact(hit);
     }
   } else if (state === 'IMPACT') {
