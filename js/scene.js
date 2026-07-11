@@ -471,21 +471,39 @@ export function createStage(canvas) {
     }
   }
 
-  // --- seasonal tinting: greenery that frosts over on the Frozen Lake ---
-  // setWorldTheme('ice') calls setFrost(true); summer colors are saved lazily.
+  // --- biome tinting: world-dependent recolors for greenery & structures ---
+  // A material/IM registers once with a VARIANT MAP ({ ice: hex, desert: hex, … });
+  // setBiome(key) applies that biome's color (or restores base when key is null
+  // or the entry has no variant for it). Base colors are captured at registration
+  // (mats) / lazily on first tint (instanced meshes). winterMat/winterIM are the
+  // legacy single-variant aliases — existing ice call-sites keep working as-is.
   const seasonMats = [];
-  const winterMat = (mat, winterHex) => { seasonMats.push({ mat, summer: mat.color.getHex(), winter: winterHex }); return mat; };
+  const biomeMat = (mat, variants) => {
+    if (typeof variants === 'number') variants = { ice: variants };
+    seasonMats.push({ mat, base: mat.color.getHex(), variants });
+    return mat;
+  };
+  const winterMat = (mat, hex) => biomeMat(mat, { ice: hex });
   const seasonIMs = [];
-  const winterIM = (im, n, winterHex) => { seasonIMs.push({ im, n, winterHex, orig: null }); return im; };
-  function setFrost(on) {
-    for (const e of seasonMats) e.mat.color.setHex(on ? e.winter : e.summer);
+  const biomeIM = (im, n, variants) => {
+    if (typeof variants === 'number') variants = { ice: variants };
+    seasonIMs.push({ im, n, variants, orig: null });
+    return im;
+  };
+  const winterIM = (im, n, hex) => biomeIM(im, n, { ice: hex });
+  function setBiome(key) {
+    for (const e of seasonMats) {
+      const v = key != null ? e.variants[key] : null;
+      e.mat.color.setHex(v != null ? v : e.base);
+    }
     const c = new THREE.Color();
     for (const e of seasonIMs) {
       if (!e.im.instanceColor) continue;
-      if (on && !e.orig) e.orig = e.im.instanceColor.array.slice();
+      const v = key != null ? e.variants[key] : null;
+      if (v != null && !e.orig) e.orig = e.im.instanceColor.array.slice();
       if (!e.orig) continue;
       for (let i = 0; i < e.n; i++) {
-        if (on) c.setHex(e.winterHex).offsetHSL(0, 0, -(i % 4) * 0.02);
+        if (v != null) c.setHex(v).offsetHSL(0, 0, -(i % 4) * 0.02);
         else c.fromArray(e.orig, i * 3);
         e.im.setColorAt(i, c);
       }
@@ -2324,29 +2342,39 @@ export function createStage(canvas) {
     furCuffs.push(sleeve);
   }
 
-  // the whole crowd bundles up too: instance colors swap to winter whites
+  // the crowd dresses for the world: named wardrobe palettes swap the instance
+  // colors (original fair outfits saved lazily, restored on key null)
+  const CROWD_PALETTES = {
+    winter: [0x9c4a4a, 0x4a6b8c, 0x5c7a5c, 0x8a7a9c, 0xe8e2d4, 0x7a5a44], // muted coats vs snow
+    desert: [0xb5885a, 0x9c7a4a, 0xc9a86a, 0x7a6a4a, 0xd8b878, 0x8a5a3a], // dusty earth tones
+    jungle: [0xc9b23a, 0xd87a3a, 0x5c8a5c, 0x8a4a3a, 0xe8d8a4, 0x4a6b5c], // expedition khakis + tropics
+    lava:   [0x3a3a42, 0x5a2a2a, 0x8a4a2a, 0x2a2a30, 0x6e5a3a, 0x4a3a3a], // soot + ember leathers
+    dojo:   [0xe8e2d4, 0x8a2a2a, 0x2a2a35, 0xc9b89a, 0x5c5a52, 0x8a7a5a], // gi whites, belt reds, monk greys
+    therapy:[0x8a9cb0, 0xb0a08a, 0x6e7a8a, 0xc9c2b5, 0x5c6a7a, 0x9a8ab0], // waiting-room neutrals
+    heaven: [0xf2efe4, 0xe8e2d4, 0xd8e4f0, 0xf0e8c9, 0xe4d8f0, 0xffffff], // robes, all of them
+    hell:   [0x8a2a2a, 0x5a1a1a, 0xb54a2a, 0x3a2a2a, 0x6e2a3a, 0x2a1a1a], // various shades of regret
+  };
   let crowdOrig = null;
-  function setCrowdWinter(on) {
+  function setCrowdPalette(key) {
     if (!bodyIM.instanceColor) return;
-    if (on && !crowdOrig) {
+    const pal = key != null ? CROWD_PALETTES[key] : null;
+    if (pal && !crowdOrig) {
       crowdOrig = {
         body: bodyIM.instanceColor.array.slice(),
         skirt: skirtIM.instanceColor ? skirtIM.instanceColor.array.slice() : null,
       };
     }
     if (!crowdOrig) return;
-    // muted winter coats — colorful enough to read against the snow
-    const COATS = [0x9c4a4a, 0x4a6b8c, 0x5c7a5c, 0x8a7a9c, 0xe8e2d4, 0x7a5a44];
     const c = new THREE.Color();
     for (let i = 0; i < N; i++) {
-      if (on) c.setHex(COATS[i % COATS.length]).offsetHSL(0, 0, ((i * 7) % 3) * -0.02);
+      if (pal) c.setHex(pal[i % pal.length]).offsetHSL(0, 0, ((i * 7) % 3) * -0.02);
       else c.fromArray(crowdOrig.body, i * 3);
       bodyIM.setColorAt(i, c);
     }
     bodyIM.instanceColor.needsUpdate = true;
     if (skirtIM.instanceColor && crowdOrig.skirt) {
       for (let i = 0; i < femN; i++) {
-        if (on) c.setHex(COATS[(i + 2) % COATS.length]).offsetHSL(0, -0.1, 0.06);
+        if (pal) c.setHex(pal[(i + 2) % pal.length]).offsetHSL(0, -0.1, 0.06);
         else c.fromArray(crowdOrig.skirt, i * 3);
         skirtIM.setColorAt(i, c);
       }
@@ -2378,13 +2406,31 @@ export function createStage(canvas) {
   scene.add(stars);
 
   const grassMap = grass.material.map, laneMap = lane.material.map;
+  // Every world is ONE entry here: a palette + declarative flags. New worlds
+  // need no bespoke branches in setWorldTheme — they declare a `group` (their
+  // prop kit, registered in WORLD_GROUPS/WORLD_FX), a `biome` (retint key for
+  // biomeMat/biomeIM variants), a `crowd` wardrobe, pond/sun tints, what farm
+  // dressing hides, and which barricade stands at 20m.
   const WORLD_THEMES = {
     day:   { fog: [0xdce9f2, 45, 160], skyTint: 0xffffff, hemi: [0xcfe2ff, 0x4f6b3a, 0.9], sun: [0xfff2d8, 1.9], fill: 0.35, cloud: 0xfff6ea, maps: true,  grass: 0xffffff, lane: 0xffffff, night: false, sunFace: true },
     night: { fog: [0x151b32, 40, 130], skyTint: 0x28325e, hemi: [0x8093c9, 0x243048, 0.5], sun: [0xbfd4ff, 0.7], fill: 0.12, cloud: 0x3a4668, maps: true,  grass: 0x7d88b8, lane: 0x8d94b8, night: true,  sunFace: false },
-    ice:   { fog: [0xe8f1fa, 45, 150], skyTint: 0xdfeafc, hemi: [0xdfeaff, 0x9fb2c8, 0.95], sun: [0xeaf4ff, 1.6], fill: 0.3, cloud: 0xf4f8ff, maps: false, grass: 0xe8f2f8, lane: 0xcfe6f2, night: false, sunFace: true },
+    ice:   { fog: [0xe8f1fa, 45, 150], skyTint: 0xdfeafc, hemi: [0xdfeaff, 0x9fb2c8, 0.95], sun: [0xeaf4ff, 1.6], fill: 0.3, cloud: 0xf4f8ff, maps: false, grass: 0xe8f2f8, lane: 0xcfe6f2, night: false, sunFace: true,
+      group: 'ice', biome: 'ice', crowd: 'winter', pond: 0xaed4ec, sunTint: [0xcfdce6, 0.6],
+      hideFarm: true, hideFences: true, hideCloths: true, barricade: 'snow' },
   };
-  function setWorldTheme(name) {
-    const t = WORLD_THEMES[name] || WORLD_THEMES.day;
+  const WORLD_GROUPS = { ice: winterG };            // themed prop kits by group key
+  const WORLD_FX = {                                 // per-world extras beyond the kit
+    ice: (on) => {
+      snowPts.visible = on;
+      furG.visible = on;
+      for (const cf of furCuffs) cf.visible = on;
+      if (coniferCaps) coniferCaps.visible = on;
+    },
+  };
+  const BARRICADES = { planks: summerBarricade, snow: snowBarricade };
+  const hasWorld = (n) => !!WORLD_THEMES[n];
+
+  function applyPalette(t) {
     scene.fog.color.setHex(t.fog[0]);
     scene.fog.near = t.fog[1];
     scene.fog.far = t.fog[2];
@@ -2393,7 +2439,7 @@ export function createStage(canvas) {
     sun.color.setHex(t.sun[0]); sun.intensity = t.sun[1];
     fill.intensity = t.fill;
     cloudMat.color.setHex(t.cloud);
-    // Frozen Lake swaps the textured ground for flat snow/ice; others restore it
+    // flat-color worlds (ice, desert…) drop the ground textures; others restore
     grass.material.map = t.maps ? grassMap : null;
     lane.material.map = t.maps ? laneMap : null;
     grass.material.color.setHex(t.grass);
@@ -2401,25 +2447,26 @@ export function createStage(canvas) {
     grass.material.needsUpdate = true;
     lane.material.needsUpdate = true;
     sunFace.visible = t.sunFace;
-    lanternG.visible = t.night;
-    stars.visible = t.night;
-    const ice = name === 'ice';
-    winterG.visible = ice;
-    snowPts.visible = ice;
-    furG.visible = ice;
-    for (const cf of furCuffs) cf.visible = ice;
-    for (const fh of farmhouses) fh.visible = !ice;      // igloos take their spots
-    for (const fb of fenceBits) fb.visible = !ice;       // drifts take the fence line
-    for (const c of cloths) c.mesh.visible = !ice;       // nobody hangs laundry in a blizzard
-    for (const m of summerBarricade) m.visible = !ice;   // planks ⇄ packed snow
-    for (const m of snowBarricade) m.visible = ice;
-    if (coniferCaps) coniferCaps.visible = ice;          // snow-loaded treetops
-    // wan winter sun: pale and half-hidden behind the snow sky
-    sunFace.material.color.setHex(ice ? 0xcfdce6 : 0xffffff);
-    sunFace.material.opacity = ice ? 0.6 : 1;
-    if (pondWater) pondWater.material.color.setHex(ice ? 0xaed4ec : 0x5b9bd0);
-    setCrowdWinter(ice);
-    setFrost(ice);
+    const [sTint, sOp] = t.sunTint || [0xffffff, 1];
+    sunFace.material.color.setHex(sTint);
+    sunFace.material.opacity = sOp;
+    lanternG.visible = !!t.night;
+    stars.visible = !!t.night;
+    if (pondWater) pondWater.material.color.setHex(t.pond || 0x5b9bd0);
+  }
+
+  function setWorldTheme(name) {
+    const t = WORLD_THEMES[name] || WORLD_THEMES.day;
+    applyPalette(t);
+    for (const [k, g] of Object.entries(WORLD_GROUPS)) g.visible = k === t.group;
+    for (const [k, fn] of Object.entries(WORLD_FX)) fn(k === t.group);
+    for (const fh of farmhouses) fh.visible = !t.hideFarm;
+    for (const fb of fenceBits) fb.visible = !t.hideFences;
+    for (const c of cloths) c.mesh.visible = !t.hideCloths;
+    const bar = t.barricade || 'planks';
+    for (const [k, arr] of Object.entries(BARRICADES)) for (const m of arr) m.visible = k === bar;
+    setCrowdPalette(t.crowd || null);
+    setBiome(t.biome || null);
   }
 
   return {
@@ -2427,7 +2474,7 @@ export function createStage(canvas) {
     trackSun, spawnShock, spawnDust, updateFX, updateAmbient, setScoreboard, animals,
     breakBarricade, resetBarricade, isBarricadeBroken: () => barricade.broken,
     sunMood, currentSunMood: () => sunCurrent, cowMoo, kidsCelebrate, spawnConfetti,
-    summonSpirits, spawnBeam, spawnSparkles, slapDuel, scareBirds, solids, setWorldTheme,
+    summonSpirits, spawnBeam, spawnSparkles, slapDuel, scareBirds, solids, setWorldTheme, hasWorld,
     setSpirit, setJudge, setBruce, cinePoints,
   };
 }
