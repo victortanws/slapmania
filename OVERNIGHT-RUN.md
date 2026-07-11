@@ -582,3 +582,24 @@ matrix, gates watertight, pin/restore in lockstep, quirks deterministic + scorin
 activeWorld quirk text, lava light floor, preview-at-home). Merged worlds-expansion → main
 (d37ed13..c5d5c80) and deployed; propagation verified. **Rollback point: d37ed13.**
 Next up: the share-your-launch image (approach validated: canvas poster + baked-in dare).
+
+## Ship record — 2026-07-11 (campaign-verdict + movement wave, a76836b)
+Pushed f62fbfc → a76836b to production; verified live (POGO in opponent.js,
+ESCAPE_FAIL/WINS in campaign.js, swept-contact prevHandSeg in main.js).
+- Phantom contact fixed (rHand 0.26→0.14) + swept palm test (60fps tunneling)
+  + wrap-slap gate ≥3.5 m/s. Baseline Charlie×Slim 92.8–93.6m held.
+- Campaign verdict cards (goal + CLEARED/FAILED + retry/continue), WINS beats,
+  fail→retry loop verified live; Ava escape-run boss (instant gate-out fail,
+  6m catch) verified both ways; Wonders trio (hop/sway/headTurn) verified —
+  Horton exam: 29.8m turned-away vs 81.4m flush on a 30m goal.
+- Validator retunes applied: o3c2 50m, t3c1 45m, v2c2 450, t2c2 50m, tour
+  order (8 keys), Ava skirt. UI audit (12 findings) all fixed: unlock modal
+  escape-ability/redeem overflow/dead rule, goal-banner vs flight ticker,
+  mobile keysbar/meters bands, landscape coach, title vs topbar, tour pane
+  overflow, pale-world caption shadows, per-tour unlock copy, portraits use
+  the real head mesh.
+- Testing note: two prior "phantom input" scares were a background validator
+  agent driving the SAME preview tab (preview servers of one session share a
+  visible tab). Serialize agent tab access, or give verification runs their
+  own launch-config port.
+- Rollback: previous production = f62fbfc (ten-worlds ship).
