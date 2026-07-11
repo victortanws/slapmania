@@ -351,7 +351,7 @@ function goToTitle() {
   if (chosenArch && chosenArch.boss) chosenArch = null;   // bosses don't loiter on the porch
   // a tour may have pinned its own world (the dojo) — restore the player's pick
   const homeWorld = localStorage.getItem('slapp_world') || 'day';
-  if (stage.hasWorld && stage.hasWorld(homeWorld)) stage.setWorldTheme(homeWorld);
+  if (stage.hasWorld(homeWorld)) setWorldFull(homeWorld);
   player.reset();
   opponent.remove();
   opponent = new Opponent({ scene, world: phys.world, mat: phys.fleshMat, arch: chosenArch || ROSTER[1] });
@@ -447,7 +447,7 @@ function openTourMenu() {
     // match the story; grants free campaign-use of a locked DLC slapper.
     if (ch.slapper) { const s = SLAPPERS.find((x) => x.key === ch.slapper); if (s) setLook(s); }
     // a tour can pin its WORLD (Bruce fights in the dojo) — guarded until it ships
-    if (ch.world && stage.hasWorld && stage.hasWorld(ch.world)) stage.setWorldTheme(ch.world);
+    if (ch.world && stage.hasWorld(ch.world)) setWorldFull(ch.world);
     let lines = [];
     const proKey = (ch.tourKey || '') + '_prologue';
     if (campaign.CUTSCENES[proKey] && !seenScene(proKey)) {
@@ -481,18 +481,63 @@ document.getElementById('matchNext').onclick = () => { sfx.ensure(); advanceScre
 // ---------- worlds: Day Fair / Night Fair / Frozen Lake (public) ----------
 // Theme + (for ice) ground friction, persisted. Distances still end at the
 // forest perimeter (~117m), so the DB dist cap (130) holds even on ice.
-// three explicit buttons — pick the world you want, the active one wears red
-function applyWorld(key) {
+// The selector is a scrollable chip row GENERATED from this list — a new world
+// is one entry here + one WORLD_THEMES entry in scene.js. DLC worlds wear a 🔒
+// until the Supporter Pack is owned; chips render only once their theme ships.
+const WORLDS = [
+  { key: 'day',     label: '🌞 DAY FAIR' },
+  { key: 'night',   label: '🌙 NIGHT FAIR' },
+  { key: 'ice',     label: '❄️ FROZEN LAKE' },
+  { key: 'desert',  label: '🌵 DESERT' },
+  { key: 'jungle',  label: '🌴 JUNGLE' },
+  { key: 'lava',    label: '🌋 LAVA LAND', dlc: true },
+  { key: 'dojo',    label: '🥋 THE DOJO', dlc: true },
+  { key: 'therapy', label: '🛋️ THERAPY ROOM', dlc: true },
+  { key: 'heaven',  label: '😇 HEAVEN', dlc: true },
+  { key: 'hell',    label: '🔥 HELL', dlc: true },
+];
+// theme + that world's ONE physics quirk, together — used by the selector,
+// the tour world-pin, and the return-to-title restore, so visuals and physics
+// can never drift apart
+function setWorldFull(key) {
   stage.setWorldTheme(key);
-  phys.setIce(key === 'ice');
+  if (key === 'ice') phys.setGround({ friction: 0.03, restitution: 0.3 });        // bodies glide
+  else if (key === 'jungle') phys.setGround({ friction: 0.38, restitution: 0.62 }); // springmoss BOING
+  else phys.setGround(null);                                                       // farm default
+  phys.setGravity(key === 'heaven' ? -8.8 : null);                                 // floaty grace
+}
+function applyWorld(key) {
+  setWorldFull(key);
   document.querySelectorAll('.worldOpt').forEach((b) => b.classList.toggle('on', b.dataset.world === key));
   localStorage.setItem('slapp_world', key);
   track('world_selected', { world: key });
 }
-document.querySelectorAll('.worldOpt').forEach((b) => {
-  b.onclick = () => { sfx.ensure(); applyWorld(b.dataset.world); };
-});
-applyWorld(localStorage.getItem('slapp_world') || 'day');
+function buildWorldRow() {
+  const row = document.getElementById('worldRow');
+  row.innerHTML = '';
+  for (const w of WORLDS) {
+    if (!stage.hasWorld(w.key)) continue;           // chips appear as worlds ship
+    const locked = w.dlc && !owned('bruceslee');    // one pack unlocks everything
+    const b = document.createElement('button');
+    b.className = 'worldOpt';
+    b.dataset.world = w.key;
+    b.textContent = locked ? `🔒 ${w.label.replace(/^\S+\s/, '')}` : w.label;
+    b.onclick = () => {
+      sfx.ensure();
+      if (locked) {
+        openUnlockModal({ name: w.label.replace(/^\S+\s/, ''), desc: 'This world — and every DLC world and legend — rides with the Supporter Pack.' });
+        return;
+      }
+      applyWorld(w.key);
+    };
+    row.appendChild(b);
+  }
+}
+buildWorldRow();
+// if the saved world is DLC and the pack was refunded/cleared, fall back to day
+const savedWorld = localStorage.getItem('slapp_world') || 'day';
+const savedDef = WORLDS.find((w) => w.key === savedWorld);
+applyWorld(stage.hasWorld(savedWorld) && !(savedDef && savedDef.dlc && !owned('bruceslee')) ? savedWorld : 'day');
 if (campaign.enabled()) {
   const b = document.getElementById('tourBtn');
   b.classList.remove('hidden');

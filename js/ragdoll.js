@@ -28,6 +28,15 @@ export function createWorld() {
     groundContact.friction = on ? 0.03 : 0.45;
     groundContact.restitution = on ? 0.3 : 0.42;
   };
+  // world-quirk knobs in the same spirit: the JUNGLE's springmoss floor
+  // (bouncy landings) and HEAVEN's floaty grace (lighter gravity). Passing
+  // null restores the farm default. Distances stay inside the ~117m perimeter
+  // (sim-verified per world before a world may use these).
+  const setGround = (opts) => {
+    groundContact.friction = opts && opts.friction != null ? opts.friction : 0.45;
+    groundContact.restitution = opts && opts.restitution != null ? opts.restitution : 0.42;
+  };
+  const setGravity = (g) => { world.gravity.set(0, g != null ? g : -9.82, 0); };
 
   const fixed = (shape, x, y, z) => {
     const b = new CANNON.Body({ type: CANNON.Body.STATIC, material: groundMat, collisionFilterGroup: GROUP_STATIC });
@@ -70,7 +79,7 @@ export function createWorld() {
   fixed(new CANNON.Box(new CANNON.Vec3(17.5, 3, 0.15)), 2.5, 3, 2.9);
   fixed(new CANNON.Box(new CANNON.Vec3(17.5, 3, 0.15)), 2.5, 3, -2.9);
 
-  return { world, groundMat, fleshMat, setIce };
+  return { world, groundMat, fleshMat, setIce, setGround, setGravity };
 }
 
 // static colliders for the visible structures (footprints supplied by the

@@ -514,8 +514,8 @@ export function createStage(canvas) {
   // --- hay: round bales, a stack, and the crash wall at the end of the lane ---
   // (in winter the shared mats swap to white — every bale becomes a snow drift
   // and the 62m crash wall becomes a wall of packed snow)
-  const hayMat = biomeMat(toonMat(0xd9b96a), { ice: 0xeef4f8, desert: 0xd8b878 });
-  const hayEnd = biomeMat(toonMat(0xc4a355), { ice: 0xe2ebf2, desert: 0xc9a86a });
+  const hayMat = biomeMat(toonMat(0xd9b96a), { ice: 0xeef4f8, desert: 0xd8b878, lava: 0x3a2f2a, hell: 0x3a2320, heaven: 0xf2eede, dojo: 0xd9c9a8, therapy: 0x9a8ab0 });
+  const hayEnd = biomeMat(toonMat(0xc4a355), { ice: 0xe2ebf2, desert: 0xc9a86a, lava: 0x322824, hell: 0x2f1e1c, heaven: 0xe8e2d4, dojo: 0xc9b490, therapy: 0x8a7aa8 });
   function roundBale(x, z, ry) {
     const b = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 1.3, 14), hayMat);
     b.rotation.set(0, ry, Math.PI / 2);
@@ -559,7 +559,7 @@ export function createStage(canvas) {
     cornIM.setMatrixAt(i, pd.matrix);
     cornIM.setColorAt(i, cc.setHSL(0.24, 0.5, 0.32 + Math.random() * 0.12));
   }
-  scene.add(biomeIM(cornIM, 180, { ice: 0xd9cfa8, desert: 0xcbb187 }));
+  scene.add(biomeIM(cornIM, 180, { ice: 0xd9cfa8, desert: 0xcbb187, lava: 0x2a2220, hell: 0x2a1a18, heaven: 0xf0d060, dojo: 0xa8b86a, therapy: 0x7a6a94 }));
 
   // --- trees ---
   function tree(x, z, s = 1) {
@@ -569,7 +569,7 @@ export function createStage(canvas) {
     trunk.castShadow = true;
     g.add(trunk);
     for (const [ox, oy, oz, r] of [[0, 3.1, 0, 1.5], [0.9, 2.5, 0.3, 1.0], [-0.9, 2.6, -0.2, 1.1]]) {
-      const puff = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 10), biomeMat(toonMat(0x4e7d3a), { ice: 0xe9f0f4, desert: 0x8a8f5a }));
+      const puff = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 10), biomeMat(toonMat(0x4e7d3a), { ice: 0xe9f0f4, desert: 0x8a8f5a, lava: 0x3a2a26, hell: 0x33201e, heaven: 0xf6f2e8, therapy: 0x8a7aa8 }));
       puff.position.set(ox, oy, oz);
       puff.castShadow = true;
       g.add(puff);
@@ -597,7 +597,7 @@ export function createStage(canvas) {
     edgeCornIM.setMatrixAt(i, pd.matrix);
     edgeCornIM.setColorAt(i, cc.setHSL(0.23, 0.5, 0.3 + Math.random() * 0.14));
   }
-  scene.add(biomeIM(edgeCornIM, 280, { ice: 0xd9cfa8, desert: 0xcbb187 }));
+  scene.add(biomeIM(edgeCornIM, 280, { ice: 0xd9cfa8, desert: 0xcbb187, lava: 0x2a2220, hell: 0x2a1a18, heaven: 0xf0d060, dojo: 0xa8b86a, therapy: 0x7a6a94 }));
 
   function scarecrow(x, z, ry = 0) {
     const g = new THREE.Group();
@@ -842,7 +842,7 @@ export function createStage(canvas) {
     fieldCornIM.setMatrixAt(i, pd.matrix);
     fieldCornIM.setColorAt(i, cc.setHSL(0.23, 0.5, 0.3 + Math.random() * 0.14));
   }
-  scene.add(biomeIM(fieldCornIM, 420, { ice: 0xd9cfa8, desert: 0xcbb187 }));
+  scene.add(biomeIM(fieldCornIM, 420, { ice: 0xd9cfa8, desert: 0xcbb187, lava: 0x2a2220, hell: 0x2a1a18, heaven: 0xf0d060, dojo: 0xa8b86a, therapy: 0x7a6a94 }));
 
   // fruit trees: apples red, oranges orange, both delicious at 30 m/s
   function fruitTree(x, z, fruitCol, leafCol, s = 1) {
@@ -850,7 +850,7 @@ export function createStage(canvas) {
     const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.28, 1.9, 8), toonMat(0x6b4a2e));
     trunk.position.y = 0.95;
     g.add(trunk);
-    const blob = new THREE.Mesh(new THREE.SphereGeometry(1.35, 10, 10), biomeMat(toonMat(leafCol), { ice: 0xe9f0f4, desert: 0x8a8f5a }));
+    const blob = new THREE.Mesh(new THREE.SphereGeometry(1.35, 10, 10), biomeMat(toonMat(leafCol), { ice: 0xe9f0f4, desert: 0x8a8f5a, lava: 0x3a2a26, hell: 0x33201e, heaven: 0xf6f2e8, therapy: 0x8a7aa8 }));
     blob.scale.set(1, 0.85, 1);
     blob.position.y = 2.6;
     g.add(blob);
@@ -942,6 +942,7 @@ export function createStage(canvas) {
   let coniferCaps = null;
   let coniferIM = null;
   let cactusBelt = null;
+  let perimSpots = null; // the perimeter dressing line — every world re-dresses THESE spots
   {
     const spots = [];
     for (let z = -36; z <= 36; z += 2.4) spots.push([115.5 + Math.random() * 3, z + Math.random()]);        // far treeline
@@ -1000,11 +1001,12 @@ export function createStage(canvas) {
     cactusBelt.traverse((m) => { m.castShadow = true; });
     cactusBelt.visible = false;
     scene.add(cactusBelt);
+    perimSpots = spots;
   }
 
   // distant hills close the horizon — the county rolls on to ~200m
   for (const [hx, hz, hr, hh] of [[190, -60, 90, 26], [170, 80, 80, 20], [-90, -120, 100, 24], [40, 190, 110, 26], [230, 40, 100, 30]]) {
-    const hill = new THREE.Mesh(new THREE.SphereGeometry(hr, 16, 12), biomeMat(toonMat(0x6e8f5a), { ice: 0xe6edf5, desert: 0xc9a05e }));
+    const hill = new THREE.Mesh(new THREE.SphereGeometry(hr, 16, 12), biomeMat(toonMat(0x6e8f5a), { ice: 0xe6edf5, desert: 0xc9a05e, lava: 0x2a2024, hell: 0x2a1518, heaven: 0xf2efe4, therapy: 0x9a8fc0 }));
     hill.scale.set(1, hh / hr, 1);
     hill.position.set(hx, -hr * 0.35, hz);
     scene.add(hill);
@@ -1598,6 +1600,56 @@ export function createStage(canvas) {
         tw.m.rotation.z -= (tw.speed / tw.r) * dt;          // roll like it means it
         tw.m.position.z = tw.z0 + Math.sin(time * 0.6 + tw.r * 20) * 1.6;
         if (tw.m.position.x > 120) tw.m.position.x = -22;   // the desert never runs out
+      }
+    }
+    if (jungleG.visible && monkey) {
+      monkey.rotation.z = Math.sin(time * 1.3) * 0.8;       // the vine pendulum
+    }
+    if (dojoG.visible) {
+      for (const k of kois) {
+        k.a += dt * 0.5;
+        k.m.position.set(40 + Math.cos(k.a) * k.r, 0.06, 24 + Math.sin(k.a) * k.r);
+        k.m.rotation.y = -k.a;
+      }
+      if (gongDisc) gongDisc.rotation.x *= 0.985;           // ringing decays back to still
+    }
+    if (lavaG.visible) {
+      for (const gy of geysers) {
+        // a fixed 4s rhythm, phase-offset — deterministic, like the weave
+        const cyc = (time + gy.ph) % 4;
+        gy.m.scale.y = cyc < 0.7 ? Math.sin((cyc / 0.7) * Math.PI) : 0.01;
+      }
+      if (salamander) {
+        const span = 40, ph = ((time * 0.045) % 2 + 2) % 2, fwd = ph < 1;
+        salamander.position.x = 30 + span * (fwd ? ph : 2 - ph);
+        salamander.rotation.y = fwd ? 0 : Math.PI;
+      }
+    }
+    if (heavenG.visible) {
+      for (const ch of cherubs) {
+        const a = time * 0.4 + ch.ph;
+        ch.g.position.set(35 + Math.cos(a) * 18, 8.5 + Math.sin(time * 1.7 + ch.ph) * 0.8, Math.sin(a) * 10);
+        ch.g.rotation.y = -a;
+        ch.g.children[1].rotation.x = Math.sin(time * 9) * 0.5;  // wing flaps
+        ch.g.children[2].rotation.x = -Math.sin(time * 9) * 0.5;
+      }
+    }
+    if (hellG.visible) {
+      for (const ip of impPokers) ip.g.position.y = Math.abs(Math.sin(time * 2.4 + ip.ph)) * 0.05;
+      if (cerberus) {
+        const span = 42, ph = ((time * 0.05) % 2 + 2) % 2, fwd = ph < 1;
+        cerberus.position.x = 28 + span * (fwd ? ph : 2 - ph);
+        cerberus.rotation.y = fwd ? 0 : Math.PI;
+        cerberus.position.y = Math.abs(Math.sin(time * 2.2)) * 0.04;
+      }
+    }
+    if (therapyG.visible && countSheep) {
+      // one sheep, hopping the rail forever — deterministic 2.4s loop
+      const hop = (time % 2.4) / 2.4;
+      countSheep.position.x = 7 + hop * 6;
+      countSheep.position.y = Math.sin(hop * Math.PI) * 1.6;
+      for (const d of therapyG.children) {
+        if (d.userData && d.userData.baseY != null) d.position.y = d.userData.baseY + Math.sin(time * 0.8 + d.position.x) * 0.15;
       }
     }
     ferrisSpin.rotation.z += dt * 0.22;
@@ -2444,6 +2496,671 @@ export function createStage(canvas) {
     }
   }
 
+  // ======================================================================
+  // THE WORLD KITS — jungle / dojo / lava / heaven / hell / therapy.
+  // Each: a perimeter re-dress on the SAME perimSpots (the physics edge stays
+  // dressed), signature structures on the existing footprints (solids never
+  // move), a barricade variant that joins barricade.pieces, and 1-3 ambient
+  // animations driven from updateAmbient. Lean kits — signature over clutter.
+  // ======================================================================
+  const mkBelt = (build, stride = 2) => {
+    const g = new THREE.Group();
+    for (let i = 0; i < perimSpots.length; i += stride) build(g, perimSpots[i][0], perimSpots[i][1], i);
+    g.traverse((m) => { m.castShadow = true; });
+    g.visible = false;
+    scene.add(g);
+    return g;
+  };
+  const mkBarricade = (build) => {
+    const arr = [];
+    const bx = START_X + 20;
+    build(arr, bx);
+    for (const g of arr) {
+      g.traverse((m) => { m.castShadow = true; });
+      g.visible = false;
+      scene.add(g);
+      barricade.pieces.push({ mesh: g, homeP: g.position.clone(), homeQ: g.quaternion.clone() });
+    }
+    return arr;
+  };
+  const glowMat = (hex) => new THREE.MeshBasicMaterial({ color: hex });
+
+  // --- 🌴 JUNGLE ---
+  const jungleG = new THREE.Group();
+  let monkey = null;
+  {
+    const trunkMat = toonMat(0x6e4a2e), leafMat = toonMat(0x2f6a2a);
+    jungleG.add(mkBelt((g, x, z, i) => {
+      const h = 6.5 + (i % 3);
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.5, h, 6), trunkMat);
+      trunk.position.set(x, h / 2, z);
+      g.add(trunk);
+      for (const [ox, oy, oz, r] of [[0, h + 0.8, 0, 2.0], [1.1, h + 0.2, 0.5, 1.3]]) {
+        const blob = new THREE.Mesh(new THREE.SphereGeometry(r, 8, 8), leafMat);
+        blob.position.set(x + ox, oy, z + oz);
+        g.add(blob);
+      }
+    }));
+    jungleG.children[0].visible = true; // belt rides inside the kit group
+    // ruins on the farmhouse footprints
+    const stone = toonMat(0x8a9a8a), moss = toonMat(0x4a7a3a);
+    const ruin = (x, z, kind) => {
+      const g = new THREE.Group();
+      if (kind === 'head') {
+        const head = new THREE.Mesh(new THREE.BoxGeometry(4.5, 6, 4.5), stone);
+        head.position.y = 3;
+        g.add(head);
+        const nose = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1.2), stone);
+        nose.position.set(-2.6, 3, 0);
+        g.add(nose);
+      } else if (kind === 'zig') {
+        for (let s = 0; s < 3; s++) {
+          const step = new THREE.Mesh(new THREE.BoxGeometry(7 - s * 2, 1.6, 9 - s * 2), stone);
+          step.position.y = 0.8 + s * 1.6;
+          g.add(step);
+        }
+      } else {
+        for (const pz of [-2.4, 2.4]) {
+          const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.8, 6.5, 8), stone);
+          pillar.position.set(0, 3.25, pz);
+          g.add(pillar);
+        }
+      }
+      const patch = new THREE.Mesh(new THREE.SphereGeometry(1.4, 7, 6), moss);
+      patch.scale.set(1, 0.3, 1);
+      patch.position.set(0, kind === 'head' ? 6 : 4.6, 0.8);
+      g.add(patch);
+      g.position.set(x, 0, z);
+      jungleG.add(g);
+    };
+    ruin(96, 19, 'head'); ruin(84, -27, 'zig'); ruin(108, -14, 'pillars'); ruin(58, 31, 'zig');
+    // the vine curtain across the lane (visual only — no collider)
+    for (let i = 0; i < 9; i++) {
+      const len = 2.6 + Math.random() * 1.8;
+      const vine = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.08, len, 5), toonMat(0x3a6a2e));
+      vine.position.set(35, 8 - len / 2, -2.6 + i * 0.65);
+      jungleG.add(vine);
+    }
+    // lily pads + croc eyes on the pond
+    for (let i = 0; i < 6; i++) {
+      const pad = new THREE.Mesh(new THREE.CircleGeometry(0.5 + Math.random() * 0.3, 8), toonMat(0x4a8a3a));
+      pad.rotation.x = -Math.PI / 2;
+      const a = Math.random() * Math.PI * 2, rr = 1 + Math.random() * 4;
+      pad.position.set(40 + Math.cos(a) * rr, 0.05, 24 + Math.sin(a) * rr);
+      jungleG.add(pad);
+    }
+    for (const s of [-1, 1]) {
+      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.14, 7, 6), toonMat(0x3a5a2a));
+      eye.position.set(37.5, 0.12, 23.4 + s * 0.35);
+      jungleG.add(eye);
+    }
+    // the monkey on a vine — pendulum from a pivot at y 7
+    monkey = new THREE.Group();
+    const rope = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 4.6, 5), toonMat(0x5a4a2e));
+    rope.position.y = -2.3;
+    monkey.add(rope);
+    const mBody = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 0.3, 3, 8), toonMat(0x8a5a3a));
+    mBody.position.y = -4.8;
+    monkey.add(mBody);
+    const mHead = new THREE.Mesh(new THREE.SphereGeometry(0.17, 8, 8), toonMat(0x8a5a3a));
+    mHead.position.y = -4.3;
+    monkey.add(mHead);
+    const mFace = new THREE.Mesh(new THREE.SphereGeometry(0.1, 7, 6), toonMat(0xe8c8a2));
+    mFace.position.set(-0.09, -4.3, 0);
+    monkey.add(mFace);
+    monkey.position.set(30, 7, -8);
+    jungleG.add(monkey);
+    jungleG.traverse((m) => { m.castShadow = true; });
+    jungleG.visible = false;
+    scene.add(jungleG);
+  }
+  const bambooBarricade = mkBarricade((arr, bx) => {
+    for (const [by, count] of [[0.4, 5], [1.1, 4], [1.8, 3]]) {
+      for (let i = 0; i < count; i++) {
+        const g = new THREE.Group();
+        const log = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 1.5, 8), toonMat(0x9ab55e));
+        g.add(log);
+        g.position.set(bx, by, -2 + i * (4 / Math.max(1, count - 1)));
+        arr.push(g);
+      }
+    }
+  });
+
+  // --- 🥋 DOJO ---
+  const dojoG = new THREE.Group();
+  let gongDisc = null;
+  const kois = [];
+  {
+    const bambooMat = toonMat(0x7a9a4a), stoneMat = toonMat(0xb5ab98);
+    dojoG.add(mkBelt((g, x, z, i) => {
+      if (i % 8 === 0) {
+        const lant = new THREE.Group();
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.45, 1.5, 6), stoneMat);
+        base.position.y = 0.75;
+        lant.add(base);
+        const cap = new THREE.Mesh(new THREE.ConeGeometry(0.6, 0.5, 6), stoneMat);
+        cap.position.y = 1.8;
+        lant.add(cap);
+        lant.position.set(x, 0, z);
+        g.add(lant);
+        return;
+      }
+      for (let b = 0; b < 4; b++) {
+        const h = 5.5 + (b + i) % 3;
+        const cane = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.17, h, 5), bambooMat);
+        cane.position.set(x + (b - 1.5) * 0.55, h / 2, z + ((b + i) % 2) * 0.5);
+        g.add(cane);
+      }
+      const leaf = new THREE.Mesh(new THREE.SphereGeometry(1.7, 7, 6), bambooMat);
+      leaf.scale.set(1, 0.55, 1);
+      leaf.position.set(x, 6.6, z);
+      g.add(leaf);
+    }));
+    dojoG.children[0].visible = true;
+    // torii gate over the lane at x=12 (posts outside the rails, beams overhead)
+    const torii = new THREE.Group();
+    const red = toonMat(0xc0392b);
+    for (const s of [-1, 1]) {
+      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.34, 6.6, 8), red);
+      post.position.set(0, 3.3, s * 3.4);
+      torii.add(post);
+    }
+    const beamTop = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 8.6), red);
+    beamTop.position.y = 6.7;
+    torii.add(beamTop);
+    const beamMid = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 7.4), red);
+    beamMid.position.y = 5.7;
+    torii.add(beamMid);
+    torii.position.x = 12;
+    dojoG.add(torii);
+    // THE GREAT GONG on the hay-wall footprint (62m) — SLAPMASTER rings it here
+    const gongG = new THREE.Group();
+    const frameMat = toonMat(0x5a4028);
+    for (const s of [-1, 1]) {
+      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.28, 9.5, 7), frameMat);
+      leg.position.set(0, 4.75, s * 4.6);
+      leg.rotation.x = s * 0.18;
+      gongG.add(leg);
+    }
+    const cross = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 9.4, 7), frameMat);
+    cross.rotation.x = Math.PI / 2;
+    cross.position.y = 9.1;
+    gongG.add(cross);
+    gongDisc = new THREE.Mesh(new THREE.CylinderGeometry(4.2, 4.2, 0.3, 22), toonMat(0xb08a3a));
+    gongDisc.rotation.z = Math.PI / 2;
+    gongDisc.position.y = 4.7;
+    gongG.add(gongDisc);
+    const boss = new THREE.Mesh(new THREE.SphereGeometry(0.9, 10, 10), toonMat(0x7a5c28));
+    boss.scale.x = 0.4;
+    boss.position.y = 4.7;
+    gongG.add(boss);
+    gongG.position.set(60.4, 0, 0);
+    dojoG.add(gongG);
+    // wooden training dummies (mook jong)
+    for (const [dx, dz] of [[26, 6.5], [44, -6], [52, 6]]) {
+      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.26, 2.2, 8), toonMat(0xc9a468));
+      post.position.set(dx, 1.1, dz);
+      dojoG.add(post);
+      for (const [ay, ar] of [[1.5, 0.5], [1.2, -0.6], [0.9, 0.4]]) {
+        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.8, 5), toonMat(0xb08a54));
+        arm.rotation.z = Math.PI / 2;
+        arm.rotation.y = ar;
+        arm.position.set(dx, ay, dz);
+        dojoG.add(arm);
+      }
+    }
+    // koi in the pond + stepping stones
+    for (const [kx, kz] of [[38.5, 23], [41, 25.5], [40.5, 22.5]]) {
+      const koi = new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.3, 3, 6), toonMat(0xe8762a));
+      koi.rotation.z = Math.PI / 2;
+      koi.position.set(kx, 0.06, kz);
+      dojoG.add(koi);
+      kois.push({ m: koi, a: Math.random() * Math.PI * 2, r: 1.2 + Math.random() * 1.2 });
+    }
+    for (let i = 0; i < 4; i++) {
+      const st = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.55, 0.16, 7), stoneMat);
+      st.position.set(36.5 + i * 1.6, 0.08, 24 - i * 0.8);
+      dojoG.add(st);
+    }
+    dojoG.traverse((m) => { m.castShadow = true; });
+    dojoG.visible = false;
+    scene.add(dojoG);
+  }
+  const shojiBarricade = mkBarricade((arr, bx) => {
+    for (let i = 0; i < 4; i++) {
+      const g = new THREE.Group();
+      const frame = new THREE.Mesh(new THREE.BoxGeometry(0.12, 3.4, 1.25), toonMat(0x5a4028));
+      g.add(frame);
+      // the paper pokes through both frame faces, so the wall reads WHITE
+      const paper = new THREE.Mesh(new THREE.BoxGeometry(0.16, 3.05, 1.02), toonMat(0xf4efe2));
+      g.add(paper);
+      g.position.set(bx, 1.7, -1.9 + i * 1.27);
+      arr.push(g);
+    }
+  });
+
+  // --- 🌋 LAVA LAND ---
+  const lavaG = new THREE.Group();
+  const geysers = [];
+  let salamander = null;
+  {
+    const obsMat = toonMat(0x1f1a1e);
+    lavaG.add(mkBelt((g, x, z, i) => {
+      const h = 4.5 + (i % 4);
+      const shard = new THREE.Mesh(new THREE.ConeGeometry(1.1, h, 5), obsMat);
+      shard.position.set(x, h / 2, z);
+      shard.rotation.y = i;
+      g.add(shard);
+      if (i % 6 === 0) {
+        const tip = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.08, 6, 10), glowMat(0xff6a20));
+        tip.rotation.x = Math.PI / 2;
+        tip.position.set(x, h * 0.55, z);
+        g.add(tip);
+      }
+    }));
+    lavaG.children[0].visible = true;
+    // volcanoes on the mesa/mountain ring
+    const volcMat = toonMat(0x3a2a28);
+    for (const [x, z, h, r] of [[-30, -55, 24, 20], [5, -62, 30, 24], [45, -58, 26, 22], [90, -64, 32, 26], [128, -54, 24, 20], [-25, 56, 26, 22], [20, 62, 32, 24], [65, 58, 26, 22], [108, 62, 30, 24], [138, 18, 28, 22]]) {
+      const cone = new THREE.Mesh(new THREE.ConeGeometry(r, h, 7), volcMat);
+      cone.position.set(x, h / 2 - 1.5, z);
+      lavaG.add(cone);
+      const crater = new THREE.Mesh(new THREE.CircleGeometry(r * 0.22, 7), glowMat(0xff7a20));
+      crater.rotation.x = -Math.PI / 2;
+      crater.position.set(x, h - 1.4, z);
+      lavaG.add(crater);
+    }
+    // glowing lane cracks + lava-pool crust plates
+    for (const [cx, cz, cl] of [[28, 1, 4], [46, -1.4, 6], [62, 0.8, 5], [81, -0.6, 7], [95, 1.2, 4]]) {
+      const crack = new THREE.Mesh(new THREE.PlaneGeometry(cl, 0.35), glowMat(0xff8a30));
+      crack.rotation.x = -Math.PI / 2;
+      crack.rotation.z = (cx % 3) * 0.4;
+      crack.position.set(cx, 0.02, cz);
+      lavaG.add(crack);
+    }
+    for (let i = 0; i < 5; i++) {
+      const plate = new THREE.Mesh(new THREE.CircleGeometry(0.8 + Math.random() * 0.7, 6), toonMat(0x2a2224));
+      plate.rotation.x = -Math.PI / 2;
+      const a = Math.random() * Math.PI * 2, rr = Math.random() * 4;
+      plate.position.set(40 + Math.cos(a) * rr, 0.06, 24 + Math.sin(a) * rr);
+      lavaG.add(plate);
+    }
+    // geysers on a fixed 4s rhythm (deterministic, like the weave)
+    for (const [gx, gz, ph] of [[32, -6, 0], [55, 8, 1.3], [78, -5, 2.6]]) {
+      const jet = new THREE.Mesh(new THREE.ConeGeometry(0.5, 3.2, 7), glowMat(0xff8a30));
+      jet.position.set(gx, 0, gz);
+      jet.scale.y = 0.01;
+      lavaG.add(jet);
+      geysers.push({ m: jet, ph });
+    }
+    // the fire salamander ambles the south line
+    salamander = new THREE.Group();
+    const sBody = new THREE.Mesh(new THREE.CapsuleGeometry(0.3, 1.1, 4, 8), toonMat(0xff6a30));
+    sBody.rotation.z = Math.PI / 2;
+    sBody.position.y = 0.4;
+    salamander.add(sBody);
+    const sHead = new THREE.Mesh(new THREE.SphereGeometry(0.26, 8, 8), toonMat(0xff8a40));
+    sHead.position.set(0.85, 0.45, 0);
+    salamander.add(sHead);
+    const sTail = new THREE.Mesh(new THREE.ConeGeometry(0.16, 1.0, 6), toonMat(0xffa050));
+    sTail.rotation.z = Math.PI / 2;
+    sTail.position.set(-1.15, 0.4, 0);
+    salamander.add(sTail);
+    salamander.position.set(30, 0, -21);
+    lavaG.add(salamander);
+    lavaG.traverse((m) => { m.castShadow = true; });
+    lavaG.visible = false;
+    scene.add(lavaG);
+  }
+  const boulderBarricade = mkBarricade((arr, bx) => {
+    for (const [by, count] of [[0.5, 4], [1.5, 3], [2.4, 2]]) {
+      for (let i = 0; i < count; i++) {
+        const g = new THREE.Group();
+        const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.62), toonMat(0x2a2224));
+        g.add(rock);
+        const ember = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.08, 0.1), glowMat(0xff6a20));
+        ember.rotation.z = i;
+        g.add(ember);
+        g.position.set(bx, by, -1.6 + i * (3.2 / Math.max(1, count - 1)));
+        arr.push(g);
+      }
+    }
+  });
+
+  // --- 😇 HEAVEN ---
+  const heavenG = new THREE.Group();
+  const cherubs = [];
+  {
+    const marble = toonMat(0xf6f2e8), gold = toonMat(0xd8b13c);
+    heavenG.add(mkBelt((g, x, z, i) => {
+      const col = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.65, 7.5, 9), marble);
+      col.position.set(x, 3.75, z);
+      g.add(col);
+      const cap = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.4, 1.5), gold);
+      cap.position.set(x, 7.7, z);
+      g.add(cap);
+    }, 3));
+    heavenG.children[0].visible = true;
+    // THE PEARLY GATES at the county line
+    const gates = new THREE.Group();
+    for (const s of [-1, 1]) {
+      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.34, 7, 9), gold);
+      post.position.set(0, 3.5, s * 2.6);
+      gates.add(post);
+      const door = new THREE.Mesh(new THREE.BoxGeometry(0.25, 5.6, 2.2), marble);
+      door.position.set(0, 2.8, s * 1.25);
+      gates.add(door);
+    }
+    const arch = new THREE.Mesh(new THREE.TorusGeometry(2.6, 0.28, 8, 16, Math.PI), gold);
+    arch.rotation.y = Math.PI / 2;
+    arch.position.y = 7;
+    gates.add(arch);
+    gates.position.set(80, 0, 5.5);
+    heavenG.add(gates);
+    // the rainbow over the lane
+    const rainbowCols = [0xd8404f, 0xe8912d, 0xf2c53d, 0x5fae5a, 0x3f7fbf, 0x8a5fb0];
+    rainbowCols.forEach((col, i) => {
+      const arc = new THREE.Mesh(new THREE.TorusGeometry(14 - i * 0.7, 0.32, 6, 24, Math.PI), toonMat(col));
+      arc.position.set(45, 0, 0);
+      heavenG.add(arc);
+    });
+    // cloud manors on the farmhouse footprints
+    for (const [x, z, s] of [[96, 19, 1.15], [84, -27, 0.95], [108, -14, 1.0], [58, 31, 0.85]]) {
+      const g = new THREE.Group();
+      for (let i = 0; i < 6; i++) {
+        const puff = new THREE.Mesh(new THREE.SphereGeometry(1.8 + Math.random() * 1.4, 8, 7), marble);
+        puff.position.set((Math.random() - 0.5) * 4.5, 2 + Math.random() * 3.5, (Math.random() - 0.5) * 6);
+        g.add(puff);
+      }
+      const win = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.1, 0.1), gold);
+      win.position.set(-2.6, 3, 0);
+      win.rotation.y = Math.PI / 2;
+      g.add(win);
+      g.scale.setScalar(s);
+      g.position.set(x, 0, z);
+      heavenG.add(g);
+    }
+    // two cherubs circling overhead
+    for (const ph of [0, Math.PI]) {
+      const ch = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 8), toonMat(0xf0d0b0));
+      ch.add(body);
+      for (const s of [-1, 1]) {
+        const wing = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.18, 0.08), marble);
+        wing.position.set(0, 0.15, s * 0.35);
+        ch.add(wing);
+      }
+      const halo = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.03, 6, 12), gold);
+      halo.rotation.x = Math.PI / 2;
+      halo.position.y = 0.45;
+      ch.add(halo);
+      heavenG.add(ch);
+      cherubs.push({ g: ch, ph });
+    }
+    heavenG.traverse((m) => { m.castShadow = true; });
+    heavenG.visible = false;
+    scene.add(heavenG);
+  }
+  const cloudBarricade = mkBarricade((arr, bx) => {
+    for (const [by, count] of [[0.5, 5], [1.5, 4], [2.4, 3]]) {
+      for (let i = 0; i < count; i++) {
+        const g = new THREE.Group();
+        const puff = new THREE.Mesh(new THREE.SphereGeometry(0.55 + (i % 2) * 0.15, 8, 7), toonMat(0xffffff));
+        g.add(puff);
+        g.position.set(bx, by, -2 + i * (4 / Math.max(1, count - 1)));
+        arr.push(g);
+      }
+    }
+  });
+
+  // --- 😈 HELL ---
+  const hellG = new THREE.Group();
+  let cerberus = null;
+  const impPokers = [];
+  {
+    const spireMat = toonMat(0x1f1418);
+    hellG.add(mkBelt((g, x, z, i) => {
+      const h = 5 + (i % 4);
+      const spire = new THREE.Mesh(new THREE.ConeGeometry(0.8, h, 5), spireMat);
+      spire.position.set(x, h / 2, z);
+      g.add(spire);
+      if (i % 4 === 0) {
+        const tip = new THREE.Mesh(new THREE.SphereGeometry(0.16, 6, 6), glowMat(0xff5a2a));
+        tip.position.set(x, h + 0.1, z);
+        g.add(tip);
+      }
+    }));
+    hellG.children[0].visible = true;
+    // THE COMPLAINTS DEPARTMENT sign over the barn + queue posts that lead nowhere
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(9, 1.4),
+      new THREE.MeshBasicMaterial({ map: makeTextTexture('COMPLAINTS DEPT.', '#ff6a2a'), transparent: true }));
+    sign.position.set(18, 7.6, -7.6);
+    hellG.add(sign);
+    for (let i = 0; i < 5; i++) {
+      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.1, 1.1, 6), toonMat(0xd8b13c));
+      post.position.set(13 + i * 1.4, 0.55, -6.5 + Math.sin(i * 1.4) * 0.6);
+      hellG.add(post);
+    }
+    // brimstone condos on the farmhouse footprints (one lit window each)
+    for (const [x, z, s] of [[96, 19, 1.1], [84, -27, 0.9], [108, -14, 1.0], [58, 31, 0.85]]) {
+      const g = new THREE.Group();
+      const block = new THREE.Mesh(new THREE.BoxGeometry(6.2, 6.5, 9.5), toonMat(0x33161a));
+      block.position.y = 3.25;
+      g.add(block);
+      const win = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 1.4), glowMat(0xff7a30));
+      win.position.set(-3.15, 3.6, 0);
+      g.add(win);
+      g.scale.setScalar(s);
+      g.position.set(x, 0, z);
+      hellG.add(g);
+    }
+    // lava jacuzzi: two contented imps soaking in the pond
+    for (const s of [-1, 1]) {
+      const impHead = new THREE.Mesh(new THREE.SphereGeometry(0.24, 8, 8), toonMat(0xc0392b));
+      impHead.position.set(39 + s, 0.28, 24 - s * 0.8);
+      hellG.add(impHead);
+      for (const hs of [-1, 1]) {
+        const horn = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.2, 5), toonMat(0x1a1a1a));
+        horn.position.set(39 + s, 0.52, 24 - s * 0.8 + hs * 0.12);
+        hellG.add(horn);
+      }
+    }
+    // ringside fire pit with two imps stoking it
+    const pit = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 1.1, 0.4, 8), toonMat(0x2a1512));
+    pit.position.set(-4, 0.2, 6);
+    hellG.add(pit);
+    const flame = new THREE.Mesh(new THREE.ConeGeometry(0.55, 1.4, 6), glowMat(0xff8a30));
+    flame.position.set(-4, 1.1, 6);
+    hellG.add(flame);
+    for (const s of [-1, 1]) {
+      const imp = new THREE.Group();
+      const ib = new THREE.Mesh(new THREE.CapsuleGeometry(0.16, 0.3, 3, 7), toonMat(0xc0392b));
+      ib.position.y = 0.45;
+      imp.add(ib);
+      const ih = new THREE.Mesh(new THREE.SphereGeometry(0.13, 7, 7), toonMat(0xc0392b));
+      ih.position.y = 0.78;
+      imp.add(ih);
+      const poker = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.2, 5), toonMat(0x3a3a40));
+      poker.rotation.x = 0.7;
+      poker.position.set(0, 0.6, -0.4);
+      imp.add(poker);
+      imp.position.set(-4 + s * 1.5, 0, 6);
+      imp.rotation.y = -s * 1.2;
+      hellG.add(imp);
+      impPokers.push({ g: imp, ph: s });
+    }
+    // stalactites — the sky is a cavern ceiling
+    for (let i = 0; i < 8; i++) {
+      const st = new THREE.Mesh(new THREE.ConeGeometry(1 + Math.random(), 4 + Math.random() * 3, 6), spireMat);
+      st.rotation.x = Math.PI;
+      st.position.set(Math.random() * 110 - 5, 19 + Math.random() * 5, (Math.random() - 0.5) * 40);
+      hellG.add(st);
+    }
+    // CERBERUS THE PUPPY ambles the south treeline (three heads, one good boy)
+    cerberus = new THREE.Group();
+    const cBody = new THREE.Mesh(new THREE.CapsuleGeometry(0.35, 0.9, 4, 8), toonMat(0x8a2a22));
+    cBody.rotation.z = Math.PI / 2;
+    cBody.position.y = 0.55;
+    cerberus.add(cBody);
+    for (let h = -1; h <= 1; h++) {
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.22, 8, 8), toonMat(0x8a2a22));
+      head.position.set(0.75, 0.8, h * 0.35);
+      cerberus.add(head);
+      const snout = new THREE.Mesh(new THREE.SphereGeometry(0.1, 6, 6), toonMat(0x6e2a1e));
+      snout.position.set(0.95, 0.74, h * 0.35);
+      cerberus.add(snout);
+    }
+    const cTail = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.5, 5), toonMat(0x8a2a22));
+    cTail.rotation.z = -Math.PI / 2.4;
+    cTail.position.set(-0.85, 0.75, 0);
+    cerberus.add(cTail);
+    cerberus.position.set(30, 0, -20);
+    hellG.add(cerberus);
+    hellG.traverse((m) => { m.castShadow = true; });
+    hellG.visible = false;
+    scene.add(hellG);
+  }
+  const redtapeBarricade = mkBarricade((arr, bx) => {
+    for (const [by, count] of [[0.45, 4], [1.35, 3], [2.2, 2]]) {
+      for (let i = 0; i < count; i++) {
+        const g = new THREE.Group();
+        const box = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.85, 1.15), toonMat(0x8a2a22));
+        g.add(box);
+        const label = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.2, 1.17), toonMat(0xe8e0cc));
+        g.add(label);
+        g.position.set(bx, by, -1.8 + i * (3.6 / Math.max(1, count - 1)));
+        arr.push(g);
+      }
+    }
+  });
+
+  // --- 🛋️ THERAPY ROOM ---
+  const therapyG = new THREE.Group();
+  let countSheep = null;
+  let sheepCount = 0;
+  {
+    const pencilY = toonMat(0xf0c030), eraser = toonMat(0xf0a0b0), graphite = toonMat(0x3a3a40);
+    therapyG.add(mkBelt((g, x, z, i) => {
+      const h = 6 + (i % 3);
+      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, h, 6), pencilY);
+      body.position.set(x, h / 2 + 0.8, z);
+      g.add(body);
+      const tip = new THREE.Mesh(new THREE.ConeGeometry(0.4, 0.9, 6), graphite);
+      tip.rotation.x = Math.PI;
+      tip.position.set(x, 0.45, z);
+      g.add(tip);
+      const er = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.5, 6), eraser);
+      er.position.set(x, h + 1.05, z);
+      g.add(er);
+    }, 3));
+    therapyG.children[0].visible = true;
+    // THE GIANT COUCH presides where the barn stood (barn hides in this world)
+    const couch = new THREE.Group();
+    const ox = toonMat(0x8a4a3a), goldFt = toonMat(0xd8b13c);
+    const seat = new THREE.Mesh(new THREE.BoxGeometry(5, 1.6, 11), ox);
+    seat.position.y = 1.4;
+    couch.add(seat);
+    const back = new THREE.Mesh(new THREE.BoxGeometry(1.4, 3.4, 11), ox);
+    back.position.set(2, 2.9, 0);
+    couch.add(back);
+    const bolster = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 4.6, 10), ox);
+    bolster.rotation.x = Math.PI / 2;
+    bolster.position.set(-1.2, 2.4, -4.2);
+    couch.add(bolster);
+    for (const [fx, fz] of [[-2, -5], [2, -5], [-2, 5], [2, 5]]) {
+      const foot = new THREE.Mesh(new THREE.SphereGeometry(0.35, 7, 7), goldFt);
+      foot.position.set(fx, 0.35, fz);
+      couch.add(foot);
+    }
+    couch.position.set(18, 0, -11);
+    therapyG.add(couch);
+    // dream doors hover on the farmhouse footprints
+    for (const [x, z, hue] of [[96, 19, 0x9a8fc0], [84, -27, 0x8fb09a], [108, -14, 0xb08f9a], [58, 31, 0x8f9ab0]]) {
+      const g = new THREE.Group();
+      const frame = new THREE.Mesh(new THREE.BoxGeometry(0.5, 5.4, 3), toonMat(hue));
+      frame.position.y = 2.7;
+      g.add(frame);
+      const door = new THREE.Mesh(new THREE.BoxGeometry(0.2, 4.6, 2.2), toonMat(0x2a2a33));
+      door.position.y = 2.5;
+      g.add(door);
+      const knob = new THREE.Mesh(new THREE.SphereGeometry(0.12, 6, 6), goldFt);
+      knob.position.set(-0.25, 2.5, 0.7);
+      g.add(knob);
+      g.position.set(x, 0.4, z);
+      g.userData.baseY = 0.4;
+      therapyG.add(g);
+    }
+    // the inkblot mirror on the pond + melting pocketwatches on posts
+    for (const s of [-1, 1]) {
+      const blot = new THREE.Mesh(new THREE.SphereGeometry(1.1, 7, 6), toonMat(0xf2ede1));
+      blot.scale.set(1, 0.08, 0.7);
+      blot.position.set(40, 0.06, 24 + s * 1.4);
+      blot.rotation.y = s * 0.7;
+      therapyG.add(blot);
+    }
+    for (const [wx, wz] of [[48, 8], [70, -7]]) {
+      const post = new THREE.Mesh(new THREE.BoxGeometry(0.16, 1.6, 0.16), toonMat(0x8a6844));
+      post.position.set(wx, 0.8, wz);
+      therapyG.add(post);
+      const watch = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.12, 8, 16), goldFt);
+      watch.scale.y = 0.62;
+      watch.position.set(wx, 1.55, wz);
+      watch.rotation.x = 0.5;
+      therapyG.add(watch);
+      const face = new THREE.Mesh(new THREE.CircleGeometry(0.44, 12), toonMat(0xf2ede1));
+      face.scale.y = 0.62;
+      face.position.set(wx, 1.55, wz + 0.02);
+      face.rotation.x = 0.5;
+      therapyG.add(face);
+    }
+    // the ANALYST's armchair, ringside — always listening
+    const chair = new THREE.Group();
+    const cSeat = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.5, 1.2), toonMat(0x5c6a7a));
+    cSeat.position.y = 0.55;
+    chair.add(cSeat);
+    const cBack = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.4, 1.2), toonMat(0x5c6a7a));
+    cBack.position.set(0.45, 1.2, 0);
+    chair.add(cBack);
+    chair.position.set(3.5, 0, 6);
+    chair.rotation.y = 2.4;
+    therapyG.add(chair);
+    // the counting sheep (it hops the ring rail forever; a number floats above)
+    countSheep = new THREE.Group();
+    const sBody2 = new THREE.Mesh(new THREE.SphereGeometry(0.4, 9, 8), toonMat(0xf2ede1));
+    sBody2.scale.set(1.25, 0.9, 1);
+    sBody2.position.y = 0.55;
+    countSheep.add(sBody2);
+    const sHead2 = new THREE.Mesh(new THREE.SphereGeometry(0.18, 8, 8), toonMat(0x2a2a33));
+    sHead2.position.set(0.5, 0.7, 0);
+    countSheep.add(sHead2);
+    for (const [lx, lz] of [[-0.2, -0.15], [-0.2, 0.15], [0.25, -0.15], [0.25, 0.15]]) {
+      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.4, 5), toonMat(0x2a2a33));
+      leg.position.set(lx, 0.2, lz);
+      countSheep.add(leg);
+    }
+    countSheep.position.set(10, 0, 2.9);
+    therapyG.add(countSheep);
+    therapyG.traverse((m) => { m.castShadow = true; });
+    therapyG.visible = false;
+    scene.add(therapyG);
+  }
+  const booksBarricade = mkBarricade((arr, bx) => {
+    const cols = [0x8a4a3a, 0x4a6b8c, 0x5c7a5c, 0x8a7a9c, 0xb5885a];
+    for (const [by, count] of [[0.35, 4], [1.05, 3], [1.75, 2]]) {
+      for (let i = 0; i < count; i++) {
+        const g = new THREE.Group();
+        const book = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.68, 1.5), toonMat(cols[(i + count) % cols.length]));
+        g.add(book);
+        const pages = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.56, 0.12), toonMat(0xf2ede1));
+        pages.position.z = 0.72;
+        g.add(pages);
+        g.position.set(bx, by, -1.7 + i * (3.4 / Math.max(1, count - 1)));
+        g.rotation.y = (i % 2) * 0.2 - 0.1;
+        arr.push(g);
+      }
+    }
+  });
+
   // falling snow — drifts down in updateAmbient while the lake is frozen
   const SNOW_N = 850;
   const snowArr = new Float32Array(SNOW_N * 3);
@@ -2563,8 +3280,32 @@ export function createStage(canvas) {
     desert: { fog: [0xead4a8, 60, 185], skyTint: 0xf2ddb4, hemi: [0xffe8bf, 0xc79a5a, 1.05], sun: [0xfff0cf, 2.2], fill: 0.24, cloud: 0xfff2df, maps: false, grass: 0xd8b878, lane: 0xc79a5e, night: false, sunFace: true,
       group: 'desert', biome: 'desert', crowd: 'desert', pond: 0xa8895a, sunTint: [0xffe2b0, 1],
       hideFarm: true, hideCloths: true, barricade: 'barrels' },
+    jungle: { fog: [0xa9d3a2, 58, 165], skyTint: 0x9fd8ef, hemi: [0xd8f0d0, 0x2f5a2a, 1.0], sun: [0xfff4d0, 2.0], fill: 0.3, cloud: 0xffffff, maps: false, grass: 0x3e7a34, lane: 0x6a5230, night: false, sunFace: true,
+      group: 'jungle', biome: 'jungle', crowd: 'jungle', pond: 0x3f6a4a,
+      hideFarm: true, hideCloths: true, barricade: 'bamboo' },
+    dojo: { fog: [0xe8dfd0, 50, 170], skyTint: 0xf4e6d0, hemi: [0xf5e8d5, 0x8a7a5c, 0.95], sun: [0xffe8c0, 1.8], fill: 0.3, cloud: 0xfff4e2, maps: false, grass: 0xd9c9a8, lane: 0xc9b490, night: false, sunFace: true,
+      group: 'dojo', biome: 'dojo', crowd: 'dojo', pond: 0x4a7a8a,
+      hideFarm: true, hideCloths: true, barricade: 'shoji' },
+    lava: { fog: [0x40201a, 36, 125], skyTint: 0x33161a, hemi: [0xff9a5a, 0x401a10, 0.88], sun: [0xff7a30, 1.6], fill: 0.24, cloud: 0x5a2a22, maps: false, grass: 0x3a2f2c, lane: 0x55403a, night: false, sunFace: false,
+      group: 'lava', biome: 'lava', crowd: 'lava', pond: 0xff7a20,
+      hideFarm: true, hideCloths: true, hideFences: true, barricade: 'boulders' },
+    therapy: { fog: [0xe6dff0, 40, 130], skyTint: 0xd9cfec, hemi: [0xece2f4, 0x9a8fb0, 0.95], sun: [0xfff0e0, 1.5], fill: 0.35, cloud: 0xf6f0fa, maps: false, grass: 0xb9aed4, lane: 0x8f82b8, night: false, sunFace: true,
+      group: 'therapy', biome: 'therapy', crowd: 'therapy', pond: 0x14141c, sunTint: [0xf0e4ff, 0.9],
+      hideFarm: true, hideCloths: true, hideBarn: true, barricade: 'books' },
+    heaven: { fog: [0xf4f0e4, 30, 110], skyTint: 0xcfe4f8, hemi: [0xfff8e8, 0xd8d2c0, 1.15], sun: [0xfff6d8, 2.3], fill: 0.4, cloud: 0xffffff, maps: false, grass: 0xf2eede, lane: 0xf7e9b8, night: false, sunFace: true,
+      group: 'heaven', biome: 'heaven', crowd: 'heaven', pond: 0xbfe0f4,
+      hideFarm: true, hideCloths: true, hideFences: true, barricade: 'cloud' },
+    hell: { fog: [0x2a0f12, 34, 118], skyTint: 0x3a0f14, hemi: [0xd85a3a, 0x2a0c0c, 0.82], sun: [0xff5a2a, 1.45], fill: 0.22, cloud: 0x4a1a1a, maps: false, grass: 0x4a1f1c, lane: 0x6e2a1e, night: false, sunFace: false,
+      group: 'hell', biome: 'hell', crowd: 'hell', pond: 0xff7a20,
+      hideFarm: true, hideCloths: true, hideFences: true, barricade: 'redtape' },
   };
-  const WORLD_GROUPS = { ice: winterG, desert: desertG }; // themed prop kits by group key
+  const WORLD_GROUPS = {
+    ice: winterG, desert: desertG, jungle: jungleG, dojo: dojoG,
+    lava: lavaG, heaven: heavenG, hell: hellG, therapy: therapyG,
+  };
+  // every non-farm world re-dresses the perimeter, so pine hides whenever any
+  // kit with its own belt is up (each belt lives inside its kit group)
+  const BELT_WORLDS = new Set(['desert', 'jungle', 'dojo', 'lava', 'heaven', 'hell', 'therapy']);
   const WORLD_FX = {                                 // per-world extras beyond the kit
     ice: (on) => {
       snowPts.visible = on;
@@ -2572,12 +3313,13 @@ export function createStage(canvas) {
       for (const cf of furCuffs) cf.visible = on;
       if (coniferCaps) coniferCaps.visible = on;
     },
-    desert: (on) => {
-      if (coniferIM) coniferIM.visible = !on;  // the perimeter swaps pine → saguaro
-      if (cactusBelt) cactusBelt.visible = on;
-    },
+    desert: (on) => { if (cactusBelt) cactusBelt.visible = on; },
   };
-  const BARRICADES = { planks: summerBarricade, snow: snowBarricade, barrels: barrelBarricade };
+  const BARRICADES = {
+    planks: summerBarricade, snow: snowBarricade, barrels: barrelBarricade,
+    bamboo: bambooBarricade, shoji: shojiBarricade, boulders: boulderBarricade,
+    cloud: cloudBarricade, redtape: redtapeBarricade, books: booksBarricade,
+  };
   const hasWorld = (n) => !!WORLD_THEMES[n];
 
   function applyPalette(t) {
@@ -2610,6 +3352,8 @@ export function createStage(canvas) {
     applyPalette(t);
     for (const [k, g] of Object.entries(WORLD_GROUPS)) g.visible = k === t.group;
     for (const [k, fn] of Object.entries(WORLD_FX)) fn(k === t.group);
+    if (coniferIM) coniferIM.visible = !BELT_WORLDS.has(t.group); // pine ⇄ the world's own belt
+    barn.visible = !t.hideBarn;                                    // therapy trades it for the couch
     for (const fh of farmhouses) fh.visible = !t.hideFarm;
     for (const fb of fenceBits) fb.visible = !t.hideFences;
     for (const c of cloths) c.mesh.visible = !t.hideCloths;
