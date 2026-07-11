@@ -496,6 +496,11 @@ function capturePortraits() {
   cvs.width = cvs.height = 180;
   const c2d = cvs.getContext('2d');
   const gl = stage.renderer.domElement;
+  // the camera MUST match the real canvas aspect: rendering an aspect-1 view
+  // onto a wide canvas squeezes the image, and the square crop then ships a
+  // flattened face (invisible on a near-square dev window, ugly fullscreen)
+  pcam.aspect = gl.width / gl.height;
+  pcam.updateProjectionMatrix();
   player.root.visible = false;           // nobody photobombs the head shot
   opponent.remove();
   for (const [tourKey, star] of Object.entries(TOUR_STARS)) {
