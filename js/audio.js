@@ -293,6 +293,26 @@ export class Sfx {
     }
   }
 
+  // THE GREAT GONG (dojo): deep inharmonic bell partials + a mallet strike,
+  // long decay — rung when a flyer reaches the 62m wall in the dojo world
+  gong() {
+    if (!this.ctx) return;
+    const ctx = this.ctx, t = ctx.currentTime;
+    for (const [ratio, g0, dur] of [[1, 0.5, 4.5], [1.51, 0.16, 3.4], [2.76, 0.22, 2.8], [5.4, 0.1, 1.6]]) {
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = 82 * ratio;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(g0 * 0.4, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0008, t + dur);
+      osc.connect(g).connect(this.master);
+      osc.start(t);
+      osc.stop(t + dur + 0.1);
+    }
+    this.burst({ dur: 0.06, gain: 0.3, filter: 'bandpass', freq: 900, q: 1.2 }); // the mallet
+  }
+
   // 'foul' (default): three sharp pips. 'start': one long authoritative blast —
   // the referee's "clock is running" call, distinct from the foul by shape.
   whistle(kind = 'foul') {

@@ -3369,6 +3369,9 @@ export function createStage(canvas) {
     breakBarricade, resetBarricade, isBarricadeBroken: () => barricade.broken,
     sunMood, currentSunMood: () => sunCurrent, cowMoo, kidsCelebrate, spawnConfetti,
     summonSpirits, spawnBeam, spawnSparkles, slapDuel, scareBirds, solids, setWorldTheme, hasWorld,
+    // strike the dojo's Great Gong: a big wobble that decays in updateAmbient
+    ringGong: () => { if (gongDisc) gongDisc.rotation.x = 0.45; },
+    isDojoUp: () => dojoG.visible,
     setSpirit, setJudge, setBruce, cinePoints,
   };
 }

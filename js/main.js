@@ -55,6 +55,7 @@ let dustCool = 0;
 let clapT = 0;
 let swellT = 0;
 let barricadeHit = false;
+let gongRung = false; // dojo: the Great Gong rings once per attempt
 let mooDone = false;
 let duelDone = false;
 let masterDone = false;
@@ -565,6 +566,7 @@ function startAttempt() {
   settleT = 0;
   dustCool = 0;
   barricadeHit = false;
+  gongRung = false;
   mooDone = false;
   duelDone = false;
   masterDone = false;
@@ -1237,6 +1239,14 @@ function tick(now) {
       excite = Math.min(1, excite + 0.5);
       ui.slapBurst('THROUGH THE BARRICADE!', '');
       stage.sunMood('happy', 4);
+    }
+    // in the DOJO, a body that reaches the 62m wall RINGS THE GREAT GONG —
+    // the SLAPMASTER bar, heard before it's told
+    if (!gongRung && stage.isDojoUp() && pel.x > 60) {
+      gongRung = true;
+      sfx.gong();
+      stage.ringGong();
+      stage.shake(0.35);
     }
     if (!mooDone && opponent.distance() > 30) {
       mooDone = true;
