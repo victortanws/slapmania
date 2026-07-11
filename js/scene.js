@@ -518,8 +518,8 @@ export function createStage(canvas) {
   // --- hay: round bales, a stack, and the crash wall at the end of the lane ---
   // (in winter the shared mats swap to white — every bale becomes a snow drift
   // and the 62m crash wall becomes a wall of packed snow)
-  const hayMat = biomeMat(toonMat(0xd9b96a), { ice: 0xeef4f8, desert: 0xd8b878, lava: 0x3a2f2a, hell: 0x3a2320, heaven: 0xf2eede, dojo: 0xd9c9a8, therapy: 0x9a8ab0, haunted: 0x6a6a5e, tech: 0xd0d4da });
-  const hayEnd = biomeMat(toonMat(0xc4a355), { ice: 0xe2ebf2, desert: 0xc9a86a, lava: 0x322824, hell: 0x2f1e1c, heaven: 0xe8e2d4, dojo: 0xc9b490, therapy: 0x8a7aa8, haunted: 0x565648, tech: 0xb4bac4 });
+  const hayMat = biomeMat(toonMat(0xd9b96a), { ice: 0xeef4f8, desert: 0xd8b878, lava: 0x3a2f2a, hell: 0x3a2320, heaven: 0xf2eede, dojo: 0xd9c9a8, therapy: 0x9a8ab0, haunted: 0x6a6a5e, tech: 0xd0d4da, jungle: 0x5a7a4a });
+  const hayEnd = biomeMat(toonMat(0xc4a355), { ice: 0xe2ebf2, desert: 0xc9a86a, lava: 0x322824, hell: 0x2f1e1c, heaven: 0xe8e2d4, dojo: 0xc9b490, therapy: 0x8a7aa8, haunted: 0x565648, tech: 0xb4bac4, jungle: 0x4a6a3a });
   function roundBale(x, z, ry) {
     const b = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 1.3, 14), hayMat);
     b.rotation.set(0, ry, Math.PI / 2);
@@ -1625,6 +1625,16 @@ export function createStage(canvas) {
     }
     if (jungleG.visible && monkey) {
       monkey.rotation.z = Math.sin(time * 1.3) * 0.8;       // the vine pendulum
+      for (const mk of jungleMonkeys) {                     // perched monkeys bob + chatter
+        mk.g.position.y += Math.sin(time * 4 + mk.ph) * 0.004;
+        mk.g.rotation.y = Math.sin(time * 1.5 + mk.ph) * 0.4;
+      }
+      if (jungleTiger) {                                    // the tiger prowls the shoulder
+        const ph = ((time * 0.03) % 2 + 2) % 2, fwd = ph < 1;
+        jungleTiger.position.x = 20 + 40 * (fwd ? ph : 2 - ph);
+        jungleTiger.rotation.y = fwd ? 0 : Math.PI;
+        jungleTiger.position.y = Math.abs(Math.sin(time * 3)) * 0.05;
+      }
     }
     if (dojoG.visible) {
       for (const k of kois) {
@@ -2658,20 +2668,92 @@ export function createStage(canvas) {
   // --- 🌴 JUNGLE ---
   const jungleG = new THREE.Group();
   let monkey = null;
+  const jungleMonkeys = [];
+  let jungleTiger = null;
   {
-    const trunkMat = toonMat(0x6e4a2e), leafMat = toonMat(0x2f6a2a);
-    jungleG.add(mkBelt((g, x, z, i) => {
-      const h = 6.5 + (i % 3);
-      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.5, h, 6), trunkMat);
-      trunk.position.set(x, h / 2, z);
-      g.add(trunk);
-      for (const [ox, oy, oz, r] of [[0, h + 0.8, 0, 2.0], [1.1, h + 0.2, 0.5, 1.3]]) {
-        const blob = new THREE.Mesh(new THREE.SphereGeometry(r, 8, 8), leafMat);
-        blob.position.set(x + ox, oy, z + oz);
-        g.add(blob);
+    const trunkMat = toonMat(0x5a3e24), leafDk = toonMat(0x1f4a1c), leafMid = toonMat(0x2f6a2a), leafLt = toonMat(0x3f8a34);
+    const vineMat = toonMat(0x3a6a2e);
+    // ---- THE CANOPY: a dense leafy ceiling over the WHOLE lane — you fight
+    // UNDER the forest. Overlapping leaf clusters at y 13-17 with gaps for
+    // light shafts, so the sky barely shows. ----
+    for (let i = 0; i < 64; i++) {
+      const cx = -18 + Math.random() * 132, cz = -15 + Math.random() * 30;
+      const r = 2.4 + Math.random() * 2.6;
+      const blob = new THREE.Mesh(new THREE.SphereGeometry(r, 8, 7), [leafDk, leafMid, leafLt][i % 3]);
+      blob.position.set(cx, 13 + Math.random() * 3.5, cz);
+      blob.scale.y = 0.55;
+      jungleG.add(blob);
+    }
+    // soft light shafts stabbing through canopy gaps
+    for (const [sx, sz] of [[18, 3], [46, -4], [78, 5], [100, -2]]) {
+      const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 3.2, 13, 8, 1, true), glowMat(0xf6f4c8));
+      shaft.material.transparent = true; shaft.material.opacity = 0.13; shaft.material.side = THREE.DoubleSide;
+      shaft.position.set(sx, 7, sz); shaft.rotation.z = 0.16;
+      jungleG.add(shaft);
+    }
+    // ---- BELT: a WALL of towering buttressed jungle trees ----
+    const belt = mkBelt((g, x, z, i) => {
+      const h = 11 + (i % 4) * 2;
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 1.0, h, 7), trunkMat);
+      trunk.position.set(x, h / 2, z); g.add(trunk);
+      for (let r = 0; r < 4; r++) {          // buttress roots flaring at the base
+        const a = r / 4 * Math.PI * 2;
+        const root = new THREE.Mesh(new THREE.ConeGeometry(0.55, 2.2, 4), trunkMat);
+        root.position.set(x + Math.cos(a) * 0.7, 1.1, z + Math.sin(a) * 0.7); root.rotation.z = Math.cos(a) * 0.35; g.add(root);
       }
-    }));
-    jungleG.children[0].visible = true; // belt rides inside the kit group
+      for (const [ox, oy, oz, rr] of [[0, h + 1, 0, 3.2], [1.7, h + 0.3, 0.6, 2.1], [-1.5, h + 0.5, -0.5, 1.9]]) {
+        const blob = new THREE.Mesh(new THREE.SphereGeometry(rr, 8, 8), [leafDk, leafMid][i % 2]);
+        blob.position.set(x + ox, oy, z + oz); g.add(blob);
+      }
+    });
+    belt.visible = true; jungleG.add(belt);
+    // ---- HANGING VINES everywhere: from the canopy down along the flanks ----
+    for (let i = 0; i < 34; i++) {
+      const vx = -16 + Math.random() * 130, side = i % 2 ? 1 : -1;
+      const vz = side * (5.5 + Math.random() * 6);
+      const len = 4 + Math.random() * 6;
+      const vine = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.07, len, 5), vineMat);
+      vine.position.set(vx, 13 - len / 2, vz);
+      jungleG.add(vine);
+      if (i % 3 === 0) {                      // a leaf tuft at the tip
+        const tuft = new THREE.Mesh(new THREE.SphereGeometry(0.4, 7, 6), leafLt);
+        tuft.position.set(vx, 13 - len, vz); jungleG.add(tuft);
+      }
+    }
+    // ---- RAFFLESIA: giant red corpse-flowers on the forest floor ----
+    const mkRafflesia = (x, z) => {
+      const f = new THREE.Group();
+      const petalMat = toonMat(0xa83228), spotMat = toonMat(0xecdcc4);
+      for (let p = 0; p < 5; p++) {
+        const a = p / 5 * Math.PI * 2;
+        const petal = new THREE.Mesh(new THREE.SphereGeometry(0.72, 8, 6), petalMat);
+        petal.scale.set(1, 0.32, 0.72);
+        petal.position.set(Math.cos(a) * 0.82, 0.28, Math.sin(a) * 0.82);
+        f.add(petal);
+        for (let s = 0; s < 3; s++) {
+          const spot = new THREE.Mesh(new THREE.SphereGeometry(0.08, 6, 6), spotMat);
+          spot.position.set(Math.cos(a) * 0.82 + (Math.random() - 0.5) * 0.6, 0.42, Math.sin(a) * 0.82 + (Math.random() - 0.5) * 0.6);
+          f.add(spot);
+        }
+      }
+      const pit = new THREE.Mesh(new THREE.CylinderGeometry(0.56, 0.4, 0.5, 12), toonMat(0x5e1814));
+      pit.position.y = 0.35; f.add(pit);
+      const rim = new THREE.Mesh(new THREE.TorusGeometry(0.56, 0.13, 8, 14), petalMat);
+      rim.rotation.x = Math.PI / 2; rim.position.y = 0.56; f.add(rim);
+      f.position.set(x, 0, z); f.scale.setScalar(1.5);
+      jungleG.add(f);
+    };
+    mkRafflesia(17, -6.6); mkRafflesia(52, 6.6); mkRafflesia(74, -6.2); mkRafflesia(92, 6.4);
+    // ---- FERN undergrowth along the lane shoulders ----
+    for (let i = 0; i < 22; i++) {
+      const side = i % 2 ? 1 : -1, fx = 6 + i * 4.4;
+      for (let fr = 0; fr < 5; fr++) {
+        const frond = new THREE.Mesh(new THREE.ConeGeometry(0.14, 1.3, 4), [leafMid, leafLt][fr % 2]);
+        const a = (fr / 5 - 0.5) * 1.6;
+        frond.position.set(fx + Math.sin(a) * 0.3, 0.65, side * 5.4 + Math.cos(a) * 0.2);
+        frond.rotation.z = a; jungleG.add(frond);
+      }
+    }
     // ruins on the farmhouse footprints
     const stone = toonMat(0x8a9a8a), moss = toonMat(0x4a7a3a);
     const ruin = (x, z, kind) => {
@@ -2740,7 +2822,54 @@ export function createStage(canvas) {
     monkey.add(mFace);
     monkey.position.set(30, 7, -8);
     jungleG.add(monkey);
-    jungleG.traverse((m) => { m.castShadow = true; });
+    // ---- MORE MONKEYS perched on branches, chattering (bob in place) ----
+    const mkMonkey = () => {
+      const mk = new THREE.Group();
+      const b = new THREE.Mesh(new THREE.CapsuleGeometry(0.2, 0.28, 3, 8), toonMat(0x7a4a2e));
+      b.position.y = 0.3; mk.add(b);
+      const hd = new THREE.Mesh(new THREE.SphereGeometry(0.16, 8, 8), toonMat(0x7a4a2e));
+      hd.position.y = 0.62; mk.add(hd);
+      const fc = new THREE.Mesh(new THREE.SphereGeometry(0.1, 7, 6), toonMat(0xe8c8a2));
+      fc.position.set(-0.08, 0.6, 0); mk.add(fc);
+      for (const s of [-1, 1]) {
+        const ear = new THREE.Mesh(new THREE.SphereGeometry(0.06, 6, 6), toonMat(0x7a4a2e));
+        ear.position.set(0, 0.72, s * 0.15); mk.add(ear);
+      }
+      const tail = new THREE.Mesh(new THREE.CapsuleGeometry(0.04, 0.7, 3, 6), toonMat(0x7a4a2e));
+      tail.position.set(0.25, 0.3, 0); tail.rotation.z = 1; mk.add(tail);
+      return mk;
+    };
+    for (const [mx, my, mz] of [[22, 8.5, 6], [58, 9, -7], [86, 8, 6.5], [44, 10, 7]]) {
+      const mk = mkMonkey(); mk.position.set(mx, my, mz);
+      jungleG.add(mk); jungleMonkeys.push({ g: mk, ph: mx });
+    }
+    // ---- THE TIGER prowling the near shoulder ----
+    jungleTiger = new THREE.Group();
+    const tOr = toonMat(0xe08a2a), tSt = toonMat(0x241610), tW = toonMat(0xf0e4d4);
+    const tBody = new THREE.Mesh(new THREE.CapsuleGeometry(0.55, 1.9, 6, 10), tOr);
+    tBody.rotation.z = Math.PI / 2; tBody.position.y = 0.95; jungleTiger.add(tBody);
+    for (let s = 0; s < 6; s++) {
+      const st = new THREE.Mesh(new THREE.TorusGeometry(0.56, 0.06, 6, 12), tSt);
+      st.rotation.y = Math.PI / 2; st.position.set(-1.0 + s * 0.4, 0.95, 0); jungleTiger.add(st);
+    }
+    const tHead = new THREE.Mesh(new THREE.SphereGeometry(0.46, 10, 8), tOr);
+    tHead.position.set(1.45, 1.1, 0); jungleTiger.add(tHead);
+    const tSnout = new THREE.Mesh(new THREE.SphereGeometry(0.26, 8, 8), tW);
+    tSnout.position.set(1.85, 1.0, 0); tSnout.scale.x = 0.8; jungleTiger.add(tSnout);
+    for (const s of [-1, 1]) {
+      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), glowMat(0xd8e030));
+      eye.position.set(1.75, 1.25, s * 0.2); jungleTiger.add(eye);
+      const ear = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.24, 5), tOr);
+      ear.position.set(1.35, 1.5, s * 0.25); jungleTiger.add(ear);
+    }
+    for (const [lx, lz] of [[-0.7, 0.35], [-0.7, -0.35], [0.7, 0.35], [0.7, -0.35]]) {
+      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.13, 0.9, 7), tOr);
+      leg.position.set(lx, 0.45, lz); jungleTiger.add(leg);
+    }
+    const tTail = new THREE.Mesh(new THREE.CapsuleGeometry(0.1, 1.5, 4, 8), tOr);
+    tTail.position.set(-1.3, 1.0, 0); tTail.rotation.z = 0.5; jungleTiger.add(tTail);
+    jungleTiger.position.set(24, 0, -12); jungleG.add(jungleTiger);
+    jungleG.traverse((m) => { if (m.isMesh && m.material.type !== 'MeshBasicMaterial') m.castShadow = true; });
     jungleG.visible = false;
     scene.add(jungleG);
   }
@@ -4296,7 +4425,7 @@ export function createStage(canvas) {
     desert: { fog: [0xead4a8, 60, 185], skyTint: 0xf2ddb4, hemi: [0xffe8bf, 0xc79a5a, 1.05], sun: [0xfff0cf, 2.2], fill: 0.24, cloud: 0xfff2df, maps: false, grass: 0xd8b878, lane: 0xc79a5e, night: false, sunFace: true,
       group: 'desert', biome: 'desert', crowd: 'desert', pond: 0xa8895a, sunTint: [0xffe2b0, 1],
       hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, barricade: 'barrels' },
-    jungle: { fog: [0xa9d3a2, 58, 165], skyTint: 0x9fd8ef, hemi: [0xd8f0d0, 0x2f5a2a, 1.0], sun: [0xfff4d0, 2.0], fill: 0.3, cloud: 0xffffff, maps: false, grass: 0x3e7a34, lane: 0x6a5230, night: false, sunFace: true,
+    jungle: { fog: [0x2f6636, 40, 135], skyTint: 0x3f6a44, hemi: [0xc0e8b0, 0x1f4a24, 1.05], sun: [0xf0f4c0, 1.7], fill: 0.34, cloud: 0x4a7a4a, maps: false, grass: 0x2e5a2a, lane: 0x5a4428, night: false, sunFace: false,
       group: 'jungle', biome: 'jungle', crowd: 'jungle', pond: 0x3f6a4a,
       hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, barricade: 'bamboo' },
     dojo: { fog: [0xe8dfd0, 50, 170], skyTint: 0xf4e6d0, hemi: [0xf5e8d5, 0x8a7a5c, 0.95], sun: [0xffe8c0, 1.8], fill: 0.3, cloud: 0xfff4e2, maps: false, grass: 0xd9c9a8, lane: 0xc9b490, night: false, sunFace: true,
