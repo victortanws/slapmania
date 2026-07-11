@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { createStage } from './scene.js';
 import { createWorld, addSolids } from './ragdoll.js';
 import { Player, SLAPPERS } from './player.js';
-import { Opponent, ROSTER, PICKABLE } from './opponent.js';
+import { Opponent, ROSTER, PICKABLE, WORLD_ROSTERS } from './opponent.js';
 import { Sfx } from './audio.js';
 import * as ui from './ui.js';
 import * as net from './net.js';
@@ -325,9 +325,14 @@ const track = (event, props) => { try { window.posthog?.capture(event, props); }
 let OPP_LIST = PICKABLE;
 function oppListNow() {
   const w = localStorage.getItem('slapp_world') || 'day';
+  const wr = WORLD_ROSTERS[w];
   // dlc volunteers (the Wonders movement specimens) join the public pick only
-  // with the pack; campaigns still summon them by key, like bosses
-  return ROSTER.filter((r) => !r.boss && (!r.world || r.world === w) && (!r.dlc || owned('bruceslee')));
+  // with the pack; campaigns still summon them by key, like bosses. Each world
+  // then fields its own CURATED roster (allow/exclude in opponent.js).
+  return ROSTER.filter((r) => !r.boss
+    && (!r.world || r.world === w)
+    && (!r.dlc || owned('bruceslee'))
+    && (!wr || (wr.allow ? wr.allow.includes(r.key) : !wr.exclude.includes(r.key))));
 }
 function openOppPick() {
   setState('SELECT_OPP');

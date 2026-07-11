@@ -635,12 +635,14 @@ export const CUTSCENES = {
   slaptherapy_prologue: [
     { who: 'YOU', text: 'Fifty years of analysis. Ten thousand dreams interpreted. Four hundred papers. And one finding that survived replication: the slap.', shot: 'player' },
     { who: 'YOU', text: 'The board revoked my license. The fair gave me a tent. Science continues.', shot: 'player' },
+    { who: 'YOU', text: "The tent came furnished. One couch, sized for the county's collective unconscious. One cat, the size of a hay wagon. The cat is not mine. The cat attends. Analysis observes — the cat out-observes.", shot: 'player' },
     { who: 'YOU', text: 'We could spend a decade on your mother. Or: one open palm. The literature is clear. NEXT PATIENT.', shot: 'player' },
   ],
   t1c1: [
     { who: 'INKBLOT IAN', text: "Doc, everyone who looks at me sees somethin' different. My aunt saw a moth. The bank saw a credit risk. I don't know who I AM.", shot: 'opp' },
     { who: 'YOU', text: 'A classic diffusion of the self. The old practice: six years, two relapses, a boat I cannot afford. The new practice: I slap the face, and the face remembers it is a face.', shot: 'player' },
     { who: 'INKBLOT IAN', text: 'What do YOU see when you look at me?', shot: 'opp' },
+    { who: 'YOU', text: 'The Red Book is open to a fresh page, Ian. Whatever you are about to become, it will be recorded — in red ink, and better handwriting than the board deserves.', shot: 'player' },
     { who: 'YOU', text: 'A cheek, Ian. At last, somebody sees you correctly. Hold still.', shot: 'player' },
   ],
   t1c2: [
@@ -668,6 +670,7 @@ export const CUTSCENES = {
   ],
   t2c3: [
     { who: 'INKBLOT IAN', text: "Doc! Since the session — my aunt saw ME. Not a moth. ME. But I gotta know it wasn't a fluke.", shot: 'opp' },
+    { who: 'YOU', text: 'Note for the record: at your first session, your shadow flinched before your face did. Today the shadow stands still. That is progress, Ian. Measurable. Billable.', shot: 'player' },
     { who: 'YOU', text: 'Ah, the retest. RIGOR! You are my favorite data point, Ian. This time the form itself must be legible — an eighty percent chain, or the result will not replicate.', shot: 'player' },
     { who: 'INKBLOT IAN', text: 'What do you see this time, doc?', shot: 'opp' },
     { who: 'YOU', text: 'A butterfly, Ian. You were never a moth. Hold still.', shot: 'player' },
@@ -681,6 +684,7 @@ export const CUTSCENES = {
   t3c2: [
     { who: 'DR. FREUDENSCHADE', text: 'Carl. Fifty years since the Vienna congress, and I find you in a TENT, prescribing VIOLENCE.', shot: 'opp' },
     { who: 'YOU', text: 'Percussion, colleague. And my patients are cured by Thursday. How is your Tuesday man? Still on the boat dream?', shot: 'player' },
+    { who: 'YOU', text: 'You wear the persona of a skeptic, colleague, but your shadow has been taking notes since you walked in. Mind the couch on your way down. It was built for exactly this.', shot: 'player' },
     { who: 'DR. FREUDENSCHADE', text: 'Year thirty-one. We are making EXCELLENT progress. Very well — one trial settles two schools. But be warned: any slap below seventy-five percent form, I shall simply interpret away as displaced aggression.', shot: 'opp' },
     { who: 'YOU', text: 'Then I shall present a slap with no other possible interpretation.', shot: 'player' },
   ],
@@ -811,6 +815,12 @@ export const CUTSCENES = {
     { who: '🏅 COMMISSIONER QUIBBLE', text: 'The Committee is satisfied on all three questions — and moved by a fourth it never thought to ask: INEVITABILITY. The Olympic motto is Faster, Higher, Stronger. Your county has proposed an amendment: Regardless.', shot: 'wide' },
     { who: 'YOU', text: 'Regardless. Stamp it. Slapping is Olympic.', shot: 'player' },
     { who: '🏅 COMMISSIONER QUIBBLE', text: 'PROVISIONALLY Olympic — the rulebook remains, and I shall be writing it here, at this fair, near the pie stand. The cello enters the Cultural Olympiad; the Maestro wept in D minor. And Ms. Eileen has filed the first event proposal: slap-biathlon. You ski, you get slapped, you ski ANGRIER. The Committee... did not hate it.', shot: 'wide' },
+    // the podium beat: jingoism arrives, and the sport itself answers it
+    { who: 'JUDGE PENNYWHISTLE', text: 'And for the record — YES! That is one for the United States of America! I have alerted the anthem committee. Both anthems. ALL the anthems.', shot: 'judge' },
+    { who: 'YOU', text: 'American or not... does it matter, your honor?', shot: 'player' },
+    { who: 'JUDGE PENNYWHISTLE', text: '...', shot: 'judge' },
+    { who: '⛷️ AVALANCHE EILEEN', text: 'Slapping has no nationality, boys. The cheek does not check your passport. That is the whole sport — I get it now.', shot: 'opp' },
+    { who: '🏅 COMMISSIONER QUIBBLE', text: 'The Committee will be quoting that. On the rings. In eleven languages. Provisionally.', shot: 'wide' },
   ],
 };
 
@@ -853,6 +863,8 @@ export const FAILS = {
      { who: 'YOU', text: 'Note for the journal: the slap, like the dream, cannot be forced. It can, however, be re-attempted immediately.', shot: 'player' }],
     [{ who: 'YOU', text: 'A whiff. Fascinating. My own shadow, sabotaging the follow-through. I have written three books about this exact moment.', shot: 'player' },
      { who: 'YOU', text: 'Physician, slap thyself. Later. First: the patient.', shot: 'player' }],
+    [{ who: 'YOU', text: 'Curious. Your shadow ducked; you did not. The slap followed the shadow. We resume when the two of you reconcile.', shot: 'player' },
+     { who: 'YOU', text: 'The cat saw everything. The cat is withholding judgment. The cat is better at this than I am. Again.', shot: 'player' }],
   ],
   v: [
     [{ who: 'VISIONARY VANCE', text: 'Interesting! We\'d call that "pre-revenue." Iterate and re-ship, friend.', shot: 'wide' },

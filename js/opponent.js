@@ -394,6 +394,24 @@ ROSTER.forEach((r) => { if (MORE_TAUNTS[r.key]) r.taunts.push(...MORE_TAUNTS[r.k
 // the public volunteer pick — bosses excluded (campaign-only)
 export const PICKABLE = ROSTER.filter((r) => !r.boss);
 
+// per-world CURATED rosters (design lesson #2: volunteers wear the place —
+// no global pool, and every exclusion has a story reason a player could guess).
+// allow = only these keys appear; exclude = the full cast minus these.
+// Worlds absent here (day) keep the whole farm cast. World locals must be
+// listed in their own world's allow list.
+export const WORLD_ROSTERS = {
+  ice:     { exclude: ['influencer', 'nadine', 'horton', 'don'] },        // crop tops, sun salutations, tailcoats and valets stay home
+  desert:  { exclude: ['maestro', 'bertha'] },                            // cello varnish and the sun dress refuse the heat
+  jungle:  { exclude: ['don', 'susie', 'horton', 'influencer'] },         // suits, chalkboards and no-signal don't trek
+  haunted: { allow: ['joe', 'tony', 'cletus', 'ravinray', 'maestro'] },   // the locked-in and the dead
+  dojo:    { allow: ['wally', 'hank', 'slim', 'susie', 'nadine'] },       // discipline tourism
+  lava:    { allow: ['flambeau', 'chuckles', 'ravinray', 'hoss'] },       // sideshow kin + thermal mass
+  therapy: { allow: ['inkblot', 'don', 'influencer', 'bertha', 'slim', 'hank', 'maestro'] }, // the client list
+  heaven:  { allow: ['hal', 'cletus', 'mabel', 'susie'] },                // the gentle
+  hell:    { allow: ['larry', 'don', 'ravinray', 'maestro'] },            // reserved parking
+  techcampus: { allow: ['vance', 'mira', 'influencer', 'don', 'susie', 'slim'] }, // whoever badges in
+};
+
 function segSphere(p0, p1, c, r) {
   const d = new THREE.Vector3().subVectors(p1, p0);
   const m = new THREE.Vector3().subVectors(p0, c);
