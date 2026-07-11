@@ -1644,6 +1644,13 @@ export function createStage(canvas) {
       }
       if (gongDisc) gongDisc.rotation.x *= 0.985;           // ringing decays back to still
       if (dojoWheel) dojoWheel.rotation.z += dt * 0.4;       // the garden waterwheel turns
+      for (const tr of dojoTrainers) {                       // students throw strikes in kata rhythm
+        const c = (time * 2 + tr.ph) % 2, punch = c < 1 ? Math.sin(c * Math.PI) : 0;
+        tr.g.userData.armL.scale.x = 1 + punch * 1.1;        // lead arm snaps out
+        tr.g.userData.armL.position.z = punch * 0.12;
+        tr.g.userData.armR.rotation.x = -punch * 0.4;        // rear hand chambers
+        tr.g.position.y = Math.abs(Math.sin(time * 4 + tr.ph)) * 0.03; // light bounce on the balls of the feet
+      }
     }
     if (lavaG.visible) {
       for (const gy of geysers) {
@@ -2890,6 +2897,7 @@ export function createStage(canvas) {
   const dojoG = new THREE.Group();
   let gongDisc = null, dojoWheel = null;
   const kois = [];
+  const dojoTrainers = [];
   {
     const timber = toonMat(0x8a5e34), timberDk = toonMat(0x5e3f22), paper = toonMat(0xf2ead6);
     const tatami = toonMat(0xc7b06a), tatamiEdge = toonMat(0x2a3a2a), red = toonMat(0xb0362a), stoneMat = toonMat(0xb5ab98);
@@ -3051,7 +3059,43 @@ export function createStage(canvas) {
       st.position.set(36.5 + i * 1.6, 0.08, 24 - i * 0.8);
       dojoG.add(st);
     }
-    dojoG.traverse((m) => { m.castShadow = true; });
+    // ---- KARATEKA: pairs of students in gi TRAINING along the sides, facing
+    // each other and throwing strikes on a fixed rhythm (no farm spectators) ----
+    const gi = toonMat(0xf0ece0), skinTone = toonMat(0xe8c19a);
+    const beltCols = [0xf0ece0, 0x8a5a2a, 0x2a6a3a, 0x2a2a33, 0xb03028];
+    const mkKarateka = (belt) => {
+      const k = new THREE.Group();
+      const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 0.5, 3, 8), gi);
+      torso.position.y = 1.0; k.add(torso);
+      const beltM = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.12, 8), toonMat(belt));
+      beltM.position.y = 0.78; k.add(beltM);
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 8), skinTone);
+      head.position.y = 1.5; k.add(head);
+      for (const s of [-1, 1]) {                     // legs (front stance)
+        const leg = new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.55, 3, 6), gi);
+        leg.position.set(s * 0.12, 0.35, s * 0.15); k.add(leg);
+      }
+      const armL = new THREE.Group();                // lead arm (punches)
+      const uaL = new THREE.Mesh(new THREE.CapsuleGeometry(0.07, 0.5, 3, 6), gi);
+      uaL.position.set(0.25, -0.02, 0); uaL.rotation.z = Math.PI / 2; armL.add(uaL);
+      const fistL = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), skinTone);
+      fistL.position.set(0.5, -0.02, 0); armL.add(fistL);
+      armL.position.set(0, 1.1, 0); k.add(armL);
+      const armR = new THREE.Group();                // rear arm (chambers)
+      const uaR = new THREE.Mesh(new THREE.CapsuleGeometry(0.07, 0.4, 3, 6), gi);
+      uaR.position.set(-0.18, 0, 0); uaR.rotation.z = Math.PI / 2; armR.add(uaR);
+      armR.position.set(0, 1.05, 0); k.add(armR);
+      k.userData = { armL, armR };
+      return k;
+    };
+    // pairs face each other, off both shoulders, down the hall
+    for (const [px, pz] of [[24, -9], [40, 9], [58, -9], [78, 9], [94, -9]]) {
+      const a = mkKarateka(beltCols[(px) % 5]); a.position.set(px, 0, pz); a.rotation.y = pz < 0 ? 0 : Math.PI;
+      const b = mkKarateka(beltCols[(px + 2) % 5]); b.position.set(px + (pz < 0 ? 2.4 : -2.4), 0, pz); b.rotation.y = pz < 0 ? Math.PI : 0;
+      dojoG.add(a, b);
+      dojoTrainers.push({ g: a, ph: px * 0.7 }, { g: b, ph: px * 0.7 + 1.1 });
+    }
+    dojoG.traverse((m) => { if (m.isMesh && m.material.type !== 'MeshBasicMaterial') m.castShadow = true; });
     dojoG.visible = false;
     scene.add(dojoG);
   }
@@ -4500,7 +4544,7 @@ export function createStage(canvas) {
       hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, barricade: 'bamboo' },
     dojo: { fog: [0xe8dfd0, 50, 170], skyTint: 0xf4e6d0, hemi: [0xf5e8d5, 0x8a7a5c, 0.95], sun: [0xffe8c0, 1.8], fill: 0.3, cloud: 0xfff4e2, maps: false, grass: 0xd9c9a8, lane: 0xc9b490, night: false, sunFace: true,
       group: 'dojo', biome: 'dojo', crowd: 'dojo', pond: 0x4a7a8a,
-      hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, barricade: 'shoji' },
+      hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, hideFences: true, hideCrowd: true, barricade: 'shoji' },
     lava: { fog: [0x5a2414, 48, 165], skyTint: 0x3a1810, hemi: [0xffb070, 0x5a2410, 1.12], sun: [0xff8a3a, 1.9], fill: 0.4, cloud: 0x6a2e1e, maps: false, grass: 0x201613, lane: 0x2a201c, night: false, sunFace: false,
       group: 'lava', biome: 'lava', crowd: 'lava', pond: 0xff7a20, hideCrowd: true,
       hideFarm: true, hideBarn: true, hideFair: true, hideCloths: true, hideFences: true, barricade: 'boulders' },
