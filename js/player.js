@@ -205,6 +205,13 @@ export class Player {
     const A = this.phys.arm;
     const AR = typeof L.bigArms === 'number' ? L.bigArms : (L.bigArms ? 2.3 : 1);  // arm thickness multiplier
     const ARR = typeof L.slapArm === 'number' ? L.slapArm : AR;  // the WEAPON arm can outgrow the off arm
+    // MUSCLE-ACTUATED HAND: a bigger weapon arm carries more effective striking
+    // MASS (heavier hand → more momentum) but also more rotational INERTIA
+    // (τ=I·α, so it's slower to accelerate through a full arc). Normal arms = 1
+    // on both; only the giant-armed (Dynamite slapArm 3.4, bigArms) diverge. The
+    // tradeoff — slow to wind up, brutal in a short committed strike — falls out.
+    this.armMass = 1 + 0.2 * (ARR - 1);      // effective impact mass of the hand
+    this.armInertia = 1 + 0.5 * (ARR - 1);   // rotational inertia of the weapon arm
 
     for (const s of [-1, 1]) {
       const leg = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.75, 3, 8), T(L.pants)));
@@ -835,16 +842,20 @@ export class Player {
     if (!this.aUnlocked && keys.a) {
       this.aUnlocked = true;
       // the whip: torso speed at the unlock moment slings into the shoulder
-      this.j.shoulder.v += Math.min(0, this.j.spine.v) * 0.4;
+      this.j.shoulder.v += Math.min(0, this.j.spine.v) * 0.4 / this.armInertia; // a heavy arm gains less ω from the torso whip
     }
     if (!this.pUnlocked && keys.p) this.pUnlocked = true;
 
+    // muscle scales the ACTUATED torque: a stronger slapper drives every joint
+    // harder → a faster hand (a mild coupling; the big strength lever stays in
+    // the power formula, this just adds "strong = quicker" realism)
+    const strT = 0.8 + 0.2 * this.phys.str;
     const t = { spine: 0, shoulder: 0, elbow: 0, wrist: 0 };
-    if (keys.s) t.spine += 75;              // coil the torso back (beats the spring to full coil in ~1s)
+    if (keys.s) t.spine += 75 * strT;       // coil the torso back (beats the spring to full coil in ~1s)
     // hip drive is only worth anything if you actually coiled the spine first
-    if (keys.l) t.spine -= 12 + 16 * Math.max(0, this.j.spine.a);
-    if (this.aUnlocked && keys.a) t.shoulder -= 34;
-    if (this.pUnlocked && keys.p) { t.elbow -= 210; t.wrist -= 170; }
+    if (keys.l) t.spine -= (12 + 16 * Math.max(0, this.j.spine.a)) * strT;
+    if (this.aUnlocked && keys.a) t.shoulder -= 34 * strT;
+    if (this.pUnlocked && keys.p) { t.elbow -= 210 * strT; t.wrist -= 170 * strT; }
 
     // after releasing S the body HOLDS the coiled pose until L fires the hips —
     // the whip waits for the player instead of evaporating in 300ms. The coil
@@ -864,8 +875,11 @@ export class Player {
         continue;
       }
       if (n === 'wrist' && !this.pUnlocked) { J.v = 0; continue; }
+      // the weapon arm (shoulder/elbow/wrist) carries the rotational inertia;
+      // the spine is the torso/core, unaffected by arm size. τ = I·α.
+      const I = n === 'spine' ? 1 : this.armInertia;
       const tq = t[n] - J.k * (J.a - J.rest) - J.c * J.v;
-      J.v += tq * dt;
+      J.v += (tq / I) * dt;
       J.a += J.v * dt;
       if (J.a < J.min) { J.a = J.min; if (J.v < 0) J.v *= -0.25; }
       if (J.a > J.max) { J.a = J.max; if (J.v > 0) J.v *= -0.25; }

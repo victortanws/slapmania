@@ -820,10 +820,15 @@ function onContact(hit, fist) {
   // muscle is a multiplier, not a substitute: the cap means brute strength only
   // pays off against tonnage — technique still decides everything else
   let power = 12.5 * player.strength * balF * coilF * lg.g * ag.g * pgPower * sweet;
-  // a slow "cleanup" graze that sneaks past the 2.2 gate (e.g. catching a weave
-  // boss on the pop-up frame) shouldn't launch full power off a crawling hand:
-  // taper below 6 m/s of real contact speed. Normal swings land ~10.8 → untouched.
-  power *= THREE.MathUtils.clamp(speed / 6, 0.35, 1);
+  // MOMENTUM: power scales with hand MOMENTUM — effective hand mass × contact
+  // speed — instead of the old taper that saturated at 6 m/s and threw away
+  // every m/s above it. REF-centred (~MOM_REF) so a typical peak swing is ~1.0
+  // (base roster unchanged), but now a faster hand pays more and a slower one
+  // pays less, continuously — micro-timing and hand speed finally matter. A big
+  // arm's extra mass (armMass) offsets its lower speed → a short committed
+  // strike still lands hard (the Lil' Dynamite short-range-bruiser tradeoff).
+  const MOM_REF = 10;
+  power *= THREE.MathUtils.clamp(0.3 + 0.7 * player.armMass * speed / MOM_REF, 0.35, 1.6);
   // rebound flail: only true multi-oscillation scuffles — a first-rebound catch
   // is a legitimate (already low-graded) beginner slap
   const ugly = chain.tFire != null && swingT - chain.tFire > 2.2;
