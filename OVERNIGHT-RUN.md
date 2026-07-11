@@ -574,3 +574,11 @@ Full buildable specs are in the sections above — these are the highest-value r
 ### Sanity notes
 - New localStorage/keys: none. New flags (opponent look): robe/windKey/paintedGrin/redNose. Distances +
   leaderboard caps unchanged (no launch-lane geometry added). Quirk preserved throughout.
+
+## WORLDS EXPANSION — SHIPPED 2026-07-11
+Final system validator verdict: **MERGE** (10/10 worlds PASS, zero console errors across the full
+matrix, gates watertight, pin/restore in lockstep, quirks deterministic + scoring-safe, distances
+93.3–96.8m ≪ 117 perimeter ≪ 130 cap). All four MINORs landed pre-merge (challenge-link locals,
+activeWorld quirk text, lava light floor, preview-at-home). Merged worlds-expansion → main
+(d37ed13..c5d5c80) and deployed; propagation verified. **Rollback point: d37ed13.**
+Next up: the share-your-launch image (approach validated: canvas poster + baked-in dare).
