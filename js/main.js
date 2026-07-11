@@ -807,12 +807,16 @@ function onContact(hit, fist) {
   // A teetering slapper can't drive the blow — the worse the visible lean at
   // contact, the softer the slap (up to −45% at the tipping point)
   const balF = 1 - 0.45 * Math.min(1, Math.abs(player.lean) / 1.05) ** 2;
+  // P opens the palm for a FLUSH cheek slap — that's what earns the sweet spot
+  // (1.35) and the contact-quality bonus. WITHOUT P the fist is still a solid
+  // striking surface: it transmits the FULL kinetic chain (coil × lunge × arm),
+  // so a well-timed S·L·A punch off a long arm carries real distance — it just
+  // pays body-blow rate (sweet 0.6, no cq) at a flatter, forward angle. The
+  // palm inflects WHERE the force goes; it doesn't gate whether force exists.
+  const pgPower = fist ? 1.0 : pg.g;
   // muscle is a multiplier, not a substitute: the cap means brute strength only
   // pays off against tonnage — technique still decides everything else
-  let power = 12.5 * player.strength * balF * coilF * lg.g * ag.g * pg.g * sweet;
-  // the closed-fist thud: a real reaction (lesson #6) but a visible dud —
-  // ×0.25 pre-cap means a perfect-chain punch can never rival a mediocre slap
-  if (fist) power *= 0.25;
+  let power = 12.5 * player.strength * balF * coilF * lg.g * ag.g * pgPower * sweet;
   // a slow "cleanup" graze that sneaks past the 2.2 gate (e.g. catching a weave
   // boss on the pop-up frame) shouldn't launch full power off a crawling hand:
   // taper below 6 m/s of real contact speed. Normal swings land ~10.8 → untouched.
@@ -866,7 +870,9 @@ function onContact(hit, fist) {
   // arc follows the strike angle: an upward slap at a tall victim launches
   // high, a downward chop at a short one skims flat
   const dir = new THREE.Vector3(1, 0, velDir.z * 0.15).normalize();
-  dir.y = THREE.MathUtils.clamp(0.34 + player.strikeLift * 0.55, 0.18, 0.52);
+  // a slap launches UP off the cheek (the strike lifts them skyward); a punch
+  // drives them FORWARD on a flat, low body-blow line — same force, different angle
+  dir.y = fist ? 0.15 : THREE.MathUtils.clamp(0.34 + player.strikeLift * 0.55, 0.18, 0.52);
   dir.normalize();
 
   opponent.launch(dir, power);
@@ -892,7 +898,7 @@ function onContact(hit, fist) {
   // the sun judges TECHNIQUE, not tonnage — chain quality decides its mood
   if (ugly || hit.part === 'torso' || slap.chain.pct < 25) stage.sunMood('meh', 3.5);
   else if (slap.chain.pct >= 60) stage.sunMood('happy', 5);
-  if (fist) { ui.slapBurst("THAT'S A PUNCH, NOT A SLAP!", 'HOUSE RULE 2: OPEN PALM ONLY — ×0.25 POWER'); sfx.whistle(); }
+  if (fist) { ui.slapBurst('BODY BLOW — CLOSED FIST!', 'A REAL HIT — OPEN THE PALM [P] FOR THE FLUSH SLAP + THE SWEET SPOT'); sfx.whistle(); }
   else if (ugly) ui.slapBurst('SLOPPY SLAP!', 'THE CHAIN WAS LONG GONE');
   else if (noSold) ui.slapBurst('NO-SOLD!', `HE NEEDS A ${opponent.arch.chainGate}% CHAIN TO EVEN BLINK`);
   else if (greased) ui.slapBurst('IT SLID OFF!', 'ONLY A PERFECT PALM GRIPS THE GREASE');
