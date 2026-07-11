@@ -709,6 +709,8 @@ function startAttempt() {
   prevHandSeg = null; // no stale sweep across attempts
   opponent.runLine = attempts.length % 2; // skiRun v2: line A / line B, announced by her push-off side
   calledHigh = arch.calledShot ? attempts.length % 2 === 0 : null; // Dale calls HIGH, LOW, HIGH
+  opponent.calledHigh = calledHigh; // he PRESENTS the called half in his pocket
+  if (arch.bulwark) opponent.bulwarkPct = Math.max(0, Math.ceil(100 - bulwarkPts / (arch.bulwark.threshold / 100)));
   // (tookTakedown persists across attempts — the match-end beat wants to know it happened)
   // the goal banner returns for the swing (it hides at contact so it never
   // sits on top of the flight distance ticker)
@@ -958,7 +960,7 @@ function showResult() {
     const th = opponent.arch.bulwark.threshold;
     const pct = Math.max(0, Math.ceil(100 - bulwarkPts / (th / 100)));
     ui.bulwark(pct);
-    if (pct <= 0) { ui.slapBurst('SPRUNG!', 'THE MAINSPRING LETS GO — UNSLAPPABLE, REVISED'); sfx.fanfare(); stage.shake(0.5); }
+    if (pct <= 0) { ui.slapBurst('SPRUNG!', 'THE MAINSPRING LETS GO — UNSLAPPABLE, REVISED'); opponent.springOut(); sfx.fanfare(); stage.shake(0.5); }
     else ui.slapBurst('ABSORBED!', `IMMOVABILITY ${pct}% — EVERY POINT STAYS LANDED`);
   }
   if (campaign.active) {

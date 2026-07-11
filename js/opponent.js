@@ -1384,6 +1384,16 @@ export class Opponent {
 
   setSurge(on) { this.surging = on; if (this.auraRing) this.auraRing.visible = on; } // Chuck's Second Wind power-up glow
   beginEscape() { this.escaping = true; } // skiRun: the whistle blows and she pushes off
+  springOut() {
+    // TICK-TOCK at zero: the mainspring lets go — every part takes the stored
+    // impulse and the 'immovable' specimen BLOWS AWAY downrange
+    if (!this.rag) return;
+    for (const n in this.rag.parts) {
+      const b = this.rag.parts[n].body;
+      b.velocity.x += 16; b.velocity.y += 7;
+      b.angularVelocity.set(Math.random() * 8 - 4, Math.random() * 10 - 5, Math.random() * 8 - 4);
+    }
+  }
   escaped() {
     // past the exit gate behind the player — the attempt is dead the instant this is true
     return !!(this.arch.skiRun && !this.launched && this.runX !== undefined && this.runX < this.arch.skiRun.exitX);
@@ -1516,7 +1526,9 @@ export class Opponent {
         // period — the cheek is only at swing height around each landing.
         // Deterministic; time the whip for the touchdown.
         const hp = A.hop || A.bounce;
-        const ph = (this.time % hp.period) / hp.period;
+        // a rattled bulwark bounces scared: the period stutters short below 40%
+        const per = hp.period * (this.bulwarkPct != null && this.bulwarkPct < 40 ? 0.65 : 1);
+        const ph = (this.time % per) / per;
         const yOff = hp.height * 4 * ph * (1 - ph);
         const P = this.rag.parts;
         for (const n in this.basePose) P[n].body.position.y = this.basePose[n].p.y + yOff;
@@ -1588,7 +1600,12 @@ export class Opponent {
         this._slipK = (this._slipK || 0) + (inPocket - (this._slipK || 0)) * Math.min(1, dt * 9);
         const k = this._slipK, sway = Math.sin(this.time * 2.1) * 0.2;
         const P = this.rag.parts;
-        P.head.body.position.y = this.basePose.head.p.y - 0.38 * k;
+        // calledShot: Dale PRESENTS the called half in the pocket. The palm
+        // plane is fixed, so he moves: LOW call = chin UP (+0.10, the palm
+        // crosses his lower face), HIGH call = crouch (−0.10, it crosses the
+        // upper). Readable telegraph AND the only way both halves exist.
+        const callOff = this.calledHigh == null ? 0 : (this.calledHigh ? -0.1 : 0.1);
+        P.head.body.position.y = this.basePose.head.p.y - 0.38 * k + callOff * (1 - k);
         P.head.body.position.x = this.basePose.head.p.x + 0.32 * k;
         P.head.body.position.z = this.basePose.head.p.z + sway;
         P.torso.body.position.y = this.basePose.torso.p.y - 0.19 * k;

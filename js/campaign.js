@@ -38,7 +38,7 @@ export const TOURS = [
         challenges: [
           { id: 'a3c1', title: 'FLAWLESS FORM', desc: 'LAND a 90% chain before MAESTRO FORTISSIMO — play every link in tune; he can hear a flat swivel from the parking lot', opp: 'maestro', goal: { type: 'chain', v: 90 } },
           { id: 'a3c2', title: 'NO SHORTCUTS', desc: 'Send HAYSEED HANK 75m — pure form, no featherweights', opp: 'hank', goal: { type: 'dist', v: 75 } },
-          { id: 'a3c3', title: '☗ BOSS: CALL THE FOURTH FORM', desc: 'CATCH DODGY DALE on the half he calls — HIGH or LOW, announced at the whistle — and SEND him 60m. The wrong half slides off his grin (×0.2)', opp: 'dale', goal: { type: 'dist', v: 60 } },
+          { id: 'a3c3', title: '☗ BOSS: CALL THE FOURTH FORM', desc: 'CATCH DODGY DALE on the half he calls — chin UP means LOW cheek, crouch means HIGH — and SEND him 50m. The wrong half slides off his grin (×0.2)', opp: 'dale', goal: { type: 'dist', v: 50 } },
         ],
       },
     ],
