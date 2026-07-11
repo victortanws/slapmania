@@ -619,6 +619,7 @@ const WORLDS = [
   { key: 'heaven',  label: '😇 HEAVEN', dlc: true },
   { key: 'hell',    label: '🔥 HELL', dlc: true },
   { key: 'techcampus', label: '💻 SLOP VALLEY', dlc: true },
+  { key: 'vegas',   label: '🎰 SLAP VEGAS', dlc: true },
 ];
 // theme + that world's ONE physics quirk, together — used by the selector,
 // the tour world-pin, and the return-to-title restore, so visuals and physics

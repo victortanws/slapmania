@@ -562,6 +562,7 @@ export function createStage(canvas) {
   scene.add(biomeIM(cornIM, 180, { ice: 0xd9cfa8, desert: 0xcbb187, lava: 0x2a2220, hell: 0x2a1a18, heaven: 0xf0d060, dojo: 0xa8b86a, therapy: 0x7a6a94, haunted: 0x5a5244, tech: 0x4a5560 }));
 
   // --- trees ---
+  const sceneTrees = []; // leafy trees — hidden on non-fair worlds (with orchardTrees)
   function tree(x, z, s = 1) {
     const g = new THREE.Group();
     const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.32, 2.4, 8), toonMat(0x6b4a2e));
@@ -577,6 +578,7 @@ export function createStage(canvas) {
     g.scale.setScalar(s);
     g.position.set(x, 0, z);
     scene.add(g);
+    sceneTrees.push(g);
   }
   tree(-7, -9, 1.3);
   tree(52, -13, 1.6);
@@ -1650,6 +1652,20 @@ export function createStage(canvas) {
         const span = 22, ph = ((time * 0.05) % 2 + 2) % 2, fwd = ph < 1;
         salamander.position.x = 24 + span * (fwd ? ph : 2 - ph);
         salamander.rotation.y = fwd ? 0 : Math.PI;
+      }
+    }
+    if (vegasG.visible) {
+      for (const n of vegasNeon) {
+        const k = 0.55 + Math.abs(Math.sin(time * n.sp + n.ph)) * 0.45;
+        if (n.m.transparent) n.m.opacity = n.base * k;
+      }
+      for (const c of vegasSpots) {
+        c.rotation.z = Math.sin(time * 0.4 + c.userData.sweep.ph) * 0.5;
+        c.rotation.x = Math.PI + Math.sin(time * 0.27 + c.userData.sweep.ph) * 0.3;
+      }
+      for (const j of vegasFountain) {
+        const h = 1.6 + Math.abs(Math.sin(time * 2 + j.ph)) * 2.4;
+        j.m.scale.y = h / 3; j.m.position.y = 1.5 + h / 2;
       }
     }
     if (heavenG.visible) {
@@ -3681,6 +3697,124 @@ export function createStage(canvas) {
 
   // the crowd dresses for the world: named wardrobe palettes swap the instance
   // colors (original fair outfits saved lazily, restored on key null)
+  // --- 🎰 SLAP VEGAS: a neon casino floor at midnight ---
+  const vegasG = new THREE.Group();
+  const vegasSpots = [], vegasNeon = [], vegasFountain = [];
+  {
+    const chrome = toonMat(0x2a2a33);
+    vegasG.add(mkBelt((g, x, z, i) => {
+      const kind = i % 7;
+      const hue = [0xff2f8e, 0x2fd4ff, 0xffd23f, 0x8a2fff, 0x2fff9a][i % 5];
+      if (kind === 3) {                         // the pyramid, sky-beam and all
+        const pyr = new THREE.Mesh(new THREE.ConeGeometry(4.5, 8, 4), toonMat(0x1a1a22));
+        pyr.rotation.y = Math.PI / 4; pyr.position.set(x, 4, z); g.add(pyr);
+        const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.5, 34, 7), glowMat(0xfff2c0));
+        beam.material.transparent = true; beam.material.opacity = 0.5;
+        beam.position.set(x, 20, z); g.add(beam);
+        vegasNeon.push({ m: beam.material, base: 0.5, sp: 1.7, ph: i });
+        return;
+      }
+      const h = 8 + (i % 5) * 2.4;
+      const tower = new THREE.Mesh(new THREE.BoxGeometry(3.4, h, 3.4), toonMat(0x14141c));
+      tower.position.set(x, h / 2, z); g.add(tower);
+      for (const sx of [-1.7, 1.7]) for (const sz of [-1.7, 1.7]) {
+        const edge = new THREE.Mesh(new THREE.BoxGeometry(0.14, h, 0.14), glowMat(hue));
+        edge.position.set(x + sx, h / 2, z + sz); g.add(edge);
+      }
+      const crown = new THREE.Mesh(new THREE.BoxGeometry(3.7, 0.4, 3.7), glowMat(hue));
+      crown.position.set(x, h - 0.3, z); g.add(crown);
+      vegasNeon.push({ m: crown.material, base: 1, sp: 2 + (i % 3), ph: i });
+      if (kind === 5) {                         // a giant slot-machine facade
+        const slot = new THREE.Mesh(new THREE.BoxGeometry(4, 5, 0.6), toonMat(0x8a1030));
+        slot.position.set(x, 2.5 + h / 2, z + 1.8); g.add(slot);
+        for (let r = 0; r < 3; r++) {
+          const reel = new THREE.Mesh(new THREE.CircleGeometry(0.7, 16), glowMat(0xffe08a));
+          reel.position.set(x - 1.1 + r * 1.1, 2.6 + h / 2, z + 2.15); g.add(reel);
+        }
+      }
+    }));
+    vegasG.children[0].visible = true;
+    // the marquee arch over the lane
+    const arch = new THREE.Group();
+    for (const s of [-1, 1]) {
+      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.36, 8.2, 10), chrome);
+      post.position.set(0, 4.1, s * 3.6); arch.add(post);
+    }
+    const span = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.6, 8.4), toonMat(0x14141c));
+    span.position.y = 8; arch.add(span);
+    const board = new THREE.Mesh(new THREE.PlaneGeometry(7.6, 1.3),
+      new THREE.MeshBasicMaterial({ map: makeTextTexture('SLAP VEGAS', '#ffd23f'), transparent: true }));
+    board.position.set(0.7, 8, 0); board.rotation.y = -Math.PI / 2; arch.add(board);
+    for (let i = 0; i < 26; i++) {
+      const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.11, 6, 6), glowMat(0xfff2c0));
+      const t = i / 26 * Math.PI * 2;
+      bulb.position.set(0.62, 8 + Math.sin(t) * 0.9, Math.cos(t) * 4.1); arch.add(bulb);
+      vegasNeon.push({ m: bulb.material, base: 1, sp: 5, ph: i * 0.5 });
+    }
+    arch.position.x = 10; vegasG.add(arch);
+    // ground motif: chip stacks + giant dice along the shoulders
+    const chipCols = [0xd83a3a, 0x2f7ad8, 0x2fae5a, 0x14141c];
+    for (let i = 0; i < 22; i++) {
+      const side = i % 2 ? 1 : -1, gx = 6 + i * 4.6;
+      const stack = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.35, 18), toonMat(chipCols[i % 4]));
+      stack.position.set(gx, 0.17, side * (5 + (i % 3))); vegasG.add(stack);
+      const rim = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.06, 6, 18), glowMat(0xf4f0e2));
+      rim.rotation.x = Math.PI / 2; rim.position.copy(stack.position); vegasG.add(rim);
+    }
+    for (const [dx, dz] of [[18, -6.5], [34, 6.2], [70, -6]]) {
+      const die = new THREE.Mesh(new THREE.BoxGeometry(1.3, 1.3, 1.3), toonMat(0xf4f0e2));
+      die.position.set(dx, 0.65, dz); die.rotation.y = dx; vegasG.add(die);
+      for (const [px, py] of [[0.4, 0.4], [-0.4, -0.4], [0, 0]]) {
+        const pip = new THREE.Mesh(new THREE.CircleGeometry(0.12, 10), toonMat(0x14141c));
+        pip.position.set(dx + px, py + 0.65, dz + 0.66); vegasG.add(pip);
+      }
+    }
+    // the fountain (on the pond footprint)
+    const fnt = new THREE.Group();
+    for (const [r, y] of [[3.4, 0.3], [2.2, 0.9], [1.2, 1.5]]) {
+      const tier = new THREE.Mesh(new THREE.CylinderGeometry(r, r + 0.3, 0.4, 22), chrome);
+      tier.position.y = y; fnt.add(tier);
+      const glow = new THREE.Mesh(new THREE.CylinderGeometry(r - 0.15, r - 0.15, 0.12, 22), glowMat(0x2fd4ff));
+      glow.position.y = y + 0.24; fnt.add(glow);
+      vegasNeon.push({ m: glow.material, base: 1, sp: 1.4, ph: r });
+    }
+    for (let i = 0; i < 9; i++) {
+      const a = i / 9 * Math.PI * 2;
+      const jet = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.12, 3, 6), glowMat(0xbfe8ff));
+      jet.material.transparent = true; jet.material.opacity = 0.7;
+      jet.position.set(Math.cos(a) * 1.4, 2.6, Math.sin(a) * 1.4);
+      fnt.add(jet); vegasFountain.push({ m: jet, ph: i * 0.7, a });
+    }
+    fnt.position.set(40, 0, 24); vegasG.add(fnt);
+    // sweeping spotlights
+    for (const [x, z, hue] of [[24, -14, 0xff2f8e], [58, 16, 0x2fd4ff]]) {
+      const pod = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.4, 1.6, 8), chrome);
+      pod.position.set(x, 0.8, z); vegasG.add(pod);
+      const cone = new THREE.Mesh(new THREE.ConeGeometry(2.4, 30, 10, 1, true), glowMat(hue));
+      cone.material.transparent = true; cone.material.opacity = 0.16; cone.material.side = THREE.DoubleSide;
+      cone.position.set(x, 15, z); vegasG.add(cone);
+      cone.userData.sweep = { ph: x };
+      vegasSpots.push(cone);
+    }
+    vegasG.traverse((m) => { if (m.isMesh && m.material.type !== 'MeshBasicMaterial') m.castShadow = true; });
+    vegasG.visible = false;
+    scene.add(vegasG);
+  }
+  const chipBarricade = mkBarricade((arr, bx) => {
+    const chipCols = [0xd83a3a, 0x2f7ad8, 0x2fae5a, 0x141018, 0xf4f0e2];
+    for (const [by, count] of [[0.45, 5], [1.35, 4], [2.2, 3]]) {
+      for (let i = 0; i < count; i++) {
+        const g = new THREE.Group();
+        const chip = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.62, 0.7, 20), toonMat(chipCols[(i + count) % 5]));
+        chip.rotation.x = Math.PI / 2; g.add(chip);
+        const edge = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.08, 6, 20), glowMat(0xf4f0e2));
+        g.add(edge);
+        g.position.set(bx, by, -1.8 + i * (3.6 / Math.max(1, count - 1)));
+        arr.push(g);
+      }
+    }
+  });
+
   const CROWD_PALETTES = {
     winter: [0x9c4a4a, 0x4a6b8c, 0x5c7a5c, 0x8a7a9c, 0xe8e2d4, 0x7a5a44], // muted coats vs snow
     desert: [0xb5885a, 0x9c7a4a, 0xc9a86a, 0x7a6a4a, 0xd8b878, 0x8a5a3a], // dusty earth tones
@@ -3692,6 +3826,7 @@ export function createStage(canvas) {
     hell:   [0x8a2a2a, 0x5a1a1a, 0xb54a2a, 0x3a2a2a, 0x6e2a3a, 0x2a1a1a], // various shades of regret
     haunted:[0x2a2a33, 0x3a2a3a, 0x4a3a2e, 0x33333c, 0x5a4a5a, 0x262e2a], // mourners' Sunday best
     tech:   [0x3a3f4a, 0x2a2a33, 0x4a5a6e, 0x2a6a6a, 0x6e7a8a, 0x1f2a3a], // hoodies, all of them
+    vegas:  [0xff2f8e, 0x2fd4ff, 0xffd23f, 0x141018, 0x8a2fff, 0xf4f0e2], // showgirl neon + tux blacks
   };
   let crowdOrig = null;
   function setCrowdPalette(key) {
@@ -3782,15 +3917,18 @@ export function createStage(canvas) {
     hell: { fog: [0x2a0f12, 34, 118], skyTint: 0x3a0f14, hemi: [0xd85a3a, 0x2a0c0c, 0.82], sun: [0xff5a2a, 1.45], fill: 0.22, cloud: 0x4a1a1a, maps: false, grass: 0x4a1f1c, lane: 0x6e2a1e, night: false, sunFace: false,
       group: 'hell', biome: 'hell', crowd: 'hell', pond: 0xff7a20,
       hideFarm: true, hideCloths: true, hideFences: true, barricade: 'redtape' },
+    vegas: { fog: [0x0e0a16, 40, 150], skyTint: 0x0a0710, hemi: [0x5a4a7a, 0x14101c, 0.55], sun: [0xff8ad0, 0.7], fill: 0.16, cloud: 0x1a1226, maps: false, grass: 0x1a0e26, lane: 0x120a1c, night: true, sunFace: false,
+      group: 'vegas', biome: 'vegas', crowd: 'vegas', pond: 0x2fd4ff, sunTint: [0xff8ad0, 0.5],
+      hideFarm: true, hideBarn: true, hideFair: true, hideCloths: true, hideFences: true, barricade: 'chips' },
   };
   const WORLD_GROUPS = {
     ice: winterG, desert: desertG, jungle: jungleG, dojo: dojoG,
     lava: lavaG, heaven: heavenG, hell: hellG, therapy: therapyG,
-    haunted: hauntedG, techcampus: techG,
+    haunted: hauntedG, techcampus: techG, vegas: vegasG,
   };
   // every non-farm world re-dresses the perimeter, so pine hides whenever any
   // kit with its own belt is up (each belt lives inside its kit group)
-  const BELT_WORLDS = new Set(['desert', 'jungle', 'dojo', 'lava', 'heaven', 'hell', 'therapy', 'haunted', 'techcampus']);
+  const BELT_WORLDS = new Set(['desert', 'jungle', 'dojo', 'lava', 'heaven', 'hell', 'therapy', 'haunted', 'techcampus', 'vegas']);
   const WORLD_FX = {                                 // per-world extras beyond the kit
     ice: (on) => {
       snowPts.visible = on;
@@ -3804,7 +3942,7 @@ export function createStage(canvas) {
     planks: summerBarricade, snow: snowBarricade, barrels: barrelBarricade,
     bamboo: bambooBarricade, shoji: shojiBarricade, boulders: boulderBarricade,
     cloud: cloudBarricade, redtape: redtapeBarricade, books: booksBarricade,
-    coffins: coffinsBarricade, boxes: boxesBarricade,
+    coffins: coffinsBarricade, boxes: boxesBarricade, chips: chipBarricade,
   };
   const hasWorld = (n) => !!WORLD_THEMES[n];
 
@@ -3844,6 +3982,8 @@ export function createStage(canvas) {
     // not just the farmhouses hideFarm hides — for worlds that aren't a fair
     for (const s of [silo, mill, tractor, ferris]) s.visible = !t.hideFair;
     for (const tr of orchardTrees) tr.visible = !t.hideFair;
+    for (const cm of [cornIM, edgeCornIM, fieldCornIM]) cm.visible = !t.hideFair; // no cornfields on the Strip / a ship / the tar
+    for (const tr of sceneTrees) tr.visible = !t.hideFair;
     for (const fh of farmhouses) fh.visible = !t.hideFarm;
     for (const fb of fenceBits) fb.visible = !t.hideFences;
     for (const c of cloths) c.mesh.visible = !t.hideCloths;
