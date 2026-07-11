@@ -349,6 +349,9 @@ function startMatch() {
 // Escape from anywhere: back to the front porch
 function goToTitle() {
   if (chosenArch && chosenArch.boss) chosenArch = null;   // bosses don't loiter on the porch
+  // a tour may have pinned its own world (the dojo) — restore the player's pick
+  const homeWorld = localStorage.getItem('slapp_world') || 'day';
+  if (stage.hasWorld && stage.hasWorld(homeWorld)) stage.setWorldTheme(homeWorld);
   player.reset();
   opponent.remove();
   opponent = new Opponent({ scene, world: phys.world, mat: phys.fleshMat, arch: chosenArch || ROSTER[1] });
@@ -443,6 +446,8 @@ function openTourMenu() {
     // pin the tour's star slapper (Charlie/Bruce/…) so the 'YOU' voice + avatar
     // match the story; grants free campaign-use of a locked DLC slapper.
     if (ch.slapper) { const s = SLAPPERS.find((x) => x.key === ch.slapper); if (s) setLook(s); }
+    // a tour can pin its WORLD (Bruce fights in the dojo) — guarded until it ships
+    if (ch.world && stage.hasWorld && stage.hasWorld(ch.world)) stage.setWorldTheme(ch.world);
     let lines = [];
     const proKey = (ch.tourKey || '') + '_prologue';
     if (campaign.CUTSCENES[proKey] && !seenScene(proKey)) {
@@ -459,6 +464,12 @@ function openTourMenu() {
       if (arch) { launch(); playScene(lines); }
       else playScene(lines, launch);
     } else launch();
+  }, {
+    ownsDlc: owned('bruceslee'),
+    onLocked: (tour) => openUnlockModal({
+      name: tour.title.replace(/^\S+\s/, ''),
+      desc: "Bruce Slee's own storyline — and all six legends — ride with the Supporter Pack.",
+    }),
   });
   track('tour_opened', { cleared: campaign.progress().length });
 }

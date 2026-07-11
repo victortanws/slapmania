@@ -119,6 +119,8 @@ export const TOURS = [
   },
   {
     key: 'secondwind', title: '🐉 THE SECOND WIND',
+    dlc: true,           // rides with the Supporter Pack (Bruce's own storyline)
+    world: 'dojo',       // fought in the martial-arts dojo world once it ships (guarded)
     slapper: 'bruceslee', // pin Bruce (grants free campaign-use of the locked DLC); martial 'YOU' voice
     blurb: 'Bruce Slee climbs to the one slap the county calls a myth. Chuck North has never been slapped. Strike in the quiet — before the legend hardens.',
     acts: [
@@ -434,11 +436,17 @@ export const FAILS = {
   ],
 };
 
+// director's ordering: Charlie's documentary leads, then the Fair; Bruce's DLC
+// storyline next, with the Master Slee scrolls beneath it.
+const TOUR_ORDER = ['wonders', 'fair', 'secondwind', 'palm'];
+TOURS.sort((a, b) => TOUR_ORDER.indexOf(a.key) - TOUR_ORDER.indexOf(b.key));
+
 // stamp each challenge with its tour's pinned slapper + tour key so the match
 // launcher can force the avatar and prepend the right prologue (see main.js).
 TOURS.forEach((tour) => tour.acts.forEach((act) => act.challenges.forEach((c) => {
   c.slapper = tour.slapper || null;
   c.tourKey = tour.key;
+  c.world = tour.world || null;
 })));
 
 export const enabled = () =>
@@ -479,15 +487,29 @@ export function checkAttempt({ dist, pts, part, chainPct, oppKey }) {
 
 // ---- the tour menu card ----
 const $ = (id) => document.getElementById(id);
-export function open(onStart) {
+export function open(onStart, opts = {}) {
+  const ownsDlc = !!opts.ownsDlc;
   const wrap = $('tourActs');
   wrap.innerHTML = '';
   let total = 0;
   TOURS.forEach((tour) => {
+    const locked = tour.dlc && !ownsDlc;
     const head = document.createElement('div');
     head.className = 'tourHead';
-    head.innerHTML = `<b>${tour.title}</b><br><span>${tour.blurb}</span>`;
+    head.innerHTML = `<b>${tour.title}${locked ? ' <span class="lockbadge" style="position:static;">🔒 PACK</span>' : ''}</b><br><span>${tour.blurb}</span>`;
     wrap.appendChild(head);
+    if (locked) {
+      // a DLC storyline: one sealed box, click anywhere → the supporter pitch
+      const box = document.createElement('div');
+      box.className = 'tourAct';
+      box.style.cursor = 'pointer';
+      box.innerHTML = `<h3>SUPPORTER STORYLINE 🔒</h3>
+        <div class="tourStory">${tour.acts.length} acts ride with the Supporter Pack. Tap to unlock.</div>`;
+      box.onclick = () => opts.onLocked && opts.onLocked(tour);
+      wrap.appendChild(box);
+      tour.acts.forEach((act) => { total += act.challenges.length; });
+      return;
+    }
     tour.acts.forEach((act, ai) => {
       total += act.challenges.length;
       const box = document.createElement('div');
