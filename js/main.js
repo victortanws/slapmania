@@ -878,7 +878,24 @@ function onContact(hit, fist) {
   // he flies down the lane, carrying a hint of the sideways sweep — and the
   // arc follows the strike angle: an upward slap at a tall victim launches
   // high, a downward chop at a short one skims flat
-  const dir = new THREE.Vector3(1, 0, velDir.z * 0.15).normalize();
+  // DIRECT THE LAUNCH PLANE from the contact geometry: the head drives along the
+  // INWARD cheek normal (−nCheek, the push direction) blended with a hint of the
+  // hand's sideways sweep. A square cheek gives push=(+1,0,0) → straight down the
+  // lane (unchanged, no regression); a TURNED or angled cheek tilts the push in z
+  // → the flight genuinely DEFLECTS sideways. dir.y (the arc) is set just below.
+  const dir = new THREE.Vector3(1, 0, velDir.z * 0.15);
+  if (hit.normal) {
+    const push = hit.normal.clone().negate(); // into the cheek
+    push.y = 0;
+    if (push.lengthSq() > 1e-4) {
+      push.normalize();
+      // partial blend toward the contact push: a square cheek is unchanged
+      // (push.x=1 → dir.x=1, push.z=0 → sweep only), a TURNED/angled cheek
+      // deflects clearly but still carries down-lane (flights stay contained)
+      dir.x = 0.4 + 0.6 * push.x;
+      dir.z = 0.6 * push.z + velDir.z * 0.15;
+    }
+  }
   // a slap launches UP off the cheek (the strike lifts them skyward); a punch
   // drives them FORWARD on a flat, low body-blow line — same force, different angle.
   // CONTACT-HEIGHT → ARC (skill axis): a slap landing HIGH on the cheek applies
@@ -898,13 +915,18 @@ function onContact(hit, fist) {
   }
   dir.normalize();
 
-  // TANGENTIAL SPIN — a whipping open palm drags ACROSS the cheek and sets the
-  // volunteer barrel-rolling; a straight fist drives in and barely turns them.
-  // Derived from the true contact geometry: the hand-velocity component across
-  // the surface normal (tang), about axis n×tang, scaled by flushness. Pure
-  // visual truth — angular velocity leaves the launch trajectory untouched, so
-  // it can NEVER perturb the measured distance. A clean slap just looks clean.
-  const spin = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, speed * 0.22);
+  // COG TORQUE + palm roll — the tumble is now PRINCIPLED, not a heuristic. The
+  // launch impulse lands ABOVE the center of gravity, so it topples the body:
+  // angular velocity ∝ r × F, with r = (contact point − COG) and F = the launch
+  // direction. A HIGH cheek hit somersaults them forward; a LOW hit barely
+  // pitches; an off-centre or TURNED-cheek hit (dir deflected in z) adds real
+  // yaw. On top of that, a flush open PALM drags across the cheek and adds a
+  // barrel-roll (the tangential sweep about n×tang). ANGULAR ONLY — this leaves
+  // every body's linear velocity (hence the measured distance + the caps)
+  // completely untouched; the flight is identical, only the tumble is honest.
+  const cog = opponent.pelvisPos(); // the body's approximate center of gravity
+  const r = new THREE.Vector3(hit.point.x - cog.x, hit.point.y - cog.y, hit.point.z - cog.z);
+  const spin = new THREE.Vector3().crossVectors(r, dir).multiplyScalar(speed * 0.85);
   if (hit.part === 'head') {
     // the offered cheek's true normal (rotates with the head) — so on a turned
     // face the barrel-roll spins about the real axis, not the radial line
@@ -913,14 +935,14 @@ function onContact(hit, fist) {
     const tMag = tang.length();
     if (tMag > 1e-3) {
       tang.normalize();
-      const axis = new THREE.Vector3().crossVectors(n, tang).normalize();
+      const rollAxis = new THREE.Vector3().crossVectors(n, tang).normalize();
       const flush = THREE.MathUtils.clamp((cq - 0.88) / 0.24, 0, 1);
-      // palm whips (full drag) vs fist driving straight in (little spin)
-      spin.copy(axis).multiplyScalar(speed * tMag * (fist ? 0.15 : 0.55) * (0.7 + 0.6 * flush));
-      spin.x += (Math.random() - 0.5) * 0.6;
-      spin.y += (Math.random() - 0.5) * 0.6;
+      // palm whips (full drag) vs fist driving straight in (little extra roll)
+      spin.addScaledVector(rollAxis, speed * tMag * (fist ? 0.15 : 0.55) * (0.7 + 0.6 * flush));
     }
   }
+  spin.x += (Math.random() - 0.5) * 0.5; // a touch of natural tumble, never sterile
+  spin.y += (Math.random() - 0.5) * 0.5;
 
   opponent.launch(dir, power, spin);
   slap = {
