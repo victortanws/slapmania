@@ -893,7 +893,9 @@ function onContact(hit, fist) {
       // (push.x=1 → dir.x=1, push.z=0 → sweep only), a TURNED/angled cheek
       // deflects clearly but still carries down-lane (flights stay contained)
       dir.x = 0.4 + 0.6 * push.x;
-      dir.z = 0.6 * push.z + velDir.z * 0.15;
+      // clamp the sideways deflection so containment is guaranteed BY CONSTRUCTION
+      // (never relying on a boss's facing-power gate to keep flights off the rails)
+      dir.z = THREE.MathUtils.clamp(0.6 * push.z + velDir.z * 0.15, -0.45, 0.45);
     }
   }
   // a slap launches UP off the cheek (the strike lifts them skyward); a punch
@@ -926,7 +928,11 @@ function onContact(hit, fist) {
   // completely untouched; the flight is identical, only the tumble is honest.
   const cog = opponent.pelvisPos(); // the body's approximate center of gravity
   const r = new THREE.Vector3(hit.point.x - cog.x, hit.point.y - cog.y, hit.point.z - cog.z);
-  const spin = new THREE.Vector3().crossVectors(r, dir).multiplyScalar(speed * 0.85);
+  // scale the tumble by the LAUNCH IMPULSE (power), not the ~constant hand speed,
+  // so a feeble graze barely turns them while a monster slap somersaults them —
+  // and damp by head INERTIA (∝√mass) so a heavy skull resists rotation
+  const inertia = Math.sqrt(opponent.arch.mass);
+  const spin = new THREE.Vector3().crossVectors(r, dir).multiplyScalar(power * 0.3 / inertia);
   if (hit.part === 'head') {
     // the offered cheek's true normal (rotates with the head) — so on a turned
     // face the barrel-roll spins about the real axis, not the radial line
@@ -937,8 +943,9 @@ function onContact(hit, fist) {
       tang.normalize();
       const rollAxis = new THREE.Vector3().crossVectors(n, tang).normalize();
       const flush = THREE.MathUtils.clamp((cq - 0.88) / 0.24, 0, 1);
-      // palm whips (full drag) vs fist driving straight in (little extra roll)
-      spin.addScaledVector(rollAxis, speed * tMag * (fist ? 0.15 : 0.55) * (0.7 + 0.6 * flush));
+      // palm whips (full drag) vs fist driving straight in (little extra roll) —
+      // also inertia-damped so heavy heads barrel-roll less
+      spin.addScaledVector(rollAxis, speed * tMag * (fist ? 0.15 : 0.55) * (0.7 + 0.6 * flush) / inertia);
     }
   }
   spin.x += (Math.random() - 0.5) * 0.5; // a touch of natural tumble, never sterile
@@ -964,7 +971,11 @@ function onContact(hit, fist) {
   stage.shake(Math.min(0.5, power / 40));
   if (!ugly && hit.part === 'head') ui.flash(Math.min(0.55, 0.16 + power / 55)); // the CRACK — a white pop on a clean cheek hit
   excite = Math.min(1, power / 20);
-  player.leanV += power * 0.04; // a monster follow-through rocks YOU too
+  // NEWTON'S 3RD: the reaction impulse travels back up the arm and rocks YOU —
+  // a bigger launch kicks a bigger recoil into your lean. A braced stance eats
+  // it; a stance already teetering gets shoved further (reckless power off a bad
+  // base staggers you into the next attempt). Bounded, deterministic.
+  player.leanV += power * 0.055 * (1 + 0.5 * Math.min(1, Math.abs(player.lean) / 1.05));
   // the sun judges TECHNIQUE, not tonnage — chain quality decides its mood
   if (ugly || hit.part === 'torso' || slap.chain.pct < 25) stage.sunMood('meh', 3.5);
   else if (slap.chain.pct >= 60) stage.sunMood('happy', 5);
