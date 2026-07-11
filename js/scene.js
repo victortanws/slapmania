@@ -4582,7 +4582,11 @@ export function createStage(canvas) {
     heaven: { fog: [0xdcecf8, 44, 150], skyTint: 0x7ab0e8, hemi: [0xfff4dc, 0xb0bcd0, 0.85], sun: [0xfff2c8, 2.6], fill: 0.18, cloud: 0xffffff, maps: false, grass: 0xe4e0d0, lane: 0xefc85a, night: false, sunFace: true,
       group: 'heaven', biome: 'heaven', crowd: 'heaven', pond: 0xbfe0f4,
       hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, hideFences: true, barricade: 'cloud' },
-    hell: { fog: [0x2a0f12, 34, 118], skyTint: 0x3a0f14, hemi: [0xd85a3a, 0x2a0c0c, 0.82], sun: [0xff5a2a, 1.45], fill: 0.22, cloud: 0x4a1a1a, maps: false, grass: 0x4a1f1c, lane: 0x6e2a1e, night: false, sunFace: false,
+    // Dante's NINTH CIRCLE is FROZEN (Cocytus), not fire: an icy blue-white lake
+    // under a hellish red glow — high contrast (red demons on pale ice), readable,
+    // and canon. Fog pushed WAY back (was 34m — flights vanished into red murk and
+    // looked like they hit a wall) so the whole arena + every flight stays visible.
+    hell: { fog: [0x5a3a48, 95, 260], skyTint: 0x431722, hemi: [0xe08a6a, 0x8fa8bc, 1.05], sun: [0xffc0a0, 2.0], fill: 0.5, cloud: 0x5a2030, maps: false, grass: 0x9fb8c8, lane: 0xcdddE8, night: false, sunFace: false,
       group: 'hell', biome: 'hell', crowd: 'hell', pond: 0xff7a20,
       hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, hideFences: true, barricade: 'redtape' },
     vegas: { fog: [0x3a2450, 60, 210], skyTint: 0x241640, hemi: [0xffd9a0, 0x4a2f6a, 1.05], sun: [0xffcf9a, 1.7], fill: 0.42, cloud: 0x4a2f6a, maps: false, grass: 0x3a2450, lane: 0xcaa03a, night: true, sunFace: false,

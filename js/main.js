@@ -838,7 +838,7 @@ function onContact(hit, fist) {
     // cheek reads as a genuine graze, from geometry
     const into = hit.normal ? hit.normal.clone().negate() : new THREE.Vector3().subVectors(hit.center, hit.point).normalize();
     const incidence = Math.max(0, velDir.dot(into));
-    cq = 0.88 + 0.24 * (0.7 * vAlign + 0.3 * incidence);
+    cq = 0.92 + 0.2 * (0.7 * vAlign + 0.3 * incidence); // gentler graze penalty (floor 0.92, same 1.12 flush ceiling)
   }
   // a punch has no sweet spot — the fist pays body-blow rate even on the head.
   // EXCEPT on a bodyBlow boss (THE CLOSED FIST school): there the forbidden FIST
@@ -873,7 +873,10 @@ function onContact(hit, fist) {
   // + a speed-INDEPENDENT effective-mass floor: a heavy hand carries momentum
   // even at low speed, so a giant arm's short/slow strike still bites (base
   // armMass 1 → +0, unchanged). Sharpens the Dynamite short-range identity.
-  power *= THREE.MathUtils.clamp(0.3 + 0.7 * player.armMass * speed / MOM_REF + 0.12 * (player.armMass - 1), 0.35, 1.7);
+  // FORGIVENESS: a higher floor + gentler slope so an imperfect (slower) hand
+  // keeps most of its power — the un-saturated version punished sloppy play too
+  // hard and made outcomes hard to read. Peak is still cap-bound (ceilings same).
+  power *= THREE.MathUtils.clamp(0.55 + 0.5 * player.armMass * speed / MOM_REF + 0.1 * (player.armMass - 1), 0.5, 1.7);
   // EXTENSION BELL — force transfers best when the arm connects near FULL
   // extension (peak reach + hand speed). A bell centred where a well-timed palm
   // lands (~0.93 of the elbow's range) → PERFECT is 1.0 (base roster unchanged);
@@ -887,7 +890,7 @@ function onContact(hit, fist) {
   // ONE-SIDED bell: full reward at/above 0.93 (a fully-extended connect is never
   // penalized — protects reach-saturated matchups like a short slapper reaching a
   // tall volunteer), penalty only BELOW 0.93 (the arm still folding). σ 0.13.
-  const extF = fist ? 1 : (armExt >= 0.93 ? 1 : THREE.MathUtils.clamp(0.6 + 0.4 * Math.exp(-(((armExt - 0.93) / 0.13) ** 2)), 0.6, 1));
+  const extF = fist ? 1 : (armExt >= 0.93 ? 1 : THREE.MathUtils.clamp(0.75 + 0.25 * Math.exp(-(((armExt - 0.93) / 0.15) ** 2)), 0.75, 1));
   // extF is applied POST-CAP (below) so under-extension gates force even at the
   // cap — a light arm caps AT full extension (extF≈1, untouched) but a heavy arm
   // caps while still folding (extF<1), so it genuinely can't reach its ceiling on
