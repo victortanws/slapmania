@@ -310,6 +310,14 @@ function openSlapperPick(previewChar = null) {
 // no-ops and the game is untouched. Feeds the pick→play→EMPEROR→share funnel.
 const track = (event, props) => { try { window.posthog?.capture(event, props); } catch {} };
 
+// volunteers on offer in the CURRENT world: the fair regulars everywhere, plus
+// each world's own locals (a world-stamped volunteer only shows at home —
+// Halo Hal waits in heaven, Low-Level Larry clocks in downstairs)
+let OPP_LIST = PICKABLE;
+function oppListNow() {
+  const w = localStorage.getItem('slapp_world') || 'day';
+  return ROSTER.filter((r) => !r.boss && (!r.world || r.world === w));
+}
 function openOppPick() {
   setState('SELECT_OPP');
   track('slapper_selected', { slapper: player.look?.name });
@@ -317,25 +325,26 @@ function openOppPick() {
   player.root.position.x = -2.6;
   player.root.rotation.y = 0;   // clear any ?preview facing before play
   ui.hideCards();
+  OPP_LIST = oppListNow();
   // the highlighted volunteer stands in the ring beckoning — slap-me showcase.
-  // PICKABLE only: bosses never appear here, the tour summons them by key.
+  // Bosses never appear here, the tour summons them by key.
   pickHighlight = (i) => {
     pickIndex = i;
     ui.setPickSel(i);
     opponent.remove();
-    opponent = new Opponent({ scene, world: phys.world, mat: phys.fleshMat, arch: PICKABLE[i], showcase: true });
-    ui.bubble(PICKABLE[i].pickLine);
+    opponent = new Opponent({ scene, world: phys.world, mat: phys.fleshMat, arch: OPP_LIST[i], showcase: true });
+    ui.bubble(OPP_LIST[i].pickLine);
   };
-  pickConfirmFn = () => { chosenArch = PICKABLE[pickIndex]; ui.bubble(null); startMatch(); };
+  pickConfirmFn = () => { chosenArch = OPP_LIST[pickIndex]; ui.bubble(null); startMatch(); };
   ui.showPick({
     title: "NOW — WHO'S CATCHIN' IT TODAY?",
     blurb: 'Heavy folks barely budge, but oh, the points pay mighty fine. Three swings at whoever you pick.',
     confirmLabel: 'SLAP THIS VOLUNTEER!',
-    items: PICKABLE.map((a) => ({ name: a.name, sub: `${a.tag} — SCORE ×${a.mass}`, desc: a.pickLine })),
+    items: OPP_LIST.map((a) => ({ name: a.name, sub: `${a.tag} — SCORE ×${a.mass}`, desc: a.pickLine })),
     onHover: (i) => pickHighlight(i),
     onConfirm: () => pickConfirmFn(),
   });
-  pickHighlight(Math.max(0, PICKABLE.indexOf(chosenArch)));
+  pickHighlight(Math.max(0, OPP_LIST.indexOf(chosenArch)));
 }
 
 function startMatch() {
@@ -736,6 +745,29 @@ function showResult() {
   }
   let line = isFoul ? ui.FOUL_LINES[slap.foul]
     : (slap && slap.part === 'torso' ? ui.bodyLineFor(flew) : ui.commentaryFor(flew, opponent.wallSplat));
+  // world personality on the result card — deterministic garnish, never scoring
+  const worldNow = localStorage.getItem('slapp_world') || 'day';
+  if (worldNow === 'lava' && !isFoul) {
+    line += ` DONENESS: ${dist < 20 ? 'STILL RAW.' : dist < 45 ? 'MEDIUM RARE.' : dist < 70 ? 'WELL DONE.' : "FLAME-BROILED. Chef's kiss."}`;
+  } else if (worldNow === 'therapy') {
+    line += ' ' + (isFoul
+      ? (slap.foul === 'clock' ? 'DIAGNOSIS: classic avoidance.' : 'DIAGNOSIS: overextension. You fear commitment, yet here we are.')
+      : slap && slap.part === 'torso' ? "DIAGNOSIS: you're projecting. Aim higher."
+      : slap && slap.chain.pct >= 90 ? 'DIAGNOSIS: a BREAKTHROUGH. Same time next week.'
+      : slap && slap.chain.pct < 40 ? 'DIAGNOSIS: a repressed follow-through.'
+      : 'DIAGNOSIS: unresolved. The couch is ready when you are.');
+  } else if (worldNow === 'hell') {
+    // Hell loves failure: fouls get a standing ovation, excellence gets silence
+    if (isFoul) {
+      line = 'THE CROWD GOES WILD — finally, some BAD NEWS! ' + line + ' SIN QUALITY: EXCELLENT.';
+      stage.kidsCelebrate(2.5);
+      sfx.crowd(3);
+    } else if (slap && slap.chain.pct >= 90) {
+      line += ' The crowd falls silent. Somewhere, a single sad honk.';
+    } else {
+      line += ' Booing intensifies with every meter. SIN QUALITY: POOR.';
+    }
+  }
   // tour goals are judged per attempt, from numbers this function already has
   if (campaign.active) {
     const cleared = campaign.checkAttempt({
@@ -939,7 +971,7 @@ addEventListener('keydown', (e) => {
   if (e.code === 'Escape' && state !== 'TITLE') { goToTitle(); return; }
   if (state === 'TITLE' && e.code === 'KeyT' && campaign.enabled()) { openTourMenu(); return; }
   if (state === 'SELECT_SLAPPER' || state === 'SELECT_OPP') {
-    const n = state === 'SELECT_SLAPPER' ? SLAPPERS.length : PICKABLE.length;
+    const n = state === 'SELECT_SLAPPER' ? SLAPPERS.length : OPP_LIST.length;
     const m = /^Digit([1-9])$/.exec(e.code);
     if (m) {
       const i = +m[1] - 1;
@@ -1397,7 +1429,7 @@ if (_pv) {
   else if (volunteer) {
     ui.showTitle(false);
     openOppPick();
-    const i = PICKABLE.indexOf(volunteer);
+    const i = OPP_LIST.indexOf(volunteer);
     if (i >= 0) pickHighlight(i);
     else {
       // bosses aren't in the pick list — showcase them directly

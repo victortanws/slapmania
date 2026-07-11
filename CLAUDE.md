@@ -386,3 +386,26 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   stage.renderer.render(stage.scene, stage.camera); }, 60)` and screenshot while
   it loops (first frame may still be blank — retake). Remember the game camera
   overwrites camera state every frame while unfrozen.
+- **WORLDS ENGINE v2 (2026-07-11, branch worlds-expansion)**: 10 worlds. Public:
+  day, night, ice, desert, jungle. DLC (Supporter Pack): lava, dojo, therapy,
+  heaven, hell. A world = ONE `WORLD_THEMES` entry (palette + declarative flags:
+  group/biome/crowd/pond/sunTint/hideFarm/hideFences/hideCloths/hideBarn/
+  barricade) + a prop kit in `WORLD_GROUPS` (+ optional `WORLD_FX`). Retints via
+  `biomeMat(mat,{ice,desert,lava,…})`/`biomeIM` variant maps applied by
+  `setBiome(key)` (base colors restore for unknown keys); crowd wardrobe via
+  `setCrowdPalette` (CROWD_PALETTES). Every non-farm world re-dresses the SAME
+  `perimSpots` perimeter (BELT_WORLDS hides the pines). Barricade variants join
+  `barricade.pieces` (burst+restack): planks/snow/barrels/bamboo/shoji/boulders/
+  cloud/redtape/books. Physics quirks via `phys.setGround`/`setGravity`, applied
+  ONLY through main.js `setWorldFull(key)` (selector + tour pin + title restore —
+  visuals and physics never drift). Quirks: ice glide, jungle springmoss BOING
+  (rest .62, sim 93.9m<117), heaven gravity −8.8 (sim 96.2m<117), lava DONENESS
+  stamp, therapy DIAGNOSIS stamp, hell INVERTED CROWD (fouls celebrated) — text
+  quirks live in showResult keyed off slapp_world. World selector = generated
+  chips (`WORLDS` list in main.js; DLC chips 🔒 → unlock modal; saved DLC world
+  falls back to day without the pack). **WORLD LOCALS**: ROSTER entries with
+  `world:'<key>'` appear in the opp pick only in that world (OPP_LIST/oppListNow)
+  — percival(jungle), flambeau(lava), wally(dojo), inkblot Ian(therapy),
+  halo hal(heaven), larry(hell). New look flags: horns, halo, wings, inkblot.
+  Campaign order: wonders→fair→secondwind(dlc, world:'dojo')→palm; tour `world:`
+  pins apply via setWorldFull and restore on title.

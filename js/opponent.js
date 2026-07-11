@@ -105,6 +105,56 @@ export const ROSTER = [
     pickLine: 'Honk honk. The clown does not fear the palm.',
     taunts: ['I bounce back, sugar — it is the whole act!', 'Honk if you missed!'],
   },
+  // ---- WORLD LOCALS (world: key): volunteers who only appear in the pick
+  // when their home world is active — each biome keeps its own regulars ----
+  {
+    key: 'percival', name: 'PITH-HELMET PERCIVAL', tag: 'LOST EXPLORER', world: 'jungle',
+    w: 0.85, h: 1.04, mass: 0.75,
+    skin: 0xe8b58c, shirt: 0xc9b98a, pants: 0xb5a578,
+    hat: 'floppy', hatCol: 0xdcd4b8, bandCol: 0x6e5a3a, hair: 'flat', hairCol: 0x8a6a4a,
+    pickLine: "Been lost since '09. Fairly sure this fair is a mirage.",
+    taunts: ['I have survived quicksand, sir. You are merely damp.', 'By my map, that slap missed by three leagues.'],
+  },
+  {
+    key: 'flambeau', name: 'FLAMBEAU THE FIRE-EATER', tag: 'SIDESHOW', world: 'lava',
+    w: 0.8, h: 1.05, mass: 0.7, noStache: true,
+    skin: 0xd89468, shirt: 0x8a1f2e, stripes: 0xf0c030, pants: 0x1f1f28,
+    hair: 'flat', hairCol: 0x14100c,
+    pickLine: 'Eats fire professionally. Considers your palm an appetizer.',
+    taunts: ['I gargle magma, darling.', 'Ooh, toasty! Again.'],
+  },
+  {
+    key: 'wally', name: 'WOODEN WALLY', tag: 'TRAINING DUMMY', world: 'dojo',
+    w: 0.95, h: 1.0, mass: 1.2, noStache: true,
+    skin: 0xc9a468, shirt: 0xc9a468, pants: 0x9a7a48,
+    paintedGrin: 0x7a4a20, hair: 'flat', hairCol: 0x8a6a3a,
+    pickLine: 'A mook jong that achieved consciousness and regrets it.',
+    taunts: ['I was carved for this.', 'Termites hit harder.'],
+  },
+  {
+    key: 'inkblot', name: 'INKBLOT IAN', tag: 'TEST SUBJECT', world: 'therapy',
+    w: 0.95, h: 1.0, mass: 0.9, noStache: true,
+    skin: 0xe8c8a2, shirt: 0xf4f0ea, pants: 0x2a2a33, inkblot: 0x1a1a22,
+    hair: 'flat', hairCol: 0x2a2a2a,
+    pickLine: 'Everyone sees something different in him. He sees a slap coming.',
+    taunts: ['You see a butterfly? I see your whiff.', 'That one looked like your childhood.'],
+  },
+  {
+    key: 'hal', name: 'HALO HAL', tag: 'TRAINEE ANGEL', world: 'heaven',
+    w: 0.85, h: 1.0, mass: 0.5, noStache: true, robe: true,
+    skin: 0xf0d0b0, shirt: 0xf6f2e8, pants: 0xf6f2e8,
+    halo: true, wings: true, hair: 'flat', hairCol: 0xf0e0a0,
+    pickLine: "Hasn't earned the big wings. You're his flight test.",
+    taunts: ['Cloud nine has a weight limit, friend.', 'I get my wings if you clear 60. No pressure.'],
+  },
+  {
+    key: 'larry', name: 'LOW-LEVEL LARRY', tag: 'DEMON, 3RD CLASS', world: 'hell',
+    w: 0.9, h: 0.97, mass: 0.8, noStache: true, suit: true,
+    skin: 0xc0392b, shirt: 0x8a8f98, pants: 0x3a3a44, tie: 0x2a2a33,
+    horns: true, hair: 'flat', hairCol: 0x1a1a1a,
+    pickLine: '400 years in the complaints department. This is his lunch break.',
+    taunts: ['Your form has been escalated to my supervisor.', 'File a grievance. The window closes never.'],
+  },
   // ---- BOSSES (boss: true): campaign-only — never listed in the public
   // volunteer pick; tour challenges summon them by key ----
   {
@@ -289,6 +339,23 @@ export class Opponent {
       const eye = new THREE.Mesh(new THREE.SphereGeometry(0.022, 6, 6), toonMat(0x111111));
       eye.position.set(-0.145 * hr, 0.035 * hr, s * 0.055 * hr);
       head.add(eye);
+    }
+    if (arch.horns) {
+      // two little devil horns — regulation issue, demon 3rd class and up
+      for (const s of [-1, 1]) {
+        const horn = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.16, 5), toonMat(0x1a1a1a));
+        horn.position.set(-0.02 * hr, 0.15 * hr, s * 0.1 * hr);
+        horn.scale.setScalar(hr);
+        head.add(horn);
+      }
+    }
+    if (arch.halo) {
+      // a gold halo, hovering with trainee-grade wobble tolerance
+      const halo = new THREE.Mesh(new THREE.TorusGeometry(0.13, 0.022, 8, 16), toonMat(0xd8b13c));
+      halo.rotation.x = Math.PI / 2;
+      halo.position.y = 0.26 * hr;
+      halo.scale.setScalar(hr);
+      head.add(halo);
     }
     if (arch.redNose) {
       const nose = new THREE.Mesh(new THREE.SphereGeometry(0.032 * hr, 8, 8), toonMat(arch.redNose));
@@ -578,6 +645,28 @@ export class Opponent {
         sheen.scale.set(0.4, 1.6, 0.4);
         sheen.position.set(-(tr + 0.004), sy, sz);
         P.torso.mesh.add(sheen);
+      }
+    }
+    if (arch.wings) {
+      // small trainee wings on the back — the big ones must be earned
+      const tr = 0.38 * w * 0.52;
+      for (const s of [-1, 1]) {
+        const wing = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.22, 0.3), toonMat(0xf6f2e8));
+        wing.position.set(tr + 0.03, 0.12 * h, s * 0.16);
+        wing.rotation.x = s * 0.5;
+        wing.castShadow = true;
+        P.torso.mesh.add(wing);
+      }
+    }
+    if (arch.inkblot) {
+      // a mirrored Rorschach blob across the chest — what do YOU see?
+      const tr = 0.38 * w * 0.52;
+      for (const s of [-1, 1]) {
+        const blob = new THREE.Mesh(new THREE.SphereGeometry(0.09, 7, 6), toonMat(arch.inkblot));
+        blob.scale.set(0.35, 1.3, 0.8);
+        blob.position.set(-(tr + 0.004), 0.08 * h, s * 0.07);
+        blob.rotation.x = s * 0.5;
+        P.torso.mesh.add(blob);
       }
     }
     if (arch.windKey) {
