@@ -47,7 +47,7 @@ function setLook(look) {
 let state = 'TITLE';
 let tState = 0;
 let timeScale = 1;
-let shotClock = 10;
+let shotClock = 30; // a full, unhurried match clock — time to read the opponent, wait out a weave, set your feet
 let attempts = [];
 let slap = null;        // outcome of the current attempt {foul, part}
 let contact = null;     // impact info {point, power}
@@ -747,7 +747,7 @@ function startAttempt() {
   cardDelay = 0;
   stage.resetBarricade();
   resetChain();
-  shotClock = arch.shotClock || 10; // bosses may run a tighter courtroom
+  shotClock = arch.shotClock || 30; // 30s standard; time-limited bosses run a tighter 20s courtroom
   timeScale = 1;
   prevHandSeg = null; // no stale sweep across attempts
   opponent.runLine = attempts.length % 2; // skiRun v2: line A / line B, announced by her push-off side
@@ -1692,7 +1692,7 @@ function tick(now) {
       ui.showMeters(true);
       opponent.setTargetVisible(true);
       // officiated (campaign) matches: the judge's whistle IS the shot clock —
-      // one long blast at the exact frame the 10 seconds start running
+      // one long blast at the exact frame the shot clock starts running
       if (campaign.active) { sfx.whistle('start'); ui.coach(null); }
       // THE GREAT ESCAPE: the whistle is her cue too — she pushes off for the gate
       if (opponent.arch.skiRun) opponent.beginEscape();

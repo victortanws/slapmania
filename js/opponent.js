@@ -299,7 +299,7 @@ export const ROSTER = [
   },
   {
     key: 'gnarl', name: 'MASTER GNARL', tag: 'BOSS · THE CLOSED FIST', boss: true,
-    w: 1.2, h: 1.08, mass: 1.3, bodyBlow: true, shotClock: 6,
+    w: 1.2, h: 1.08, mass: 1.3, bodyBlow: true, shotClock: 20,
     // Slee's FIRST student — expelled 60 years ago for asking what force lived in
     // the closed hand. Renounced the robe; a bare-knuckle brawler with a shield cheek
     skin: 0xb98a63, shirt: 0x5a5048, pants: 0x3a352e, whiteBeard: true, brow: true, beltCol: 0x2e2a24,
@@ -317,7 +317,7 @@ export const ROSTER = [
   // -- SAVE THE FAIR bosses: each one examines a different skill --
   {
     key: 'judge', name: 'THE ASSESSOR', tag: 'BOSS · 5-SECOND APPRAISAL', boss: true,
-    w: 1.05, h: 1.04, mass: 1.1, noStache: true, shotClock: 5, brow: true,
+    w: 1.05, h: 1.04, mass: 1.1, noStache: true, shotClock: 20, brow: true,
     // powdered wig over a black suit — the county appraiser himself
     skin: 0xdfb992, shirt: 0x17171d, pants: 0x17171d, suit: true, tie: 0x51525e,
     hair: 'frizz', hairCol: 0xf2ede1,
@@ -344,7 +344,7 @@ export const ROSTER = [
   },
   {
     key: 'pennywhistle', name: 'JUDGE PENNYWHISTLE', tag: 'BOSS · CONTEMPT OF COURT', boss: true,
-    w: 1.0, h: 0.98, mass: 1.15, shotClock: 6, chainGate: 50, whistleProp: true,
+    w: 1.0, h: 0.98, mass: 1.15, shotClock: 20, chainGate: 50, whistleProp: true,
     // the county's beloved judge-referee-notary-hot-dog-inspector — bought.
     // Black robe, gold tie, the famous silver whistle still on its cord.
     skin: 0xe2b688, shirt: 0x1b1b22, pants: 0x1b1b22, suit: true, tie: 0xd8b13c,
@@ -409,7 +409,7 @@ export const ROSTER = [
   {
     key: 'reaper', name: 'THE GREEN REAPER', tag: 'BOSS · MOWING TIME', boss: true,
     w: 1.15, h: 1.12, mass: 1.35, noStache: true, robe: true,
-    shotClock: 7, chainGate: 65,
+    shotClock: 20, chainGate: 65,
     // moss-green work robe, hood up; the scythe is FOR THE LAWN
     skin: 0x141a14, shirt: 0x2e6b3a, pants: 0x24522e,
     reaperHood: 0x24522e, scythe: true,
@@ -428,7 +428,7 @@ export const ROSTER = [
   {
     key: 'slopunit', name: 'S.L.O.P. UNIT-1', tag: 'BOSS · ARTIFICIAL GENERAL APOLOGIES', boss: true,
     w: 1.9, h: 1.25, mass: 3.2, noStache: true,
-    shotClock: 6, chainGate: 70,
+    shotClock: 20, chainGate: 70,
     // gunmetal chassis, panel-grey plating — the manifestation of AGI (allegedly)
     skin: 0x9aa2ad, shirt: 0x6e7683, pants: 0x4a515c, robot: true,
     pickLine: 'The manifestation of AGI. Mostly generates apologies.',

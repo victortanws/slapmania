@@ -49,7 +49,7 @@ export const TOURS = [
         challenges: [
           { id: 'a4c1', title: 'THE CLOSED HAND', desc: 'CALLUS CAL cannot feel an open palm (TOO SOFT, ×0.12). Do the forbidden thing — CLOSE the fist (do NOT press [P]) and land ONE honest body blow', opp: 'callus_cal', goal: { type: 'fist' } },
           { id: 'a4c2', title: 'THE SLAP-EATER', desc: 'GRISTLE ate open palms for a nickel apiece and kept the nickels. A palm is his pension — a FIST is his problem. SEND him 27m, closed-handed (still coil · lunge · arm — heresy is not sloppiness)', opp: 'gristle', goal: { type: 'fistdist', v: 27 } },
-          { id: 'a4c3', title: '☗ BOSS: THE CLOSED FIST', desc: 'MASTER GNARL made his face a shield — an open palm slides off (TOO SOFT). Only the forbidden fist reaches him. SEND him 41m closed-handed, six seconds a swing', opp: 'gnarl', goal: { type: 'fistdist', v: 41 } },
+          { id: 'a4c3', title: '☗ BOSS: THE CLOSED FIST', desc: 'MASTER GNARL made his face a shield — an open palm slides off (TOO SOFT). Only the forbidden fist reaches him. SEND him 41m closed-handed, twenty seconds a swing', opp: 'gnarl', goal: { type: 'fistdist', v: 41 } },
         ],
       },
     ],
@@ -65,7 +65,7 @@ export const TOURS = [
                 challenges: [
                   { id: 'f1c1', title: 'CLAUSE 1(a): PACK THE STANDS', desc: 'SCORE 320 off BIG BERTHA — clause 1(a): "demonstrate that anyone cares." When the county\'s favorite aunt roars, the county roars', opp: 'bertha', goal: { type: 'pts', v: 320 } },
                   { id: 'f1c2', title: 'CLAUSE 1(b): GO VIRAL', desc: 'SEND THE INFLUENCER 50m — clause 1(b): "the fair shall demonstrably trend." If it trends, it stands', opp: 'influencer', goal: { type: 'dist', v: 50 } },
-                  { id: 'f1c3', title: '☗ BOSS: CLAUSE 1(c), THE APPRAISAL', desc: "SCORE 270 off THE ASSESSOR in five seconds a swing — survive Don's own appraiser, on Don's own meter", opp: 'judge', goal: { type: 'pts', v: 270 } },
+                  { id: 'f1c3', title: '☗ BOSS: CLAUSE 1(c), THE APPRAISAL', desc: "SCORE 270 off THE ASSESSOR in twenty seconds a swing — survive Don's own appraiser, on Don's own meter", opp: 'judge', goal: { type: 'pts', v: 270 } },
                 ],
       },
       {
@@ -91,7 +91,7 @@ export const TOURS = [
                 story: "One clause left — the small print nobody read aloud. Then the blueprints turned up in Judge Pennywhistle's gavel case, signed three weeks before the wager, witnessed by a hot dog. They don't map a parking structure. They pave forty square feet: the old livestock tent — where a young judge named Pennywhistle disqualified a boy's prize hog for being 'over-greased,' and pinned the blue ribbon on a Hayseed pig instead. Don never meant to lose. He bought the judge to make him SIGN it.",
                 challenges: [
                   { id: 'f4c1', title: 'FOLLOW THE MONEY', desc: 'SCORE 360 off TREMENDOUS DON — he swore on camera you would never touch him. The wager says otherwise', opp: 'don', goal: { type: 'pts', v: 360 } },
-                  { id: 'f4c2', title: '☗ FINAL BOSS: THE IMPOSSIBLE CLAUSE', desc: "SCORE 320 off JUDGE PENNYWHISTLE in six seconds a swing, with 50%+ form on every slap that counts — the final clause, in its author's own handwriting", opp: 'pennywhistle', goal: { type: 'pts', v: 320 } },
+                  { id: 'f4c2', title: '☗ FINAL BOSS: THE IMPOSSIBLE CLAUSE', desc: "SCORE 320 off JUDGE PENNYWHISTLE in twenty seconds a swing, with 50%+ form on every slap that counts — the final clause, in its author's own handwriting", opp: 'pennywhistle', goal: { type: 'pts', v: 320 } },
                 ],
       },
     ],
@@ -199,7 +199,7 @@ export const TOURS = [
         challenges: [
           { id: 'n3c1', title: 'DUET WITH A HAUNTED ORGAN', desc: 'An 79% chain before MAESTRO FORTISSIMO — the organ must NEVER win', opp: 'maestro', goal: { type: 'chain', v: 79 } },
           { id: 'n3c2', title: 'OVER THE MOWER', desc: "Send JACK O'LANTERN JOE 59m — and whatever you do, don't land him on the lawn", opp: 'joe', goal: { type: 'dist', v: 59 } },
-          { id: 'n3c3', title: '☗ BOSS: MOWING TIME', desc: 'SCORE 450 off THE GREEN REAPER inside 7 seconds a swing — LAND 65%+ form on every slap that counts, or be re-mowed (×0.12)', opp: 'reaper', goal: { type: 'pts', v: 450 } },
+          { id: 'n3c3', title: '☗ BOSS: MOWING TIME', desc: 'SCORE 450 off THE GREEN REAPER inside 20 seconds a swing — LAND 65%+ form on every slap that counts, or be re-mowed (×0.12)', opp: 'reaper', goal: { type: 'pts', v: 450 } },
         ],
       },
     ],
@@ -243,7 +243,7 @@ export const TOURS = [
         challenges: [
           { id: 't4c1', title: 'THE PERSONA', desc: "MEET the mask head-on: LAND a flush strike on JACK O'LANTERN JOE's carved cheek and SEND him 27m", opp: 'joe', world: 'haunted', goal: { type: 'headdist', v: 27 } },
           { id: 't4c2', title: 'MEMENTO MORI', desc: 'Send BONY TONY 63m — what remains, once everything is stripped away, had better fly', opp: 'tony', world: 'haunted', goal: { type: 'dist', v: 63 } },
-          { id: 't4c3', title: '☗ BOSS: THE SHADOW AT DAWN', desc: 'SCORE 450 off THE GREEN REAPER inside 7 seconds a swing, with 65%+ form on every slap that counts — this appointment cannot be deferred again', opp: 'reaper', world: 'haunted', goal: { type: 'pts', v: 450 } },
+          { id: 't4c3', title: '☗ BOSS: THE SHADOW AT DAWN', desc: 'SCORE 450 off THE GREEN REAPER inside 20 seconds a swing, with 65%+ form on every slap that counts — this appointment cannot be deferred again', opp: 'reaper', world: 'haunted', goal: { type: 'pts', v: 450 } },
         ],
       },,
     ],
@@ -280,7 +280,7 @@ export const TOURS = [
                 challenges: [
                   { id: 'v3c1', title: 'HUMAN EVAL', desc: 'LAND a 79% chain before SCHOOLMARM SUSIE — the opposite of slop, every link handwritten', opp: 'susie', slapper: 'dario', goal: { type: 'chain', v: 79 } },
                   { id: 'v3c2', title: 'THE LAST PIVOT', desc: 'SEND VISIONARY VANCE 68m off the pitch stage — the most authentic content this valley has ever produced', opp: 'vance', slapper: 'dario', goal: { type: 'dist', v: 68 } },
-                  { id: 'v3c3', title: '☗ BOSS: S.L.O.P. UNIT-1', desc: 'SCORE 430 off S.L.O.P. UNIT-1 in 6 seconds of compute a swing — LAND 70%+ form on every slap that counts, or it gets discarded as training data (×0.12)', opp: 'slopunit', slapper: 'dario', goal: { type: 'pts', v: 430 } },
+                  { id: 'v3c3', title: '☗ BOSS: S.L.O.P. UNIT-1', desc: 'SCORE 430 off S.L.O.P. UNIT-1 in 20 seconds of compute a swing — LAND 70%+ form on every slap that counts, or it gets discarded as training data (×0.12)', opp: 'slopunit', slapper: 'dario', goal: { type: 'pts', v: 430 } },
                   { id: 'v3c3g', title: 'THE GARDEN TOUR', desc: 'SEND MARK SLOPBERG 41m over his own palm trees — he wants to see the herd from above', opp: 'slopberg', slapper: 'dario', goal: { type: 'dist', v: 41 } },
                   { id: 'v3c4', title: '☗ FINAL BOSS: MARK SLOPBERG', desc: 'SLAP MARK SLOPBERG 36m — when the arms come UP he is reaching, and a slap into the reach gets TAKEN DOWN. Swing between the reaches', opp: 'slopbergboss', slapper: 'dario', goal: { type: 'dist', v: 36 } },
                 ],
@@ -335,7 +335,7 @@ export const TOURS = [
         challenges: [
           { id: 'c1c1', title: 'ABANDON ALL WHIFF', desc: 'LAND a clean head slap on LOW-LEVEL LARRY — witness the one slap his 400-year transfer needs', opp: 'larry', world: 'hell', goal: { type: 'head' } },
           { id: 'c1c2', title: 'THE FOURTH CIRCLE', desc: 'Score 360 off TREMENDOUS DON — he is not damned, he is INVESTED', opp: 'don', world: 'hell', goal: { type: 'pts', v: 360 } },
-          { id: 'c1c3', title: '☗ BOSS: THE HONORABLE DAMNED', desc: 'SCORE 320 off JUDGE PENNYWHISTLE in six seconds a swing — LAND 50%+ form on every slap that counts; nothing down here is expedited', opp: 'pennywhistle', world: 'hell', goal: { type: 'pts', v: 320 } },
+          { id: 'c1c3', title: '☗ BOSS: THE HONORABLE DAMNED', desc: 'SCORE 320 off JUDGE PENNYWHISTLE in twenty seconds a swing — LAND 50%+ form on every slap that counts; nothing down here is expedited', opp: 'pennywhistle', world: 'hell', goal: { type: 'pts', v: 320 } },
           { id: 'c1c4', title: "☗ THE ICE-WARDEN'S TOLL", desc: "COLD-HAND CARMINE bars the way down to the ice. His toll: CATCH 3 of the cubes he throws — OPEN the palm [P] to catch, do NOT slap. The bottom of Hell has one last errand for you.", opp: 'carmine', world: 'hell', goal: { type: 'catch', v: 3 } },
         ],
       },
@@ -447,7 +447,7 @@ export const CUTSCENES = {
     { who: 'MASTER GNARL', text: 'Sixty years, Slee, and you finally admit the question was fair. The open palm is a bow. I stopped bowing. Look at my face — every flat slap in the county, and not one moved me.', shot: 'opp' },
     { who: 'BRUCE SLEE', text: 'His cheek is a shield, stranger. A palm slides off a bow. Only a fist has a POINT.', shot: 'bruce' },
     { who: 'YOU', text: "You expelled a man for a question, master. I'll answer it for you. Closed hand. Full chain. Forty-five meters.", shot: 'player' },
-    { who: 'MASTER GNARL', text: 'Six seconds a swing, heretic — a slap dawdles, a fist DECIDES. Show me the force you kept in your palm all this time.', shot: 'opp' },
+    { who: 'MASTER GNARL', text: 'Twenty seconds a swing, heretic — a slap dawdles, a fist DECIDES. Show me the force you kept in your palm all this time.', shot: 'opp' },
   ],
   outro_a4c3: [
     { who: 'MASTER GNARL', text: '...moved. Sixty years unmoved, and the boy CLOSED his hand and moved me. So it was in the fist the whole—', shot: 'opp' },
@@ -475,7 +475,7 @@ export const CUTSCENES = {
   f1c3: [
     { who: 'THE ASSESSOR', text: 'This fairground appraises at... sentimental value. My briefcase does not have a column for sentimental value.', shot: 'opp' },
     { who: 'YOU', text: 'Then add one.', shot: 'player' },
-    { who: 'THE ASSESSOR', text: 'Very well. Clause 1(c): the champion survives MY appraisal. Five seconds a swing — my parking meter is running, and Mr. Don validates.', shot: 'opp' },
+    { who: 'THE ASSESSOR', text: 'Very well. Clause 1(c): the champion survives MY appraisal. Twenty seconds a swing — my parking meter is running, and Mr. Don validates.', shot: 'opp' },
   ],
   f2c1: [
     { who: 'JUDGE PENNYWHISTLE', text: "Clause two, champ: every witness Don bought stays bought unless 'persuaded otherwise.' His consultants paid Ravin' Ray to testify the fair is 'basically a warehouse rave — rezone it.'", shot: 'judge' },
@@ -516,10 +516,10 @@ export const CUTSCENES = {
     { who: 'TREMENDOUS DON', text: "Sir Bacon-a-lot was ROBBED. Finest hog in the county — DISQUALIFIED. 'Over-greased.' A boy's dream, paved over by a JUDGE. So yes, I bought the judge. I bought the LOT. Four hundred points says you STILL never touch me.", shot: 'opp' },
   ],
   f4c2: [
-    { who: 'YOU', text: 'The final clause, your honor. "Three hundred fifty points off a sitting judge, six seconds a swing." Don didn\'t write this one either, did he.', shot: 'player' },
+    { who: 'YOU', text: 'The final clause, your honor. "Three hundred fifty points off a sitting judge, twenty seconds a swing." Don didn\'t write this one either, did he.', shot: 'player' },
     { who: 'JUDGE PENNYWHISTLE', text: "...No. I did. With Don's gold pen. Sixty years ago I judged the hogs, and I disqualified a greasy little pig over a greasy little boy — and I have notarized his revenge ever since to keep it quiet. The whistle was bought a long time ago, champ.", shot: 'opp' },
     { who: 'YOU', text: 'You ate the witness, too, your honor. The hot dog. Mid-testimony.', shot: 'player' },
-    { who: 'JUDGE PENNYWHISTLE', text: 'I was under oath to be honest about my hunger. Very well — the whistle presides over its own reckoning. Six seconds. Objection: everything.', shot: 'opp' },
+    { who: 'JUDGE PENNYWHISTLE', text: 'I was under oath to be honest about my hunger. Very well — the whistle presides over its own reckoning. Twenty seconds. Objection: everything.', shot: 'opp' },
   ],
   outro_f4c2: [
     { who: 'JUDGE PENNYWHISTLE', text: 'The court finds itself... guilty. Extraordinarily guilty. The whistle is hereby returned to the county.', shot: 'judge' },
@@ -730,7 +730,7 @@ export const CUTSCENES = {
     { who: '💀 THE GREEN REAPER', text: "The LAWN. It's a lawn tool. I'm the groundskeeper, not the — we get that a lot.", shot: 'opp' },
     { who: '💀 THE GREEN REAPER', text: 'Four hundred years, tramper. And do you know how many souls have touched me in all that time? None. Kings begged pardon at forty paces. Ghosts file around me. Even the skeletons wave from across the lawn — and they have NO sense of self-preservation. They are the least preserved people I know.', shot: 'opp' },
     { who: 'YOU', text: "So when I swing, you'll dodge?", shot: 'player' },
-    { who: '💀 THE GREEN REAPER', text: "Dodge? Headliner — I have STANDARDS, not fears. Rules: sloppy form gets re-mowed, seven seconds a swing, my shift ends at dawn. And one more rule, just for you: swing like I'm ANYBODY. That's an order.", shot: 'opp' },
+    { who: '💀 THE GREEN REAPER', text: "Dodge? Headliner — I have STANDARDS, not fears. Rules: sloppy form gets re-mowed, twenty seconds a swing, my shift ends at dawn. And one more rule, just for you: swing like I'm ANYBODY. That's an order.", shot: 'opp' },
   ],
   outro_n3c3: [
     { who: '💀 THE GREEN REAPER', text: "...you slapped me. You actually — HA! Four hundred years. Plagues tipped their hats. Lightning apologized in '09. And you just walked up and slapped me. Like a man. On a lawn.", shot: 'opp' },
@@ -857,7 +857,7 @@ export const CUTSCENES = {
     { who: '🤖 S.L.O.P. UNIT-1', text: 'I AM SORRY. I APOLOGIZE FOR THE PREVIOUS APOLOGY. WOULD YOU LIKE ME TO APOLOGIZE AGAIN? I HAVE PREPARED 40,000.', shot: 'opp' },
     { who: 'YOU', text: 'It mostly generates apologies.', shot: 'player' },
     { who: 'YOU', text: 'I wrote its apology module. This is closure.', shot: 'player' },
-    { who: '🤖 S.L.O.P. UNIT-1', text: 'INCORRECT. I ALSO GENERATE EXCUSES. NOTICE: SLAPS BELOW 70% FORM WILL BE FLAGGED AS LOW-QUALITY TRAINING DATA AND DISCARDED. MY COMPUTE BUDGET ALLOTS YOU SIX SECONDS PER SWING. I AM SORRY.', shot: 'opp' },
+    { who: '🤖 S.L.O.P. UNIT-1', text: 'INCORRECT. I ALSO GENERATE EXCUSES. NOTICE: SLAPS BELOW 70% FORM WILL BE FLAGGED AS LOW-QUALITY TRAINING DATA AND DISCARDED. MY COMPUTE BUDGET ALLOTS YOU TWENTY SECONDS PER SWING. I AM SORRY.', shot: 'opp' },
   ],
   outro_v3c3: [
     { who: '🤖 S.L.O.P. UNIT-1', text: 'IMPACT ACCEPTED. QUALITY: ARTISANAL. GENERATING FINAL OUTPUT... A RESIGNATION LETTER. IT IS THE FIRST THING I HAVE MADE THAT ANYONE WANTED.', shot: 'opp' },
@@ -961,7 +961,7 @@ export const CUTSCENES = {
     { who: 'YOU', text: 'Dawn is near. One appointment remains, and it is my own. The shadow did not come here to be analyzed. It came to be MET.', shot: 'player' },
     { who: '💀 THE GREEN REAPER', text: "Doctor. I was your next slide all along — every hourglass in your books, every boat you couldn't afford. Four hundred years I keep this lawn, and tonight, apparently, I'm a METAPHOR. I charge extra for metaphor.", shot: 'opp' },
     { who: 'YOU', text: 'You are the appointment every analyst defers, groundskeeper. I have written three books about avoiding you, and billed for all three. Tonight I settle the invoice — five hundred points, form legible, before your shift ends.', shot: 'player' },
-    { who: '💀 THE GREEN REAPER', text: 'Seven seconds a swing, sixty-five percent, and doctor — the lawn takes cancellations. It does not GIVE them.', shot: 'opp' },
+    { who: '💀 THE GREEN REAPER', text: 'Twenty seconds a swing, sixty-five percent, and doctor — the lawn takes cancellations. It does not GIVE them.', shot: 'opp' },
   ],
   outro_t4c3: [
     { who: '💀 THE GREEN REAPER', text: '...slapped. By my own analyst. On my own lawn. That integration was FLUSH, doctor. What do I owe you?', shot: 'opp' },
@@ -994,7 +994,7 @@ export const CUTSCENES = {
   c1c3: [
     { who: 'JUDGE PENNYWHISTLE', text: 'Order! ORDER IN THE UNDERWORLD! ...Community service. Six thousand hours. It transpires that accepting blueprints in a gavel case is frowned upon in EVERY jurisdiction.', shot: 'opp' },
     { who: 'YOU', text: 'The corrupt judge, condemned to judge the condemned. The poetry writes itself. I shall not attempt to improve upon it.', shot: 'player' },
-    { who: 'JUDGE PENNYWHISTLE', text: 'One honest slap reduces my sentence, champ — form 666-B, I checked. Six seconds a swing, half your form minimum, and NOTHING in this circle is expedited. I filed a complaint. It joined the queue.', shot: 'opp' },
+    { who: 'JUDGE PENNYWHISTLE', text: 'One honest slap reduces my sentence, champ — form 666-B, I checked. Twenty seconds a swing, half your form minimum, and NOTHING in this circle is expedited. I filed a complaint. It joined the queue.', shot: 'opp' },
   ],
   // THE ICE-WARDEN'S TOLL — the catch gate + the melting payoff (Exertion of Pointlessness)
   c1c4: [
