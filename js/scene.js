@@ -1643,6 +1643,7 @@ export function createStage(canvas) {
         k.m.rotation.y = -k.a;
       }
       if (gongDisc) gongDisc.rotation.x *= 0.985;           // ringing decays back to still
+      if (dojoWheel) dojoWheel.rotation.z += dt * 0.4;       // the garden waterwheel turns
     }
     if (lavaG.visible) {
       for (const gy of geysers) {
@@ -2887,51 +2888,120 @@ export function createStage(canvas) {
 
   // --- 🥋 DOJO ---
   const dojoG = new THREE.Group();
-  let gongDisc = null;
+  let gongDisc = null, dojoWheel = null;
   const kois = [];
   {
-    const bambooMat = toonMat(0x7a9a4a), stoneMat = toonMat(0xb5ab98);
+    const timber = toonMat(0x8a5e34), timberDk = toonMat(0x5e3f22), paper = toonMat(0xf2ead6);
+    const tatami = toonMat(0xc7b06a), tatamiEdge = toonMat(0x2a3a2a), red = toonMat(0xb0362a), stoneMat = toonMat(0xb5ab98);
+    // ---- THE GREAT ROOF: a pitched timber roof over the whole hall, so you
+    // train UNDER it. Two long sloped planes to a ridge + exposed rafters. ----
+    for (const s of [-1, 1]) {
+      const slope = new THREE.Mesh(new THREE.BoxGeometry(132, 0.6, 15), timberDk);
+      slope.position.set(50, 15, s * 6.6); slope.rotation.x = s * 0.5;
+      dojoG.add(slope);
+    }
+    const ridge = new THREE.Mesh(new THREE.BoxGeometry(132, 0.9, 0.9), timber);
+    ridge.position.set(50, 18.3, 0); dojoG.add(ridge);
+    for (let rx = -14; rx < 108; rx += 6) {          // exposed cross-rafters
+      const raf = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 22), timber);
+      raf.position.set(rx, 12.2, 0); dojoG.add(raf);
+    }
+    // ---- TATAMI floor: mat panels down the lane with dark cloth borders ----
+    const mat = new THREE.Mesh(new THREE.PlaneGeometry(132, 15), tatami);
+    mat.rotation.x = -Math.PI / 2; mat.position.set(50, 0.02, 0); dojoG.add(mat);
+    for (let mx = -16; mx < 116; mx += 6) {          // mat seams
+      const seam = new THREE.Mesh(new THREE.PlaneGeometry(0.14, 15), tatamiEdge);
+      seam.rotation.x = -Math.PI / 2; seam.position.set(mx, 0.03, 0); dojoG.add(seam);
+    }
+    for (const ze of [-7.4, 7.4]) {
+      const border = new THREE.Mesh(new THREE.PlaneGeometry(132, 0.5), tatamiEdge);
+      border.rotation.x = -Math.PI / 2; border.position.set(50, 0.03, ze); dojoG.add(border);
+    }
+    // ---- TIMBER PILLARS + SHOJI walls flanking the hall ----
+    const mkPillar = (x, zc) => {
+      const p = new THREE.Mesh(new THREE.BoxGeometry(0.8, 12, 0.8), timber);
+      p.position.set(x, 6, zc); dojoG.add(p);
+      const cap = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.5, 1.2), timberDk);
+      cap.position.set(x, 12, zc); dojoG.add(cap);
+    };
+    for (let px = -14; px <= 106; px += 12) { mkPillar(px, -11); mkPillar(px, 11); }
+    for (const zc of [-11, 11]) {                     // shoji screen bays + a top beam
+      const beam = new THREE.Mesh(new THREE.BoxGeometry(132, 0.7, 0.7), timber);
+      beam.position.set(50, 9.5, zc); dojoG.add(beam);
+      for (let sx = -14; sx < 106; sx += 4) {
+        const scr = new THREE.Mesh(new THREE.BoxGeometry(3.6, 8, 0.15), paper);
+        scr.position.set(sx, 4.6, zc); dojoG.add(scr);
+        for (const gy of [2, 4.6, 7.2]) {             // muntin grid on the paper
+          const bar = new THREE.Mesh(new THREE.BoxGeometry(3.7, 0.1, 0.18), timberDk);
+          bar.position.set(sx, gy, zc); dojoG.add(bar);
+        }
+      }
+    }
+    // ---- hanging PAPER LANTERNS glowing along the hall ----
+    for (let lx = 4; lx < 100; lx += 16) {
+      for (const lz of [-4.5, 4.5]) {
+        const lant = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 1.1, 12), glowMat(0xffcf7a));
+        lant.material.transparent = true; lant.material.opacity = 0.92;
+        lant.position.set(lx, 8, lz); dojoG.add(lant);
+        const cord = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 3, 4), timberDk);
+        cord.position.set(lx, 10, lz); dojoG.add(cord);
+      }
+    }
+    // ---- THE KAMIZA: a raised dais at the far end with a hanging scroll ----
+    const dais = new THREE.Mesh(new THREE.BoxGeometry(6, 0.6, 20), timber);
+    dais.position.set(106, 0.3, 0); dojoG.add(dais);
+    const scroll = new THREE.Mesh(new THREE.PlaneGeometry(2, 5), paper);
+    scroll.position.set(108.4, 6, 0); scroll.rotation.y = -Math.PI / 2; dojoG.add(scroll);
+    for (const sy of [8.6, 3.4]) {
+      const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 2.4, 8), timberDk);
+      rod.rotation.x = Math.PI / 2; rod.position.set(108.3, sy, 0); dojoG.add(rod);
+    }
+    const kanji = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 3.2),
+      new THREE.MeshBasicMaterial({ map: makeTextTexture('SLAP', '#1a1a1a'), transparent: true }));
+    kanji.position.set(108.35, 6, 0); kanji.rotation.y = -Math.PI / 2; dojoG.add(kanji);
+    // ---- WEAPON RACK on the near wall: bokken + staves ----
+    const rack = new THREE.Mesh(new THREE.BoxGeometry(3, 2.4, 0.3), timberDk);
+    rack.position.set(20, 1.6, -10.6); dojoG.add(rack);
+    for (let w = 0; w < 4; w++) {
+      const bokken = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 2.2, 6), timber);
+      bokken.position.set(19 + w * 0.55, 1.6, -10.4); dojoG.add(bokken);
+    }
+    // ---- BELT: the garden GLIMPSED outside — bamboo, a stone lantern, and a
+    // turning WATERWHEEL (the one bit of "outside" you can see past the hall) ----
     dojoG.add(mkBelt((g, x, z, i) => {
-      if (i % 8 === 0) {
-        const lant = new THREE.Group();
+      if (i % 6 === 0) {
         const base = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.45, 1.5, 6), stoneMat);
-        base.position.y = 0.75;
-        lant.add(base);
+        base.position.set(x, 0.75, z); g.add(base);
         const cap = new THREE.Mesh(new THREE.ConeGeometry(0.6, 0.5, 6), stoneMat);
-        cap.position.y = 1.8;
-        lant.add(cap);
-        lant.position.set(x, 0, z);
-        g.add(lant);
+        cap.position.set(x, 1.8, z); g.add(cap);
         return;
       }
-      for (let b = 0; b < 4; b++) {
-        const h = 5.5 + (b + i) % 3;
-        const cane = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.17, h, 5), bambooMat);
-        cane.position.set(x + (b - 1.5) * 0.55, h / 2, z + ((b + i) % 2) * 0.5);
-        g.add(cane);
+      for (let b = 0; b < 3; b++) {
+        const h = 5 + (b + i) % 3;
+        const cane = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, h, 5), toonMat(0x7a9a4a));
+        cane.position.set(x + (b - 1) * 0.5, h / 2, z); g.add(cane);
       }
-      const leaf = new THREE.Mesh(new THREE.SphereGeometry(1.7, 7, 6), bambooMat);
-      leaf.scale.set(1, 0.55, 1);
-      leaf.position.set(x, 6.6, z);
-      g.add(leaf);
+      const leaf = new THREE.Mesh(new THREE.SphereGeometry(1.4, 7, 6), toonMat(0x6a9a3a));
+      leaf.scale.set(1, 0.55, 1); leaf.position.set(x, 5.6, z); g.add(leaf);
     }));
-    dojoG.children[0].visible = true;
-    // torii gate over the lane at x=12 (posts outside the rails, beams overhead)
-    const torii = new THREE.Group();
-    const red = toonMat(0xc0392b);
-    for (const s of [-1, 1]) {
-      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.34, 6.6, 8), red);
-      post.position.set(0, 3.3, s * 3.4);
-      torii.add(post);
+    dojoG.children[dojoG.children.length - 1].visible = true;
+    // the waterwheel in the garden stream, off the near-left corner
+    dojoWheel = new THREE.Group();
+    const wheelMat = toonMat(0x6e4a2a);
+    const whub = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.7, 10), wheelMat);
+    whub.rotation.x = Math.PI / 2; dojoWheel.add(whub);
+    for (let i = 0; i < 8; i++) {
+      const a = i / 8 * Math.PI * 2;
+      const spoke = new THREE.Mesh(new THREE.BoxGeometry(0.12, 3.6, 0.12), wheelMat);
+      spoke.rotation.z = a; dojoWheel.add(spoke);
+      const paddle = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.8), wheelMat);
+      paddle.position.set(Math.cos(a) * 1.85, Math.sin(a) * 1.85, 0); paddle.rotation.z = a; dojoWheel.add(paddle);
     }
-    const beamTop = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 8.6), red);
-    beamTop.position.y = 6.7;
-    torii.add(beamTop);
-    const beamMid = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 7.4), red);
-    beamMid.position.y = 5.7;
-    torii.add(beamMid);
-    torii.position.x = 12;
-    dojoG.add(torii);
+    const wrim = new THREE.Mesh(new THREE.TorusGeometry(1.85, 0.11, 6, 22), wheelMat);
+    dojoWheel.add(wrim);
+    const stream = new THREE.Mesh(new THREE.PlaneGeometry(8, 3), toonMat(0x4a7a8a));
+    stream.rotation.x = -Math.PI / 2; stream.position.set(-16, 0.05, -18); dojoG.add(stream);
+    dojoWheel.position.set(-15, 2.3, -19); dojoG.add(dojoWheel);
     // THE GREAT GONG on the hay-wall footprint (62m) — SLAPMASTER rings it here
     const gongG = new THREE.Group();
     const frameMat = toonMat(0x5a4028);
