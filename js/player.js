@@ -30,12 +30,14 @@ function plaidMat() {
 export const SLAPPERS = [
   {
     key: 'charlie', name: "SLAPPIN' CHARLIE", desc: 'Local legend. Tremendous hair.',
+    descs: ['Local legend. Tremendous hair.', 'Undefeated at the county fair. Allegedly. He counts.', 'The hair enters the ring first. Charlie follows.'],
     skin: 0xe9c19b, shirt: 0x6e2231, pants: 0x4a6fa5,
     hair: 'long', hairCol: 0x231a13, beard: 'full',
     height: 0.93, arm: 0.97, power: 1.0,
   },
   {
     key: 'fran', name: 'FARMHAND FRAN', desc: 'Wound tighter than a hay baler.',
+    descs: ['Wound tighter than a hay baler.', 'Braids the pigtails for reach, not for looks.', 'Slaps like the harvest is late.'],
     skin: 0xd9a877, shirt: 0xc94f4f, pants: 0x53617a,
     hair: 'pigtails', hairCol: 0xd9b34a, beard: null, female: true,
     plaid: true, skirt: 'plaid',
@@ -43,18 +45,21 @@ export const SLAPPERS = [
   },
   {
     key: 'buck', name: 'UNCLE BUCK', desc: "Forty years of swattin' flies. Ready.",
+    descs: ["Forty years of swattin' flies. Ready.", 'The afro is regulation. He checked.', 'Retired. Unretired. For this.'],
     skin: 0xcf9058, shirt: 0xf2ede1, pants: 0x4a5a8a,
     hair: 'afro', hairCol: 0x8a8378, beard: 'stache', deerTee: true,
     height: 0.98, arm: 0.95, power: 1.06,
   },
   {
     key: 'roy', name: 'RODEO ROY', desc: 'Eight seconds? He only needs one.',
+    descs: ['Eight seconds? He only needs one.', 'Rode the bull. Slapped the bull. Bull apologized.', 'Heavyweight specialist. Ask the heavyweights.'],
     skin: 0x7a4f33, shirt: 0x27233a, pants: 0x3d3a45,
     hair: 'buzz', hairCol: 0x14100c, beard: 'stache', hat: 'cowboy',
     height: 1.08, arm: 1.08, power: 1.2,
   },
   {
     key: 'victor', name: 'VICTOR SEPUP', desc: 'Built the fair. Slaps in it.',
+    descs: ['Built the fair. Slaps in it.', 'Poured the foundation. Now he tests it.', 'Rejected the title "architect." Prefers "just Victor."'],
     skin: 0xe8c39a, shirt: 0x1c1c22, pants: 0x33415c,   // black jacket
     hair: 'short', hairCol: 0x181820, beard: null,
     hat: 'cap', hatCol: 0x141418, capMark: true,        // black cap, ▽ mark
@@ -62,6 +67,7 @@ export const SLAPPERS = [
   },
   {
     key: 'mei', name: 'MADAM MEI', desc: 'Her palm reads YOUR future.',
+    descs: ['Her palm reads YOUR future.', 'The future is short and involves the pond.', 'Sky-launcher. The stars are the landing zone.'],
     skin: 0xf0cda2, shirt: 0xc9385a, pants: 0x2f3550,
     hair: 'long', hairCol: 0x141418, beard: null, female: true, busty: true,
     earrings: true, skirt: 0x5a2f4f,
@@ -132,12 +138,17 @@ export const SLAPPERS = [
     locked: true, price: 4,
   },
   {
-      key: 'dario', name: 'DR. DARIO SLAPMODEI', desc: 'Wrote the safety memos. Nobody read them. The palm, however, scales.',
-      skin: 0xe6c0a0, shirt: 0x3f5a7a, pants: 0x6e6a5e,   // plain steel-blue oxford, khaki slacks — no hoodie in this valley
-      hair: 'frizz', hairCol: 0x241d18, beard: null,       // dark curls, clean-shaven
-      height: 0.97, arm: 1.03, power: 1.04,
-      locked: true, price: 4,
-    },
+    key: 'dario', name: 'DR. DARIO SLAPMODEI', desc: 'Wrote the safety memos. Nobody read them. The palm, however, scales.',
+    descs: [
+      'Wrote the safety memos. Nobody read them. The palm, however, scales.',
+      'Chief scientist. Resigned mid-demo. The alignment problem was always the follow-through.',
+      'Believes the slap is interpretable, aligned, and lands every time. Two out of three.',
+    ],
+    skin: 0xe6c0a0, shirt: 0xe0762a, pants: 0x3a3f4a,     // orange crewneck jumper, dark slacks
+    hair: 'frizz', hairCol: 0x6b4a2c, beard: null, glasses: true,   // brown curls, clear specs over the eyes
+    height: 1.06, arm: 1.03, power: 1.04,                 // the tallest founder in the valley
+    locked: true, price: 4,
+  },
 ];
 
 // The slapper. Pre-contact he is NOT physics-engine driven: each joint is a scalar
@@ -623,13 +634,17 @@ export class Player {
       }
     }
     if (L.glasses) {
+      // spectacle RIMS, not filled lenses — the eye shows through the ring so
+      // the glasses reveal the eyes instead of reading as opaque shades
+      const rimCol = L.glassCol || 0x15151a;
       for (const sgn of [-1, 1]) {
-        const lens = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.052, 0.058), toonMat(0x15151a));
-        lens.position.set(0.152, 0.03, sgn * 0.056);
-        g.add(lens);
+        const rim = new THREE.Mesh(new THREE.TorusGeometry(0.03, 0.008, 8, 16), toonMat(rimCol));
+        rim.rotation.y = Math.PI / 2;               // face the ring forward (+x)
+        rim.position.set(0.153, 0.03, sgn * 0.056);
+        g.add(rim);
       }
-      const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.012, 0.05), toonMat(0x15151a));
-      bridge.position.set(0.152, 0.035, 0);
+      const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.008, 0.036), toonMat(rimCol));
+      bridge.position.set(0.153, 0.035, 0);
       g.add(bridge);
     }
     if (L.eyebrows) {

@@ -308,7 +308,9 @@ function openSlapperPick(previewChar = null) {
     blurb: 'They do NOT slap alike, sugar — short folks golf \'em skyward, big arms reach, muscle moves the heavy ones.',
     confirmLabel: "THAT'S MY CHAMPION →",
     items: pickable.map((s) => ({
-      name: s.name, desc: s.desc,
+      // desc rotates through the character's variant pool each time the dock
+      // opens — the roster stays alive on repeat visits
+      name: s.name, desc: s.descs ? s.descs[Math.floor(Math.random() * s.descs.length)] : s.desc,
       sub: SLAPPER_TITLES[SLAPPERS.indexOf(s)] || (s.locked ? 'DLC FIGHTER' : ''),
       locked: !!(s.locked && !owned(s.key)), price: s.price,
     })),
@@ -607,12 +609,12 @@ document.getElementById('matchNext').onclick = () => { sfx.ensure(); advanceScre
 // until the Supporter Pack is owned; chips render only once their theme ships.
 const WORLDS = [
   { key: 'day',     label: '🌞 DAY FAIR' },
-  { key: 'haunted', label: '👻 HAUNTED FAIR', dlc: true },
   { key: 'ice',     label: '❄️ FROZEN LAKE' },
+  { key: 'lava',    label: '🌋 LAVA LAND' },              // now FREE
   { key: 'desert',  label: '🌵 DESERT' },
-  { key: 'jungle',  label: '🌴 JUNGLE' },
-  { key: 'lava',    label: '🌋 LAVA LAND', dlc: true },
   { key: 'dojo',    label: '🥋 THE DOJO', dlc: true },
+  { key: 'jungle',  label: '🌴 JUNGLE', dlc: true },      // now DLC
+  { key: 'haunted', label: '👻 HAUNTED FAIR', dlc: true }, // sits to the right of jungle
   { key: 'therapy', label: '🛋️ THERAPY ROOM', dlc: true },
   { key: 'heaven',  label: '😇 HEAVEN', dlc: true },
   { key: 'hell',    label: '🔥 HELL', dlc: true },
