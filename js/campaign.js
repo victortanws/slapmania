@@ -438,7 +438,7 @@ export const FAILS = {
 
 // director's ordering: Charlie's documentary leads, then the Fair; Bruce's DLC
 // storyline next, with the Master Slee scrolls beneath it.
-const TOUR_ORDER = ['wonders', 'fair', 'secondwind', 'palm'];
+const TOUR_ORDER = ['wonders', 'fair', 'palm', 'secondwind'];
 TOURS.sort((a, b) => TOUR_ORDER.indexOf(a.key) - TOUR_ORDER.indexOf(b.key));
 
 // stamp each challenge with its tour's pinned slapper + tour key so the match

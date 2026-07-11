@@ -926,7 +926,13 @@ function setupGlobalPanel(bestAttempt) {
 // player still drumming the slap keys can't blow through their own results
 function advanceScreens(code) {
   if (state === 'TOUR') return false; // the menu is click-driven; stray taps do nothing
-  if (state === 'TITLE') { openSlapperPick(); return true; }
+  // the title moves on ENTER / SPACE / a tap — not any stray key (players were
+  // being yanked into the pick while reaching for the world chips)
+  if (state === 'TITLE') {
+    if (code && code !== 'Enter' && code !== 'NumpadEnter' && code !== 'Space') return false;
+    openSlapperPick();
+    return true;
+  }
   if (code && KEYMAP[code]) return false;
   if (state === 'RESULT' && tState > 1.0) { advance(); return true; }
   // the final scoreboard is for BROWSING — a bare tap/click must NOT advance (it
