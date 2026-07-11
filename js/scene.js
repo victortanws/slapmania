@@ -514,8 +514,8 @@ export function createStage(canvas) {
   // --- hay: round bales, a stack, and the crash wall at the end of the lane ---
   // (in winter the shared mats swap to white — every bale becomes a snow drift
   // and the 62m crash wall becomes a wall of packed snow)
-  const hayMat = winterMat(toonMat(0xd9b96a), 0xeef4f8);
-  const hayEnd = winterMat(toonMat(0xc4a355), 0xe2ebf2);
+  const hayMat = biomeMat(toonMat(0xd9b96a), { ice: 0xeef4f8, desert: 0xd8b878 });
+  const hayEnd = biomeMat(toonMat(0xc4a355), { ice: 0xe2ebf2, desert: 0xc9a86a });
   function roundBale(x, z, ry) {
     const b = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 1.3, 14), hayMat);
     b.rotation.set(0, ry, Math.PI / 2);
@@ -559,7 +559,7 @@ export function createStage(canvas) {
     cornIM.setMatrixAt(i, pd.matrix);
     cornIM.setColorAt(i, cc.setHSL(0.24, 0.5, 0.32 + Math.random() * 0.12));
   }
-  scene.add(winterIM(cornIM, 180, 0xd9cfa8));
+  scene.add(biomeIM(cornIM, 180, { ice: 0xd9cfa8, desert: 0xcbb187 }));
 
   // --- trees ---
   function tree(x, z, s = 1) {
@@ -569,7 +569,7 @@ export function createStage(canvas) {
     trunk.castShadow = true;
     g.add(trunk);
     for (const [ox, oy, oz, r] of [[0, 3.1, 0, 1.5], [0.9, 2.5, 0.3, 1.0], [-0.9, 2.6, -0.2, 1.1]]) {
-      const puff = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 10), winterMat(toonMat(0x4e7d3a), 0xe9f0f4));
+      const puff = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 10), biomeMat(toonMat(0x4e7d3a), { ice: 0xe9f0f4, desert: 0x8a8f5a }));
       puff.position.set(ox, oy, oz);
       puff.castShadow = true;
       g.add(puff);
@@ -597,7 +597,7 @@ export function createStage(canvas) {
     edgeCornIM.setMatrixAt(i, pd.matrix);
     edgeCornIM.setColorAt(i, cc.setHSL(0.23, 0.5, 0.3 + Math.random() * 0.14));
   }
-  scene.add(winterIM(edgeCornIM, 280, 0xd9cfa8));
+  scene.add(biomeIM(edgeCornIM, 280, { ice: 0xd9cfa8, desert: 0xcbb187 }));
 
   function scarecrow(x, z, ry = 0) {
     const g = new THREE.Group();
@@ -632,12 +632,12 @@ export function createStage(canvas) {
   // pumpkin patch
   for (let i = 0; i < 12; i++) {
     const r = 0.14 + Math.random() * 0.16;
-    const p = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 8), winterMat(toonMat(0xd8722d), 0xc9a06a));
+    const p = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 8), biomeMat(toonMat(0xd8722d), { ice: 0xc9a06a, desert: 0xc9a06a }));
     p.scale.y = 0.72;
     p.position.set(36 + Math.random() * 8, r * 0.68, -4.6 - Math.random() * 2.8);
     p.castShadow = true;
     scene.add(p);
-    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.03, 0.09, 5), winterMat(toonMat(0x5c7a3a), 0x6e5a40));
+    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.03, 0.09, 5), biomeMat(toonMat(0x5c7a3a), { ice: 0x6e5a40, desert: 0x6e5a40 }));
     stem.position.set(p.position.x, r * 1.15, p.position.z);
     scene.add(stem);
   }
@@ -701,14 +701,14 @@ export function createStage(canvas) {
   // sunflower sentries along the far lane
   function sunflower(x, z, s = 1) {
     const g = new THREE.Group();
-    const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.05, 1.5, 6), winterMat(toonMat(0x5c7a3a), 0x8a7454));
+    const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.05, 1.5, 6), biomeMat(toonMat(0x5c7a3a), { ice: 0x8a7454, desert: 0x8a7454 }));
     stalk.position.y = 0.75;
     g.add(stalk);
     const face = new THREE.Group();
     face.position.y = 1.55;
     face.rotation.y = -Math.PI / 2; // greets the incoming flyer
     face.rotation.x = 0.15;
-    const petals = new THREE.Mesh(new THREE.CircleGeometry(0.24, 12), winterMat(toonMat(0xf2c53d), 0xb5946a));
+    const petals = new THREE.Mesh(new THREE.CircleGeometry(0.24, 12), biomeMat(toonMat(0xf2c53d), { ice: 0xb5946a, desert: 0xb5946a }));
     petals.material.side = THREE.DoubleSide;
     face.add(petals);
     const heart = new THREE.Mesh(new THREE.CircleGeometry(0.11, 12), toonMat(0x6e4a2a));
@@ -842,7 +842,7 @@ export function createStage(canvas) {
     fieldCornIM.setMatrixAt(i, pd.matrix);
     fieldCornIM.setColorAt(i, cc.setHSL(0.23, 0.5, 0.3 + Math.random() * 0.14));
   }
-  scene.add(winterIM(fieldCornIM, 420, 0xd9cfa8));
+  scene.add(biomeIM(fieldCornIM, 420, { ice: 0xd9cfa8, desert: 0xcbb187 }));
 
   // fruit trees: apples red, oranges orange, both delicious at 30 m/s
   function fruitTree(x, z, fruitCol, leafCol, s = 1) {
@@ -850,19 +850,19 @@ export function createStage(canvas) {
     const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.28, 1.9, 8), toonMat(0x6b4a2e));
     trunk.position.y = 0.95;
     g.add(trunk);
-    const blob = new THREE.Mesh(new THREE.SphereGeometry(1.35, 10, 10), winterMat(toonMat(leafCol), 0xe9f0f4));
+    const blob = new THREE.Mesh(new THREE.SphereGeometry(1.35, 10, 10), biomeMat(toonMat(leafCol), { ice: 0xe9f0f4, desert: 0x8a8f5a }));
     blob.scale.set(1, 0.85, 1);
     blob.position.y = 2.6;
     g.add(blob);
     for (let i = 0; i < 6; i++) {
       const a = (i / 6) * Math.PI * 2 + Math.random();
-      const fruit = new THREE.Mesh(new THREE.SphereGeometry(0.09, 7, 7), winterMat(toonMat(fruitCol), 0xe9f0f4));
+      const fruit = new THREE.Mesh(new THREE.SphereGeometry(0.09, 7, 7), biomeMat(toonMat(fruitCol), { ice: 0xe9f0f4, desert: 0xb08d54 }));
       fruit.position.set(Math.cos(a) * 1.15, 2.2 + Math.random() * 0.9, Math.sin(a) * 1.15);
       g.add(fruit);
     }
     // windfall fruit in the grass
     for (let i = 0; i < 2; i++) {
-      const drop = new THREE.Mesh(new THREE.SphereGeometry(0.08, 7, 7), winterMat(toonMat(fruitCol), 0xe9f0f4));
+      const drop = new THREE.Mesh(new THREE.SphereGeometry(0.08, 7, 7), biomeMat(toonMat(fruitCol), { ice: 0xe9f0f4, desert: 0xb08d54 }));
       drop.position.set((Math.random() - 0.5) * 2.4, 0.08, (Math.random() - 0.5) * 2.4);
       g.add(drop);
     }
@@ -893,13 +893,13 @@ export function createStage(canvas) {
     water.position.set(40, 0.03, 24);
     scene.add(water);
     pondWater = water;
-    const rim = new THREE.Mesh(new THREE.RingGeometry(6, 6.8, 24), winterMat(toonMat(0xc9b88a), 0xe9f2f8));
+    const rim = new THREE.Mesh(new THREE.RingGeometry(6, 6.8, 24), biomeMat(toonMat(0xc9b88a), { ice: 0xe9f2f8, desert: 0xb09a6a }));
     rim.rotation.x = -Math.PI / 2;
     rim.position.set(40, 0.02, 24);
     scene.add(rim);
     for (let i = 0; i < 14; i++) {
       const a = Math.random() * Math.PI * 2;
-      const reed = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.035, 0.9 + Math.random() * 0.6, 4), winterMat(toonMat(0x5c7a3a), 0xcbb98a));
+      const reed = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.035, 0.9 + Math.random() * 0.6, 4), biomeMat(toonMat(0x5c7a3a), { ice: 0xcbb98a, desert: 0x9a8a6a }));
       reed.position.set(40 + Math.cos(a) * (5.6 + Math.random()), 0.5, 24 + Math.sin(a) * (5.6 + Math.random()));
       scene.add(reed);
     }
@@ -907,7 +907,7 @@ export function createStage(canvas) {
 
   // watermelon patch by the ring-side fence
   for (let i = 0; i < 8; i++) {
-    const w = new THREE.Mesh(new THREE.SphereGeometry(0.2 + Math.random() * 0.1, 10, 8), winterMat(toonMat(0x3f7d3a), 0xeaf1f6));
+    const w = new THREE.Mesh(new THREE.SphereGeometry(0.2 + Math.random() * 0.1, 10, 8), biomeMat(toonMat(0x3f7d3a), { ice: 0xeaf1f6, desert: 0xb0a06a }));
     w.scale.set(1.35, 0.8, 1);
     w.rotation.y = Math.random() * Math.PI;
     w.position.set(26 + Math.random() * 6, 0.16, -15.5 - Math.random() * 3);
@@ -937,8 +937,11 @@ export function createStage(canvas) {
   }
 
   // perimeter forest: the TRUE edge of the world, dressed as dense conifers
-  // exactly where the physics catches — nobody ever hits an invisible wall
+  // exactly where the physics catches — nobody ever hits an invisible wall.
+  // The DESERT re-dresses the SAME line as saguaro + red rock (cactusBelt).
   let coniferCaps = null;
+  let coniferIM = null;
+  let cactusBelt = null;
   {
     const spots = [];
     for (let z = -36; z <= 36; z += 2.4) spots.push([115.5 + Math.random() * 3, z + Math.random()]);        // far treeline
@@ -966,12 +969,42 @@ export function createStage(canvas) {
     caps.visible = false;
     coniferCaps = caps;
     scene.add(caps);
+    coniferIM = conifer;
     scene.add(winterIM(conifer, spots.length, 0xc9d8d2));
+
+    // the desert's edge: saguaros + red rocks on the SAME perimeter spots
+    cactusBelt = new THREE.Group();
+    const cacMat = toonMat(0x5f7a44), rockMat = toonMat(0xb06a3c);
+    for (let i = 0; i < spots.length; i += 2) {
+      const [cx, cz] = spots[i];
+      if (i % 8 === 0) {
+        const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(1.1 + Math.random() * 0.8), rockMat);
+        rock.position.set(cx, 0.7, cz);
+        rock.rotation.set(Math.random(), Math.random(), Math.random());
+        cactusBelt.add(rock);
+        continue;
+      }
+      const s = 0.8 + Math.random() * 0.7;
+      const trunk = new THREE.Mesh(new THREE.CapsuleGeometry(0.42 * s, 3.4 * s, 4, 7), cacMat);
+      trunk.position.set(cx, 1.9 * s, cz);
+      cactusBelt.add(trunk);
+      if (i % 6 === 0) {
+        for (const sgn of [-1, 1]) {
+          const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.24 * s, 1.1 * s, 3, 6), cacMat);
+          arm.position.set(cx, 2.2 * s, cz + sgn * 0.75 * s);
+          arm.rotation.x = sgn * -0.5;
+          cactusBelt.add(arm);
+        }
+      }
+    }
+    cactusBelt.traverse((m) => { m.castShadow = true; });
+    cactusBelt.visible = false;
+    scene.add(cactusBelt);
   }
 
   // distant hills close the horizon — the county rolls on to ~200m
   for (const [hx, hz, hr, hh] of [[190, -60, 90, 26], [170, 80, 80, 20], [-90, -120, 100, 24], [40, 190, 110, 26], [230, 40, 100, 30]]) {
-    const hill = new THREE.Mesh(new THREE.SphereGeometry(hr, 16, 12), winterMat(toonMat(0x6e8f5a), 0xe6edf5));
+    const hill = new THREE.Mesh(new THREE.SphereGeometry(hr, 16, 12), biomeMat(toonMat(0x6e8f5a), { ice: 0xe6edf5, desert: 0xc9a05e }));
     hill.scale.set(1, hh / hr, 1);
     hill.position.set(hx, -hr * 0.35, hz);
     scene.add(hill);
@@ -1559,6 +1592,14 @@ export function createStage(canvas) {
 
   function updateAmbient(dt, time) {
     fan.rotation.z += dt * 1.4;
+    if (desertG.visible) {
+      for (const tw of tumbleweeds) {
+        tw.m.position.x += tw.speed * dt;
+        tw.m.rotation.z -= (tw.speed / tw.r) * dt;          // roll like it means it
+        tw.m.position.z = tw.z0 + Math.sin(time * 0.6 + tw.r * 20) * 1.6;
+        if (tw.m.position.x > 120) tw.m.position.x = -22;   // the desert never runs out
+      }
+    }
     ferrisSpin.rotation.z += dt * 0.22;
     for (const car of ferrisCars) {
       const a = car.userData.a + ferrisSpin.rotation.z;
@@ -2301,6 +2342,108 @@ export function createStage(canvas) {
     }
   }
 
+  // --- THE DESERT: sun-bleached ghost-town rodeo. Mesas ring the horizon,
+  // adobe shacks stand on the farmhouse footprints (physics boxes unchanged),
+  // whiskey barrels stack at the 20m line, tumbleweeds roll the lane. ---
+  const desertG = new THREE.Group();
+  const tumbleweeds = [];
+  {
+    const mesaMat = toonMat(0xb5623a), strataMat = toonMat(0xc98a5a);
+    const mesa = (x, z, h, r) => {
+      const m = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.72, r, h, 6), mesaMat);
+      m.position.set(x, h / 2 - 1.5, z);
+      desertG.add(m);
+      const band = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.88, r * 0.94, h * 0.16, 6), strataMat);
+      band.position.set(x, h * 0.55, z);
+      desertG.add(band);
+    };
+    mesa(-30, -55, 22, 20); mesa(5, -62, 28, 24); mesa(45, -58, 24, 22);
+    mesa(90, -64, 30, 26); mesa(128, -54, 22, 20);
+    mesa(-25, 56, 24, 22); mesa(20, 62, 30, 24); mesa(65, 58, 24, 22);
+    mesa(108, 62, 28, 24); mesa(138, 18, 26, 22);
+    // adobe/ghost-town shacks on the farmhouse footprints (solids already there)
+    const adobeMat = toonMat(0xc99a5e), doorMat = toonMat(0x2a2018);
+    for (const [x, z, ry, s] of [[96, 19, -0.55, 1.1], [84, -27, 0.5, 0.9], [108, -14, -0.2, 1.0], [58, 31, 0.9, 0.85]]) {
+      const g = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.BoxGeometry(6.5, 5.5, 10), adobeMat);
+      body.position.y = 2.75;
+      g.add(body);
+      const beamMat = toonMat(0x7a5a34);
+      for (let b = -1; b <= 1; b++) {
+        const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 7.4, 5), beamMat);
+        beam.rotation.z = Math.PI / 2;
+        beam.position.set(0, 5.2, b * 2.8);
+        g.add(beam);
+      }
+      const door = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 3.2), doorMat);
+      door.position.set(-3.28, 1.6, 0);
+      door.rotation.y = -Math.PI / 2;
+      g.add(door);
+      g.traverse((m) => { m.castShadow = true; });
+      g.scale.setScalar(s);
+      g.rotation.y = ry;
+      g.position.set(x, 0, z);
+      desertG.add(g);
+    }
+    // cattle skulls on the old fence posts near the ring — the rodeo's dress code
+    const boneMat = toonMat(0xe8e0cc);
+    for (const [sx, sz] of [[6, 3.4], [38, -3.4]]) {
+      const skull = new THREE.Mesh(new THREE.SphereGeometry(0.22, 8, 7), boneMat);
+      skull.scale.set(1, 0.85, 0.75);
+      skull.position.set(sx, 1.15, sz);
+      desertG.add(skull);
+      for (const sgn of [-1, 1]) {
+        const horn = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.4, 5), boneMat);
+        horn.rotation.z = sgn * 1.35;
+        horn.position.set(sx, 1.25, sz + sgn * 0.3);
+        desertG.add(horn);
+      }
+      const post = new THREE.Mesh(new THREE.BoxGeometry(0.13, 1.1, 0.13), toonMat(0x8a6844));
+      post.position.set(sx, 0.55, sz);
+      desertG.add(post);
+    }
+    // tumbleweeds: wiry balls rolling +x across the field (ambient, no physics —
+    // a launch is never deflected by luck; they're weather, not obstacles)
+    const twMat = new THREE.MeshBasicMaterial({ color: 0xb59a5e, wireframe: true });
+    for (let i = 0; i < 6; i++) {
+      const r = 0.45 + Math.random() * 0.35;
+      const tw = new THREE.Mesh(new THREE.IcosahedronGeometry(r, 1), twMat);
+      tw.position.set(-20 + Math.random() * 130, r, -9 + Math.random() * 18);
+      desertG.add(tw);
+      tumbleweeds.push({ m: tw, r, speed: 3 + Math.random() * 2.5, z0: tw.position.z });
+    }
+    desertG.visible = false;
+    scene.add(desertG);
+  }
+  // barrel barricade at the 20m CRASH ZONE — joins barricade.pieces so it
+  // still bursts on a flyer and restacks on reset (visibility per-world)
+  const barrelBarricade = [];
+  {
+    const bx = START_X + 20;
+    const stave = toonMat(0x7a4a2a), hoop = toonMat(0x3a3a40);
+    let bi = 0;
+    for (const [by, count] of [[0.6, 4], [1.8, 3]]) {
+      for (let i = 0; i < count; i++) {
+        const g = new THREE.Group();
+        const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.52, 0.52, 1.15, 10), stave);
+        g.add(barrel);
+        for (const hy of [-0.4, 0.35]) {
+          const ring = new THREE.Mesh(new THREE.TorusGeometry(0.53, 0.04, 6, 14), hoop);
+          ring.rotation.x = Math.PI / 2;
+          ring.position.y = hy;
+          g.add(ring);
+        }
+        g.position.set(bx + (bi % 2 ? 0.18 : -0.12), by, -1.9 + i * (3.8 / Math.max(1, count - 1)));
+        g.traverse((m) => { m.castShadow = true; });
+        g.visible = false;
+        scene.add(g);
+        barrelBarricade.push(g);
+        barricade.pieces.push({ mesh: g, homeP: g.position.clone(), homeQ: g.quaternion.clone() });
+        bi++;
+      }
+    }
+  }
+
   // falling snow — drifts down in updateAmbient while the lake is frozen
   const SNOW_N = 850;
   const snowArr = new Float32Array(SNOW_N * 3);
@@ -2417,8 +2560,11 @@ export function createStage(canvas) {
     ice:   { fog: [0xe8f1fa, 45, 150], skyTint: 0xdfeafc, hemi: [0xdfeaff, 0x9fb2c8, 0.95], sun: [0xeaf4ff, 1.6], fill: 0.3, cloud: 0xf4f8ff, maps: false, grass: 0xe8f2f8, lane: 0xcfe6f2, night: false, sunFace: true,
       group: 'ice', biome: 'ice', crowd: 'winter', pond: 0xaed4ec, sunTint: [0xcfdce6, 0.6],
       hideFarm: true, hideFences: true, hideCloths: true, barricade: 'snow' },
+    desert: { fog: [0xead4a8, 60, 185], skyTint: 0xf2ddb4, hemi: [0xffe8bf, 0xc79a5a, 1.05], sun: [0xfff0cf, 2.2], fill: 0.24, cloud: 0xfff2df, maps: false, grass: 0xd8b878, lane: 0xc79a5e, night: false, sunFace: true,
+      group: 'desert', biome: 'desert', crowd: 'desert', pond: 0xa8895a, sunTint: [0xffe2b0, 1],
+      hideFarm: true, hideCloths: true, barricade: 'barrels' },
   };
-  const WORLD_GROUPS = { ice: winterG };            // themed prop kits by group key
+  const WORLD_GROUPS = { ice: winterG, desert: desertG }; // themed prop kits by group key
   const WORLD_FX = {                                 // per-world extras beyond the kit
     ice: (on) => {
       snowPts.visible = on;
@@ -2426,8 +2572,12 @@ export function createStage(canvas) {
       for (const cf of furCuffs) cf.visible = on;
       if (coniferCaps) coniferCaps.visible = on;
     },
+    desert: (on) => {
+      if (coniferIM) coniferIM.visible = !on;  // the perimeter swaps pine → saguaro
+      if (cactusBelt) cactusBelt.visible = on;
+    },
   };
-  const BARRICADES = { planks: summerBarricade, snow: snowBarricade };
+  const BARRICADES = { planks: summerBarricade, snow: snowBarricade, barrels: barrelBarricade };
   const hasWorld = (n) => !!WORLD_THEMES[n];
 
   function applyPalette(t) {
