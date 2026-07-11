@@ -3540,20 +3540,37 @@ export function createStage(canvas) {
   const lakePackets = [];
   {
     const hedge = toonMat(0x4a7a3a), steel = toonMat(0x9aa2ad), glass = toonMat(0x7ab0d8);
+    // THE SKYLINE: a wall of concrete + glass towers rings the campus. Each is
+    // a tall slab with a window grid; some concrete-grey, some blue-glass, with
+    // rooftop plant, setbacks, and the odd red aircraft-warning beacon.
+    const concrete = [0xb8bcc2, 0xc8ccd2, 0xa8adb5], glassCol = [0x7ab0d8, 0x8fc0e0, 0x6a9cc8];
     techG.add(mkBelt((g, x, z, i) => {
-      if (i % 10 === 0) {
-        const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.12, 9, 6), steel);
-        mast.position.set(x, 4.5, z);
-        g.add(mast);
-        const tip = new THREE.Mesh(new THREE.SphereGeometry(0.14, 6, 6), glowMat(0xff3030));
-        tip.position.set(x, 9.1, z);
-        g.add(tip);
-        mastTips.push(tip);
-        return;
+      const isGlass = i % 2 === 0;
+      const h = 14 + (i * 7 % 5) * 5;          // 14–34m, varied
+      const w = 3.2 + (i % 3) * 0.6;
+      const tower = new THREE.Mesh(new THREE.BoxGeometry(w, h, w),
+        toonMat(isGlass ? glassCol[i % 3] : concrete[i % 3]));
+      tower.position.set(x, h / 2, z); g.add(tower);
+      // window grid on the lane-facing side (glow so the skyline reads at distance)
+      const rows = Math.floor(h / 2.2), cols = 3;
+      for (let ry = 1; ry < rows; ry++) for (let cx = 0; cx < cols; cx++) {
+        const win = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.1, 0.06),
+          glowMat(isGlass ? 0xbfe4f6 : 0xdfe6ec));
+        win.material.transparent = true; win.material.opacity = isGlass ? 0.85 : 0.6;
+        win.position.set(x - w / 2 * (Math.sign(x) || -1) - 0.04 * (Math.sign(x) || -1), ry * 2.2, z + (cx - 1) * (w / 3));
+        g.add(win);
       }
-      const block = new THREE.Mesh(new THREE.BoxGeometry(2.6, 2.2, 2.4), hedge);
-      block.position.set(x, 1.1, z);
-      g.add(block);
+      // a setback crown + rooftop unit
+      const crown = new THREE.Mesh(new THREE.BoxGeometry(w * 0.7, 1.4, w * 0.7), toonMat(0x9aa2ad));
+      crown.position.set(x, h + 0.7, z); g.add(crown);
+      if (i % 3 === 0) {                         // aircraft beacon
+        const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.22, 6, 6), glowMat(0xff3030));
+        beacon.position.set(x, h + 1.6, z); g.add(beacon);
+        mastTips.push(beacon);
+      } else {                                   // rooftop AC / dish
+        const roof = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.5, 0.8), steel);
+        roof.position.set(x, h + 1.6, z); g.add(roof);
+      }
     }));
     techG.children[0].visible = true;
     // glass HQ blocks on the footprints
@@ -3659,6 +3676,58 @@ export function createStage(canvas) {
     roomba.add(rdot);
     roomba.position.set(4, 0, 3.5);
     techG.add(roomba);
+
+    // ---- MANICURED landscaping: tidy columnar cypress + spherical topiary,
+    // the well-cured greenery of an Apple-Park-grade campus ----
+    for (let i = 0; i < 18; i++) {
+      const side = i % 2 ? 1 : -1, tx = 8 + i * 5;
+      const tz = side * (6.5 + (i % 2) * 1.4);
+      const t = new THREE.Group();
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.14, 0.8, 8), toonMat(0x8a6a48));
+      trunk.position.y = 0.4; t.add(trunk);
+      if (i % 3 === 0) {                       // columnar cypress
+        const col = new THREE.Mesh(new THREE.ConeGeometry(0.5, 3.4, 9), toonMat(0x3a6a44));
+        col.position.y = 2.3; t.add(col);
+      } else {                                 // clipped spherical topiary (2-tier)
+        const b1 = new THREE.Mesh(new THREE.SphereGeometry(0.7, 12, 10), toonMat(0x4a8a4e));
+        b1.position.y = 1.4; b1.scale.y = 0.85; t.add(b1);
+        const b2 = new THREE.Mesh(new THREE.SphereGeometry(0.5, 12, 10), toonMat(0x4a8a4e));
+        b2.position.y = 2.3; t.add(b2);
+      }
+      const planter = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.42, 0.4, 10), toonMat(0xe8ecf0));
+      planter.position.y = 0.2; t.add(planter);
+      t.position.set(tx, 0, tz); techG.add(t);
+    }
+
+    // ---- SLEEK ELECTRIC CARS lined up on the campus drive, plus a charger row ----
+    const evCols = [0xf4f4f6, 0x1a1a1f, 0xd83a3a, 0x9aa2ad];
+    for (let i = 0; i < 7; i++) {
+      const side = i % 2 ? -1 : 1, cx = 14 + i * 11;
+      const car = new THREE.Group();
+      // a low aerodynamic body: two stacked tapered boxes, no grille
+      const lower = new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.5, 1.4), toonMat(evCols[i % 4]));
+      lower.position.y = 0.5; car.add(lower);
+      const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.55, 1.3), toonMat(0x1a2028));
+      cabin.position.set(-0.1, 0.98, 0); car.add(cabin);   // the glasshouse greenhouse
+      const nose = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.32, 1.3), toonMat(evCols[i % 4]));
+      nose.position.set(1.6, 0.42, 0); car.add(nose);
+      for (const [wx, wz] of [[1.0, 0.72], [1.0, -0.72], [-1.0, 0.72], [-1.0, -0.72]]) {
+        const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 0.22, 14), toonMat(0x14141c));
+        wheel.rotation.x = Math.PI / 2; wheel.position.set(wx, 0.34, wz); car.add(wheel);
+      }
+      const light = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.09, 1.2), glowMat(0xffffff));
+      light.position.set(1.86, 0.5, 0); car.add(light);
+      car.position.set(cx, 0, side * 9.4); car.rotation.y = side > 0 ? Math.PI : 0;
+      techG.add(car);
+      // a slim charging stall behind every other car
+      if (i % 2 === 0) {
+        const post = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.5, 0.25), toonMat(0xe8ecf0));
+        post.position.set(cx - 0.2, 0.75, side * 11); techG.add(post);
+        const scr = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.4, 0.05), glowMat(0x40ff80));
+        scr.position.set(cx - 0.2, 1.2, side * 11 - 0.14); techG.add(scr);
+      }
+    }
+
     techG.traverse((m) => { m.castShadow = true; });
     techG.visible = false;
     scene.add(techG);
@@ -4035,9 +4104,9 @@ export function createStage(canvas) {
     haunted: { fog: [0x121a16, 34, 118], skyTint: 0x141f1a, hemi: [0x7a9c8a, 0x18221c, 0.55], sun: [0xbfe0c8, 0.75], fill: 0.12, cloud: 0x2a3a30, maps: true, grass: 0x55705f, lane: 0x6a7268, night: true, sunFace: false,
       group: 'haunted', biome: 'haunted', crowd: 'haunted', pond: 0x0e1418,
       hideFarm: true, barricade: 'coffins' },
-    techcampus: { fog: [0xdde6ee, 52, 175], skyTint: 0xcfe0f2, hemi: [0xe8f0f8, 0x8aa08a, 0.95], sun: [0xf2f6ff, 1.9], fill: 0.38, cloud: 0xf4f8fc, maps: false, grass: 0x86b45e, lane: 0xb8bcc2, night: false, sunFace: true,
+    techcampus: { fog: [0xdde6ee, 60, 200], skyTint: 0xcfe0f2, hemi: [0xeaf2fa, 0x9aacb8, 1.0], sun: [0xf6faff, 2.0], fill: 0.42, cloud: 0xf4f8fc, maps: false, grass: 0xa8b0b8, lane: 0xc4c8ce, night: false, sunFace: true,
       group: 'techcampus', biome: 'tech', crowd: 'tech', pond: 0x2a8ae0, sunTint: [0xeef4ff, 0.7],
-      hideFarm: true, hideFences: true, hideCloths: true, barricade: 'boxes' },
+      hideFarm: true, hideBarn: true, hideFair: true, hideFences: true, hideCloths: true, barricade: 'boxes' },
     ice:   { fog: [0xe8f1fa, 45, 150], skyTint: 0xdfeafc, hemi: [0xdfeaff, 0x9fb2c8, 0.95], sun: [0xeaf4ff, 1.6], fill: 0.3, cloud: 0xf4f8ff, maps: false, grass: 0xe8f2f8, lane: 0xcfe6f2, night: false, sunFace: true,
       group: 'ice', biome: 'ice', crowd: 'winter', pond: 0xaed4ec, sunTint: [0xcfdce6, 0.6],
       hideFarm: true, hideFences: true, hideCloths: true, barricade: 'snow' },
