@@ -901,12 +901,21 @@ addEventListener('keyup', (e) => {
   const k = KEYMAP[e.code];
   if (k) keys[k] = false;
 });
+// advance on a clean TAP (down + up, in place, quick) — NOT on press-down, so
+// pressing-and-holding or dragging/scrolling never triggers the next screen.
+let tapStart = null;
 addEventListener('pointerdown', (e) => {
   if (e.isTrusted && manual) { manual = false; skipRender = false; last = performance.now(); schedule(); }
-  if (dlg.isActive()) return;   // the dialogue box handles its own clicks
-  if (e.target.closest('button, a, input')) return;
-  sfx.ensure();
-  advanceScreens(null);
+  sfx.ensure(); // audio unlock wants the earliest gesture
+  if (dlg.isActive() || e.target.closest('button, a, input')) { tapStart = null; return; }
+  tapStart = { x: e.clientX, y: e.clientY, t: performance.now() };
+});
+addEventListener('pointerup', (e) => {
+  const s = tapStart; tapStart = null;
+  if (!s || dlg.isActive() || e.target.closest('button, a, input')) return;
+  const moved = Math.hypot(e.clientX - s.x, e.clientY - s.y);
+  const held = performance.now() - s.t;
+  if (moved < 14 && held < 500) advanceScreens(null); // a real tap: in place + quick
 });
 
 // ---------- camera director ----------

@@ -489,6 +489,16 @@ Remaining juice backlog (documented): hit-sparks, sweat/spit spray, hitstop, mil
 - **CAMPAIGN_LIVE = true** (campaign.js:9) — the County Fair Tour (4 campaigns) is now public via the
   "🎪 THE COUNTY FAIR TOUR" title button. Rollback target recorded: **main @ 86ff553**.
 
+### Ship prep 2 — title layout + tap-and-release (director reports) — DONE + verified
+- **Tour button overlapped the credit bar** on the title once campaign went live. FIX: credit bar now flows
+  in the card (removed absolute positioning) below the tour button. Verified: clean title, no overlap.
+- **Widened the preamble** ("Well howdy sugar…") max-width 560→820px — wraps to 3 lines instead of 4, freeing
+  vertical space (director's suggested option). Verified.
+- **Advance on TAP-AND-RELEASE, not press-down** (director report): press-holding immediately triggered the
+  next screen. FIX: track pointerdown→pointerup; advance only on a real tap (moved <14px, held <500ms), so a
+  hold or a drag/scroll never advances. VERIFIED: 600ms hold → no advance; 65px drag → no advance; quick tap →
+  advances. Buttons/inputs still handle their own clicks; keyboard advance unchanged.
+
 ## Left for the director
 
 ### How to review + ship
