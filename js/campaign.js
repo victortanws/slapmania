@@ -46,11 +46,11 @@ export const TOURS = [
   {
     key: 'fair', title: '🚜 SAVE THE FAIR',
     world: 'day',   // the fair being saved IS the day fair — the story never plays on ice
-    blurb: "Tremendous Don Enterprises filed to pave the fairground into Parking Structure Seven. Then Don smelled a camera and made it interesting: a public WAGER, drafted by his lawyers, signed on the hood of a bulldozer.",
+    blurb: "Tremendous Don rolled up in a gold bulldozer and crashed the fair's sixtieth ribbon-cutting. The cover story: Parking Structure Seven. The REAL story is forty years old and has a curly tail. He drafted a public WAGER on the bulldozer's hood — signed, notarized, and rigged.",
     acts: [
       {
         act: 'ACT I — THE WAGER',
-                story: 'Don arrived with cameras and a contract: the county names one champion. Clear every trial in the wager and Don tears the paving permit ON CAMERA. Fail one, and the bulldozers roll. His lawyers smiled all through the signing. Clause one: prove anyone cares.',
+                story: 'Don arrived by helicopter, motorcade, AND bulldozer, then made the whole county watch him NOT cut the ribbon. The wager: name one champion, clear every trial, and Don tears the paving permit ON CAMERA. Fail one, the bulldozers roll. His lawyers smiled all through the signing. He stopped smiling exactly once — at the LIVESTOCK banner. Clause one: prove anyone cares.',
                 challenges: [
                   { id: 'f1c1', title: 'CLAUSE 1(a): PACK THE STANDS', desc: 'SCORE 350 off BIG BERTHA — clause 1(a): "demonstrate that anyone cares." When the county\'s favorite aunt roars, the county roars', opp: 'bertha', goal: { type: 'pts', v: 350 } },
                   { id: 'f1c2', title: 'CLAUSE 1(b): GO VIRAL', desc: 'SEND THE INFLUENCER 55m — clause 1(b): "the fair shall demonstrably trend." If it trends, it stands', opp: 'influencer', goal: { type: 'dist', v: 55 } },
@@ -59,7 +59,7 @@ export const TOURS = [
       },
       {
         act: 'ACT II — CLAUSE TWO: THE WITNESSES',
-                story: 'Clause two, subsection "testimony": every witness Don bought stays bought unless persuaded otherwise. His consultants deposed half the county. Some witnesses can be un-bought at thirty meters.',
+                story: 'Clause two, subsection "testimony": every witness Don\'s consultants deposed stays bought unless persuaded otherwise. Odd thing — every deposition ends on the same question: "Were you present at the 1962 livestock judging?" Nobody can say why he keeps asking. Some witnesses can be un-bought at thirty meters.',
                 challenges: [
                   { id: 'f2c1', title: 'HOSTILE WITNESS', desc: "SEND RAVIN' RAY 30m — he took glowsticks to testify against us; thirty meters and he recants everything", opp: 'ravinray', goal: { type: 'dist', v: 30 } },
                   { id: 'f2c2', title: 'FUNDRAISER FRENZY', desc: "SCORE 500 off BIG HOSS — the wager's filing fees are extortionate, and Don's lawyers bill by the objection", opp: 'hoss', goal: { type: 'pts', v: 500 } },
@@ -68,7 +68,7 @@ export const TOURS = [
       },
       {
         act: 'ACT III — CLAUSE THREE: FORM BEYOND REPROACH',
-                story: 'Clause three, lifted word for word from the county charter: "form beyond reproach" — graded by certified faculty, verified by a foreman who does not blink, defended by a retired champion Don pays in casserole coupons. The bulldozers idle at the gate while his lawyers count your percentages.',
+                story: 'Clause three, lifted word for word from the county charter: "form beyond reproach" — graded by certified faculty, verified by a foreman who does not blink, defended by a retired champion Don pays in casserole coupons. The bulldozers idle at the gate while his lawyers count your percentages — and a very old photograph, a boy and a disqualified hog, sits face-down on Don\'s dashboard.',
                 challenges: [
                   { id: 'f3c1', title: 'READ THE FINE PRINT', desc: 'LAND an 85% chain before SCHOOLMARM SUSIE — clause three demands form beyond reproach, graded in red ink', opp: 'susie', goal: { type: 'chain', v: 85 } },
                   { id: 'f3c2', title: 'JAWBREAKER', desc: 'MOVE IRON-JAW McGRAW 28m — LAND 70%+ form on every slap that counts; below it the foreman will not even blink (×0.12)', opp: 'ironjaw', goal: { type: 'dist', v: 28 } },
@@ -77,7 +77,7 @@ export const TOURS = [
       },
       {
         act: 'EPILOGUE — THE FINAL CLAUSE',
-                story: 'One clause left — the small print nobody read aloud at the signing. Then the blueprints turned up in Judge Pennywhistle\'s gavel case, signed three weeks before the wager was drafted, witnessed by a hot dog. Don never meant to lose. He wrote the final clause himself, with the judge\'s pen: six seconds a swing, against the bench.',
+                story: "One clause left — the small print nobody read aloud. Then the blueprints turned up in Judge Pennywhistle's gavel case, signed three weeks before the wager, witnessed by a hot dog. They don't map a parking structure. They pave forty square feet: the old livestock tent — where a young judge named Pennywhistle disqualified a boy's prize hog for being 'over-greased,' and pinned the blue ribbon on a Hayseed pig instead. Don never meant to lose. He bought the judge to make him SIGN it.",
                 challenges: [
                   { id: 'f4c1', title: 'FOLLOW THE MONEY', desc: 'SCORE 400 off TREMENDOUS DON — he swore on camera you would never touch him. The wager says otherwise', opp: 'don', goal: { type: 'pts', v: 400 } },
                   { id: 'f4c2', title: '☗ FINAL BOSS: THE IMPOSSIBLE CLAUSE', desc: "SCORE 350 off JUDGE PENNYWHISTLE in six seconds a swing, with 50%+ form on every slap that counts — the final clause, in its author's own handwriting", opp: 'pennywhistle', goal: { type: 'pts', v: 350 } },
@@ -259,6 +259,7 @@ export const TOURS = [
         challenges: [
           { id: 'v2c1', title: 'THE DEMO', desc: 'LAND a 75% chain before MIRACLE MIRA — she would know a fake. Professionally.', opp: 'mira', goal: { type: 'chain', v: 75 } },
           { id: 'v2c2', title: 'BURN RATE', desc: 'Score 450 off BIG HOSS — show the board what their money weighs', opp: 'hoss', goal: { type: 'pts', v: 450 } },
+          { id: 'v2c2b', title: 'THE MARS PIVOT', desc: 'SEND X MARSWELL 60m — he promised the board Mars; give him a live preview of re-entry', opp: 'marswell', goal: { type: 'dist', v: 60 } },
           { id: 'v2c3', title: 'EXIT STRATEGY', desc: 'Send MIRACLE MIRA 60m — an exit only counts if it is bigger than the last round', opp: 'mira', goal: { type: 'dist', v: 60 } },
         ],
       },
@@ -414,10 +415,14 @@ export const CUTSCENES = {
     { who: '👻 MASTER SLEE', text: "Rest, he says. One more Sunday first — Mabel is owed a 'good.'", shot: 'spirit' },
   ],
   f1c1: [
-    { who: 'TREMENDOUS DON', text: 'Beautiful fairground. Terrible fairground. My people are paving it — Parking Structure Seven, the greatest of the sevens. BUT. I am, famously, a sportsman. So: a wager. My lawyers wrote it. It is TREMENDOUSLY fair.', shot: 'wide' },
-    { who: 'JUDGE PENNYWHISTLE', text: 'The county names one champion. Clear every trial in this contract and Mr. Don tears the paving permit to pieces ON CAMERA. Fail one... Parking Structure Seven. I have notarized it. The pen was gold. I kept the pen.', shot: 'judge' },
+    { who: '🎈 A FAIR KID', text: "It's the SIXTIETH season! The mayor's cutting the ribbon and — is that a HELICOPTER? Why is the helicopter GOLD?", shot: 'wide' },
+    { who: '🌭 THE HOT DOG VENDOR', text: "That's a helicopter, a motorcade, AND a gold bulldozer, kid. Nobody brings a bulldozer to a ribbon-cutting unless he brought his OWN ribbon to cut instead.", shot: 'wide' },
+    { who: 'TREMENDOUS DON', text: "SORRY I'M LATE — I was cutting a BETTER ribbon. Beautiful fairground. Terrible fairground. My people are paving it: Parking Structure Seven, the last unpaved lot between my two garages. The greatest of the sevens.", shot: 'wide' },
+    { who: 'BIG BERTHA', text: 'Over my sixty seasons, sugar. This county does not sell.', shot: 'opp' },
+    { who: 'TREMENDOUS DON', text: "It's not about the money, Bertha — I have all of it. It's about... that banner. 'LIVESTOCK & BLUE RIBBONS.' Pave that corner FIRST. No reason. Sportsman's whim.", shot: 'wide' },
+    { who: 'JUDGE PENNYWHISTLE', text: "Mr. Don proposes a WAGER — his lawyers drafted it on the bulldozer's hood. The county names one champion. Clear every trial and he tears the permit ON CAMERA. Fail one... Structure Seven. I notarized it. The pen was gold. I did not look him in the eye.", shot: 'judge' },
     { who: 'YOU', text: 'Give me the contract.', shot: 'player' },
-    { who: 'TREMENDOUS DON', text: "Clause one, champ: prove anyone CARES about this place. Cameras are rolling. They're my cameras. Wave.", shot: 'wide' },
+    { who: 'TREMENDOUS DON', text: "Clause one, champ: prove anyone CARES. Cameras are rolling — MY cameras. When the county's favorite aunt roars, the county roars. Wave for the drone, Bertha.", shot: 'wide' },
     { who: 'BIG BERTHA', text: 'For the fair? Sugar, swing like you mean it.', shot: 'opp' },
   ],
   f1c2: [
@@ -464,21 +469,22 @@ export const CUTSCENES = {
     { who: 'GRANNY THUNDER', text: "Honey, nobody's managed it since 1987. Slip city. Population: you.", shot: 'opp' },
   ],
   f4c1: [
-    { who: 'TREMENDOUS DON', text: "So you cleared my clauses. MY clauses! That's how good my lawyers are — even the losing side is winning. Anyway, I found a problem with the wager: me. I'm contesting it.", shot: 'opp' },
-    { who: 'YOU', text: 'The blueprints were signed three weeks before the wager, Don. You never meant to tear anything.', shot: 'player' },
-    { who: 'TREMENDOUS DON', text: "Fake blueprints! Beautiful fake blueprints — the best fake blueprints. Four hundred points says you never touch me. THAT clause I'll honor. Probably.", shot: 'opp' },
+    { who: 'TREMENDOUS DON', text: "So you cleared my clauses. MY clauses! That's how good my lawyers are — even the losing side is winning. Anyway, I found a problem with the wager. Me. I'm contesting it.", shot: 'opp' },
+    { who: 'YOU', text: 'This was never about parking, Don. Forty square feet. The old livestock tent. 1962.', shot: 'player' },
+    { who: 'TREMENDOUS DON', text: "Sir Bacon-a-lot was ROBBED. Finest hog in the county — DISQUALIFIED. 'Over-greased.' A boy's dream, paved over by a JUDGE. So yes, I bought the judge. I bought the LOT. Four hundred points says you STILL never touch me.", shot: 'opp' },
   ],
   f4c2: [
-    { who: 'YOU', text: 'The final clause, your honor. "Three hundred fifty points off a sitting judge, six seconds a swing." Strange thing for Don\'s lawyers to write.', shot: 'player' },
-    { who: 'JUDGE PENNYWHISTLE', text: "They didn't. I did. With my own pen — well, Don's pen. Gold. The theory being that nobody, in the whole history of jurisprudence, has ever slapped the bench inside six seconds.", shot: 'opp' },
-    { who: 'YOU', text: 'You ate the witness, your honor. The hot dog. Mid-testimony.', shot: 'player' },
-    { who: 'JUDGE PENNYWHISTLE', text: 'I was under oath to be honest about my hunger. Very well — the whistle presides. Six seconds. Objection: everything.', shot: 'opp' },
+    { who: 'YOU', text: 'The final clause, your honor. "Three hundred fifty points off a sitting judge, six seconds a swing." Don didn\'t write this one either, did he.', shot: 'player' },
+    { who: 'JUDGE PENNYWHISTLE', text: "...No. I did. With Don's gold pen. Sixty years ago I judged the hogs, and I disqualified a greasy little pig over a greasy little boy — and I have notarized his revenge ever since to keep it quiet. The whistle was bought a long time ago, champ.", shot: 'opp' },
+    { who: 'YOU', text: 'You ate the witness, too, your honor. The hot dog. Mid-testimony.', shot: 'player' },
+    { who: 'JUDGE PENNYWHISTLE', text: 'I was under oath to be honest about my hunger. Very well — the whistle presides over its own reckoning. Six seconds. Objection: everything.', shot: 'opp' },
   ],
   outro_f4c2: [
     { who: 'JUDGE PENNYWHISTLE', text: 'The court finds itself... guilty. Extraordinarily guilty. The whistle is hereby returned to the county.', shot: 'judge' },
     { who: 'TREMENDOUS DON', text: 'AND THE WAGER IS HONORED! Look at me — on camera — tearing this permit into beautiful pieces. THIS IS WHY THEY CALL ME A MAN OF MY WORD. They will now.', shot: 'wide' },
     { who: 'YOU', text: 'You lost, Don.', shot: 'player' },
-    { who: 'TREMENDOUS DON', text: 'I PIVOTED. "Save the fair" was MY idea — the wager, the trials, the champion? I built that arc. We\'re rebranding it Tremendous Fairground Rescue, presented by Don. The plaque is already up. Big, beautiful plaque.', shot: 'wide' },
+    { who: 'JUDGE PENNYWHISTLE', text: 'And the court has one debt outstanding since 1962. Let the record show: the blue ribbon for Finest Hog is awarded, posthumously, to one Sir Bacon-a-lot. Framed. Hung at the livestock tent — which STAYS.', shot: 'judge' },
+    { who: 'TREMENDOUS DON', text: "...the PIG gets the ribbon. Forty years, and the — ...you know what, I'll allow it. Beautiful ribbon. I'm putting my name on the frame. 'Tremendous Sir Bacon-a-lot, presented by Don.' We're rebranding the whole rescue. The plaque is already up. Big, beautiful plaque.", shot: 'wide' },
     { who: 'JUDGE PENNYWHISTLE', text: 'The fair stands. Parking Structure Seven shall be built as a birdhouse. Case dismissed.', shot: 'judge' },
   ],
 
@@ -540,7 +546,7 @@ export const CUTSCENES = {
     { who: 'MASTER MANTIS', text: 'I have seen your little film, biologist. Forty million views, and not one of them noticed: you narrate the palm as if it were a beetle. I have narrated MEN as if they were weather.', shot: 'opp' },
     { who: 'YOU', text: 'A rival deadpan enters the study. He critiques the observer. Note the audacity — and the robe. The robe is excellent. This is not admiration. It is taxonomy.', shot: 'player' },
     { who: 'MASTER MANTIS', text: 'Then observe closely. Only a genuine SNAP moves a master — on EVERY swing. A lazy arm is not a slap. It is merely... narration.', shot: 'opp' },
-    { who: 'YOU', text: 'We shall learn whose voice stays flat when the other cracks the air. Roll camera.', shot: 'player' },
+    { who: 'YOU', text: 'We shall learn whose voice stays flat when the other cracks the air. Begin.', shot: 'player' },
   ],
   w3c1: [
     { who: 'MAESTRO FORTISSIMO', text: 'I watched your film. Forty million people, and not ONE of them heard the flat swivel in Reel One. I heard it. Ninety percent, narrator, or I walk out of my own documentary.', shot: 'opp' },
@@ -556,7 +562,7 @@ export const CUTSCENES = {
     { who: 'TICK-TOCK TOM', text: 'UNSLAPPABLE! Note the bounce. A lesser machine stands still. I bounce because I have ENERGY TO SPARE. Slap me all century, biologist — the mainspring keeps the change.', shot: 'opp' },
     { who: 'YOU', text: 'Fascinating. The specimen advertises its own invulnerability. Rhythmically. In nature this is called a display. In science, it is called a hypothesis.', shot: 'player' },
     { who: 'TICK-TOCK TOM', text: 'The meter reads ONE HUNDRED PERCENT IMMOVABLE. The meter is riveted to my chest. I also am riveted. Everything about me is riveted!', shot: 'opp' },
-    { who: 'YOU', text: 'Then we test it to zero. Every point stays landed, specimen. Science is patient, and the meter is honest. Roll camera.', shot: 'player' },
+    { who: 'YOU', text: 'Then we test it to zero. Every point stays landed, specimen. Science is patient, and the meter is honest. Start the tape.', shot: 'player' },
   ],
   outro_w3c3: [
     { who: 'TICK-TOCK TOM', text: 'REVISION! REVISION TO THE ENGRAVING! Unslappable, ASTERISK: cumulatively, over time, by a PROFESSIONAL—', shot: 'opp' },
@@ -713,7 +719,7 @@ export const CUTSCENES = {
     { who: 'YOU', text: 'You ARE the airplane. Twenty-five meters. I will bill the sky.', shot: 'player' },
   ],
   t1c3: [
-    { who: 'BIG BERTHA', text: "Doc, I carry this whole county. Six fairs, four bake sales, everybody's troubles. I can't put a single one of 'em down.", shot: 'opp' },
+    { who: 'BIG BERTHA', text: "Doc, I carry this whole county. Every bake sale, every busted heart, everybody's troubles. I can't put a single one of 'em down.", shot: 'opp' },
     { who: 'YOU', text: 'The caretaker archetype, load-bearing. Talk therapy would gently examine why. The palm asks a better question: what happens to the load when the carrier is BRIEFLY AIRBORNE?', shot: 'player' },
     { who: 'BIG BERTHA', text: "...you know what, sugar? Fifty years, and nobody's ever offered.", shot: 'opp' },
   ],
@@ -734,7 +740,7 @@ export const CUTSCENES = {
     { who: 'YOU', text: 'Note for the record: at your first session, your shadow flinched before your face did. Today the shadow stands still. That is progress, Ian. Measurable. Billable.', shot: 'player' },
     { who: 'YOU', text: 'Ah, the retest. RIGOR! You are my favorite data point, Ian. This time the form itself must be legible — an eighty percent chain, or the result will not replicate.', shot: 'player' },
     { who: 'INKBLOT IAN', text: 'What do you see this time, doc?', shot: 'opp' },
-    { who: 'YOU', text: 'A butterfly, Ian. You were never a moth. Hold still.', shot: 'player' },
+    { who: 'YOU', text: 'A butterfly, Ian. You were never a moth. Now — once more, for the record, and do not flinch.', shot: 'player' },
   ],
   t3c1: [
     { who: 'HAYSEED HANK', text: "Doc, I keep havin' the same dream. I'm flyin' over the barn, over the corn, over the county line... then I wake up face-down in the pond.", shot: 'opp' },
@@ -842,7 +848,7 @@ export const CUTSCENES = {
     o2c1: [
       { who: '🏅 COMMISSIONER QUIBBLE', text: 'Round two is paperwork. Form 7: certified instruction. Form 12: a sanctioned bout. And Form 88 — evaluation by a Committee-recognized athlete. We have dispatched... the phenom. May the Movement forgive us.', shot: 'wide' },
       { who: 'SCHOOLMARM SUSIE', text: "Thirty years I've taught this county to read, to reason, and to line up single-file. If the world can watch a man slap another man into a pond, it can watch teaching. I volunteer for Form 7.", shot: 'opp' },
-      { who: 'SCHOOLMARM SUSIE', text: 'Eighty percent, dear, and DIAGRAM every link. I sign nothing I have not graded, and I have never once given an A.', shot: 'opp' },
+      { who: 'SCHOOLMARM SUSIE', text: 'Eighty percent, dear, and DIAGRAM every link. I sign nothing I have not graded, and my red pen has never once run dry.', shot: 'opp' },
     ],
     o2c2: [
       { who: '🏅 COMMISSIONER QUIBBLE', text: 'Form 12. A head-to-head. Two competitors, sanctioned exchange, witnessed and stapled.', shot: 'wide' },
@@ -869,7 +875,7 @@ export const CUTSCENES = {
     ],
     o3c2: [
       { who: '🏅 COMMISSIONER QUIBBLE', text: 'Every Olympic sport arrives with a record for the next generation to chase. Set one. Officially. I have brought the good clipboard.', shot: 'wide' },
-      { who: 'HAYSEED HANK', text: "A world record. Me. Ma said this cheek would go places — she meant CHURCH.", shot: 'opp' },
+      { who: 'HAYSEED HANK', text: "A world record. With my name spelled right. Ma wanted me in the hymn book — she'll settle for the record book.", shot: 'opp' },
       { who: 'YOU', text: 'Fifty meters, Hank. The book will spell it H-A-N-K.', shot: 'player' },
     ],
     o3c3: [
@@ -957,7 +963,7 @@ export const CUTSCENES = {
   c2c2: [
     { who: "RAVIN' RAY", text: "Sloth terrace, man. The penance is you gotta HUSTLE, forever. They put me here 'cause I sleep all day. That's not sloth. That's SCHEDULING.", shot: 'opp' },
     { who: '👻 VIRGIL', text: "He's appealed it three times. The mountain don't do appeals. It does do momentum — thirty-two meters counts as hustle, and up he goes.", shot: 'wide' },
-    { who: 'YOU', text: 'Then rise, nocturnal one, upon the wings of a single honest slap!', shot: 'player' },
+    { who: 'YOU', text: 'Then rise, nocturnal one — on this terrace, momentum itself counts as virtue!', shot: 'player' },
     { who: "RAVIN' RAY", text: 'See, THAT guy gets it. Drop it on the downbeat.', shot: 'opp' },
   ],
   c2c3: [
@@ -974,7 +980,7 @@ export const CUTSCENES = {
   c3c2: [
     { who: 'GRANDPA CLETUS', text: "Sonny. Been visitin' up here since '61 — they let me nap on the clouds, on account of I'm 'closest to the door.' Their words. I choose to take it kindly.", shot: 'opp' },
     { who: 'YOU', text: 'The veteran, serene upon the summit of all things. Why volunteer, elder?', shot: 'player' },
-    { who: 'GRANDPA CLETUS', text: "Forty-five meters, up HERE, with the floaty gravity? That's the closest to flyin' an old man gets while still buyin' green bananas. Mind the suspenders.", shot: 'opp' },
+    { who: 'GRANDPA CLETUS', text: "Forty-five meters, up HERE, with the floaty gravity? That's the closest to flyin' an old man gets while still buyin' green bananas. Gentle on the halo — it's a rental.", shot: 'opp' },
   ],
   c3c3: [
     { who: '👻 VIRGIL', text: "Well. Here's the top. Everyone I ever guided went through that gate. Job's done, poet — I'll just wait here. Like always. Somebody's got to mind the stakes.", shot: 'wide' },
@@ -1008,6 +1014,12 @@ export const CUTSCENES = {
     { who: 'MARK SLOPBERG', text: "Coach is going to clip that. It's fine. It's FINE. I'm fine. ...Hey. Do you want to see the cows? Nobody ever wants to see the cows. They just want the term sheet.", shot: 'opp' },
     { who: 'YOU', text: 'I genuinely want to see the cows.', shot: 'player' },
     { who: 'MARK SLOPBERG', text: "THIS is why your slap can't be acquired. Henrietta first — she does a trick. And take some smoked meats for the road. I smoked them myself, at 4 a.m., on the wakeboard. Don't ask how. It tested well.", shot: 'opp' },
+  ],
+  v2c2b: [
+    { who: 'X MARSWELL', text: "Board says the AI play is crowded. Fine. We're pivoting the whole company to MARS. Specifically: Mars-slop. We generate the slop HERE, we ship it THERE, and Mars finally has content.", shot: 'opp' },
+    { who: 'YOU', text: 'Mars has no one to read it.', shot: 'player' },
+    { who: 'X MARSWELL', text: "Not YET — that's a top-of-funnel problem. Look. I do rockets. I do EVs. I do a flamethrower. I posted through a hurricane. The one thing I have never once landed is a dodge. Sixty meters. Call it my first crewed launch.", shot: 'opp' },
+    { who: 'YOU', text: 'Ignition.', shot: 'player' },
   ],
 };
 
@@ -1100,11 +1112,11 @@ export const WINS = {
     [{ who: '👻 MASTER SLEE', text: 'Hm. Adequate. ...no. No. It was good. Forty years dead and the word still sticks in my teeth.', shot: 'spirit' },
      { who: 'YOU', text: 'One scroll at a time, master.', shot: 'player' }],
     [{ who: '👻 MASTER SLEE', text: 'You felt it? The whole chain spoke in one sentence. Do not smile. Masters do not smile. I am beaming.', shot: 'spirit' },
-     { who: 'YOU', text: 'The palm is finally listening. To the RIGHT instructions this time.', shot: 'player' }],
+     { who: 'YOU', text: 'That one landed exactly where I sent it. First time my hand and I agreed on anything.', shot: 'player' }],
   ],
   f: [
     [{ who: 'JUDGE PENNYWHISTLE', text: 'The court accepts that slap into evidence. Exhibit A: MAGNIFICENT. The stenographer drew a little star.', shot: 'judge' },
-     { who: 'YOU', text: 'The fair stands a little taller, your honor.', shot: 'player' }],
+     { who: 'YOU', text: 'Read it into the record, your honor: this county cares. Loudly.', shot: 'player' }],
     [{ who: 'JUDGE PENNYWHISTLE', text: "Noted and notarized: one (1) cheek, relocated per county code. Somewhere, Don's lawyers just billed him for flinching.", shot: 'judge' },
      { who: 'YOU', text: 'Send them the replay. Postage due.', shot: 'player' }],
   ],
@@ -1145,9 +1157,9 @@ export const WINS = {
      { who: 'YOU', text: 'Stamp it and cue the anthem.', shot: 'player' }],
   ],
   c: [
-    [{ who: 'YOU', text: 'And one soul, freed by a single honest slap, moved on! I shall render it in eleven syllables!', shot: 'player' },
+    [{ who: 'YOU', text: 'And one soul, unstuck at last, moved on to the next stamp! I shall render it in eleven syllables!', shot: 'player' },
      { who: '👻 VIRGIL', text: 'Render it in eight. Onward — the map says up.', shot: 'wide' }],
-    [{ who: '👻 VIRGIL', text: 'Clean strike. Surveyed it myself: flush, square, and three feet farther than you needed. Showoff.', shot: 'wide' },
+    [{ who: '👻 VIRGIL', text: 'Clean strike. Surveyed it myself: flush, square, and a good yard past where you needed. Showoff.', shot: 'wide' },
      { who: 'YOU', text: 'The poem demanded a margin.', shot: 'player' }],
   ],
 };

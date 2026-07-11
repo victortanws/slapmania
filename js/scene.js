@@ -4286,7 +4286,7 @@ export function createStage(canvas) {
     day:   { fog: [0xdce9f2, 45, 160], skyTint: 0xffffff, hemi: [0xcfe2ff, 0x4f6b3a, 0.9], sun: [0xfff2d8, 1.9], fill: 0.35, cloud: 0xfff6ea, maps: true,  grass: 0xffffff, lane: 0xffffff, night: false, sunFace: true },
     haunted: { fog: [0x121a16, 34, 118], skyTint: 0x141f1a, hemi: [0x7a9c8a, 0x18221c, 0.55], sun: [0xbfe0c8, 0.75], fill: 0.12, cloud: 0x2a3a30, maps: true, grass: 0x55705f, lane: 0x6a7268, night: true, sunFace: false,
       group: 'haunted', biome: 'haunted', crowd: 'haunted', pond: 0x0e1418,
-      hideFarm: true, hideFair: true, hideBarn: true, barricade: 'coffins' },
+      hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, barricade: 'coffins' },
     techcampus: { fog: [0xdde6ee, 60, 200], skyTint: 0xcfe0f2, hemi: [0xeaf2fa, 0x9aacb8, 1.0], sun: [0xf6faff, 2.0], fill: 0.42, cloud: 0xf4f8fc, maps: false, grass: 0xa8b0b8, lane: 0xc4c8ce, night: false, sunFace: true,
       group: 'techcampus', biome: 'tech', crowd: 'tech', pond: 0x2a8ae0, sunTint: [0xeef4ff, 0.7],
       hideFarm: true, hideBarn: true, hideFair: true, hideFences: true, hideCloths: true, barricade: 'boxes' },

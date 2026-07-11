@@ -240,6 +240,22 @@ export const ROSTER = [
       'The tee is gray because choices are friction. Also I own the color.',
     ],
   },
+  {
+    key: 'marswell', name: 'X MARSWELL', tag: 'FOUNDER · TO MARS, POSTING', world: 'techcampus',
+    w: 0.9, h: 1.05, mass: 0.9, noStache: true,
+    // black tee under a dark founder jacket, buzzed hair; the phone never leaves the hand
+    skin: 0xe0b58c, shirt: 0x1a1a20, pants: 0x22252c,
+    hair: 'flat', hairCol: 0x2a2018, hoodie: 0x14141a,   // the hoodie flag doubles as the black jacket
+    pickLine: 'Promised Mars by Tuesday. Cannot dodge a Wednesday palm.',
+    taunts: [
+      'Funding secured. Slap deflected. Both are basically confirmed.',
+      "I'm taking this whole valley to Mars. The cows are coming. Ask them.",
+      'I bought the platform so I could post THROUGH the slap.',
+      "It's 3 a.m. and I have never been more sure of anything I'll delete by 4.",
+      'Careful — I sell a flamethrower. Legally a "not-a-flamethrower."',
+      'My rocket lands itself. My face, we are still A/B testing.',
+    ],
+  },
   // ---- BOSSES (boss: true): campaign-only — never listed in the public
   // volunteer pick; tour challenges summon them by key ----
   {
@@ -478,7 +494,7 @@ export const WORLD_ROSTERS = {
   therapy: { allow: ['inkblot', 'don', 'influencer', 'bertha', 'slim', 'hank', 'maestro'] }, // the client list
   heaven:  { allow: ['hal', 'cletus', 'mabel', 'susie'] },                // the gentle
   hell:    { allow: ['larry', 'don', 'ravinray', 'maestro'] },            // reserved parking
-  techcampus: { allow: ['vance', 'mira', 'slopberg', 'influencer', 'don', 'susie', 'slim'] }, // whoever badges in
+  techcampus: { allow: ['vance', 'mira', 'slopberg', 'marswell', 'influencer', 'don', 'susie', 'slim'] }, // whoever badges in
 };
 
 function segSphere(p0, p1, c, r) {
