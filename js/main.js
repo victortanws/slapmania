@@ -1491,6 +1491,73 @@ function schedule() {
   if (document.hidden) setTimeout(() => tick(performance.now()), 33);
   else requestAnimationFrame(tick);
 }
+
+// --- ICE CATCH (Cocytus, INFERNO) — COLD-HAND CARMINE's toll: catch his thrown
+// ice with an OPEN PALM. Reuses the swing: bring the open palm to the strike zone
+// as a cube arrives (time it like a slap). Deterministic (no RNG) so it's fair
+// AND testable. A closed fist bats it away; a late/early palm misses. The cubes
+// melt to nothing later — that's the whole joke. Kinematic meshes, pooled. ---
+const iceCubes = [];
+const cubePool = [];
+let catchCount = 0, catchMiss = 0, catchThrowT = 0, catchThrown = 0;
+const CATCH_PERIOD = 1.35, CATCH_DUR = 0.85;
+function makeCube() {
+  const m = new THREE.Mesh(
+    new THREE.BoxGeometry(0.17, 0.17, 0.17),
+    new THREE.MeshStandardMaterial({ color: 0xbfe9ff, transparent: true, opacity: 0.82, roughness: 0.08, metalness: 0.15, emissive: 0x3a6a88, emissiveIntensity: 0.3 }));
+  m.visible = false; scene.add(m);
+  return m;
+}
+function resetCatch() {
+  for (const c of iceCubes) { c.mesh.visible = false; cubePool.push(c.mesh); }
+  iceCubes.length = 0; catchCount = 0; catchMiss = 0; catchThrown = 0;
+  catchThrowT = CATCH_PERIOD - 0.55; // first cube arrives shortly after the swing opens
+}
+function throwCube() {
+  const mesh = cubePool.pop() || makeCube();
+  mesh.visible = true;
+  const to = opponent.headPos().clone();                 // the strike zone — where a swung palm arrives
+  const from = opponent.torsoPos().clone(); from.y -= 0.05; // handed up from Carmine's fist
+  iceCubes.push({ mesh, t: 0, from, to, caught: false, live: true });
+  catchThrown++;
+}
+// closest point on segment p0→p1 to point c (for the swept catch test)
+function segSphereClosest(p0, p1, c) {
+  const d = new THREE.Vector3().subVectors(p1, p0);
+  const len2 = d.lengthSq();
+  const t = len2 > 0 ? THREE.MathUtils.clamp(new THREE.Vector3().subVectors(c, p0).dot(d) / len2, 0, 1) : 0;
+  return p0.clone().addScaledVector(d, t);
+}
+function updateCatch(dt) {
+  catchThrowT += dt;
+  if (catchThrowT >= CATCH_PERIOD) { catchThrowT = 0; throwCube(); }
+  const seg = player.handSeg; // {p0,p1} — the hand's SWEPT path this frame (beats tunneling)
+  for (const c of iceCubes) {
+    if (!c.live) continue;
+    c.t += dt / CATCH_DUR;
+    const k = Math.min(1, c.t);
+    const p = c.from.clone().lerp(c.to, k);
+    p.y += Math.sin(Math.PI * k) * 0.4; // a little toss-arc
+    c.mesh.position.copy(p);
+    c.mesh.rotation.x += dt * 7; c.mesh.rotation.y += dt * 5;
+    // closest distance from the cube to the hand's swept path (or the live point)
+    let d = 9;
+    if (seg) { const q = segSphereClosest(seg.p0, seg.p1, p); d = q.distanceTo(p); }
+    else d = player.handPos.distanceTo(p);
+    // CATCH: open palm sweeping within reach of the cube inside the arrival window
+    if (!c.caught && c.t > 0.6 && player.pUnlocked && d < 0.33) {
+      c.caught = true; c.live = false; c.mesh.visible = false; cubePool.push(c.mesh);
+      catchCount++;
+      ui.slapBurst('CAUGHT!', `ICE IN HAND — ${catchCount} SET DOWN IN A TIDY ROW`);
+      sfx.crack(0.28); stage.spawnShock(p);
+    } else if (c.t > 1.32) { // fell back into the lake, uncaught
+      c.live = false; c.mesh.visible = false; cubePool.push(c.mesh);
+      catchMiss++;
+    }
+  }
+  for (let i = iceCubes.length - 1; i >= 0; i--) if (!iceCubes[i].live) iceCubes.splice(i, 1);
+}
+
 function tick(now) {
   schedule();
   const dt = Math.min(Math.max((now - last) / 1000, 0) || 0, 1 / 30);
@@ -1533,6 +1600,7 @@ function tick(now) {
       if (calledHigh !== null) ui.slapBurst(calledHigh ? 'DALE CALLS: HIGH CHEEK!' : 'DALE CALLS: LOW CHEEK!', 'ONLY THE CALLED HALF COUNTS — LAND IT FLUSH');
       if (opponent.arch.bulwark) ui.bulwark(Math.max(0, Math.ceil(100 - bulwarkPts / (opponent.arch.bulwark.threshold / 100))));
       surgeFired = false; // reset Chuck's Second Wind telegraph for this attempt
+      if (opponent.arch.throwIce) resetCatch(); // fresh row of ice to catch
       setState('SWING');
     }
   } else if (state === 'SWING') {
@@ -1610,6 +1678,7 @@ function tick(now) {
     if (player.fallen) foul('footing');
     else if (opponent.escaped()) foul('escape'); // she made the gate — instant fail, no 10s grace
     else if (shotClock <= 0 && !opponent.arch.skiRun) foul('clock');
+    else if (opponent.arch.throwIce) updateCatch(dts); // CATCH STAGE: no slap-launch — catch Carmine's ice
     else if (player.handSeg && (player.pUnlocked || (player.aUnlocked && player.handSpeed >= 3))) {
       // a CLOSED fist is not a ghost (lesson #6: whatever touches, reacts) —
       // a fast fist lands as a discounted, disapproved punch (onContact fist
@@ -1775,6 +1844,7 @@ window.__slapp = {
   relock: (key) => { unlocks = key ? unlocks.filter((k) => k !== key) : []; localStorage.setItem('slapp_unlocks', JSON.stringify(unlocks)); return [...unlocks]; },
   get unlocks() { return [...unlocks]; },
   dist: () => opponent.distance(),
+  get catches() { return { caught: catchCount, missed: catchMiss, thrown: catchThrown, live: iceCubes.length }; },
   get chainState() { return chain; },
   get bestScore() { return bestPts(); },
   get milestones() { return { barricadeHit, mooDone, duelDone, masterDone, emperorDone, countyDone, barricadeBroken: stage.isBarricadeBroken(), sun: stage.currentSunMood(), ascending: player.ascending }; },
