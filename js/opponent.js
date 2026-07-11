@@ -328,14 +328,16 @@ export const ROSTER = [
   {
     // key is 'chuckboss' (NOT 'chucknorth') — the DLC slapper already owns that key;
     // this is the same legend in boss form, so the display NAME stays CHUCK NORTH
-    key: 'chuckboss', name: 'CHUCK NORTH', tag: 'BOSS · THE SECOND WIND', boss: true,
+    key: 'chuckboss', name: 'CHUCK NORTH', tag: 'BOSS · THE CRIMSON TECHNIQUE', boss: true,
     w: 1.25, h: 1.10, mass: 1.5, noStache: true,
-    // a broad frontier legend: auburn full beard, powers up mid-match ("the crowd chants")
-    skin: 0xd6a878, shirt: 0x3a5a3f, pants: 0x2f3b2f,
-    beard: 0x8a5522, brawn: true, redAura: true,
+    // FINAL FORM: same auburn hair and beard as the man himself — but the skin
+    // burns RED, allegedly the result of a brand-new technique (he microwaved
+    // his chi; the county has questions; the beard has no comment)
+    skin: 0xd05a40, shirt: 0x3a5a3f, pants: 0x2f3b2f,
+    hair: 'short', hairCol: 0x8a4b2a, beard: 0x8a4b2a, brawn: true, redAura: true,
     secondWind: { delay: 4.0, gate: 85, weak: 0.35, punch: 1.15 },
-    pickLine: "Never been slapped. Not once. Ask the tornado — it'll tell you the same.",
-    taunts: ['I once counted to infinity. Twice.', "Four seconds of quiet, son. You won't take 'em.", 'This beard has its own zip code.'],
+    pickLine: 'The new technique turned him red. He says that means it is working.',
+    taunts: ['I once counted to infinity. Twice.', "Four seconds of quiet, son. You won't take 'em.", 'The redness is INTENTIONAL. It is called the Crimson Technique. I invented it this morning.'],
   },
   {
     key: 'reaper', name: 'THE GREEN REAPER', tag: 'BOSS · MOWING TIME', boss: true,

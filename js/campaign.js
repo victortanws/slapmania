@@ -45,6 +45,7 @@ export const TOURS = [
   },
   {
     key: 'fair', title: '🚜 SAVE THE FAIR',
+    world: 'day',   // the fair being saved IS the day fair — the story never plays on ice
     blurb: "Tremendous Don Enterprises filed to pave the fairground into Parking Structure Seven. The county has one defense: your palm.",
     acts: [
       {
@@ -239,6 +240,7 @@ export const TOURS = [
   {
     key: 'slopvalley', title: '🤖 SLOP VALLEY',
     dlc: true,
+    slapper: 'charlie',   // the deadpan documentarian visits the valley (a lab-founder lead joins in the rewrite)
     world: 'techcampus',
     blurb: 'A tech campus disrupted the fair with AI-generated everything. Slapping is the one thing they cannot generate.',
     acts: [
@@ -1227,10 +1229,15 @@ export function open(onStart, opts = {}) {
         return;
       }
       box.innerHTML = `<h3>${act.act}</h3><div class="tourStory">${act.story}</div>`;
+      // goals reveal one at a time: cleared rows and the NEXT trial show their
+      // marching orders; everything past that keeps its mystery (devAll sees all)
+      let nextShown = false;
       act.challenges.forEach((c) => {
         const row = document.createElement('div');
         row.className = 'tourCh' + (isDone(c.id) ? ' done' : '');
-        row.innerHTML = `<span class="tick">${isDone(c.id) ? '✅' : '⬜'}</span><span><b>${c.title}</b>${isDone(c.id) ? ' <small>↻ replay</small>' : ''}<br>${c.desc}</span>`;
+        let reveal = devAll || isDone(c.id);
+        if (!isDone(c.id) && !nextShown) { reveal = true; nextShown = true; }
+        row.innerHTML = `<span class="tick">${isDone(c.id) ? '✅' : '⬜'}</span><span><b>${c.title}</b>${isDone(c.id) ? ' <small>↻ replay</small>' : ''}<br>${reveal ? c.desc : '<i>The tour reveals each trial as you reach it.</i>'}</span>`;
         row.onclick = () => onStart(c);
         box.appendChild(row);
       });
