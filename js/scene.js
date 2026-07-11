@@ -1717,6 +1717,12 @@ export function createStage(canvas) {
         const g = 0.35 + Math.abs(Math.sin(time * 0.7)) * 0.25;
         for (const m of heavenG.userData.godAura) m.opacity = m === heavenG.userData.godAura[0] ? g + 0.15 : g;
       }
+      for (const sh of heavenSheep) {         // blessed sheep graze the clouds
+        const ph = ((time * sh.spd + sh.ph0) % 2 + 2) % 2, fwd = ph < 1;
+        sh.g.position.x = sh.x0 + sh.span * (fwd ? ph : 2 - ph);
+        sh.g.rotation.y = fwd ? 0 : Math.PI;
+        sh.g.position.y = Math.abs(Math.sin(time * 5 + sh.ph0)) * 0.03;
+      }
     }
     if (hellG.visible) {
       for (const ip of impPokers) ip.g.position.y = Math.abs(Math.sin(time * 2.4 + ip.ph)) * 0.05;
@@ -3285,6 +3291,7 @@ export function createStage(canvas) {
   // --- 😇 HEAVEN ---
   const heavenG = new THREE.Group();
   const cherubs = [];
+  const heavenSheep = [];
   {
     const marble = toonMat(0xf6f2e8), gold = toonMat(0xd8b13c);
     heavenG.add(mkBelt((g, x, z, i) => {
@@ -3379,6 +3386,27 @@ export function createStage(canvas) {
     godG.rotation.y = -0.5;                  // angled to face down the lane
     heavenG.add(godG);
     heavenG.userData.godAura = [aura.material, ...godG.children.filter((c) => c.geometry && c.geometry.type === 'PlaneGeometry').map((c) => c.material)];
+    // ---- little SHEEP grazing the clouds around the slapping ring ----
+    const wool = toonMat(0xfbf8f2), sheepFace = toonMat(0x3a3a44);
+    for (const [sx, sz, span, spd, ph0] of [[12, -9, 10, 0.06, 0], [26, 8, 12, 0.05, 1], [4, 7, 8, 0.07, 2], [34, -8, 10, 0.045, 3]]) {
+      const sh = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.SphereGeometry(0.42, 10, 8), wool);
+      body.scale.set(1.25, 0.95, 1); body.position.y = 0.6; sh.add(body);
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.2, 8, 8), sheepFace);
+      head.position.set(0.52, 0.66, 0); sh.add(head);
+      for (const s of [-1, 1]) {
+        const ear = new THREE.Mesh(new THREE.SphereGeometry(0.07, 6, 6), sheepFace);
+        ear.position.set(0.48, 0.78, s * 0.16); sh.add(ear);
+      }
+      for (const [lx, lz] of [[-0.22, -0.16], [-0.22, 0.16], [0.28, -0.16], [0.28, 0.16]]) {
+        const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.42, 5), sheepFace);
+        leg.position.set(lx, 0.21, lz); sh.add(leg);
+      }
+      const halo = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.03, 6, 14), toonMat(0xffd23f)); // even the sheep are blessed
+      halo.rotation.x = Math.PI / 2; halo.position.set(0.52, 1.0, 0); sh.add(halo);
+      sh.position.set(sx, 0, sz); heavenG.add(sh);
+      heavenSheep.push({ g: sh, x0: sx, span, spd, ph0 });
+    }
 
     heavenG.traverse((m) => { if (m.isMesh && m.material.type !== 'MeshBasicMaterial') m.castShadow = true; });
     heavenG.visible = false;
@@ -4551,7 +4579,7 @@ export function createStage(canvas) {
     therapy: { fog: [0x4a3524, 85, 260], skyTint: 0x3a2a1c, hemi: [0xffe4b8, 0x6a4e34, 1.45], sun: [0xfff0d4, 1.8], fill: 0.6, cloud: 0x4a3524, maps: false, grass: 0x7a5636, lane: 0x8a2530, night: false, sunFace: false,
       group: 'therapy', biome: 'therapy', crowd: 'therapy', pond: 0x14141c, sunTint: [0xf0e4ff, 0.9], hideCrowd: true,
       hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, hideBarn: true, barricade: 'books' },
-    heaven: { fog: [0xf4f0e4, 30, 110], skyTint: 0xcfe4f8, hemi: [0xfff8e8, 0xd8d2c0, 1.15], sun: [0xfff6d8, 2.3], fill: 0.4, cloud: 0xffffff, maps: false, grass: 0xf2eede, lane: 0xf7e9b8, night: false, sunFace: true,
+    heaven: { fog: [0xdcecf8, 44, 150], skyTint: 0x7ab0e8, hemi: [0xfff4dc, 0xb0bcd0, 0.85], sun: [0xfff2c8, 2.6], fill: 0.18, cloud: 0xffffff, maps: false, grass: 0xe4e0d0, lane: 0xefc85a, night: false, sunFace: true,
       group: 'heaven', biome: 'heaven', crowd: 'heaven', pond: 0xbfe0f4,
       hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, hideFences: true, barricade: 'cloud' },
     hell: { fog: [0x2a0f12, 34, 118], skyTint: 0x3a0f14, hemi: [0xd85a3a, 0x2a0c0c, 0.82], sun: [0xff5a2a, 1.45], fill: 0.22, cloud: 0x4a1a1a, maps: false, grass: 0x4a1f1c, lane: 0x6e2a1e, night: false, sunFace: false,

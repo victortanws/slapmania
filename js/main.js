@@ -41,6 +41,7 @@ let opponent = new Opponent({ scene, world: phys.world, mat: phys.fleshMat });
 function setLook(look) {
   player.remove();
   player = new Player({ scene, world: phys.world, mat: phys.fleshMat, look });
+  if (player.halo) player.halo.visible = activeWorld === 'heaven';  // keep the halo across slapper changes
 }
 
 let state = 'TITLE';
@@ -633,6 +634,7 @@ function setWorldFull(key) {
   else if (key === 'jungle') phys.setGround({ friction: 0.38, restitution: 0.62 }); // springmoss BOING
   else phys.setGround(null);                                                       // farm default
   phys.setGravity(key === 'heaven' ? -8.8 : null);                                 // floaty grace
+  if (player.halo) player.halo.visible = key === 'heaven';                         // the slapper becomes an angel in Heaven
 }
 function applyWorld(key) {
   setWorldFull(key);

@@ -359,6 +359,13 @@ export class Player {
       head.add(eye);
     }
     this.decorateHead(head, 0.16);
+    // ANGEL HALO: a floating gold ring above the head — shown only in Heaven
+    const halo = this.halo = new THREE.Mesh(
+      new THREE.TorusGeometry(0.14, 0.028, 8, 20), new THREE.MeshBasicMaterial({ color: 0xffd23f }));
+    halo.rotation.x = Math.PI / 2;
+    halo.position.y = 0.34;
+    halo.visible = false;
+    head.add(halo);
 
     // left arm (non-slapping): hangs at the side, with a proper t-shirt sleeve
     const armL = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.05 * AR, 0.5, 3, 8), T(L.skin)));
