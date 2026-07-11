@@ -64,8 +64,8 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
 .tourCh.done small{color:#8a5fc0;font-size:9px;letter-spacing:1px;}
 .tourCh.lockedRow{opacity:.3;cursor:default;pointer-events:none;}
 @media (max-width:560px){
-  .tourAct{width:94vw;padding:9px 10px;}
-  #tour{overflow-y:auto;justify-content:flex-start;padding-top:52px;}
+  .tourAct{width:94vw;padding:9px 10px;box-sizing:border-box;}
+  #tour{overflow-y:auto;overflow-x:hidden;justify-content:flex-start;padding-top:52px;}
 }
 
 /* ---- world selector: the active world wears the red ---- */
@@ -112,7 +112,8 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
 .keychip{width:56px;text-align:center;}
 .keychip span{display:block;margin:0 auto;width:44px;height:44px;line-height:44px;background:#252a4a;color:#8b93bd;
   border:3px solid #000;border-radius:9px;font-size:22px;box-shadow:0 4px 0 #000;transition:background .06s,color .06s,transform .06s;}
-.keychip label{display:block;font-size:9px;letter-spacing:1px;color:#8b93bd;margin-top:5px;}
+.keychip label{display:block;font-size:9px;letter-spacing:1px;color:#8b93bd;margin-top:5px;
+  text-shadow:1px 1px 0 rgba(0,0,0,.65);}
 .keychip.held span{background:var(--yellow);color:#111;transform:translateY(3px);box-shadow:0 1px 0 #000;}
 .keychip.held label{color:#fff;}
 .keychip.cue span{animation:cuepulse .3s infinite alternate;background:var(--red);color:#fff;}
@@ -120,7 +121,8 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
 
 /* ---- meters ---- */
 #meters{position:absolute;bottom:20px;left:0;right:0;display:flex;justify-content:center;gap:46px;align-items:flex-end;}
-.meterlabel{font-size:10px;color:#9aa3c7;letter-spacing:2px;text-align:center;margin-top:5px;}
+.meterlabel{font-size:10px;color:#9aa3c7;letter-spacing:2px;text-align:center;margin-top:5px;
+  text-shadow:1px 1px 0 rgba(0,0,0,.65);} /* stays legible on pale worlds (tech plaza) */
 #leanwrap{width:290px;}
 #leanbar{position:relative;height:16px;background:#1e2440;border:2px solid #000;border-radius:9px;}
 #leanbar .zone{position:absolute;top:0;bottom:0;width:16%;background:rgba(255,71,87,.5);}
@@ -295,14 +297,16 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
   .card h1{font-size:46px;letter-spacing:0;}
   /* tall cards (title, final verdict) top-align + scroll so nothing clips off
      either end and the score/boards/share buttons stay reachable on a phone */
-  #title,#match{justify-content:flex-start;padding-top:16px;padding-bottom:28px;}
+  /* clear the transparent ATTEMPTS/BEST topbar — the logo used to sit behind it */
+  #title,#match{justify-content:flex-start;padding-top:64px;padding-bottom:28px;}
   #creditBar{display:none;} /* would sit under the world buttons on a short card */
   .bigdist{font-size:60px;} .bigdist.foul{font-size:44px;}
   #banner .big{font-size:42px;} #banner .sub{font-size:14px;}
   #distance{font-size:40px;top:118px;} #clock{font-size:30px;min-width:80px;}
-  /* keep the challenge banner from growing down into the distance/coach lines */
+  /* keep the challenge banner from growing down into the distance/coach lines
+     (max-height backs up the clamp: without it line 3 paints into the padding box) */
   #challengeBar{font-size:11px;max-width:88vw;display:-webkit-box;-webkit-line-clamp:2;
-    -webkit-box-orient:vertical;overflow:hidden;}
+    -webkit-box-orient:vertical;overflow:hidden;line-height:1.45;max-height:calc(2.9em + 16px);}
   .rules{padding:10px 14px;} .rules ol{font-size:11px;}
   .keys{font-size:13px;} .key{font-size:15px;padding:4px 9px;}
   #attempts,#best{min-width:110px;font-size:12px;}
@@ -312,11 +316,13 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
   #intro{top:14%;padding:0 10px;}
   .verdict{font-size:14px;}
   #coach{font-size:14px;top:168px;}
-  #keysbar{bottom:84px;gap:8px;}
+  /* key chips hug the bottom edge; the stacked meters sit in their own band
+     ABOVE them (they used to crush into each other around y~700) */
+  #keysbar{bottom:6px;gap:8px;}
   .keychip{width:40px;} .keychip span{width:32px;height:32px;line-height:32px;font-size:15px;}
   .keychip label{font-size:7px;}
   /* narrow screens: stack the meters so nothing clips off-screen */
-  #meters{flex-direction:column;gap:6px;align-items:center;}
+  #meters{flex-direction:column;gap:6px;align-items:center;bottom:78px;}
   #chainwrap{transform:scale(.82);transform-origin:bottom center;}
   body.touch #meters{bottom:100px;}
   /* compact pick dock: shrink the cards to a bottom strip so the fighter in the
@@ -342,6 +348,8 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
   #intro{top:6%;}
   #refBar{bottom:10px;font-size:11px;}
   #bubble.withIntro{bottom:12%;right:4%;}
+  /* a 2-line coach at 27px reaches the key chips on a 380px-tall screen */
+  #coach{top:100px;font-size:16px;}
 }
 @keyframes goPulse{50%{transform:scale(1.05);}}
 
@@ -351,10 +359,11 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
 .lockbadge{position:absolute;top:-9px;right:-7px;background:var(--ink);color:var(--yellow);
   border:2px solid #000;border-radius:8px;font-family:'Arial Black',Impact,sans-serif;font-size:11px;
   padding:2px 7px;box-shadow:0 3px 0 #000;letter-spacing:.5px;}
-#unlockModal{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  background:rgba(6,7,16,.82);pointer-events:auto;z-index:60;padding:16px;}
+#unlockModal{position:absolute;inset:0;display:flex;align-items:safe center;justify-content:center;
+  background:rgba(6,7,16,.82);pointer-events:auto;z-index:60;padding:16px;overflow-y:auto;}
 .unlockCard{position:relative;box-sizing:border-box;max-width:min(340px,calc(100vw - 24px));background:#fffbe8;color:#1b1d33;border:5px solid #000;border-radius:16px;
-  padding:24px 28px;max-width:340px;width:100%;text-align:center;box-shadow:8px 8px 0 rgba(0,0,0,.55);
+  padding:24px 28px;width:100%;text-align:center;box-shadow:8px 8px 0 rgba(0,0,0,.55);
+  max-height:calc(100dvh - 32px);overflow-y:auto;
   font-family:Arial,sans-serif;}
 .unlockX{position:absolute;top:8px;right:10px;background:none;border:none;box-shadow:none;
   font-size:18px;color:#1b1d33;padding:2px 6px;cursor:pointer;}
@@ -365,7 +374,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
 #unlockBuy{background:var(--red);color:#fff;font-size:18px;width:100%;}
 .unlockOr{font-size:11px;letter-spacing:1px;color:#8a8fa5;margin:14px 0 8px;}
 .unlockRedeem{display:flex;gap:6px;}
-#unlockCode{flex:1;pointer-events:auto;font-family:'Arial Black',Impact,sans-serif;font-size:14px;
+#unlockCode{flex:1;min-width:0;width:0;pointer-events:auto;font-family:'Arial Black',Impact,sans-serif;font-size:14px;
   padding:9px 10px;border:3px solid #000;border-radius:8px;background:#fff;color:#111;
   text-transform:uppercase;text-align:center;}
 #unlockRedeemBtn{font-size:13px;}
@@ -533,7 +542,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
   </div>
 
   <div id="match" class="card hidden">
-    <div class="tagline">FINAL VERDICT OF THE COUNTY FAIR</div>
+    <div id="matchTag" class="tagline">FINAL VERDICT OF THE COUNTY FAIR</div>
     <div id="matchDist" class="bigdist"></div>
     <div id="matchLine" class="verdict"></div>
     <div id="boards">
@@ -547,7 +556,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
         <div id="netMsg"></div>
       </div>
     </div>
-    <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center;">
+    <div id="matchShare" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center;">
       <button id="shareBtn">COPY BRAG TEXT</button>
       <span id="shareRow">
         <button class="sharetgt" data-net="x" title="Share on X">𝕏</button>
@@ -562,7 +571,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
       <a href="https://www.youtube.com/@VictorTan" target="_blank" rel="noopener" style="color:var(--yellow);text-decoration:none;">▶ YOUTUBE.COM/@VICTORTAN</a>
     </div>
     <button id="matchNext" class="blink" style="margin-top:6px;font-size:16px;">PICK YOUR NEXT VOLUNTEER ▶</button>
-    <div class="pressany" style="font-size:11px;letter-spacing:2px;opacity:.75;margin-top:4px;">scroll the boards to browse · ENTER = next</div>
+    <div id="matchHint" class="pressany" style="font-size:11px;letter-spacing:2px;opacity:.75;margin-top:4px;">scroll the boards to browse · ENTER = next</div>
   </div>
 
 </div>

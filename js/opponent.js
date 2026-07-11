@@ -105,6 +105,39 @@ export const ROSTER = [
     pickLine: 'Honk honk. The clown does not fear the palm.',
     taunts: ['I bounce back, sugar — it is the whole act!', 'Honk if you missed!'],
   },
+  // ---- WONDERS SPECIMENS (dlc: true): movement-gimmick volunteers — public
+  // pick only with the Supporter Pack; campaigns summon them by key regardless ----
+  {
+    key: 'pogo', name: 'POGO McPHEE', tag: 'PERPETUAL MOTION', dlc: true,
+    w: 0.78, h: 1.0, mass: 0.62, noStache: true,
+    hop: { period: 0.9, height: 0.55 }, // the cheek visits the strike plane once per bounce
+    // carnival-prize athletic wear: mustard tee, red stripes, sweatband, ginger frizz
+    skin: 0xe2b088, shirt: 0xf0c030, stripes: 0xd8404f, pants: 0x2f6fe0,
+    hat: 'band', hatCol: 0xd8404f, hair: 'frizz', hairCol: 0xc06a2a, springShoes: 0xd8404f,
+    pickLine: 'The specimen oscillates vertically. Science does not know why. Neither does the specimen.',
+    taunts: ['You gotta TIME it, flatfoot!', "Gravity keeps askin'. I keep declinin'."],
+  },
+  {
+    key: 'nadine', name: 'NAMASTE NADINE', tag: 'SUN SALUTATION', dlc: true,
+    w: 0.8, h: 1.02, mass: 0.7, female: true, noStache: true,
+    sway: { period: 3.2, amp: 0.5 }, // slow fore/aft lean — the cheek drifts in and out of reach
+    // sage-teal tank, charcoal leggings, tidy bun, cream headband, serene beyond reason
+    skin: 0xdda379, shirt: 0x7ac0b8, pants: 0x4a4458,
+    hair: 'bun', hairCol: 0x6e4a2c, hat: 'band', hatCol: 0xf2e6cc, yogaMat: 0x8a5fb0,
+    pickLine: 'She is not evading. She is exercising. The cheek arrives on the inhale.',
+    taunts: ['Breathe in... breathe WAY out of range.', 'My chakras are aligned, sweetheart. Your swing is not.'],
+  },
+  {
+    key: 'horton', name: 'HEAD-TURNING HORTON', tag: 'ALL ANGLES', dlc: true,
+    w: 0.95, h: 1.05, mass: 1.0,
+    headTurn: { period: 2.4, arc: 1.2 }, // the CHEEK sweeps away/toward — a flush hit wants the face incoming
+    // full evening dress: tailcoat over white shirtfront, white bow tie, black topper w/ gold band
+    skin: 0xe0b48e, shirt: 0xf4f0ea, pants: 0x17171d, suit: true, tie: 0xf4f0ea,
+    tails: true, bowtie: true,
+    hat: 'top', hatCol: 0x17171d, bandCol: 0xd8b13c, hair: 'flat', hairCol: 0x2a2a2a,
+    pickLine: 'Formal wear. Rotating skull. The cheek sweeps past like a lighthouse.',
+    taunts: ["You've been slapping my HAT, sir.", "Left profile, right profile — pick one. I certainly shan't."],
+  },
   // ---- WORLD LOCALS (world: key): volunteers who only appear in the pick
   // when their home world is active — each biome keeps its own regulars ----
   {
@@ -318,7 +351,7 @@ export const ROSTER = [
     key: 'ava', name: 'AVALANCHE AVA', tag: 'BOSS · THE PHENOM', boss: true,
     w: 0.8, h: 1.0, mass: 0.85, female: true, weave: true, noStache: true,
     // ice-blue race suit w/ white speed stripes, dark ponytail, goggles pushed UP
-    skin: 0xe8c2a0, shirt: 0x2f6fe0, pants: 0x2f6fe0, stripes: 0xf2ede1,
+    skin: 0xe8c2a0, shirt: 0x2f6fe0, pants: 0x2f6fe0, stripes: 0xf2ede1, skirt: 0x2f6fe0,
     hair: 'pony', hairCol: 0x1a1a1f, goggles: 0xff8c1a,
     pickLine: 'Four golds. Three world records. One energy drink. Zero slaps taken.',
     taunts: ['I dodge trees at eighty. You are slower than a tree.', 'Is the county in slow motion, or is that just you?'],
@@ -326,11 +359,11 @@ export const ROSTER = [
   {
     key: 'avaskis', name: 'AVALANCHE AVA', tag: 'BOSS · FULL SEND', boss: true,
     w: 0.8, h: 1.0, mass: 0.9, female: true, noStache: true,
-    skin: 0xe8c2a0, shirt: 0x2f6fe0, pants: 0x2f6fe0, stripes: 0xf2ede1,
+    skin: 0xe8c2a0, shirt: 0x2f6fe0, pants: 0x2f6fe0, stripes: 0xf2ede1, skirt: 0x2f6fe0,
     hair: 'pony', hairCol: 0x1a1a1f, goggles: 0xff8c1a, gogglesDown: true,
-    skis: true, skiEscape: { period: 3.2, window: 0.9, span: 2.4 },
-    pickLine: 'Winter rules. The skis stay ON. Catch her in the crossing.',
-    taunts: ['Grass is just slow snow.', 'You had your window. It skied away.'],
+    skis: true, skiRun: { speed: 1.7, startX: 9, exitX: -8 },
+    pickLine: 'She is DONE being slapped. One run, straight past you, out the gate.',
+    taunts: ['Grass is just slow snow.', "Don't take it personally — I'm not dodging you. I'm LEAVING you."],
   },
 ];
 
@@ -943,18 +976,63 @@ export class Opponent {
     }
     if (arch.suit) {
       // crisp white shirtfront and the power tie — it reaches the belt. Always.
+      // (bowtie swaps the blade for a bow at the collar — evening dress rules.)
       const tr = 0.38 * w * 0.52;
       const shirtV = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.24 * h, 0.11 * w), toonMat(0xf2ede1));
       shirtV.position.set(-(tr + 0.004), 0.09 * h, 0);
       shirtV.castShadow = true;
       P.torso.mesh.add(shirtV);
-      const knot = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.05, 0.055), toonMat(arch.tie || 0xc9302c));
-      knot.position.set(-(tr + 0.018), 0.18 * h, 0);
-      P.torso.mesh.add(knot);
-      const blade = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.32 * h, 0.06), toonMat(arch.tie || 0xc9302c));
-      blade.position.set(-(tr + 0.018), 0.0, 0);
-      blade.castShadow = true;
-      P.torso.mesh.add(blade);
+      if (arch.bowtie) {
+        const knot = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.045, 0.045), toonMat(arch.tie || 0xf4f0ea));
+        knot.position.set(-(tr + 0.022), 0.18 * h, 0);
+        P.torso.mesh.add(knot);
+        for (const sgn of [-1, 1]) {
+          const wing = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.06, 0.07), toonMat(arch.tie || 0xf4f0ea));
+          wing.position.set(-(tr + 0.018), 0.18 * h, sgn * 0.055);
+          P.torso.mesh.add(wing);
+        }
+      } else {
+        const knot = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.05, 0.055), toonMat(arch.tie || 0xc9302c));
+        knot.position.set(-(tr + 0.018), 0.18 * h, 0);
+        P.torso.mesh.add(knot);
+        const blade = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.32 * h, 0.06), toonMat(arch.tie || 0xc9302c));
+        blade.position.set(-(tr + 0.018), 0.0, 0);
+        blade.castShadow = true;
+        P.torso.mesh.add(blade);
+      }
+    }
+    if (arch.tails) {
+      // tailcoat skirts off the back of the jacket (+x is behind him)
+      const tr = 0.38 * w * 0.52;
+      for (const sgn of [-1, 1]) {
+        const tail = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.3 * h, 0.1 * w), toonMat(arch.pants || 0x17171d));
+        tail.position.set(tr - 0.01, -0.32 * h, sgn * 0.09 * w);
+        tail.rotation.z = -0.12;
+        tail.castShadow = true;
+        P.torso.mesh.add(tail);
+      }
+    }
+    if (arch.springShoes) {
+      // carnival spring shoes: stacked coils under each boot — the gimmick, visible
+      for (const leg of [P.llL, P.llR]) {
+        for (let i = 0; i < 3; i++) {
+          const coil = new THREE.Mesh(new THREE.TorusGeometry(0.07, 0.018, 6, 12), toonMat(arch.springShoes));
+          coil.rotation.x = Math.PI / 2;
+          coil.position.set(0, -0.33 - i * 0.045, 0.02);
+          coil.castShadow = true;
+          leg.mesh.add(coil);
+        }
+      }
+    }
+    if (arch.yogaMat) {
+      // a rolled mat slung across the upper back
+      const mat = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.52, 10), toonMat(arch.yogaMat));
+      const tr = 0.38 * w * 0.52;
+      mat.rotation.x = Math.PI / 2;
+      mat.rotation.z = 0.25;
+      mat.position.set(tr + 0.06, 0.12 * h, 0);
+      mat.castShadow = true;
+      P.torso.mesh.add(mat);
     }
     if (arch.whiteBeard || arch.beard) {
       // a chin beard — wispy white sage by default, or a fuller colored beard for arch.beard
@@ -1073,6 +1151,19 @@ export class Opponent {
         const band = new THREE.Mesh(new THREE.CylinderGeometry(0.152, 0.158, 0.055, 16), T(arch.bandCol || 0x2f6fe0));
         band.position.y = -0.05;
         hat.add(band);
+      } else if (arch.hat === 'top') {
+        // the formal topper — tall cylinder, crisp brim, gold band. It pops off
+        // on impact like every real hat, which is most of why it exists.
+        const col = arch.hatCol || 0x17171d;
+        const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.26, 0.025, 16), T(col));
+        brim.position.y = -0.05;
+        hat.add(brim);
+        const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.145, 0.34, 14), T(col));
+        crown.position.y = 0.13;
+        hat.add(crown);
+        const band = new THREE.Mesh(new THREE.CylinderGeometry(0.153, 0.153, 0.06, 14), T(arch.bandCol || 0xd8b13c));
+        band.position.y = -0.005;
+        hat.add(band);
       } else { // straw
         const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.03, 14), T(0xd9b96a));
         brim.position.y = -0.05;
@@ -1146,6 +1237,19 @@ export class Opponent {
   }
 
   setSurge(on) { this.surging = on; if (this.auraRing) this.auraRing.visible = on; } // Chuck's Second Wind power-up glow
+  beginEscape() { this.escaping = true; } // skiRun: the whistle blows and she pushes off
+  escaped() {
+    // past the exit gate behind the player — the attempt is dead the instant this is true
+    return !!(this.arch.skiRun && !this.launched && this.runX !== undefined && this.runX < this.arch.skiRun.exitX);
+  }
+  headFacing() {
+    // headTurn bosses: how square the face is to the palm right now.
+    // 1.1 = caught the turn flush; 0.25 = the back of the head. Deterministic.
+    if (!this.arch.headTurn) return 1;
+    const ht = this.arch.headTurn;
+    const yaw = Math.sin((this.time / ht.period) * Math.PI * 2) * ht.arc;
+    return Math.min(1.1, 0.25 + 0.85 * Math.max(0, Math.cos(yaw)));
+  }
   headPos() { return new THREE.Vector3().copy(this.rag.parts.head.body.position); }
   torsoPos() { return new THREE.Vector3().copy(this.rag.parts.torso.body.position); }
   pelvisPos() { return new THREE.Vector3().copy(this.rag.parts.pelvis.body.position); }
@@ -1205,7 +1309,9 @@ export class Opponent {
     } else if (this.showcaseMode) {
       this.animateShowcase();
     } else {
-      if (!this.arch.weave && !this.arch.skiEscape) {
+      const A = this.arch;
+      const gimmick = A.weave || A.skiRun || A.hop || A.sway || A.headTurn;
+      if (!gimmick) {
         // every volunteer BREATHES: a slow, readable rise-and-fall of the cheek
         // (~4.5s period, ±5cm). Never enough to whiff — but a flush hit wants
         // the head level with your swing plane, so watching the ring pays.
@@ -1218,22 +1324,72 @@ export class Opponent {
         this.rag.sync();
         this.syncHat();
       }
-      if (this.arch.skiEscape) {
-        // FULL SEND: she carves laterally across the strike pocket on a fixed,
-        // readable loop — the cheek only exists mid-line for a heartbeat. Outside
-        // the crossing the swept-segment test genuinely whiffs (no foul; a fresh
-        // S re-arms, the shot clock keeps running). Deterministic — zero RNG.
-        const se = this.arch.skiEscape;
-        const zOff = Math.sin((this.time / se.period) * Math.PI * 2) * se.span;
-        const lean = Math.cos((this.time / se.period) * Math.PI * 2) * 0.25;
+      if (A.skiRun) {
+        // THE GREAT ESCAPE: she parks down the lane, and at the whistle
+        // (beginEscape) skis straight past the player toward the exit gate.
+        // The whole body translates on the LIVE physics bodies, so the swept
+        // hit test is honest: you strike as she crosses the pocket, or she is
+        // GONE (main.js polls escaped() for the instant fail). She checks her
+        // speed through the ring — a real skier's brake — which is the window.
+        // Constant speed, fixed line: deterministic and learnable, zero RNG.
+        const sr = A.skiRun;
+        if (this.runX === undefined) this.runX = sr.startX;
+        if (this.escaping && this.runX > sr.exitX - 3) {
+          // two-speed line: full send outside the ring, a 45% brake-check through
+          // it. She stops mattering a few meters past the gate — no skiing to
+          // infinity behind the foul banner.
+          const v = Math.abs(this.runX) < 1.4 ? sr.speed * 0.55 : sr.speed;
+          this.runX -= v * dt;
+        }
+        const x = this.runX;
+        const carve = Math.sin((this.time * 2.2)) * 0.28 * Math.min(1, Math.abs(x) / 3); // straightens in the pocket
         const P = this.rag.parts;
-        P.head.body.position.z = this.basePose.head.p.z + zOff;
-        P.head.body.position.y = this.basePose.head.p.y;
-        P.torso.body.position.z = this.basePose.torso.p.z + zOff * 0.85;
-        P.pelvis.body.position.z = this.basePose.pelvis.p.z + zOff * 0.7;
-        P.llL.body.position.z = this.basePose.llL.p.z + zOff * 0.6;
-        P.llR.body.position.z = this.basePose.llR.p.z + zOff * 0.6;
-        P.head.body.position.x = this.basePose.head.p.x + lean * 0.1;
+        for (const n in this.basePose) {
+          P[n].body.position.x = this.basePose[n].p.x + x;
+          P[n].body.position.z = this.basePose[n].p.z + carve;
+        }
+        P.head.body.position.x += -0.08; // racer's forward tuck
+        if (this.hatBody && this.hatOff) this.hatBody.position.copy(P.head.body.position.vadd(this.hatOff));
+        this.rag.sync();
+        this.syncHat();
+      }
+      if (A.hop) {
+        // PERPETUAL MOTION: a parabolic bounce, feet find the dirt once per
+        // period — the cheek is only at swing height around each landing.
+        // Deterministic; time the whip for the touchdown.
+        const ph = (this.time % A.hop.period) / A.hop.period;
+        const yOff = A.hop.height * 4 * ph * (1 - ph);
+        const P = this.rag.parts;
+        for (const n in this.basePose) P[n].body.position.y = this.basePose[n].p.y + yOff;
+        if (this.hatBody && this.hatOff) this.hatBody.position.copy(P.head.body.position.vadd(this.hatOff));
+        this.rag.sync();
+        this.syncHat();
+      }
+      if (A.sway) {
+        // SUN SALUTATION: a slow fore/aft lean — she is NOT hiding, it is
+        // exercise. The cheek drifts into reach on the lean-in (−x, toward the
+        // palm) and out of it on the lean-away. Strike on the inhale.
+        const xOff = Math.sin((this.time / A.sway.period) * Math.PI * 2) * A.sway.amp;
+        const P = this.rag.parts;
+        P.head.body.position.x = this.basePose.head.p.x + xOff;
+        P.torso.body.position.x = this.basePose.torso.p.x + xOff * 0.62;
+        P.pelvis.body.position.x = this.basePose.pelvis.p.x + xOff * 0.2;
+        P.head.body.position.y = this.basePose.head.p.y - Math.abs(xOff) * 0.16; // a real fold dips the head
+        if (this.hatBody && this.hatOff) this.hatBody.position.copy(P.head.body.position.vadd(this.hatOff));
+        this.rag.sync();
+        this.syncHat();
+      }
+      if (A.headTurn) {
+        // ALL ANGLES: the skull yaws left/right on a fixed metronome. Contact
+        // still registers (the head is a sphere), but power scales with how
+        // square the face is — headFacing() feeds the multiplier in main.js.
+        // Catch the face mid-turn, incoming: that is the flush window.
+        const yaw = Math.sin((this.time / A.headTurn.period) * Math.PI * 2) * A.headTurn.arc;
+        const P = this.rag.parts;
+        P.head.body.quaternion.setFromEuler(0, yaw, 0);
+        const breathe = Math.sin(this.time * 1.4) * 0.05; // he still breathes — the turn is the exam
+        P.head.body.position.y = this.basePose.head.p.y + breathe;
+        P.torso.body.position.y = this.basePose.torso.p.y + breathe * 0.35;
         if (this.hatBody && this.hatOff) this.hatBody.position.copy(P.head.body.position.vadd(this.hatOff));
         this.rag.sync();
         this.syncHat();

@@ -45,16 +45,18 @@ export function challengeBar(text) {
   el.challengeBar.classList.remove('hidden');
 }
 
-// only 'footing' and 'clock' are ever produced (see main.js foul() calls);
-// the old 'punch'/'fingertips' fouls were removed with the dead onContact code
+// only 'footing', 'clock' and 'escape' are ever produced (see main.js foul()
+// calls); the old 'punch'/'fingertips' fouls were removed with the dead onContact code
 export const FOUL_LINES = {
   footing: 'He wound up so hard he slapped himself off his own feet.',
   clock: 'Ten seconds of nothing. The crowd is booing. The opponent is chewing wheat.',
+  escape: 'She made the exit gate. The last thing this attempt saw was her back.',
 };
 
 export const FOUL_BANNERS = {
   footing: ['FOUL!', 'HE HAS SLAPPED HIMSELF OFF HIS OWN FEET'],
   clock: ['FORFEIT!', 'FROZEN BY THE MAGNITUDE OF THE MOMENT'],
+  escape: ["SHE'S GONE!", 'THE PHENOM MADE THE GATE — UNSLAPPED'],
 };
 
 export function commentaryFor(d, haySplat) {
@@ -243,9 +245,33 @@ export function showResult({ dist, pts, arch, part, foul, chain, line, n }) {
   el.resNext.textContent = n >= 3 ? 'CLICK / ENTER → FINAL VERDICT' : `CLICK / ENTER → ATTEMPT ${n + 1} OF 3`;
 }
 
-export function showMatch({ bestAttempt, line, board, shareUrl }) {
+export function showMatch({ bestAttempt, line, board, shareUrl, tour }) {
   coach(null); // clear any lingering ceremony line (SLAPMASTER/EMPEROR) so it doesn't stack on the verdict header
   el.match.classList.remove('hidden');
+  const tag = $('matchTag'), hint = $('matchHint'), shareRow = $('matchShare'),
+        boards = $('boards'), next = $('matchNext');
+  if (tour) {
+    // CAMPAIGN VERDICT: the card restates the goal and says CLEARED or FAILED —
+    // no county boards, no share row, no volunteer-picking talk. The story beat
+    // (win/fail scene) plays right after, so the card stays short.
+    tag.textContent = `🎪 ${tour.title}`;
+    el.matchDist.textContent = tour.cleared ? 'CHALLENGE CLEARED ✔' : 'CHALLENGE FAILED ✘';
+    el.matchDist.style.color = tour.cleared ? '#7dff8a' : '#ff6f5e';
+    el.matchLine.textContent = `THE GOAL: ${tour.goal}` + (bestAttempt.pts > 0
+      ? ` — Your best: ${bestAttempt.dist.toFixed(1)}m / ${bestAttempt.pts} PTS into ${bestAttempt.opp}.`
+      : ' — Three attempts, zero contact. The clipboard has seen things.');
+    boards.style.display = 'none';
+    shareRow.style.display = 'none';
+    next.textContent = tour.cleared ? 'CONTINUE THE TOUR ▶' : 'RETRY THE CHALLENGE ↻';
+    hint.textContent = tour.cleared ? 'ENTER = onward' : 'ENTER = retry · ESC = back to the fairgrounds';
+    return;
+  }
+  tag.textContent = 'FINAL VERDICT OF THE COUNTY FAIR';
+  el.matchDist.style.color = '';
+  boards.style.display = '';
+  shareRow.style.display = '';
+  next.textContent = 'PICK YOUR NEXT VOLUNTEER ▶';
+  hint.textContent = 'scroll the boards to browse · ENTER = next';
   el.matchDist.textContent = `${bestAttempt.pts} PTS`;
   el.matchLine.textContent = bestAttempt.pts > 0
     ? `${bestAttempt.dist.toFixed(1)}m into ${bestAttempt.opp}. ${line}`

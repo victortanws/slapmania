@@ -70,6 +70,8 @@ let chosenArch = null;
 let rivalBarText = null;
 let lastClearedId = null; // set when a tour goal clears — an outro may follow
 let failIdx = 0;          // rotates the failure-scene pool
+let winIdx = 0;           // rotates the victory-beat pool
+let prevHandSeg = null;   // last frame's palm segment — the contact test sweeps from it
 function restoreBar() { ui.challengeBar(rivalBarText); }
 let pickIndex = 0;
 let pickHighlight = null;
@@ -256,6 +258,12 @@ function openUnlockModal(char) {
 function closeUnlockModal() { um.modal.classList.add('hidden'); unlockTarget = null; }
 if (um.modal) {
   um.close.onclick = closeUnlockModal;
+  // clicking the dark backdrop closes too — on landscape phones the ✕ can sit
+  // above the fold, and a modal you can't leave is a trap
+  um.modal.onclick = (e) => { if (e.target === um.modal) closeUnlockModal(); };
+  addEventListener('keydown', (e) => {
+    if (e.code === 'Escape' && !um.modal.classList.contains('hidden')) { e.stopImmediatePropagation(); closeUnlockModal(); }
+  }, true); // capture: beat the global Escape→title handler while the modal is up
   um.buy.onclick = async () => {
     if (!shopEnabled()) { um.msg.textContent = 'Checkout opens soon — hang tight! 🛒'; return; }
     um.msg.textContent = 'Opening checkout…';
@@ -317,7 +325,9 @@ const track = (event, props) => { try { window.posthog?.capture(event, props); }
 let OPP_LIST = PICKABLE;
 function oppListNow() {
   const w = localStorage.getItem('slapp_world') || 'day';
-  return ROSTER.filter((r) => !r.boss && (!r.world || r.world === w));
+  // dlc volunteers (the Wonders movement specimens) join the public pick only
+  // with the pack; campaigns still summon them by key, like bosses
+  return ROSTER.filter((r) => !r.boss && (!r.world || r.world === w) && (!r.dlc || owned('bruceslee')));
 }
 function openOppPick() {
   setState('SELECT_OPP');
@@ -475,10 +485,12 @@ function capturePortraits() {
         temp = new Opponent({ scene, world: phys.world, mat: phys.fleshMat, arch, showcase: true });
         head = temp.headPos();
       }
-      // ¾ close-up from front-left, eye level, a touch of headroom
+      // ¾ close-up from front-left, eye level, a touch of headroom. Far enough
+      // back that hoods, toppers and frizz can't swallow the lens (hooded and
+      // hatted casts used to render as a full-frame blob of their own costume)
       const facing = star.slapper ? 1 : -1;  // slappers face +x, volunteers −x
-      pcam.position.set(head.x + facing * 0.72, head.y + 0.08, head.z + 0.42);
-      pcam.lookAt(head.x, head.y - 0.02, head.z);
+      pcam.position.set(head.x + facing * 1.05, head.y + 0.12, head.z + 0.6);
+      pcam.lookAt(head.x, head.y - 0.06, head.z);
       stage.renderer.render(stage.scene, pcam);
       const side = Math.min(gl.width, gl.height);
       c2d.drawImage(gl, (gl.width - side) / 2, (gl.height - side) / 2, side, side, 0, 0, 180, 180);
@@ -490,6 +502,44 @@ function capturePortraits() {
   opponent = new Opponent({ scene, world: phys.world, mat: phys.fleshMat, arch: chosenArch || ROSTER[1] });
 }
 
+// launch (or RE-launch — the retry button lands here too) one tour challenge
+function startTourChallenge(ch) {
+  campaign.setActive(ch);
+  campaign.close();
+  ui.challengeBar(campaign.goalText());
+  track('tour_challenge_started', { id: ch.id, title: ch.title });
+  const arch = ch.opp ? ROSTER.find((r) => r.key === ch.opp) : null;
+  const launch = () => {
+    if (arch) { chosenArch = arch; startMatch(); }  // the challenge names its victim
+    else openOppPick();                             // "anybody" — player's choice
+  };
+  // story beats, once each (slapp_seen). Entering the Palm campaign for the
+  // FIRST time prepends the prologue (Bruce and the master, and the technique
+  // he died one percent short of). Named opponents launch first so their
+  // close-ups have a subject; the scene plays over the frozen faceoff.
+  // pin the tour's star slapper (Charlie/Bruce/…) so the 'YOU' voice + avatar
+  // match the story; grants free campaign-use of a locked DLC slapper.
+  if (ch.slapper) { const s = SLAPPERS.find((x) => x.key === ch.slapper); if (s) setLook(s); }
+  // a tour can pin its WORLD (Bruce fights in the dojo) — guarded until it ships
+  if (ch.world && stage.hasWorld(ch.world)) setWorldFull(ch.world);
+  let lines = [];
+  const proKey = (ch.tourKey || '') + '_prologue';
+  if (campaign.CUTSCENES[proKey] && !seenScene(proKey)) {
+    markScene(proKey);
+    lines.push(...campaign.CUTSCENES[proKey]);
+  }
+  const cine = campaign.CUTSCENES[ch.id];
+  if (cine && !seenScene(ch.id)) {
+    markScene(ch.id);
+    lines.push(...cine);
+  }
+  if (lines.length) {
+    lines = lines.map((l) => (l.who === 'YOU' ? { ...l, who: player.look.name } : l));
+    if (arch) { launch(); playScene(lines); }
+    else playScene(lines, launch);
+  } else launch();
+}
+
 function openTourMenu() {
   setState('TOUR');
   ui.showTitle(false);
@@ -497,47 +547,12 @@ function openTourMenu() {
   ui.bubble(null);
   restoreBar();
   capturePortraits();
-  campaign.open((ch) => {
-    campaign.setActive(ch);
-    campaign.close();
-    ui.challengeBar(campaign.goalText());
-    track('tour_challenge_started', { id: ch.id, title: ch.title });
-    const arch = ch.opp ? ROSTER.find((r) => r.key === ch.opp) : null;
-    const launch = () => {
-      if (arch) { chosenArch = arch; startMatch(); }  // the challenge names its victim
-      else openOppPick();                             // "anybody" — player's choice
-    };
-    // story beats, once each (slapp_seen). Entering the Palm campaign for the
-    // FIRST time prepends the prologue (Bruce and the master, and the technique
-    // he died one percent short of). Named opponents launch first so their
-    // close-ups have a subject; the scene plays over the frozen faceoff.
-    // pin the tour's star slapper (Charlie/Bruce/…) so the 'YOU' voice + avatar
-    // match the story; grants free campaign-use of a locked DLC slapper.
-    if (ch.slapper) { const s = SLAPPERS.find((x) => x.key === ch.slapper); if (s) setLook(s); }
-    // a tour can pin its WORLD (Bruce fights in the dojo) — guarded until it ships
-    if (ch.world && stage.hasWorld(ch.world)) setWorldFull(ch.world);
-    let lines = [];
-    const proKey = (ch.tourKey || '') + '_prologue';
-    if (campaign.CUTSCENES[proKey] && !seenScene(proKey)) {
-      markScene(proKey);
-      lines.push(...campaign.CUTSCENES[proKey]);
-    }
-    const cine = campaign.CUTSCENES[ch.id];
-    if (cine && !seenScene(ch.id)) {
-      markScene(ch.id);
-      lines.push(...cine);
-    }
-    if (lines.length) {
-      lines = lines.map((l) => (l.who === 'YOU' ? { ...l, who: player.look.name } : l));
-      if (arch) { launch(); playScene(lines); }
-      else playScene(lines, launch);
-    } else launch();
-  }, {
+  campaign.open(startTourChallenge, {
     portraits: tourPortraits,
     ownsDlc: owned('bruceslee'),
     onLocked: (tour) => openUnlockModal({
       name: tour.title.replace(/^\S+\s/, ''),
-      desc: "Bruce Slee's own storyline — and all six legends — ride with the Supporter Pack.",
+      desc: `${tour.acts.length} acts of "${tour.blurb}" — this storyline, every legend and every world ride with the Supporter Pack.`,
     }),
   });
   track('tour_opened', { cleared: campaign.progress().length });
@@ -640,6 +655,10 @@ function startAttempt() {
   resetChain();
   shotClock = arch.shotClock || 10; // bosses may run a tighter courtroom
   timeScale = 1;
+  prevHandSeg = null; // no stale sweep across attempts
+  // the goal banner returns for the swing (it hides at contact so it never
+  // sits on top of the flight distance ticker)
+  if (campaign.active) ui.challengeBar(campaign.goalText());
   ui.hideCards();
   ui.showTitle(false);
   ui.setAttempts(attempts, attempts.length);
@@ -674,8 +693,20 @@ function foul(type) {
 function onContact(hit) {
   const speed = player.handSpeed;
   const velDir = player.handVel.clone().normalize();
-  // slow grazes and backhand drift don't count as an attempt at a slap
-  if (speed < 2.2 || velDir.x < 0.15) return;
+  // slow grazes and backhand drift don't count as an attempt at a slap.
+  // One honest exception: on tall/deep matchups (Roy×Hoss) the palm's arc only
+  // reaches the cheek at the wrap-around, travelling sideways INTO the face —
+  // a real slap's follow-through. A fast palm driving into the head counts even
+  // with little +x left; without this the PERFECT swing whiffed and a 2.8 m/s
+  // rebound flail scored the "hit" instead.
+  if (speed < 2.2) return;
+  if (velDir.x < 0.15) {
+    // ≥3.5 m/s (not the full 6): on the deepest matchups the wrap is where the
+    // palm has slowed to 4-6 — the speed taper below prices that honestly
+    const into = hit.part === 'head' ? new THREE.Vector3().subVectors(hit.center, hit.point).normalize() : null;
+    const wrapSlap = !!(into && speed >= 3.5 && velDir.dot(into) >= 0.35);
+    if (!wrapSlap) return;
+  }
 
   // power is the PRODUCT of the chain links — technique is everything
   const lg = chain.l || gradeL(null);
@@ -731,6 +762,11 @@ function onContact(hit) {
   // coilExam: the mainspring only trips on a nearly-full wind-up (S/coil exam)
   const unwound = !!(opponent.arch.coilExam && !ugly && coilFrac < opponent.arch.coilExam / 100);
   if (unwound) power *= 0.40;
+  // headTurn (HORTON): power scales with how square the face is at contact —
+  // catch the turn incoming for a flush 1.1×; the back of the head barely counts
+  const facing = opponent.headFacing();
+  const turnedAway = !!(opponent.arch.headTurn && hit.part === 'head' && facing < 0.6);
+  if (opponent.arch.headTurn && hit.part === 'head') power *= facing;
   // secondWind (CHUCK NORTH): mortal for the first `delay` seconds of the swing —
   // strike in that quiet for full power. Once the crowd chants (tState past delay)
   // he becomes a STORY: a weak chain is shrugged (pre-cap), an 85%+ chain punches
@@ -761,6 +797,7 @@ function onContact(hit) {
     },
   };
   contact = { point: hit.point.clone(), power };
+  ui.challengeBar(null); // clear the lane for the flight ticker — it returns next attempt
   stage.spawnShock(hit.point);
   sfx.crack(Math.min(1, power / 22));
   sfx.gasp();
@@ -777,6 +814,8 @@ function onContact(hit) {
   else if (greased) ui.slapBurst('IT SLID OFF!', 'ONLY A PERFECT PALM GRIPS THE GREASE');
   else if (noSnap) ui.slapBurst('NO SNAP!', 'ONLY A CRACKING ARM — A FAST WHIP — MOVES THE MASTER');
   else if (unwound) ui.slapBurst('UNWOUND!', `WIND THE COIL PAST ${opponent.arch.coilExam}% OR THE SPRING NEVER TRIPS`);
+  else if (turnedAway) ui.slapBurst('BACK OF THE HEAD!', 'CATCH THE FACE MID-TURN, INCOMING — LIKE A LIGHTHOUSE');
+  else if (opponent.arch.headTurn && hit.part === 'head' && facing > 1.02) ui.slapBurst('CAUGHT THE TURN!', 'FLUSH ON THE INCOMING CHEEK');
   else if (hit.part === 'head') ui.smack('SLAPMANIA!', false);
   else ui.smack('BODY BLOW!', true);
   ui.showMeters(false);
@@ -925,7 +964,15 @@ function advance() {
                   : ` ⚔️ ${challenge.by}'s ${challenge.pts} PTS still stands. Run it back.`;
       track('challenge_result', { won, target: challenge.pts, scored: bestAttempt.pts, by: challenge.by });
     }
-    ui.showMatch({ bestAttempt, line, board, shareUrl: challengeUrl(bestAttempt) });
+    // a campaign card is a VERDICT, not a fairground scoreboard: it restates the
+    // goal, says CLEARED or FAILED in big letters, and offers retry/continue —
+    // no county boards, no share row, no "pick your next volunteer"
+    const tourCtx = campaign.active ? {
+      title: campaign.active.title,
+      goal: campaign.active.desc,
+      cleared: lastClearedId === campaign.active.id,
+    } : null;
+    ui.showMatch({ bestAttempt, line, board, shareUrl: challengeUrl(bestAttempt), tour: tourCtx });
     setupGlobalPanel(bestAttempt);
     setState('MATCH_END');
   } else {
@@ -1003,23 +1050,37 @@ function advanceScreens(code) {
     // never lingers as the quick-match default. Final bosses get their payoff
     // scene (the master rests / the verdict) before the menu returns.
     if (campaign.active) {
-      const failedId = !lastClearedId && !campaign.isDone(campaign.active.id) ? campaign.active.id : null;
+      const ch = campaign.active;
+      const clearedNow = lastClearedId === ch.id; // judged on THIS match, not old checkmarks
+      lastClearedId = null;
+      const you = (l) => (l.who === 'YOU' ? { ...l, who: player.look.name } : l);
+      if (!clearedNow) {
+        // FAILED: a short, humiliating beat — then straight back into the SAME
+        // challenge (the card's button said RETRY; ESC from the card = leave)
+        const escapeBeat = chosenArch && chosenArch.skiRun; // she made the gate — her victory lap plays, not a whiff joke
+        const pool = campaign.FAILS[ch.id[0]] || [];
+        const fail = escapeBeat ? campaign.ESCAPE_FAIL : (pool.length ? pool[failIdx++ % pool.length] : null);
+        const retry = () => startTourChallenge(ch);
+        if (fail) playScene(fail.map(you), retry, { sad: true });
+        else retry();
+        return true;
+      }
+      // CLEARED: finales get their payoff scene (the master rests / the verdict);
+      // every other clear earns a quick victory beat before the menu returns
       campaign.clearActive();
       if (chosenArch && chosenArch.boss) chosenArch = null;
       restoreBar();
-      const outro = lastClearedId && campaign.CUTSCENES['outro_' + lastClearedId];
-      const outroId = 'outro_' + lastClearedId;
-      lastClearedId = null;
+      const outroId = 'outro_' + ch.id;
+      const outro = campaign.CUTSCENES[outroId];
       if (outro && !seenScene(outroId)) {
         markScene(outroId);
-        playScene(outro, () => openTourMenu());
-      } else if (failedId) {
-        // the goal stood: a short, humiliating beat — camera on your slumped hero
-        const pool = campaign.FAILS[failedId[0]] || [];
-        const fail = pool.length ? pool[failIdx++ % pool.length] : null;
-        if (fail) playScene(fail.map((l) => (l.who === 'YOU' ? { ...l, who: player.look.name } : l)), () => openTourMenu(), { sad: true });
+        playScene(outro.map(you), () => openTourMenu());
+      } else {
+        const pool = campaign.WINS[ch.id[0]] || [];
+        const win = pool.length ? pool[winIdx++ % pool.length] : null;
+        if (win) playScene(win.map(you), () => openTourMenu());
         else openTourMenu();
-      } else openTourMenu();
+      }
       return true;
     }
     openOppPick();
@@ -1204,6 +1265,8 @@ function tick(now) {
       // officiated (campaign) matches: the judge's whistle IS the shot clock —
       // one long blast at the exact frame the 10 seconds start running
       if (campaign.active) { sfx.whistle('start'); ui.coach(null); }
+      // THE GREAT ESCAPE: the whistle is her cue too — she pushes off for the gate
+      if (opponent.arch.skiRun) opponent.beginEscape();
       surgeFired = false; // reset Chuck's Second Wind telegraph for this attempt
       setState('SWING');
     }
@@ -1278,18 +1341,28 @@ function tick(now) {
     else ui.coach(null);
 
     shotClock -= dts;
-    ui.setClock(shotClock);
+    ui.setClock(opponent.arch.skiRun ? null : shotClock); // her run IS the clock
     if (player.fallen) foul('footing');
-    else if (shotClock <= 0) foul('clock');
+    else if (opponent.escaped()) foul('escape'); // she made the gate — instant fail, no 10s grace
+    else if (shotClock <= 0 && !opponent.arch.skiRun) foul('clock');
     else if (player.handSeg && player.pUnlocked) {
       // OPEN PALM ONLY, literally: a closed hand doesn't register at all —
-      // the referee starts counting the instant the palm opens
+      // the referee starts counting the instant the palm opens.
       // rHand = the hand's TRUE reach past the wrist path (palm + fingers ≈ 0.14m).
       // It was 0.26 — a beach-ball hand that launched volunteers from visibly
       // short of the cheek. Contact now happens where contact LOOKS like it happens.
-      const hit = opponent.checkHit(player.handSeg.p0, player.handSeg.p1, 0.14);
+      // The honest radius needs an honest SWEEP: at 14 m/s the hand crosses
+      // 0.24m between frames — more than the contact margin on deep matchups —
+      // so we also test the tip's and heel's paths since last frame. Without
+      // this, whether Roy's perfect swing touched Hoss was 60fps roulette.
+      const { p0, p1 } = player.handSeg;
+      const hit = opponent.checkHit(p0, p1, 0.14)
+        || (prevHandSeg && opponent.checkHit(prevHandSeg.p1, p1, 0.14))
+        || (prevHandSeg && opponent.checkHit(prevHandSeg.p0, p0, 0.14));
+      if (prevHandSeg) { prevHandSeg.p0.copy(p0); prevHandSeg.p1.copy(p1); }
+      else prevHandSeg = { p0: p0.clone(), p1: p1.clone() };
       if (hit) onContact(hit);
-    }
+    } else prevHandSeg = null; // fist closed (or re-armed): never sweep across that gap
   } else if (state === 'IMPACT') {
     player.update(dts, keys);
     if (tState > 0.55) {

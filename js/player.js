@@ -137,6 +137,7 @@ export class Player {
     // baseX walks short-armed slappers closer so everyone can find the cheek.
     this.phys = { h: look.height || 1, arm: look.arm || 1, str: look.power || 1 };
     this.baseX = THREE.MathUtils.clamp(0.73 * (1 - this.phys.h * this.phys.arm), -0.15, 0.2);
+    this.baseX0 = this.baseX; // per-attempt reset reference
     this.rag = null;
     this.fallen = false;
 
@@ -685,6 +686,7 @@ export class Player {
     this.pUnlocked = false;
     this.lungeT = null;
     this.lungeAmt = 0;
+    this.baseX = this.baseX0; // fresh attempt, physique stance — setStanceDepth re-steps at the whistle
     this.root.position.x = this.baseX;
     this.root.visible = true;
     this.pose();
@@ -732,6 +734,7 @@ export class Player {
     // dir.y already saturates at lift 0.33 — so this is reach, not balance.
     this.strikeLift = THREE.MathUtils.clamp(Math.asin(s), -0.35, 0.9);
   }
+
 
   // a fresh S press after a spent swing re-holsters everything: arm back to
   // the cocked fist, locks re-engaged, stance reset — an independent new slap
