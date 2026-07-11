@@ -864,7 +864,10 @@ function onContact(hit, fist) {
   // arm's extra mass (armMass) offsets its lower speed → a short committed
   // strike still lands hard (the Lil' Dynamite short-range-bruiser tradeoff).
   const MOM_REF = 10;
-  power *= THREE.MathUtils.clamp(0.3 + 0.7 * player.armMass * speed / MOM_REF, 0.35, 1.6);
+  // + a speed-INDEPENDENT effective-mass floor: a heavy hand carries momentum
+  // even at low speed, so a giant arm's short/slow strike still bites (base
+  // armMass 1 → +0, unchanged). Sharpens the Dynamite short-range identity.
+  power *= THREE.MathUtils.clamp(0.3 + 0.7 * player.armMass * speed / MOM_REF + 0.12 * (player.armMass - 1), 0.35, 1.7);
   // EXTENSION BELL — force transfers best when the arm connects near FULL
   // extension (peak reach + hand speed). A bell centred where a well-timed palm
   // lands (~0.93 of the elbow's range) → PERFECT is 1.0 (base roster unchanged);
@@ -991,6 +994,7 @@ function onContact(hit, fist) {
   // every body's linear velocity (hence the measured distance + the caps)
   // completely untouched; the flight is identical, only the tumble is honest.
   const cog = opponent.pelvisPos(); // the body's approximate center of gravity
+  if (opponent.arch.cogY != null) cog.y = opponent.arch.cogY; // exotic builds (floating head, top-heavy) can override the lever
   const r = new THREE.Vector3(hit.point.x - cog.x, hit.point.y - cog.y, hit.point.z - cog.z);
   // scale the tumble by the LAUNCH IMPULSE (power), not the ~constant hand speed,
   // so a feeble graze barely turns them while a monster slap somersaults them —

@@ -209,7 +209,12 @@ export function createRagdoll({ world, scene, mat, x = 0, z = 0, skin = 0xd9a066
         if (spin) body.angularVelocity.set(spin.x + (r() - 0.5) * 0.8, spin.y + (r() - 0.5) * 0.8, spin.z + (r() - 0.5) * 0.8);
         else body.angularVelocity.set((r() - 0.5) * 2.5, (r() - 0.5) * 2.5, speed * 0.25 * (0.8 + r() * 0.4));
       });
-      parts.head.body.velocity.scale(1.1, parts.head.body.velocity);
+      // HEAD LEADS, TORSO FOLLOWS, PELVIS ANCHORS — a real lead-and-drag whiplash:
+      // the head snaps out fastest, the enabled neck/spine constraints then drag
+      // the trailing body along. The pelvis (the distance proxy) keeps the base
+      // launch velocity, so the measured flight + caps are unchanged.
+      parts.head.body.velocity.scale(1.2, parts.head.body.velocity);
+      parts.torso.body.velocity.scale(1.06, parts.torso.body.velocity);
     },
     topple(dirX) {
       dynamize();
