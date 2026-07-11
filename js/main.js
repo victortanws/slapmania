@@ -804,7 +804,10 @@ function onContact(hit, fist) {
     return;
   }
   if (speed < 2.2) return;
-  if (velDir.x < 0.15) {
+  // KARATE CHOP: a downward edge-strike — its hand velocity points DOWN, so it
+  // must bypass the forward-velocity gate below (built for horizontal slaps).
+  const chop = !fist && player.mode === 'chop';
+  if (velDir.x < 0.15 && !chop) {
     // ≥3.5 m/s (not the full 6): on the deepest matchups the wrap is where the
     // palm has slowed to 4-6 — the speed taper below prices that honestly
     const into = hit.part === 'head' ? new THREE.Vector3().subVectors(hit.center, hit.point).normalize() : null;
@@ -841,7 +844,10 @@ function onContact(hit, fist) {
   // EXCEPT on a bodyBlow boss (THE CLOSED FIST school): there the forbidden FIST
   // IS the flush hit (lands like a good palm), and the open palm is no-sold below.
   const fistSweet = (fist && opponent.arch.bodyBlow) ? (hit.part === 'head' ? 1.15 : 0.7) : 0.6;
-  const sweet = (fist ? fistSweet : (hit.part === 'head' ? 1.35 : 0.6)) * cq;
+  // a CHOP is an edge strike to the CROWN — its sweet spot is the top of the head
+  // (a downward spike), a hair under a flush slap; a chop to the body is a thud.
+  const sweet = chop ? (hit.part === 'head' ? 1.2 : 0.55) * cq
+    : (fist ? fistSweet : (hit.part === 'head' ? 1.35 : 0.6)) * cq;
   // real slap physics: force comes up from the ground through a BRACED stance.
   // A teetering slapper can't drive the blow — the worse the visible lean at
   // contact, the softer the slap (up to −45% at the tipping point)
@@ -974,7 +980,13 @@ function onContact(hit, fist) {
   // and in tension with cq, which rewards the CENTER: you trade a little flush
   // force for a steeper arc. Reading the cheek height now pays two ways.
   let arcTag = null;
-  if (fist) {
+  if (chop) {
+    // a CHOP SPIKES DOWN — it drives the volunteer into the ground (a short, brutal
+    // spike + bounce), the opposite of the slap's long outward arc. Little forward.
+    dir.x = 0.28;
+    dir.z = THREE.MathUtils.clamp(velDir.z * 0.1, -0.2, 0.2);
+    dir.y = -THREE.MathUtils.clamp(0.42 + player.strikeLift * 0.25, 0.3, 0.72);
+  } else if (fist) {
     dir.y = 0.15;
   } else {
     const dyN = hit.part === 'head'

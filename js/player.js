@@ -174,7 +174,11 @@ export class Player {
       shoulder: { a: 0.5, v: 0, rest: 0.5, k: 16, c: 1.6, min: -1.6, max: 2.0 },
       elbow:    { a: 1.2, v: 0, rest: 1.2, k: 12, c: 1.8, min: 0.06, max: 2.3 },
       wrist:    { a: 0.9, v: 0, rest: 0.9, k: 15, c: 2.0, min: -0.3, max: 1.1 },
+      // KARATE CHOP: a physics-driven VERTICAL raise/drop DOF (drives shoulderG.z
+      // directly in chop mode). Unused in slap mode (held at rest).
+      shoulderPitch: { a: 0.42, v: 0, rest: 0.42, k: 14, c: 1.6, min: -0.55, max: 1.95 },
     };
+    this.mode = 'slap'; // 'slap' | 'chop' — chop remaps S·L·A·P to a downward edge-strike
     this.lean = 0;
     this.leanV = 0;
 
@@ -724,7 +728,7 @@ export class Player {
     if (this.rag) { this.rag.remove(); this.rag = null; }
     this.fallen = false;
     // idle stance: arm hanging loose at the side — it only cocks up when coiling
-    const rests = { spine: 0, shoulder: 0.5, elbow: 0.35, wrist: 0.9 };
+    const rests = { spine: 0, shoulder: 0.5, elbow: 0.35, wrist: 0.9, shoulderPitch: 0.42 };
     for (const n in this.j) { this.j[n].a = rests[n]; this.j[n].v = 0; }
     this.armLift = -1.15;
     this._armed = false;
@@ -844,8 +848,10 @@ export class Player {
     if (!this.lFired && keys.l) this.lFired = true;
     if (!this.aUnlocked && keys.a) {
       this.aUnlocked = true;
-      // the whip: torso speed at the unlock moment slings into the shoulder
-      this.j.shoulder.v += Math.min(0, this.j.spine.v) * 0.4 / this.armInertia; // a heavy arm gains less ω from the torso whip
+      // the whip: the driver's speed at unlock slings into the next link. SLAP:
+      // torso→shoulder. CHOP: the arm's DROP velocity→the forearm (the snap down).
+      if (this.mode === 'chop') this.j.elbow.v += Math.min(0, this.j.shoulderPitch.v) * 0.5 / this.armInertia;
+      else this.j.shoulder.v += Math.min(0, this.j.spine.v) * 0.4 / this.armInertia; // a heavy arm gains less ω from the torso whip
     }
     if (!this.pUnlocked && keys.p) this.pUnlocked = true;
 
@@ -853,12 +859,24 @@ export class Player {
     // harder → a faster hand (a mild coupling; the big strength lever stays in
     // the power formula, this just adds "strong = quicker" realism)
     const strT = 0.8 + 0.2 * this.phys.str;
-    const t = { spine: 0, shoulder: 0, elbow: 0, wrist: 0 };
-    if (keys.s) t.spine += 75 * strT;       // coil the torso back (beats the spring to full coil in ~1s)
-    // hip drive is only worth anything if you actually coiled the spine first
-    if (keys.l) t.spine -= (12 + 16 * Math.max(0, this.j.spine.a)) * strT;
-    if (this.aUnlocked && keys.a) t.shoulder -= 34 * strT;
-    if (this.pUnlocked && keys.p) { t.elbow -= 210 * strT; t.wrist -= 170 * strT; }
+    const t = { spine: 0, shoulder: 0, elbow: 0, wrist: 0, shoulderPitch: 0 };
+    if (this.mode === 'chop') {
+      // KARATE CHOP — a vertical, edge-of-hand DOWNWARD strike. Same 4-beat rhythm:
+      // S = RAISE the arm overhead (cock, holds on release like the coil);
+      // L = the WEIGHT-DROP trigger (drives it down + throws body weight in);
+      // A = snap the FOREARM down; P = roll the hand edge-on. Peak hand velocity
+      // is DOWNWARD — handVel captures it, so the power formula works unchanged.
+      if (keys.s) t.shoulderPitch += 80 * strT;
+      if (keys.l) { t.shoulderPitch -= (16 + 26 * Math.max(0, this.j.shoulderPitch.a)) * strT; this.leanV += 1.1 * dt; }
+      if (this.aUnlocked && keys.a) t.elbow -= 150 * strT;
+      if (this.pUnlocked && keys.p) t.wrist -= 170 * strT;
+    } else {
+      if (keys.s) t.spine += 75 * strT;       // coil the torso back (beats the spring to full coil in ~1s)
+      // hip drive is only worth anything if you actually coiled the spine first
+      if (keys.l) t.spine -= (12 + 16 * Math.max(0, this.j.spine.a)) * strT;
+      if (this.aUnlocked && keys.a) t.shoulder -= 34 * strT;
+      if (this.pUnlocked && keys.p) { t.elbow -= 210 * strT; t.wrist -= 170 * strT; }
+    }
 
     // after releasing S the body HOLDS the coiled pose until L fires the hips —
     // the whip waits for the player instead of evaporating in 300ms. The coil
@@ -868,21 +886,31 @@ export class Player {
 
     for (const n in this.j) {
       const J = this.j[n];
-      // locked joints ride rigidly on the torso — no free spring energy
-      if (n === 'spine' && spineGated) { J.v = 0; J.a = Math.max(0, J.a - 0.55 * dt); continue; }
-      if (n === 'shoulder' && !this.aUnlocked) { J.v = 0; continue; }
-      if (n === 'elbow' && !this.pUnlocked) {
-        J.v = 0;
-        // a THROWN fist EXTENDS the arm — a punch reaches (target ~0.45, mostly
-        // straight). Only an armed-but-not-yet-thrown arm stays folded (1.2), idle
-        // 0.35. Without this the closed-fist body blow stopped ~7cm short of the
-        // cheek and whiffed on any timing wobble. The palm (P) still extends
-        // further (toward 0.06), keeping its reach edge.
-        const target = this.aUnlocked ? 0.45 : (this._armed ? 1.2 : 0.35);
-        J.a += (target - J.a) * Math.min(1, 8 * dt);
-        continue;
+      // locked joints ride rigidly — no free spring energy. CHOP has its own locks.
+      if (this.mode === 'chop') {
+        // shoulderPitch HOLDS raised after S-release until L (the coil analog);
+        // the unused horizontal DOFs sit still; elbow unlocks on A, wrist on P.
+        if (n === 'shoulderPitch') { if (spineGated) { J.v = 0; J.a = Math.max(J.rest, J.a - 0.55 * dt); continue; } }
+        else if (n === 'spine' || n === 'shoulder') { J.v = 0; continue; }
+        else if (n === 'elbow' && !this.aUnlocked) { J.v = 0; continue; }
+        else if (n === 'wrist' && !this.pUnlocked) { J.v = 0; continue; }
+      } else {
+        if (n === 'shoulderPitch') { J.v = 0; continue; } // unused in slap — stays at rest
+        else if (n === 'spine' && spineGated) { J.v = 0; J.a = Math.max(0, J.a - 0.55 * dt); continue; }
+        else if (n === 'shoulder' && !this.aUnlocked) { J.v = 0; continue; }
+        else if (n === 'elbow' && !this.pUnlocked) {
+          J.v = 0;
+          // a THROWN fist EXTENDS the arm — a punch reaches (target ~0.45, mostly
+          // straight). Only an armed-but-not-yet-thrown arm stays folded (1.2), idle
+          // 0.35. Without this the closed-fist body blow stopped ~7cm short of the
+          // cheek and whiffed on any timing wobble. The palm (P) still extends
+          // further (toward 0.06), keeping its reach edge.
+          const target = this.aUnlocked ? 0.45 : (this._armed ? 1.2 : 0.35);
+          J.a += (target - J.a) * Math.min(1, 8 * dt);
+          continue;
+        }
+        else if (n === 'wrist' && !this.pUnlocked) { J.v = 0; continue; }
       }
-      if (n === 'wrist' && !this.pUnlocked) { J.v = 0; continue; }
       // the weapon arm (shoulder/elbow/wrist) carries the rotational inertia;
       // the spine is the torso/core, unaffected by arm size. τ = I·α.
       const I = n === 'spine' ? 1 : this.armInertia;
@@ -942,6 +970,21 @@ export class Player {
   }
 
   pose() {
+    if (this.mode === 'chop') {
+      // vertical strike plane: the arm raises overhead and chops DOWN, driven by
+      // shoulderPitch (physics), not the kinematic armLift lerp. Horizontal DOFs
+      // stay near neutral so it's a clean downward arc.
+      this.torsoG.rotation.y = 0;
+      this.headMesh.rotation.y = 0;
+      this.shoulderG.rotation.y = 0.15;
+      this.shoulderG.rotation.z = this.j.shoulderPitch.a; // + = overhead, − = chopped down
+      this.elbowG.rotation.y = this.j.elbow.a;
+      this.handG.rotation.y = -(0.9 - this.j.wrist.a) * 0.4;
+      const curl = 1.45 * (1 - this.wristOpen);
+      if (this.fingers) this.fingers.forEach((fg) => { fg.rotation.y = curl; });
+      this.root.rotation.z = -this.lean * 0.5;
+      return;
+    }
     this.torsoG.rotation.y = this.j.spine.a;
     this.headMesh.rotation.y = -this.j.spine.a * 0.6; // keeps his eyes on the target
     this.shoulderG.rotation.y = this.j.shoulder.a + 0.35;
