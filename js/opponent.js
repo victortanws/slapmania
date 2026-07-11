@@ -253,12 +253,12 @@ export const ROSTER = [
     taunts: ['Mountains ask ME for advice.', 'I have never taken a single step.'],
   },
   {
-    key: 'dale', name: 'DODGY DALE', tag: 'BOSS · SLIPPERY', boss: true,
-    w: 0.85, h: 1.02, mass: 0.9, noStache: true, weave: true,
+    key: 'dale', name: 'DODGY DALE', tag: 'BOSS · CALLS HIS CHEEK', boss: true,
+    w: 0.85, h: 1.02, mass: 0.9, noStache: true, weave: true, calledShot: { margin: 0.02, cqMin: 95 },
     skin: 0xdcae85, shirt: 0x2b2b33, pants: 0xd83a3a,
     hat: 'band', hatCol: 0xd83a3a, hair: 'frizz', hairCol: 0xb9b3ac,
-    pickLine: 'Never been slapped. Time the sway, sugar.',
-    taunts: ['Swing and a miss.', 'My cheek is a moving target.'],
+    pickLine: 'Never been slapped. He will even tell you WHERE. Sugar.',
+    taunts: ['HIGH cheek. Told you. Still missed.', 'I call it, you miss it. The system works.', 'Four hundred palms. One jar of tears.'],
   },
   // -- SAVE THE FAIR bosses: each one examines a different skill --
   {
@@ -317,14 +317,27 @@ export const ROSTER = [
     taunts: ['Your arm is asleep. Wake it.', 'Faster. The mantis does not lecture twice.'],
   },
   {
-    key: 'clockwork', name: 'TICK-TOCK TOM', tag: 'BOSS · FULLY WOUND', boss: true,
-    w: 1.1, h: 1.02, mass: 1.3, coilExam: 85,
-    // a brass carnival automaton: the wind-up key on his back is the signature gag
-    skin: 0xc9a24b, shirt: 0x9a7a34, pants: 0x6e5626,
-    windKey: true, paintedGrin: 0xc0202a, brow: true,
-    pickLine: 'Wind him ALL the way, or the mainspring never trips.',
-    taunts: ['Tick... tick... not yet.', 'Half a wind is no wind at all.'],
-  },
+      key: 'clockwork', name: 'TICK-TOCK TOM', tag: 'BOSS · UNSLAPPABLE (SELF-DECLARED)', boss: true,
+      w: 1.1, h: 1.02, mass: 3.2,   // solid brass all the way through — slopunit-class tonnage in a carnival body
+      bounce: { period: 0.8, height: 0.16 },   // bounces in place — a confidence display, not a dodge
+      // BULWARK: cumulative points across the match's 3 attempts fill a hidden
+      // meter; the HUD chip shows the inverse ('IMMOVABILITY: 97%'). At zero the
+      // mainspring lets go and he BLOWS AWAY downrange on a stored impulse.
+      bulwark: { threshold: 900, label: 'IMMOVABILITY' },
+      skin: 0xc9a24b, shirt: 0x9a7a34, pants: 0x6e5626,
+      windKey: true, paintedGrin: 0xc0202a, brow: true,
+      pickLine: 'Declares himself UNSLAPPABLE. The meter disagrees. Slowly.',
+      taunts: [
+        'UNSLAPPABLE. I had it engraved. On myself.',
+        'Tick. Tock. Still here.',
+        'I absorbed that one. I absorb ALL of them. It is called posture.',
+        'Was that a slap or a suggestion?',
+        'Ninety-seven percent immovable. The three percent is paint.',
+        'Hear the mainspring laughing? Tick. Tick. That is laughter.',
+        'Bouncing is not dodging. Bouncing is CONFIDENCE.',
+        'The last man to move me was a licensed piano mover. He had a DOLLY.',
+      ],
+    },
   {
     // key is 'chuckboss' (NOT 'chucknorth') — the DLC slapper already owns that key;
     // this is the same legend in boss form, so the display NAME stays CHUCK NORTH
@@ -375,20 +388,31 @@ export const ROSTER = [
     skin: 0xeecfa8, shirt: 0xd8232e, pants: 0xd8232e, noSkirt: true, // solid red — hoop stripes read as Waldo
     hair: 'pony', hairCol: 0xd9a441, fringe: true, hat: 'beanie', hatCol: 0xf2ede1, bandCol: 0xd8232e,
     goggles: 0xff8c1a,
-    pickLine: 'Four golds. Three world records. One energy drink. Zero slaps taken.',
+    pickLine: 'Four golds. Three records. Two federations. Zero slaps taken.',
     taunts: ['I dodge trees at eighty. You are slower than a tree.', 'Is the county in slow motion, or is that just you?'],
   },
   {
-    key: 'avaskis', name: 'AVALANCHE EILEEN', tag: 'BOSS · FULL SEND', boss: true,
+    key: 'avaskis', name: 'AVALANCHE EILEEN', tag: 'BOSS · DEMO SPEED', boss: true,
     w: 0.8, h: 1.0, mass: 0.9, female: true, noStache: true, busty: true,
     // same red jumpsuit + beanie, goggles DOWN, skis on (skirt suppressed so they show)
     skin: 0xeecfa8, shirt: 0xd8232e, pants: 0xd8232e, noSkirt: true, // solid red — hoop stripes read as Waldo
     hair: 'pony', hairCol: 0xd9a441, fringe: true, hat: 'beanie', hatCol: 0xf2ede1, bandCol: 0xd8232e,
     goggles: 0xff8c1a, gogglesDown: true,
     skis: true, skiRun: { speed: 1.7, startX: 9, exitX: -8 },
-    pickLine: 'She is DONE being slapped. One run, straight past you, out the gate.',
-    taunts: ['Grass is just slow snow.', "Don't take it personally — I'm not dodging you. I'm LEAVING you."],
+    pickLine: 'Demo speed, brake through the pocket. She is teaching, not fleeing.',
+    taunts: ['Grass is just slow snow.', 'I sandbag for children and new sports. You qualify twice.'],
   },
+  {
+      key: 'avafullsend', name: 'AVALANCHE EILEEN', tag: 'BOSS · COMPETITION SPEED', boss: true,
+      w: 0.8, h: 1.0, mass: 0.9, female: true, noStache: true, busty: true,
+      // same red jumpsuit + beanie, goggles DOWN, skis on — but this run is REAL
+      skin: 0xeecfa8, shirt: 0xd8232e, pants: 0xd8232e, noSkirt: true,
+      hair: 'pony', hairCol: 0xd9a441, fringe: true, hat: 'beanie', hatCol: 0xf2ede1, bandCol: 0xd8232e,
+      goggles: 0xff8c1a, gogglesDown: true,
+      skis: true, skiRun: { speed: 2.7, startX: 10, exitX: -8, noBrake: true, twoLine: { z: 0.55, blendX: 3, delayB: 0.4 } },
+      pickLine: 'No brake, no second pass. Read the push-off, own the pocket.',
+      taunts: ['The pocket is one second wide. My schedule is tighter.', 'I have outrun three federations. You have a palm.'],
+    },
   // ROSTER, js/opponent.js — commedia bosses
   {
     key: 'cato', name: 'CUSTODIAN CATO', tag: 'BOSS · THE MOUNTAIN GATE', boss: true,
@@ -1438,7 +1462,7 @@ export class Opponent {
       this.animateShowcase();
     } else {
       const A = this.arch;
-      const gimmick = A.weave || A.skiRun || A.hop || A.sway || A.headTurn || A.bjj;
+      const gimmick = A.weave || A.skiRun || A.hop || A.sway || A.headTurn || A.bjj || A.bounce;
       if (!gimmick) {
         // every volunteer BREATHES: a slow, readable rise-and-fall of the cheek
         // (~4.5s period, ±5cm). Never enough to whiff — but a flush hit wants
@@ -1464,13 +1488,19 @@ export class Opponent {
         if (this.runX === undefined) this.runX = sr.startX;
         if (this.escaping && this.runX > sr.exitX - 3) {
           // two-speed line: full send outside the ring, a 45% brake-check through
-          // it. She stops mattering a few meters past the gate — no skiing to
-          // infinity behind the foul banner.
-          const v = Math.abs(this.runX) < 1.4 ? sr.speed * 0.55 : sr.speed;
+          // it — unless noBrake (competition speed: the pocket is one second wide).
+          // twoLine (v2) holds line B at the start for one extra pole-plant.
+          const held = sr.twoLine && this.runLine === 1 && this.runT === undefined && (this.holdT = (this.holdT || 0) + dt) < sr.twoLine.delayB;
+          const v = held ? 0 : (!sr.noBrake && Math.abs(this.runX) < 1.4) ? sr.speed * 0.55 : sr.speed;
           this.runX -= v * dt;
         }
         const x = this.runX;
-        const carve = Math.sin((this.time * 2.2)) * 0.28 * Math.min(1, Math.abs(x) / 3); // straightens in the pocket
+        const tl = sr.twoLine;
+        const amp = tl ? tl.z : 0.28;
+        const phase = tl && this.runLine === 1 ? Math.PI : 0;
+        const blend = Math.min(1, Math.abs(x) / (tl ? tl.blendX : 3));
+        const carve = Math.sin(this.time * 2.2 + phase) * amp * blend
+          + (tl ? (this.runLine === 1 ? -1 : 1) * tl.z * (1 - Math.min(1, Math.abs(x - sr.startX) / 2)) : 0); // push-off side announces the line
         const P = this.rag.parts;
         for (const n in this.basePose) {
           P[n].body.position.x = this.basePose[n].p.x + x;
@@ -1481,12 +1511,13 @@ export class Opponent {
         this.rag.sync();
         this.syncHat();
       }
-      if (A.hop) {
+      if (A.hop || A.bounce) {
         // PERPETUAL MOTION: a parabolic bounce, feet find the dirt once per
         // period — the cheek is only at swing height around each landing.
         // Deterministic; time the whip for the touchdown.
-        const ph = (this.time % A.hop.period) / A.hop.period;
-        const yOff = A.hop.height * 4 * ph * (1 - ph);
+        const hp = A.hop || A.bounce;
+        const ph = (this.time % hp.period) / hp.period;
+        const yOff = hp.height * 4 * ph * (1 - ph);
         const P = this.rag.parts;
         for (const n in this.basePose) P[n].body.position.y = this.basePose[n].p.y + yOff;
         if (this.hatBody && this.hatOff) this.hatBody.position.copy(P.head.body.position.vadd(this.hatOff));

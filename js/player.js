@@ -131,6 +131,13 @@ export const SLAPPERS = [
     height: 1.0, arm: 1.02, power: 0.96,   // an everyman — the campaign is about honesty, not tonnage
     locked: true, price: 4,
   },
+  {
+      key: 'dario', name: 'DR. DARIO SLAPMODEI', desc: 'Wrote the safety memos. Nobody read them. The palm, however, scales.',
+      skin: 0xe6c0a0, shirt: 0x3f5a7a, pants: 0x6e6a5e,   // plain steel-blue oxford, khaki slacks — no hoodie in this valley
+      hair: 'frizz', hairCol: 0x241d18, beard: null,       // dark curls, clean-shaven
+      height: 0.97, arm: 1.03, power: 1.04,
+      locked: true, price: 4,
+    },
 ];
 
 // The slapper. Pre-contact he is NOT physics-engine driven: each joint is a scalar

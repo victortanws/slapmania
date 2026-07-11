@@ -38,6 +38,20 @@ export function refBar(text) {
   el.refBar.classList.remove('hidden');
 }
 
+// Tick-Tock's IMMOVABILITY chip — top-anchored under the goal banner (never on refBar)
+export function bulwark(pct) {
+  let el2 = document.getElementById('bulwarkChip');
+  if (!el2) {
+    el2 = document.createElement('div');
+    el2.id = 'bulwarkChip';
+    el2.style.cssText = 'position:absolute;top:150px;left:0;right:0;margin:0 auto;width:fit-content;background:#3a2a10;border:3px solid var(--yellow);color:#ffd23f;font-size:13px;letter-spacing:1px;padding:5px 14px;border-radius:9px;box-shadow:4px 4px 0 rgba(0,0,0,.5);z-index:40;text-align:center;';
+    document.getElementById('hud') ? document.getElementById('hud').appendChild(el2) : document.body.appendChild(el2);
+  }
+  if (pct == null) { el2.style.display = 'none'; return; }
+  el2.style.display = '';
+  el2.textContent = pct <= 0 ? 'SPRUNG!' : `IMMOVABILITY: ${pct}%`;
+}
+
 // a rival's gauntlet, pinned under the topbar for the whole session
 export function challengeBar(text) {
   if (!text) { el.challengeBar.classList.add('hidden'); return; }

@@ -73,6 +73,8 @@ let failIdx = 0;          // rotates the failure-scene pool
 let winIdx = 0;           // rotates the victory-beat pool
 let prevHandSeg = null;   // last frame's palm segment — the contact test sweeps from it
 let tookTakedown = false; // Slopberg caught a slap mid-REACH this match — the fail beat knows
+let bulwarkPts = 0;       // Tick-Tock v2: cumulative points this MATCH — the IMMOVABILITY meter
+let calledHigh = null;    // Dale's called cheek half this attempt (true=HIGH), null = no call
 function restoreBar() { ui.challengeBar(rivalBarText); }
 let pickIndex = 0;
 let pickHighlight = null;
@@ -370,6 +372,8 @@ function openOppPick() {
 
 function startMatch() {
   tookTakedown = false;
+  bulwarkPts = 0;
+  ui.bulwark(null);
   attempts = [];
   submitted = false;
   if (!chosenArch) chosenArch = ROSTER[1];
@@ -400,6 +404,7 @@ function goToTitle() {
   ui.coach(null);
   ui.setAttempts(attempts, 0);
   ui.refBar(null);
+  ui.bulwark(null);
   dlg.stop();
   campaign.close();
   campaign.clearActive();
@@ -452,6 +457,16 @@ let refLineIdx = 0;
 // menu and every cutscene replays (nothing marked seen), so the whole story is
 // viewable end to end without clearing progress or owning the pack.
 const TOURDEV = new URLSearchParams(location.search).get('tourdev') === '1';
+// one-time migration: these scenes were rewritten (narrative overhaul) — clear
+// their seen-marks so existing players get the new versions
+if (!localStorage.getItem('slapp_mig1')) {
+  try {
+    const RESEEN = ['w2c3','w3c3','outro_w3c3','o1c1','o1c2','o1c3','o2c1','o2c2','o2c3','o2c4','o3c1','o3c2','o3c3','outro_o3c3','olympicbid_prologue','f1c1','f1c2','f1c3','f2c1','f2c2','f3c1','f4c1','f4c2','outro_f4c2','v3c1','a3c3'];
+    const seen = JSON.parse(localStorage.getItem('slapp_seen') || '[]').filter((id) => !RESEEN.includes(id));
+    localStorage.setItem('slapp_seen', JSON.stringify(seen));
+  } catch {}
+  localStorage.setItem('slapp_mig1', '1');
+}
 const seenScene = (id) => !TOURDEV && JSON.parse(localStorage.getItem('slapp_seen') || '[]').includes(id);
 const markScene = (id) => {
   if (TOURDEV) return; // the testing lens never consumes first-views
@@ -687,6 +702,8 @@ function startAttempt() {
   shotClock = arch.shotClock || 10; // bosses may run a tighter courtroom
   timeScale = 1;
   prevHandSeg = null; // no stale sweep across attempts
+  opponent.runLine = attempts.length % 2; // skiRun v2: line A / line B, announced by her push-off side
+  calledHigh = arch.calledShot ? attempts.length % 2 === 0 : null; // Dale calls HIGH, LOW, HIGH
   // (tookTakedown persists across attempts — the match-end beat wants to know it happened)
   // the goal banner returns for the swing (it hides at contact so it never
   // sits on top of the flight distance ticker)
@@ -811,6 +828,14 @@ function onContact(hit, fist) {
   const facing = opponent.headFacing();
   const turnedAway = !!(opponent.arch.headTurn && hit.part === 'head' && facing < 0.6);
   if (opponent.arch.headTurn && hit.part === 'head') power *= facing;
+  // calledShot (DODGY DALE): he calls a cheek half before the swing — only a
+  // flush hit inside the called half counts full. Aim is the exam: high/low
+  // reads off hit.point.y vs the head center; cq prices the flushness.
+  const cs = opponent.arch.calledShot;
+  const csDy = hit.part === 'head' ? hit.point.y - hit.center.y : 0;
+  const inCalledHalf = calledHigh === null || (calledHigh ? csDy >= cs.margin : csDy <= -cs.margin);
+  const wrongCheek = !!(cs && !ugly && !fist && hit.part === 'head' && (!inCalledHalf || Math.round(cq * 100) < cs.cqMin));
+  if (wrongCheek) power *= 0.2;
   // secondWind (CHUCK NORTH): mortal for the first `delay` seconds of the swing —
   // strike in that quiet for full power. Once the crowd chants (tState past delay)
   // he becomes a STORY: a weak chain is shrugged (pre-cap), an 85%+ chain punches
@@ -860,6 +885,7 @@ function onContact(hit, fist) {
   else if (noSnap) ui.slapBurst('NO SNAP!', 'ONLY A CRACKING ARM — A FAST WHIP — MOVES THE MASTER');
   else if (unwound) ui.slapBurst('UNWOUND!', `WIND THE COIL PAST ${opponent.arch.coilExam}% OR THE SPRING NEVER TRIPS`);
   else if (turnedAway) ui.slapBurst('BACK OF THE HEAD!', 'CATCH THE FACE MID-TURN, INCOMING — LIKE A LIGHTHOUSE');
+  else if (wrongCheek) ui.slapBurst('WRONG CHEEK!', calledHigh ? 'HE CALLED HIGH — UPPER HALF, FLUSH' : 'HE CALLED LOW — LOWER HALF, FLUSH');
   else if (opponent.arch.headTurn && hit.part === 'head' && facing > 1.02) ui.slapBurst('CAUGHT THE TURN!', 'FLUSH ON THE INCOMING CHEEK');
   else if (hit.part === 'head') ui.smack('SLAPMANIA!', false);
   else ui.smack('BODY BLOW!', true);
@@ -921,12 +947,22 @@ function showResult() {
     }
   }
   // tour goals are judged per attempt, from numbers this function already has
+  if (opponent.arch.bulwark && !isFoul) {
+    // TICK-TOCK v2: every point stays landed — the meter only goes down
+    bulwarkPts += pts;
+    const th = opponent.arch.bulwark.threshold;
+    const pct = Math.max(0, Math.ceil(100 - bulwarkPts / (th / 100)));
+    ui.bulwark(pct);
+    if (pct <= 0) { ui.slapBurst('SPRUNG!', 'THE MAINSPRING LETS GO — UNSLAPPABLE, REVISED'); sfx.fanfare(); stage.shake(0.5); }
+    else ui.slapBurst('ABSORBED!', `IMMOVABILITY ${pct}% — EVERY POINT STAYS LANDED`);
+  }
   if (campaign.active) {
     const cleared = campaign.checkAttempt({
       dist, pts,
       part: slap && !isFoul ? slap.part : null,
       chainPct: slap && slap.chain ? slap.chain.pct : 0,
       oppKey: arch.key,
+      bulwarkPts,
     });
     if (cleared) {
       line = `🎪 ${cleared.title} — CLEAR! ` + line;
@@ -1317,6 +1353,8 @@ function tick(now) {
       if (campaign.active) { sfx.whistle('start'); ui.coach(null); }
       // THE GREAT ESCAPE: the whistle is her cue too — she pushes off for the gate
       if (opponent.arch.skiRun) opponent.beginEscape();
+      if (calledHigh !== null) ui.slapBurst(calledHigh ? 'DALE CALLS: HIGH CHEEK!' : 'DALE CALLS: LOW CHEEK!', 'ONLY THE CALLED HALF COUNTS — LAND IT FLUSH');
+      if (opponent.arch.bulwark) ui.bulwark(Math.max(0, Math.ceil(100 - bulwarkPts / (opponent.arch.bulwark.threshold / 100))));
       surgeFired = false; // reset Chuck's Second Wind telegraph for this attempt
       setState('SWING');
     }
