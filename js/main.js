@@ -839,7 +839,10 @@ function onContact(hit, fist) {
   // downside. Fist punches keep their own model (elbow stays folded by design).
   const elb = player.j.elbow;
   const armExt = (elb.max - elb.a) / (elb.max - elb.min); // 0 folded → 1 straight
-  const extF = fist ? 1 : THREE.MathUtils.clamp(0.6 + 0.4 * Math.exp(-(((armExt - 0.93) / 0.16) ** 2)), 0.6, 1);
+  // ONE-SIDED bell: full reward at/above 0.93 (a fully-extended connect is never
+  // penalized — protects reach-saturated matchups like a short slapper reaching a
+  // tall volunteer), penalty only BELOW 0.93 (the arm still folding). σ 0.13.
+  const extF = fist ? 1 : (armExt >= 0.93 ? 1 : THREE.MathUtils.clamp(0.6 + 0.4 * Math.exp(-(((armExt - 0.93) / 0.13) ** 2)), 0.6, 1));
   // extF is applied POST-CAP (below) so under-extension gates force even at the
   // cap — a light arm caps AT full extension (extF≈1, untouched) but a heavy arm
   // caps while still folding (extF<1), so it genuinely can't reach its ceiling on
@@ -981,7 +984,7 @@ function onContact(hit, fist) {
       bal: Math.round(balF * 100),
       cq: hit.part === 'head' ? Math.round(cq * 100) : null, // contact flushness (100 = level+square)
       arc: arcTag, // launch-angle read: STEEP (caught high) / FLAT (caught low) / LEVEL
-      reach: fist ? null : (armExt > 0.985 ? 'OVEREXTENDED' : armExt < 0.87 ? 'SHORT' : 'FULL'), // arm-extension read at contact
+      reach: fist ? null : (armExt < 0.87 ? 'SHORT' : 'FULL'), // arm-extension read at contact (over-extension no longer penalised)
       extPct: fist ? null : Math.round(extF * 100), // for tuning
       pct: chainPct, // % of theoretical max — same number the boss gates judge
     },
