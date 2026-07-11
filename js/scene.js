@@ -1678,10 +1678,14 @@ export function createStage(canvas) {
     if (heavenG.visible) {
       for (const ch of cherubs) {
         const a = time * 0.4 + ch.ph;
-        ch.g.position.set(35 + Math.cos(a) * 18, 8.5 + Math.sin(time * 1.7 + ch.ph) * 0.8, Math.sin(a) * 10);
+        ch.g.position.set((ch.cx || 40) + Math.cos(a) * (ch.rad || 18), (ch.hy || 9) + Math.sin(time * 1.7 + ch.ph) * 0.9, Math.sin(a) * (ch.rad || 18) * 0.6);
         ch.g.rotation.y = -a;
-        ch.g.children[1].rotation.x = Math.sin(time * 9) * 0.5;  // wing flaps
-        ch.g.children[2].rotation.x = -Math.sin(time * 9) * 0.5;
+        ch.g.children[2].rotation.x = Math.sin(time * 9) * 0.5;  // wing flaps (robe is now children[1])
+        ch.g.children[3].rotation.x = -Math.sin(time * 9) * 0.5;
+      }
+      if (heavenG.userData.godAura) {         // the glory gently breathes
+        const g = 0.35 + Math.abs(Math.sin(time * 0.7)) * 0.25;
+        for (const m of heavenG.userData.godAura) m.opacity = m === heavenG.userData.godAura[0] ? g + 0.15 : g;
       }
     }
     if (hellG.visible) {
@@ -3053,24 +3057,52 @@ export function createStage(canvas) {
       g.position.set(x, 0, z);
       heavenG.add(g);
     }
-    // two cherubs circling overhead
-    for (const ph of [0, Math.PI]) {
+    // a HOST of angels circling overhead at varied heights + radii
+    for (let a = 0; a < 6; a++) {
+      const ph = (a / 6) * Math.PI * 2;
       const ch = new THREE.Group();
-      const body = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 8), toonMat(0xf0d0b0));
+      const body = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 8), toonMat([0xf0d0b0, 0xe8c8a0, 0xf4dcc0][a % 3]));
       ch.add(body);
+      const robe = new THREE.Mesh(new THREE.ConeGeometry(0.32, 0.6, 8), marble);
+      robe.position.y = -0.4; ch.add(robe);
       for (const s of [-1, 1]) {
-        const wing = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.18, 0.08), marble);
-        wing.position.set(0, 0.15, s * 0.35);
-        ch.add(wing);
+        const wing = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.22, 0.08), marble);
+        wing.position.set(0, 0.15, s * 0.4); ch.add(wing);
       }
-      const halo = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.03, 6, 12), gold);
-      halo.rotation.x = Math.PI / 2;
-      halo.position.y = 0.45;
-      ch.add(halo);
+      const halo = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.035, 6, 12), gold);
+      halo.rotation.x = Math.PI / 2; halo.position.y = 0.5; ch.add(halo);
       heavenG.add(ch);
-      cherubs.push({ g: ch, ph });
+      cherubs.push({ g: ch, ph, rad: 14 + (a % 3) * 7, hy: 8 + (a % 3) * 4, cx: 40 + (a % 2) * 18 });
     }
-    heavenG.traverse((m) => { m.castShadow = true; });
+    // GOD looking down: a vast robed presence high over the lane's end, radiant
+    // golden aura, benevolent, watching every slap. (A silhouette of majesty —
+    // no face rendered, just the glory.)
+    const godG = new THREE.Group();
+    const aura = new THREE.Mesh(new THREE.CircleGeometry(11, 32), glowMat(0xfff2c0));
+    aura.material.transparent = true; aura.material.opacity = 0.5; godG.add(aura);
+    for (let i = 0; i < 16; i++) {          // radiant sunburst rays
+      const ray = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 16), glowMat(0xffe89a));
+      ray.material.transparent = true; ray.material.opacity = 0.35;
+      ray.rotation.z = (i / 16) * Math.PI * 2; godG.add(ray);
+    }
+    const robe = new THREE.Mesh(new THREE.ConeGeometry(4.5, 9, 14), marble);
+    robe.position.y = -3.2; godG.add(robe);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(1.7, 16, 14), toonMat(0xf4dcc0));
+    head.position.y = 2.2; godG.add(head);
+    const beard = new THREE.Mesh(new THREE.ConeGeometry(1.3, 2.6, 12), marble);
+    beard.position.y = 1.1; beard.rotation.x = Math.PI; godG.add(beard);
+    const crown = new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.18, 8, 20), gold);
+    crown.rotation.x = Math.PI / 2; crown.position.y = 3.7; godG.add(crown);
+    for (const s of [-1, 1]) {              // vast outstretched arms
+      const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.6, 4, 4, 8), marble);
+      arm.position.set(s * 3.4, -0.6, 0); arm.rotation.z = s * 0.9; godG.add(arm);
+    }
+    godG.position.set(96, 26, -6);
+    godG.rotation.y = -0.5;                  // angled to face down the lane
+    heavenG.add(godG);
+    heavenG.userData.godAura = [aura.material, ...godG.children.filter((c) => c.geometry && c.geometry.type === 'PlaneGeometry').map((c) => c.material)];
+
+    heavenG.traverse((m) => { if (m.isMesh && m.material.type !== 'MeshBasicMaterial') m.castShadow = true; });
     heavenG.visible = false;
     scene.add(heavenG);
   }
@@ -3189,7 +3221,56 @@ export function createStage(canvas) {
     cerberus.add(cTail);
     cerberus.position.set(30, 0, -20);
     hellG.add(cerberus);
-    hellG.traverse((m) => { m.castShadow = true; });
+
+    // ---- THE NINTH CIRCLE (Cocytus): the deepest pit is FROZEN, and the great
+    // adversary is stuck waist-deep in the ice, casually enduring it. A vast
+    // dark figure, three brooding faces, huge bat wings, breath fogging the air. ----
+    const ice = new THREE.MeshBasicMaterial({ color: 0xbfe0f0, transparent: true, opacity: 0.92 });
+    const frozenLake = new THREE.Mesh(new THREE.CircleGeometry(20, 40), ice);
+    frozenLake.rotation.x = -Math.PI / 2; frozenLake.position.set(108, 0.03, 0); hellG.add(frozenLake);
+    for (let i = 0; i < 14; i++) {          // cracked ice plates + damned souls frozen in
+      const crack = new THREE.Mesh(new THREE.CircleGeometry(1.2 + Math.random() * 1.6, 5), toonMat(0x7fa8c4));
+      crack.rotation.x = -Math.PI / 2; crack.rotation.z = Math.random() * 3;
+      const a = Math.random() * Math.PI * 2, rr = 3 + Math.random() * 15;
+      crack.position.set(108 + Math.cos(a) * rr, 0.05, Math.sin(a) * rr); hellG.add(crack);
+      if (i % 2 === 0) {                    // a soul's head + hands frozen at the surface
+        const soul = new THREE.Mesh(new THREE.SphereGeometry(0.28, 8, 8), toonMat(0x8a6a5a));
+        soul.position.set(108 + Math.cos(a) * rr, 0.22, Math.sin(a) * rr); hellG.add(soul);
+      }
+    }
+    const satan = new THREE.Group();
+    const torso = new THREE.Mesh(new THREE.CapsuleGeometry(3.2, 5, 6, 12), toonMat(0x4a3a52));
+    torso.position.y = 4.5; satan.add(torso);
+    // three faces (Dante's Lucifer), the center one flanked by a red and a pale
+    const faceCols = [0x6e2a2a, 0x241a1e, 0x5a5a4a];
+    for (let f = -1; f <= 1; f++) {
+      const head = new THREE.Mesh(new THREE.SphereGeometry(1.5, 12, 12), toonMat(0x544860));
+      head.position.set(f * 1.7, 8.4, f === 0 ? 0.6 : 0); head.scale.z = 0.9; satan.add(head);
+      const face = new THREE.Mesh(new THREE.CircleGeometry(1.0, 16), toonMat(faceCols[f + 1]));
+      face.position.set(f * 1.7, 8.4, f === 0 ? 1.5 : 0.85);
+      if (f !== 0) face.rotation.y = f * 0.5;
+      satan.add(face);
+      for (const s of [-1, 1]) {           // glowing eyes on every face
+        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.18, 6, 6), glowMat(0xff6a20));
+        eye.position.set(f * 1.7 + s * 0.4, 8.7, (f === 0 ? 1.5 : 0.85) + 0.2); satan.add(eye);
+      }
+      const horn = new THREE.Mesh(new THREE.ConeGeometry(0.3, 1.4, 6), toonMat(0x14100e));
+      horn.position.set(f * 1.7, 10, f === 0 ? 0.4 : 0); horn.rotation.z = f * 0.2; satan.add(horn);
+    }
+    for (const s of [-1, 1]) {              // vast leathery bat wings
+      const wing = new THREE.Mesh(new THREE.ConeGeometry(4.5, 9, 3), toonMat(0x3a2e46));
+      wing.position.set(s * 4.5, 6, -1.5); wing.rotation.z = s * 1.5; wing.scale.z = 0.25; satan.add(wing);
+    }
+    // a mug of something hot — he's "casually hanging out"
+    const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.4, 0.7, 10), toonMat(0x3a3a44));
+    mug.position.set(2.6, 5.6, 1.8); satan.add(mug);
+    const steam = new THREE.Mesh(new THREE.SphereGeometry(0.4, 8, 8), new THREE.MeshBasicMaterial({ color: 0xe8f0f4, transparent: true, opacity: 0.4 }));
+    steam.position.set(2.6, 6.4, 1.8); satan.add(steam);
+    satan.position.set(112, 0, 0);
+    satan.rotation.y = -Math.PI / 2 - 0.3;   // facing back down the lane
+    hellG.add(satan);
+
+    hellG.traverse((m) => { if (m.isMesh && m.material.type !== 'MeshBasicMaterial') m.castShadow = true; });
     hellG.visible = false;
     scene.add(hellG);
   }
