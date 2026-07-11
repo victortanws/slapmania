@@ -1245,7 +1245,7 @@ export const clearActive = () => { active = null; };
 export const goalText = () =>
   active ? `🎪 ${active.title} — ${active.desc.toUpperCase()}` : null;
 
-export function checkAttempt({ dist, pts, part, fist, chainPct, oppKey, bulwarkPts }) {
+export function checkAttempt({ dist, pts, part, fist, catches, chainPct, oppKey, bulwarkPts }) {
   if (!active) return null;
   if (active.opp && active.opp !== oppKey) return null;
   const g = active.goal;
@@ -1257,6 +1257,8 @@ export function checkAttempt({ dist, pts, part, fist, chainPct, oppKey, bulwarkP
     // THE FORBIDDEN FORM: a CLOSED-FIST body blow — land one (fist), or send them a distance closed-handed (fistdist)
     (g.type === 'fist' && fist && part && pts > 0) ||
     (g.type === 'fistdist' && fist && dist >= g.v) ||
+    // THE ICE-WARDEN'S TOLL: catch N of Carmine's thrown cubes with an open palm
+    (g.type === 'catch' && (catches || 0) >= g.v) ||
     (g.type === 'bulwark' && (bulwarkPts || 0) >= g.v) ||
     (g.type === 'chain' && part && chainPct >= g.v && pts > 0);
   if (!met) return null;

@@ -287,6 +287,17 @@ export const ROSTER = [
     taunts: ['Folks line up to slap the man who don\'t flinch.', 'Bring a fist or bring a chair.'],
   },
   {
+    key: 'carmine', name: 'COLD-HAND CARMINE', tag: 'BOSS · THE ICE-WARDEN', boss: true, world: 'hell',
+    // INFERNO: a Malebranche of the ninth-circle rim (horned, winged, comic-cruel,
+    // Cantos XXI–XXIII), cast in Lucifer's front-face RED (XXXIV). His toll: catch
+    // the ice he keeps packing from the master's freezing wing-wind. throwIce → the
+    // catch stage (no slap-launch; open the palm to catch each cube).
+    w: 1.05, h: 1.06, mass: 1.1, throwIce: true,
+    skin: 0xc0392b, shirt: 0x5a1f18, pants: 0x3a1512, horns: true, wings: true, brow: true,
+    pickLine: "Hold these — I'm behind on the ice.",
+    taunts: ['Six wings up top make the cold. I just pack it.', "Set 'em in a row. I'll want 'em. Later."],
+  },
+  {
     key: 'gnarl', name: 'MASTER GNARL', tag: 'BOSS · THE CLOSED FIST', boss: true,
     w: 1.2, h: 1.08, mass: 1.3, bodyBlow: true, shotClock: 6,
     // Slee's FIRST student — expelled 60 years ago for asking what force lived in

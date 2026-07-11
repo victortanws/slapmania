@@ -1550,12 +1550,35 @@ function updateCatch(dt) {
       catchCount++;
       ui.slapBurst('CAUGHT!', `ICE IN HAND — ${catchCount} SET DOWN IN A TIDY ROW`);
       sfx.crack(0.28); stage.spawnShock(p);
+      const goal = campaign.active && campaign.active.goal;
+      if (goal && goal.type === 'catch' && catchCount >= goal.v) { finishCatchStage(); return; }
     } else if (c.t > 1.32) { // fell back into the lake, uncaught
       c.live = false; c.mesh.visible = false; cubePool.push(c.mesh);
       catchMiss++;
     }
   }
   for (let i = iceCubes.length - 1; i >= 0; i--) if (!iceCubes[i].live) iceCubes.splice(i, 1);
+}
+// a catch stage ends the instant the toll is paid (or the clock runs out) — one
+// verdict, no 3-attempt loop: you either filed the row or you didn't
+function finishCatchStage() {
+  const arch = opponent.arch;
+  const cleared = campaign.active
+    ? campaign.checkAttempt({ dist: 0, pts: 0, part: null, fist: false, catches: catchCount, chainPct: 0, oppKey: arch.key, bulwarkPts: 0 })
+    : null;
+  if (cleared) lastClearedId = cleared.id;
+  const won = !!cleared;
+  const bestAttempt = { dist: 0, pts: 0, foul: null, part: null, opp: arch.name };
+  attempts.push(bestAttempt);
+  iceCubes.forEach((c) => { c.mesh.visible = false; cubePool.push(c.mesh); }); iceCubes.length = 0;
+  ui.hideCards();
+  const line = won
+    ? `❄️ ${catchCount} CAUGHT — every cube set down in a tidy row. The lake lets you pass.`
+    : `Only ${catchCount} caught before the ice ran out. Carmine wants his toll.`;
+  const tourCtx = campaign.active ? { title: campaign.active.title, goal: campaign.active.desc, cleared: won } : null;
+  ui.showMatch({ bestAttempt, line, board, shareUrl: null, tour: tourCtx });
+  if (won) sfx.fanfare();
+  setState('MATCH_END');
 }
 
 function tick(now) {
@@ -1677,7 +1700,7 @@ function tick(now) {
     ui.setClock(opponent.arch.skiRun ? null : shotClock); // her run IS the clock
     if (player.fallen) foul('footing');
     else if (opponent.escaped()) foul('escape'); // she made the gate — instant fail, no 10s grace
-    else if (shotClock <= 0 && !opponent.arch.skiRun) foul('clock');
+    else if (shotClock <= 0 && !opponent.arch.skiRun) { if (opponent.arch.throwIce) finishCatchStage(); else foul('clock'); }
     else if (opponent.arch.throwIce) updateCatch(dts); // CATCH STAGE: no slap-launch — catch Carmine's ice
     else if (player.handSeg && (player.pUnlocked || (player.aUnlocked && player.handSpeed >= 3))) {
       // a CLOSED fist is not a ghost (lesson #6: whatever touches, reacts) —
