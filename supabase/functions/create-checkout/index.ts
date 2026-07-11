@@ -7,7 +7,7 @@ import Stripe from 'npm:stripe@14';
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') ?? '');
 // The STRIPE_PRICE_ID secret still wins if set; the fallback is now the LIVE
 // Supporter Pack price, so checkout works even without the secret.
-const PRICE_ID = Deno.env.get('STRIPE_PRICE_ID') ?? 'price_1TrxzMEQTIgrDf8X3uQ5InvM';
+const PRICE_ID = Deno.env.get('STRIPE_PRICE_ID') ?? 'price_1Ts0U4EQTIgrDf8XqmeE8c3v';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',

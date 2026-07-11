@@ -944,8 +944,9 @@ function onContact(hit, fist) {
       const rollAxis = new THREE.Vector3().crossVectors(n, tang).normalize();
       const flush = THREE.MathUtils.clamp((cq - 0.88) / 0.24, 0, 1);
       // palm whips (full drag) vs fist driving straight in (little extra roll) —
-      // also inertia-damped so heavy heads barrel-roll less
-      spin.addScaledVector(rollAxis, speed * tMag * (fist ? 0.15 : 0.55) * (0.7 + 0.6 * flush) / inertia);
+      // on the SAME impulse basis as the COG term (power, not raw hand speed, so
+      // a weak flush palm doesn't over-roll) and inertia-damped for heavy heads
+      spin.addScaledVector(rollAxis, power * tMag * (fist ? 0.06 : 0.2) * (0.7 + 0.6 * flush) / inertia);
     }
   }
   spin.x += (Math.random() - 0.5) * 0.5; // a touch of natural tumble, never sterile
@@ -971,10 +972,11 @@ function onContact(hit, fist) {
   stage.shake(Math.min(0.5, power / 40));
   if (!ugly && hit.part === 'head') ui.flash(Math.min(0.55, 0.16 + power / 55)); // the CRACK — a white pop on a clean cheek hit
   excite = Math.min(1, power / 20);
-  // NEWTON'S 3RD: the reaction impulse travels back up the arm and rocks YOU —
-  // a bigger launch kicks a bigger recoil into your lean. A braced stance eats
-  // it; a stance already teetering gets shoved further (reckless power off a bad
-  // base staggers you into the next attempt). Bounded, deterministic.
+  // SWING FOLLOW-THROUGH (not literal recoil): a committed slap's body rotation
+  // carries YOU forward through the strike — the bigger the launch, the bigger
+  // the lurch — and this dominates the small backward contact reaction, so the
+  // net felt effect is forward. A stance already teetering gets shoved further
+  // (reckless power off a bad base staggers you into the next attempt). Bounded.
   player.leanV += power * 0.055 * (1 + 0.5 * Math.min(1, Math.abs(player.lean) / 1.05));
   // the sun judges TECHNIQUE, not tonnage — chain quality decides its mood
   if (ugly || hit.part === 'torso' || slap.chain.pct < 25) stage.sunMood('meh', 3.5);
