@@ -251,13 +251,16 @@ export function createStage(canvas) {
     fenceBits.push(rail);
   }
 
-  // festive bunting — kept well clear of the camera's view of the ring
+  // festive bunting — kept well clear of the camera's view of the ring.
+  // Grouped so it hides on non-fair worlds (fairground pennants don't belong
+  // in a therapy room or hell).
   const flagCols = [0xd8404f, 0xffd23f, 0x3f7fbf, 0xf2ede1, 0x5fae5a];
+  const buntingG = new THREE.Group();
   for (const bx of [-5.5, 30]) {
     for (const s of [-1, 1]) {
       const pole = new THREE.Mesh(new THREE.BoxGeometry(0.09, 2.7, 0.09), woodMat);
       pole.position.set(bx, 1.35, s * 2.95);
-      scene.add(pole);
+      buntingG.add(pole);
     }
     const tri = new THREE.Shape();
     tri.moveTo(-0.11, 0); tri.lineTo(0.11, 0); tri.lineTo(0, -0.3); tri.closePath();
@@ -268,9 +271,10 @@ export function createStage(canvas) {
         color: flagCols[i % flagCols.length], side: THREE.DoubleSide,
       }));
       f.position.set(bx, 2.62 - Math.sin(t * Math.PI) * 0.28, -2.9 + t * 5.8);
-      scene.add(f);
+      buntingG.add(f);
     }
   }
+  scene.add(buntingG);
 
   // --- barn + silo ---
   const barn = new THREE.Group();
@@ -3290,111 +3294,174 @@ export function createStage(canvas) {
 
   // --- 🛋️ THERAPY ROOM ---
   const therapyG = new THREE.Group();
-  let countSheep = null;
+  let countSheep = null, therapyCat = null;
   let sheepCount = 0;
   {
-    const pencilY = toonMat(0xf0c030), eraser = toonMat(0xf0a0b0), graphite = toonMat(0x3a3a40);
-    therapyG.add(mkBelt((g, x, z, i) => {
-      const h = 6 + (i % 3);
-      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, h, 6), pencilY);
-      body.position.set(x, h / 2 + 0.8, z);
-      g.add(body);
-      const tip = new THREE.Mesh(new THREE.ConeGeometry(0.4, 0.9, 6), graphite);
-      tip.rotation.x = Math.PI;
-      tip.position.set(x, 0.45, z);
-      g.add(tip);
-      const er = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.5, 6), eraser);
-      er.position.set(x, h + 1.05, z);
-      g.add(er);
-    }, 3));
-    therapyG.children[0].visible = true;
-    // THE GIANT COUCH presides where the barn stood (barn hides in this world)
+    const walnut = toonMat(0x7a5236), wainscot = toonMat(0x8a6440), panelDk = toonMat(0x5e3e26);
+    const leather = toonMat(0x6a1f26), carpet = toonMat(0x7a1f28), brass = toonMat(0xc9a84a), cream = toonMat(0xe8dfce);
+    const shelfW = toonMat(0x6a4630);
+    const bookCols = [0x8a3030, 0x2f5a7a, 0x3a6a48, 0x7a5a2a, 0x5a3a6a, 0x8a6a3a];
+    // ---- FLOOR: polished wood + a big red rug down the middle, cream border ----
+    const rug = new THREE.Mesh(new THREE.PlaneGeometry(118, 15), carpet);
+    rug.rotation.x = -Math.PI / 2; rug.position.set(48, 0.02, 0); therapyG.add(rug);
+    for (const zEdge of [-7.4, 7.4]) {            // cream rug trim
+      const trim = new THREE.Mesh(new THREE.PlaneGeometry(118, 0.5), cream);
+      trim.rotation.x = -Math.PI / 2; trim.position.set(48, 0.03, zEdge); therapyG.add(trim);
+    }
+    // ---- WALLS: tall walnut panelling flanking the lane + a back wall ----
+    const mkWall = (zc, len, xc) => {
+      const wall = new THREE.Mesh(new THREE.BoxGeometry(len, 15, 0.6), walnut);
+      wall.position.set(xc, 7.5, zc); therapyG.add(wall);
+      const band = new THREE.Mesh(new THREE.BoxGeometry(len, 1.6, 0.75), wainscot);
+      band.position.set(xc, 1.3, zc); therapyG.add(band);
+      const rail = new THREE.Mesh(new THREE.BoxGeometry(len, 0.2, 0.85), brass);
+      rail.position.set(xc, 2.2, zc); therapyG.add(rail);
+      // recessed panels along the wall
+      for (let px = -len / 2 + 4; px < len / 2 - 2; px += 6) {
+        const p = new THREE.Mesh(new THREE.BoxGeometry(3.6, 6, 0.72), panelDk);
+        p.position.set(xc + px, 6.5, zc); therapyG.add(p);
+      }
+    };
+    mkWall(-11, 124, 46); mkWall(11, 124, 46);
+    // back wall across the far end
+    const backWall = new THREE.Mesh(new THREE.BoxGeometry(0.6, 15, 22.6), walnut);
+    backWall.position.set(107, 7.5, 0); therapyG.add(backWall);
+    // ---- CEILING: coffered beams high overhead + a warm chandelier ----
+    for (let bx = -10; bx < 106; bx += 12) {
+      const beam = new THREE.Mesh(new THREE.BoxGeometry(1, 0.8, 22), shelfW);
+      beam.position.set(bx, 14.6, 0); therapyG.add(beam);
+    }
+    const chand = new THREE.Group();
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(1.6, 0.14, 8, 20), brass);
+    ring.rotation.x = Math.PI / 2; chand.add(ring);
+    for (let i = 0; i < 8; i++) {
+      const a = i / 8 * Math.PI * 2;
+      const candle = new THREE.Mesh(new THREE.SphereGeometry(0.2, 8, 8), glowMat(0xffdf9a));
+      candle.position.set(Math.cos(a) * 1.6, 0.1, Math.sin(a) * 1.6); chand.add(candle);
+    }
+    const chandGlow = new THREE.Mesh(new THREE.SphereGeometry(2.4, 12, 12), glowMat(0xffe6b0));
+    chandGlow.material.transparent = true; chandGlow.material.opacity = 0.18; chand.add(chandGlow);
+    chand.position.set(30, 12.5, 0); therapyG.add(chand);
+    // ---- BOOKSHELVES lining both walls (the study) ----
+    for (const zc of [-10.2, 10.2]) {
+      for (let sx = 4; sx < 100; sx += 10) {
+        const unit = new THREE.Group();
+        const carcass = new THREE.Mesh(new THREE.BoxGeometry(4, 7, 0.9), shelfW);
+        carcass.position.y = 3.5; unit.add(carcass);
+        for (let shelf = 1; shelf <= 5; shelf++) {
+          for (let b = 0; b < 9; b++) {
+            const book = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.9 + (b % 3) * 0.15, 0.5), toonMat(bookCols[(b + shelf) % 6]));
+            book.position.set(-1.7 + b * 0.4, shelf * 1.3 - 0.3, 0.28); unit.add(book);
+          }
+        }
+        unit.position.set(sx, 0, zc); unit.rotation.y = zc < 0 ? 0 : Math.PI;
+        therapyG.add(unit);
+      }
+    }
+    // ---- THE COUCH: a plush tufted Chesterfield, oxblood leather ----
     const couch = new THREE.Group();
-    const ox = toonMat(0x8a4a3a), goldFt = toonMat(0xd8b13c);
-    const seat = new THREE.Mesh(new THREE.BoxGeometry(5, 1.6, 11), ox);
-    seat.position.y = 1.4;
-    couch.add(seat);
-    const back = new THREE.Mesh(new THREE.BoxGeometry(1.4, 3.4, 11), ox);
-    back.position.set(2, 2.9, 0);
-    couch.add(back);
-    const bolster = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 4.6, 10), ox);
-    bolster.rotation.x = Math.PI / 2;
-    bolster.position.set(-1.2, 2.4, -4.2);
-    couch.add(bolster);
-    for (const [fx, fz] of [[-2, -5], [2, -5], [-2, 5], [2, 5]]) {
-      const foot = new THREE.Mesh(new THREE.SphereGeometry(0.35, 7, 7), goldFt);
-      foot.position.set(fx, 0.35, fz);
-      couch.add(foot);
+    const base = new THREE.Mesh(new THREE.BoxGeometry(4.4, 1.3, 10), leather);
+    base.position.y = 1.1; couch.add(base);
+    // seat cushions
+    for (const cz of [-3.2, 0, 3.2]) {
+      const cush = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.7, 3), toonMat(0x7a262e));
+      cush.position.set(0, 1.9, cz); couch.add(cush);
     }
-    couch.position.set(18, 0, -11);
+    const back = new THREE.Mesh(new THREE.BoxGeometry(1.5, 3.4, 10), leather);
+    back.position.set(1.7, 2.6, 0); couch.add(back);
+    // tufted buttons on the back
+    for (let by = 0; by < 3; by++) for (let bz = -3.5; bz <= 3.5; bz += 2.3) {
+      const btn = new THREE.Mesh(new THREE.SphereGeometry(0.12, 6, 6), toonMat(0x4a1218));
+      btn.position.set(1.0, 2.2 + by * 0.9, bz + (by % 2) * 1.15); couch.add(btn);
+    }
+    // rolled arms
+    for (const az of [-5, 5]) {
+      const arm = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.1, 4.6, 12), leather);
+      arm.rotation.x = Math.PI / 2; arm.position.set(0, 2.2, az); couch.add(arm);
+    }
+    for (const [fx, fz] of [[-1.6, -4.4], [1.6, -4.4], [-1.6, 4.4], [1.6, 4.4]]) {
+      const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.18, 0.5, 8), toonMat(0x2a1a10));
+      foot.position.set(fx, 0.25, fz); couch.add(foot);
+    }
+    couch.position.set(14, 0, -4.5); couch.rotation.y = 0.25;
     therapyG.add(couch);
-    // dream doors hover on the farmhouse footprints
-    for (const [x, z, hue] of [[96, 19, 0x9a8fc0], [84, -27, 0x8fb09a], [108, -14, 0xb08f9a], [58, 31, 0x8f9ab0]]) {
-      const g = new THREE.Group();
-      const frame = new THREE.Mesh(new THREE.BoxGeometry(0.5, 5.4, 3), toonMat(hue));
-      frame.position.y = 2.7;
-      g.add(frame);
-      const door = new THREE.Mesh(new THREE.BoxGeometry(0.2, 4.6, 2.2), toonMat(0x2a2a33));
-      door.position.y = 2.5;
-      g.add(door);
-      const knob = new THREE.Mesh(new THREE.SphereGeometry(0.12, 6, 6), goldFt);
-      knob.position.set(-0.25, 2.5, 0.7);
-      g.add(knob);
-      g.position.set(x, 0.4, z);
-      g.userData.baseY = 0.4;
-      therapyG.add(g);
-    }
-    // the inkblot mirror on the pond + melting pocketwatches on posts
+    // ---- THE GIANT CAT, watching the whole session from the far end ----
+    therapyCat = new THREE.Group();
+    const catFur = toonMat(0x3a3a42);
+    const catBody = new THREE.Mesh(new THREE.CapsuleGeometry(2.2, 2.6, 6, 12), catFur);
+    catBody.rotation.z = Math.PI / 2; catBody.position.set(0, 2.2, 0); catBody.scale.z = 1.4; therapyCat.add(catBody);
+    const catHead = new THREE.Mesh(new THREE.SphereGeometry(1.9, 14, 12), catFur);
+    catHead.position.set(-2.6, 4.4, 0); therapyCat.add(catHead);
     for (const s of [-1, 1]) {
-      const blot = new THREE.Mesh(new THREE.SphereGeometry(1.1, 7, 6), toonMat(0xf2ede1));
-      blot.scale.set(1, 0.08, 0.7);
-      blot.position.set(40, 0.06, 24 + s * 1.4);
-      blot.rotation.y = s * 0.7;
-      therapyG.add(blot);
+      const ear = new THREE.Mesh(new THREE.ConeGeometry(0.7, 1.3, 4), catFur);
+      ear.position.set(-2.6, 6, s * 1.1); therapyCat.add(ear);
+      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.4, 10, 10), glowMat(0x8adf5a));
+      eye.position.set(-4.2, 4.6, s * 0.8); eye.scale.x = 0.5; therapyCat.add(eye);
+      const pupil = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.5, 0.1), toonMat(0x141014));
+      pupil.position.set(-4.42, 4.6, s * 0.8); therapyCat.add(pupil);
     }
-    for (const [wx, wz] of [[48, 8], [70, -7]]) {
-      const post = new THREE.Mesh(new THREE.BoxGeometry(0.16, 1.6, 0.16), toonMat(0x8a6844));
-      post.position.set(wx, 0.8, wz);
-      therapyG.add(post);
-      const watch = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.12, 8, 16), goldFt);
-      watch.scale.y = 0.62;
-      watch.position.set(wx, 1.55, wz);
-      watch.rotation.x = 0.5;
-      therapyG.add(watch);
-      const face = new THREE.Mesh(new THREE.CircleGeometry(0.44, 12), toonMat(0xf2ede1));
-      face.scale.y = 0.62;
-      face.position.set(wx, 1.55, wz + 0.02);
-      face.rotation.x = 0.5;
-      therapyG.add(face);
+    const tail = new THREE.Mesh(new THREE.CapsuleGeometry(0.35, 4, 4, 8), catFur);
+    tail.position.set(2.8, 1.4, 2.6); tail.rotation.z = 0.7; therapyCat.add(tail);
+    therapyCat.position.set(98, 0, 4); therapyCat.rotation.y = -0.6;
+    therapyG.add(therapyCat);
+    // ---- THE RED BOOK on a brass lectern (glowing), ringside ----
+    const lectern = new THREE.Group();
+    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.22, 1.5, 8), brass);
+    stem.position.y = 0.75; lectern.add(stem);
+    const slope = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.14, 0.9), brass);
+    slope.position.y = 1.55; slope.rotation.x = 0.5; lectern.add(slope);
+    const redBook = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.22, 0.8), toonMat(0x9a1818));
+    redBook.position.y = 1.65; redBook.rotation.x = 0.5; lectern.add(redBook);
+    const bookGlow = new THREE.Mesh(new THREE.SphereGeometry(0.9, 10, 10), glowMat(0xff3a3a));
+    bookGlow.material.transparent = true; bookGlow.material.opacity = 0.16; bookGlow.position.y = 1.7; lectern.add(bookGlow);
+    lectern.position.set(6, 0, 6.5); therapyG.add(lectern);
+    // ---- FIREPLACE on the back wall, glowing ----
+    const fp = new THREE.Group();
+    const surround = new THREE.Mesh(new THREE.BoxGeometry(1, 5, 6), toonMat(0x2a2028));
+    surround.position.y = 2.5; fp.add(surround);
+    const hearth = new THREE.Mesh(new THREE.BoxGeometry(1.2, 3, 3.4), toonMat(0x14100e));
+    hearth.position.set(-0.2, 1.8, 0); fp.add(hearth);
+    for (let i = 0; i < 4; i++) {
+      const flame = new THREE.Mesh(new THREE.ConeGeometry(0.4, 1.2, 6), glowMat([0xff5a1a, 0xff9a30, 0xffd23f][i % 3]));
+      flame.position.set(-0.5, 1 + (i % 2) * 0.3, -1 + i * 0.66); fp.add(flame);
     }
-    // the ANALYST's armchair, ringside — always listening
-    const chair = new THREE.Group();
-    const cSeat = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.5, 1.2), toonMat(0x5c6a7a));
-    cSeat.position.y = 0.55;
-    chair.add(cSeat);
-    const cBack = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.4, 1.2), toonMat(0x5c6a7a));
-    cBack.position.set(0.45, 1.2, 0);
-    chair.add(cBack);
-    chair.position.set(3.5, 0, 6);
-    chair.rotation.y = 2.4;
-    therapyG.add(chair);
-    // the counting sheep (it hops the ring rail forever; a number floats above)
+    const mantel = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.3, 7), wainscot);
+    mantel.position.set(0, 5.2, 0); fp.add(mantel);
+    fp.position.set(106.3, 0, -6); therapyG.add(fp);
+    // ---- framed Rorschach inkblots hung along the walls ----
+    for (const [fx, fz, fzr] of [[24, -10.5, 0], [54, -10.5, 0], [40, 10.5, Math.PI], [76, 10.5, Math.PI]]) {
+      const fr = new THREE.Mesh(new THREE.BoxGeometry(2.4, 3, 0.2), toonMat(0x2a1a12));
+      fr.position.set(fx, 6, fz); fr.rotation.y = fzr; therapyG.add(fr);
+      const blot = new THREE.Mesh(new THREE.CircleGeometry(0.9, 12), toonMat(0x14100e));
+      blot.scale.x = 1.4; blot.position.set(fx, 6, fz + (fzr ? -0.12 : 0.12)); blot.rotation.y = fzr; therapyG.add(blot);
+    }
+    // ---- a warm floor lamp + a grandfather clock ----
+    const lamp = new THREE.Group();
+    const lstem = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.1, 3.4, 8), brass);
+    lstem.position.y = 1.7; lamp.add(lstem);
+    const shade = new THREE.Mesh(new THREE.ConeGeometry(0.9, 1, 12, 1, true), toonMat(0xe8c98a));
+    shade.position.y = 3.5; lamp.add(shade);
+    const lglow = new THREE.Mesh(new THREE.SphereGeometry(0.6, 10, 10), glowMat(0xffe6a0));
+    lglow.material.transparent = true; lglow.material.opacity = 0.35; lglow.position.y = 3.4; lamp.add(lglow);
+    lamp.position.set(20, 0, 8.5); therapyG.add(lamp);
+    const clock = new THREE.Group();
+    const cbody = new THREE.Mesh(new THREE.BoxGeometry(1.2, 5.5, 0.9), walnut);
+    cbody.position.y = 2.75; clock.add(cbody);
+    const cface = new THREE.Mesh(new THREE.CircleGeometry(0.5, 16), cream);
+    cface.position.set(0, 4.4, 0.46); clock.add(cface);
+    clock.position.set(104, 0, 8); clock.rotation.y = -0.5; therapyG.add(clock);
+    // the counting sheep still hops the rug (a therapist's sleepless client)
     countSheep = new THREE.Group();
     const sBody2 = new THREE.Mesh(new THREE.SphereGeometry(0.4, 9, 8), toonMat(0xf2ede1));
-    sBody2.scale.set(1.25, 0.9, 1);
-    sBody2.position.y = 0.55;
-    countSheep.add(sBody2);
+    sBody2.scale.set(1.25, 0.9, 1); sBody2.position.y = 0.55; countSheep.add(sBody2);
     const sHead2 = new THREE.Mesh(new THREE.SphereGeometry(0.18, 8, 8), toonMat(0x2a2a33));
-    sHead2.position.set(0.5, 0.7, 0);
-    countSheep.add(sHead2);
+    sHead2.position.set(0.5, 0.7, 0); countSheep.add(sHead2);
     for (const [lx, lz] of [[-0.2, -0.15], [-0.2, 0.15], [0.25, -0.15], [0.25, 0.15]]) {
       const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.4, 5), toonMat(0x2a2a33));
-      leg.position.set(lx, 0.2, lz);
-      countSheep.add(leg);
+      leg.position.set(lx, 0.2, lz); countSheep.add(leg);
     }
-    countSheep.position.set(10, 0, 2.9);
-    therapyG.add(countSheep);
-    therapyG.traverse((m) => { m.castShadow = true; });
+    countSheep.position.set(10, 0, 2.9); therapyG.add(countSheep);
+    therapyG.traverse((m) => { if (m.isMesh && m.material.type !== 'MeshBasicMaterial') m.castShadow = true; });
     therapyG.visible = false;
     scene.add(therapyG);
   }
@@ -4207,7 +4274,7 @@ export function createStage(canvas) {
     lava: { fog: [0x5a2414, 48, 165], skyTint: 0x3a1810, hemi: [0xffb070, 0x5a2410, 1.12], sun: [0xff8a3a, 1.9], fill: 0.4, cloud: 0x6a2e1e, maps: false, grass: 0x201613, lane: 0x2a201c, night: false, sunFace: false,
       group: 'lava', biome: 'lava', crowd: 'lava', pond: 0xff7a20,
       hideFarm: true, hideBarn: true, hideFair: true, hideCloths: true, hideFences: true, barricade: 'boulders' },
-    therapy: { fog: [0xe6dff0, 40, 130], skyTint: 0xd9cfec, hemi: [0xece2f4, 0x9a8fb0, 0.95], sun: [0xfff0e0, 1.5], fill: 0.35, cloud: 0xf6f0fa, maps: false, grass: 0xb9aed4, lane: 0x8f82b8, night: false, sunFace: true,
+    therapy: { fog: [0x4a3524, 85, 260], skyTint: 0x3a2a1c, hemi: [0xffe4b8, 0x6a4e34, 1.45], sun: [0xfff0d4, 1.8], fill: 0.6, cloud: 0x4a3524, maps: false, grass: 0x7a5636, lane: 0x8a2530, night: false, sunFace: false,
       group: 'therapy', biome: 'therapy', crowd: 'therapy', pond: 0x14141c, sunTint: [0xf0e4ff, 0.9],
       hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, hideBarn: true, barricade: 'books' },
     heaven: { fog: [0xf4f0e4, 30, 110], skyTint: 0xcfe4f8, hemi: [0xfff8e8, 0xd8d2c0, 1.15], sun: [0xfff6d8, 2.3], fill: 0.4, cloud: 0xffffff, maps: false, grass: 0xf2eede, lane: 0xf7e9b8, night: false, sunFace: true,
@@ -4287,6 +4354,7 @@ export function createStage(canvas) {
     for (const a of animals) a.g.visible = !t.hideFair;      // no wandering pigs on the Strip
     sb.visible = !t.hideFair;                                // the "SLAPMANIA FAIR" board is fair-only
     balloon.visible = !t.hideFair;                           // the fair balloon doesn't drift over hell
+    buntingG.visible = !t.hideFair;                          // no fairground pennants in a therapy room
     for (const fh of farmhouses) fh.visible = !t.hideFarm;
     for (const fb of fenceBits) fb.visible = !t.hideFences;
     for (const c of cloths) c.mesh.visible = !t.hideCloths;
