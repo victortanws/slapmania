@@ -327,6 +327,10 @@ function openOppPick() {
   player.root.rotation.y = 0;   // clear any ?preview facing before play
   ui.hideCards();
   OPP_LIST = oppListNow();
+  // a challenge link may name a world LOCAL (e.g. ?copp=hal) — keep the named
+  // matchup answerable even outside their home world (they're world-themed
+  // flavor, not pay-gated fighters)
+  if (chosenArch && chosenArch.world && !chosenArch.boss && !OPP_LIST.includes(chosenArch)) OPP_LIST = [...OPP_LIST, chosenArch];
   // the highlighted volunteer stands in the ring beckoning — slap-me showcase.
   // Bosses never appear here, the tour summons them by key.
   pickHighlight = (i) => {
@@ -509,7 +513,9 @@ const WORLDS = [
 // theme + that world's ONE physics quirk, together — used by the selector,
 // the tour world-pin, and the return-to-title restore, so visuals and physics
 // can never drift apart
+let activeWorld = 'day'; // the world actually on stage (tour pins don't persist to localStorage)
 function setWorldFull(key) {
+  activeWorld = key;
   stage.setWorldTheme(key);
   if (key === 'ice') phys.setGround({ friction: 0.03, restitution: 0.3 });        // bodies glide
   else if (key === 'jungle') phys.setGround({ friction: 0.38, restitution: 0.62 }); // springmoss BOING
@@ -748,7 +754,7 @@ function showResult() {
   let line = isFoul ? ui.FOUL_LINES[slap.foul]
     : (slap && slap.part === 'torso' ? ui.bodyLineFor(flew) : ui.commentaryFor(flew, opponent.wallSplat));
   // world personality on the result card — deterministic garnish, never scoring
-  const worldNow = localStorage.getItem('slapp_world') || 'day';
+  const worldNow = activeWorld; // the world on stage, incl. tour pins
   if (worldNow === 'lava' && !isFoul) {
     line += ` DONENESS: ${dist < 20 ? 'STILL RAW.' : dist < 45 ? 'MEDIUM RARE.' : dist < 70 ? 'WELL DONE.' : "FLAME-BROILED. Chef's kiss."}`;
   } else if (worldNow === 'therapy') {
@@ -1437,6 +1443,8 @@ if (_pv) {
   const volunteer = ROSTER.find((r) => r.key === _pv);
   if (slapper) { openSlapperPick(slapper); hideDock(); }
   else if (volunteer) {
+    // showcase a world local at HOME (a hell demon posing in heaven is funny once)
+    if (volunteer.world && stage.hasWorld(volunteer.world)) setWorldFull(volunteer.world);
     ui.showTitle(false);
     openOppPick();
     const i = OPP_LIST.indexOf(volunteer);

@@ -3286,7 +3286,7 @@ export function createStage(canvas) {
     dojo: { fog: [0xe8dfd0, 50, 170], skyTint: 0xf4e6d0, hemi: [0xf5e8d5, 0x8a7a5c, 0.95], sun: [0xffe8c0, 1.8], fill: 0.3, cloud: 0xfff4e2, maps: false, grass: 0xd9c9a8, lane: 0xc9b490, night: false, sunFace: true,
       group: 'dojo', biome: 'dojo', crowd: 'dojo', pond: 0x4a7a8a,
       hideFarm: true, hideCloths: true, barricade: 'shoji' },
-    lava: { fog: [0x40201a, 36, 125], skyTint: 0x33161a, hemi: [0xff9a5a, 0x401a10, 0.88], sun: [0xff7a30, 1.6], fill: 0.24, cloud: 0x5a2a22, maps: false, grass: 0x3a2f2c, lane: 0x55403a, night: false, sunFace: false,
+    lava: { fog: [0x40201a, 36, 125], skyTint: 0x33161a, hemi: [0xff9a5a, 0x401a10, 0.98], sun: [0xff7a30, 1.7], fill: 0.32, cloud: 0x5a2a22, maps: false, grass: 0x3a2f2c, lane: 0x55403a, night: false, sunFace: false,
       group: 'lava', biome: 'lava', crowd: 'lava', pond: 0xff7a20,
       hideFarm: true, hideCloths: true, hideFences: true, barricade: 'boulders' },
     therapy: { fog: [0xe6dff0, 40, 130], skyTint: 0xd9cfec, hemi: [0xece2f4, 0x9a8fb0, 0.95], sun: [0xfff0e0, 1.5], fill: 0.35, cloud: 0xf6f0fa, maps: false, grass: 0xb9aed4, lane: 0x8f82b8, night: false, sunFace: true,
