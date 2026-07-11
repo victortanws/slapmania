@@ -77,3 +77,25 @@ Every future campaign/world/boss gets checked against this list.
 - [ ] Tick-Tock Tom v2 (cumulative-points boss + Charlie punchline)
 - [ ] Ava "slapping has no nationality" scene (judge/Sepup/Ava)
 - [ ] Per-world reward ladder + remove the ~50m blockage + flight creatures
+
+## Wave 3 principles (2026-07-11, story-quality feedback)
+
+13. **Goals are marching orders.** Challenge copy uses ACTIVE VERBS and states
+    exactly what to DO ("SEND Hank 50m", "LAND a 70% chain EVERY round"). Boss
+    gate copy must say the form is needed on every counted slap, not just
+    imply a threshold. Flavor and requirement read as one sentence.
+14. **The ladder pays the premise.** Every challenge's goal must visibly
+    advance the campaign's stated stakes; a finale must BE the resolution
+    (slapping the judge in 6s must read as how the fair gets saved). Story
+    threads (Don's wager) recur across acts, not just bookend them.
+15. **Bosses match their story.** The final boss of a campaign embodies its
+    theme (Wonders ends on "everything can be slapped" — Tick-Tock v2, not a
+    rival deadpan). Mechanics are the plot.
+16. **Reveal the road, not the map.** The tour menu shows each act's story and
+    the NEXT trial's orders; later goals stay hidden until reached.
+17. **No repeated lines.** A character never says the same signature joke
+    twice in one campaign (Charlie's "graveyard closes at midnight" ×N).
+    Writing passes check for repetition explicitly.
+18. **Finales are earned difficulty.** A final boss mechanic is genuinely hard
+    (Eileen's final run: faster, unpredictable, no brake) — the mini version
+    can appear earlier as the tutorial beat.
