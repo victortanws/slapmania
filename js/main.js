@@ -797,7 +797,10 @@ function onContact(hit, fist) {
     // weighted 70/30 over incidence: height-reading is the skill being paid.
     const R = opponent.rHead + 0.26;
     const vAlign = 1 - Math.min(1, Math.abs(hit.point.y - hit.center.y) / (R * 0.45));
-    const into = new THREE.Vector3().subVectors(hit.center, hit.point).normalize();
+    // angle of incidence against the OFFERED CHEEK's true normal (it rotates
+    // with the head), not the radial point→center line — so a turned or angled
+    // cheek reads as a genuine graze, from geometry
+    const into = hit.normal ? hit.normal.clone().negate() : new THREE.Vector3().subVectors(hit.center, hit.point).normalize();
     const incidence = Math.max(0, velDir.dot(into));
     cq = 0.88 + 0.24 * (0.7 * vAlign + 0.3 * incidence);
   }
@@ -843,7 +846,13 @@ function onContact(hit, fist) {
   if (unwound) power *= 0.40;
   // headTurn (HORTON): power scales with how square the face is at contact —
   // catch the turn incoming for a flush 1.1×; the back of the head barely counts
-  const facing = opponent.headFacing();
+  // headTurn: how square the offered cheek is to the incoming hand, read from
+  // the TRUE contact angle NOW — the cheek and its normal rotate with his neck,
+  // so a face turned away presents a glancing incidence and bleeds power, all
+  // from geometry (this replaces the old decoupled time-clock; same feel/shape).
+  const facing = (opponent.arch.headTurn && hit.part === 'head' && hit.normal)
+    ? THREE.MathUtils.clamp(0.25 + 0.85 * Math.max(0, velDir.dot(hit.normal.clone().negate())), 0, 1.1)
+    : opponent.headFacing();
   const turnedAway = !!(opponent.arch.headTurn && hit.part === 'head' && facing < 0.6);
   if (opponent.arch.headTurn && hit.part === 'head') power *= facing;
   // calledShot (DODGY DALE): he calls a cheek half before the swing — only a
@@ -897,7 +906,9 @@ function onContact(hit, fist) {
   // it can NEVER perturb the measured distance. A clean slap just looks clean.
   const spin = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, speed * 0.22);
   if (hit.part === 'head') {
-    const n = new THREE.Vector3().subVectors(hit.point, hit.center).normalize();
+    // the offered cheek's true normal (rotates with the head) — so on a turned
+    // face the barrel-roll spins about the real axis, not the radial line
+    const n = hit.normal ? hit.normal.clone() : new THREE.Vector3().subVectors(hit.point, hit.center).normalize();
     const tang = velDir.clone().addScaledVector(n, -velDir.dot(n)); // sweep across the surface
     const tMag = tang.length();
     if (tMag > 1e-3) {

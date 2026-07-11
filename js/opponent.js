@@ -1442,12 +1442,23 @@ export class Opponent {
     this.target.children.forEach((m) => m.material.color.setHex(col));
   }
 
+  // The OFFERED CHEEK's outward normal. In head-local space the cheek faces the
+  // slapper (−x); this rotates it by the head's live quaternion, so a headTurn
+  // boss's yaw actually swings the cheek's facing AND its Z in 3D — a face
+  // turned away presents a glancing normal. Contact still lands on the sphere
+  // (the head is still there), but the ANGLE the force transfers at is now real
+  // geometry, not a decoupled clock. Square, still heads breathe → normal ≈ −x.
+  cheekNormal() {
+    const q = this.rag.parts.head.body.quaternion;
+    return new THREE.Vector3(-1, 0, 0).applyQuaternion(new THREE.Quaternion(q.x, q.y, q.z, q.w));
+  }
+
   // swept hand segment vs head then torso spheres
   checkHit(p0, p1, rHand) {
     if (this.launched) return null;
     const hc = this.headPos();
     let pt = segSphere(p0, p1, hc, this.rHead + rHand);
-    if (pt) return { part: 'head', point: pt, center: hc };
+    if (pt) return { part: 'head', point: pt, center: hc, normal: this.cheekNormal() };
     const tc = this.torsoPos();
     pt = segSphere(p0, p1, tc, this.rTorso + rHand);
     // the collar shrug zone: a graze above the chest is a hand EN ROUTE to the
