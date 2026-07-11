@@ -285,8 +285,13 @@ export function showResult({ dist, pts, arch, part, foul, chain, line, n }) {
   const cqNote = chain && chain.cq != null
     ? (chain.cq >= 106 ? ` · FLUSH +${chain.cq - 100}%` : chain.cq <= 94 ? ` · GRAZE −${100 - chain.cq}%` : '')
     : '';
+  // launch-angle read: caught HIGH on the cheek → steeper arc, LOW → flatter.
+  // The aiming skill in tension with flushness — where you land vertically shapes the flight.
+  const arcNote = chain && chain.arc && chain.arc !== 'LEVEL'
+    ? (chain.arc === 'STEEP' ? ' · HIGH ↗ STEEP ARC' : ' · LOW ↘ FLAT ARC')
+    : '';
   el.resChain.textContent = chain
-    ? `CHAIN ${chain.pct}% OF PERFECT — SWIVEL ${chain.coil}% · LUNGE ${chain.l} · ARM ${chain.a} · PALM ${chain.p}${cqNote}${chain.ugly ? ' · (REBOUND FLAIL −70%)' : ''}${chain.bal != null && chain.bal < 95 ? ` · OFF-BALANCE −${100 - chain.bal}%` : ''}`
+    ? `CHAIN ${chain.pct}% OF PERFECT — SWIVEL ${chain.coil}% · LUNGE ${chain.l} · ARM ${chain.a} · PALM ${chain.p}${cqNote}${arcNote}${chain.ugly ? ' · (REBOUND FLAIL −70%)' : ''}${chain.bal != null && chain.bal < 95 ? ` · OFF-BALANCE −${100 - chain.bal}%` : ''}`
     : '';
   el.resLine.textContent = line;
   el.resNext.textContent = n >= 3 ? 'CLICK / ENTER → FINAL VERDICT' : `CLICK / ENTER → ATTEMPT ${n + 1} OF 3`;

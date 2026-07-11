@@ -871,8 +871,22 @@ function onContact(hit, fist) {
   // high, a downward chop at a short one skims flat
   const dir = new THREE.Vector3(1, 0, velDir.z * 0.15).normalize();
   // a slap launches UP off the cheek (the strike lifts them skyward); a punch
-  // drives them FORWARD on a flat, low body-blow line — same force, different angle
-  dir.y = fist ? 0.15 : THREE.MathUtils.clamp(0.34 + player.strikeLift * 0.55, 0.18, 0.52);
+  // drives them FORWARD on a flat, low body-blow line — same force, different angle.
+  // CONTACT-HEIGHT → ARC (skill axis): a slap landing HIGH on the cheek applies
+  // force well above the body's center of mass → more toppling lift → a STEEPER
+  // arc; a LOW hit drives flatter. Modulated strictly WITHIN the existing
+  // [0.18,0.52] band (never past it — the 117m/130m caps hold by construction),
+  // and in tension with cq, which rewards the CENTER: you trade a little flush
+  // force for a steeper arc. Reading the cheek height now pays two ways.
+  let arcTag = null;
+  if (fist) {
+    dir.y = 0.15;
+  } else {
+    const dyN = hit.part === 'head'
+      ? THREE.MathUtils.clamp((hit.point.y - hit.center.y) / (opponent.rHead * 0.7), -1, 1) : 0;
+    dir.y = THREE.MathUtils.clamp(0.34 + player.strikeLift * 0.55 + dyN * 0.09, 0.18, 0.52);
+    if (hit.part === 'head') arcTag = dyN > 0.5 ? 'STEEP' : dyN < -0.5 ? 'FLAT' : 'LEVEL';
+  }
   dir.normalize();
 
   // TANGENTIAL SPIN — a whipping open palm drags ACROSS the cheek and sets the
@@ -904,6 +918,7 @@ function onContact(hit, fist) {
       coil: Math.round(Math.min(1, coilFrac) * 100), l: lg.label, a: ag.label, p: pg.label, ugly,
       bal: Math.round(balF * 100),
       cq: hit.part === 'head' ? Math.round(cq * 100) : null, // contact flushness (100 = level+square)
+      arc: arcTag, // launch-angle read: STEEP (caught high) / FLAT (caught low) / LEVEL
       pct: chainPct, // % of theoretical max — same number the boss gates judge
     },
   };
