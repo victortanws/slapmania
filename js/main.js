@@ -56,6 +56,7 @@ let clapT = 0;
 let swellT = 0;
 let barricadeHit = false;
 let gongRung = false; // dojo: the Great Gong rings once per attempt
+let lavaBurned = false; // lava: the flame-broil reaction fires once per attempt
 let mooDone = false;
 let duelDone = false;
 let masterDone = false;
@@ -698,6 +699,7 @@ function startAttempt() {
   dustCool = 0;
   barricadeHit = false;
   gongRung = false;
+  lavaBurned = false;
   mooDone = false;
   duelDone = false;
   masterDone = false;
@@ -932,7 +934,8 @@ function showResult() {
   // world personality on the result card — deterministic garnish, never scoring
   const worldNow = activeWorld; // the world on stage, incl. tour pins
   if (worldNow === 'lava' && !isFoul) {
-    line += ` DONENESS: ${dist < 20 ? 'STILL RAW.' : dist < 45 ? 'MEDIUM RARE.' : dist < 70 ? 'WELL DONE.' : "FLAME-BROILED. Chef's kiss."}`;
+    line += slap && slap._lavaBurned ? ' 🌋 STRAIGHT INTO THE MOLTEN SEA — flame-broiled to a crisp!'
+      : ` DONENESS: ${dist < 20 ? 'STILL RAW.' : dist < 45 ? 'MEDIUM RARE.' : dist < 70 ? 'WELL DONE.' : "FLAME-BROILED. Chef's kiss."}`;
   } else if (worldNow === 'therapy') {
     line += ' ' + (isFoul
       ? (slap.foul === 'clock' ? 'DIAGNOSIS: classic avoidance.' : 'DIAGNOSIS: overextension. You fear commitment, yet here we are.')
@@ -1490,6 +1493,17 @@ function tick(now) {
       excite = Math.min(1, excite + 0.5);
       ui.slapBurst('THROUGH THE BARRICADE!', '');
       stage.sunMood('happy', 4);
+    }
+    // LAVA LAND: drift off the crust causeway into the molten sea and the
+    // volunteer is FLAME-BROILED — a real reaction, not a silent pass-through
+    if (!lavaBurned && activeWorld === 'lava' && Math.abs(pel.z) > 6.5 && pel.x > stage.START_X + 2 && pel.y < 3) {
+      lavaBurned = true;
+      stage.lavaBurst(pel);
+      sfx.crack(1); sfx.crash();
+      stage.shake(0.4);
+      excite = Math.min(1, excite + 0.4);
+      ui.slapBurst('FLAME-BROILED!', 'INTO THE MOLTEN SEA — WELL DONE');
+      if (slap) slap._lavaBurned = true;
     }
     // in the DOJO, a body that reaches the 62m wall RINGS THE GREAT GONG —
     // the SLAPMASTER bar, heard before it's told

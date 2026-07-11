@@ -909,6 +909,9 @@ export function createStage(canvas) {
     }
   }
 
+  // fair-only décor (watermelons, the wooden scoreboard, the county-line sign,
+  // the wandering animals) — hidden wholesale on non-fair worlds via hideFair
+  const fairDecor = [];
   // watermelon patch by the ring-side fence
   for (let i = 0; i < 8; i++) {
     const w = new THREE.Mesh(new THREE.SphereGeometry(0.2 + Math.random() * 0.1, 10, 8), biomeMat(toonMat(0x3f7d3a), { ice: 0xeaf1f6, desert: 0xb0a06a }));
@@ -917,6 +920,7 @@ export function createStage(canvas) {
     w.position.set(26 + Math.random() * 6, 0.16, -15.5 - Math.random() * 3);
     w.castShadow = true;
     scene.add(w);
+    fairDecor.push(w);
   }
 
   // the county line: cross it airborne and you're a local legend
@@ -938,6 +942,7 @@ export function createStage(canvas) {
     signG.traverse((o) => { o.castShadow = true; });
     signG.position.set(80, 0, 5.5);
     scene.add(signG);
+    fairDecor.push(signG);
   }
 
   // perimeter forest: the TRUE edge of the world, dressed as dense conifers
@@ -1641,7 +1646,9 @@ export function createStage(canvas) {
         sm.m.material.opacity = Math.max(0, 0.5 - t2 / 42);
       }
       const k = 0.5 + Math.sin(time * 1.3) * 0.5;   // molten shimmer across the sea
-      for (const sea of seaMats) sea.color.setRGB(1, 0.30 + k * 0.14, 0.06 + k * 0.06);
+      // low green/blue: ACES tone-mapping blows brighter inputs to pale sand —
+      // these tone-map to a saturated molten orange (verified via readPixels)
+      for (const sea of seaMats) sea.color.setRGB(1, 0.09 + k * 0.09, 0.01 + k * 0.02);
       for (const dm of lavaDemons) {          // basalt brutes amble the flanks
         const ph = ((time * dm.spd + dm.ph0) % 2 + 2) % 2, fwd = ph < 1;
         dm.g.position.x = dm.x0 + dm.span * (fwd ? ph : 2 - ph);
@@ -2033,6 +2040,20 @@ export function createStage(canvas) {
     }
   }
 
+  const flameGeo = new THREE.ConeGeometry(0.4, 1.2, 7);
+  function lavaBurst(point) {
+    // a gout of fire + dark smoke where a body plunges into the molten sea
+    for (let i = 0; i < 14; i++) {
+      const fire = i > 9;
+      const m = new THREE.Mesh(fire ? new THREE.SphereGeometry(0.6, 8, 8) : flameGeo,
+        new THREE.MeshBasicMaterial({ color: fire ? 0x2a201c : [0xff3a10, 0xff8a20, 0xffd23f][i % 3], transparent: true, opacity: 1, depthWrite: false }));
+      m.position.copy(point); m.position.y = 0.3;
+      scene.add(m);
+      fx.push({ mesh: m, t: 0, life: fire ? 1.1 : 0.55 + Math.random() * 0.4, type: 'flame', big: fire ? 2.5 : 1.4 + Math.random(),
+        v: new THREE.Vector3((Math.random() - 0.5) * 4, (fire ? 2 : 5) + Math.random() * 4, (Math.random() - 0.5) * 4) });
+    }
+  }
+
   function spawnDust(point, big = 1) {
     for (let i = 0; i < 6; i++) {
       const m = new THREE.Mesh(dustGeo, new THREE.MeshBasicMaterial({
@@ -2109,6 +2130,11 @@ export function createStage(canvas) {
         f.mesh.rotation.y += f.av.y * dt;
         f.mesh.rotation.z += f.av.z * dt;
         f.mesh.material.opacity = k > 0.7 ? (1 - k) / 0.3 : 1;
+      } else if (f.type === 'flame') {
+        f.mesh.position.addScaledVector(f.v, dt);
+        f.v.y += 4 * dt; // fire leaps UP
+        f.mesh.scale.setScalar(Math.max(0.05, (1 - k) * f.big));
+        f.mesh.material.opacity = 1 - k;
       } else if (f.type === 'feather') {
         f.mesh.position.addScaledVector(f.v, dt);
         f.v.y = Math.max(f.v.y - 3 * dt, -0.7); // feathers drift down, never drop
@@ -3715,13 +3741,22 @@ export function createStage(canvas) {
         return;
       }
       const h = 8 + (i % 5) * 2.4;
-      const tower = new THREE.Mesh(new THREE.BoxGeometry(3.4, h, 3.4), toonMat(0x14141c));
+      // LIT warm hotel facades (cream / gold / champagne) — not black boxes
+      const facade = [0xd9c4a0, 0xc9a86a, 0xe0d0b0, 0xb89a7a, 0xd8b878][i % 5];
+      const tower = new THREE.Mesh(new THREE.BoxGeometry(3.4, h, 3.4), toonMat(facade));
       tower.position.set(x, h / 2, z); g.add(tower);
+      // rows of warm-lit windows down the face (glow, cheap, sells "occupied hotel")
+      for (let wy = 1; wy < Math.floor(h / 1.4); wy++) {
+        for (const wx of [-1, 0, 1]) {
+          const win = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.7, 0.06), glowMat((wx + wy) % 4 ? 0xffe6a0 : 0x2fd4ff));
+          win.position.set(x + wx * 1.0, wy * 1.4, z + 1.72); g.add(win);
+        }
+      }
       for (const sx of [-1.7, 1.7]) for (const sz of [-1.7, 1.7]) {
-        const edge = new THREE.Mesh(new THREE.BoxGeometry(0.14, h, 0.14), glowMat(hue));
+        const edge = new THREE.Mesh(new THREE.BoxGeometry(0.16, h, 0.16), glowMat(hue));
         edge.position.set(x + sx, h / 2, z + sz); g.add(edge);
       }
-      const crown = new THREE.Mesh(new THREE.BoxGeometry(3.7, 0.4, 3.7), glowMat(hue));
+      const crown = new THREE.Mesh(new THREE.BoxGeometry(3.7, 0.5, 3.7), glowMat(hue));
       crown.position.set(x, h - 0.3, z); g.add(crown);
       vegasNeon.push({ m: crown.material, base: 1, sp: 2 + (i % 3), ph: i });
       if (kind === 5) {                         // a giant slot-machine facade
@@ -3796,6 +3831,116 @@ export function createStage(canvas) {
       cone.userData.sweep = { ph: x };
       vegasSpots.push(cone);
     }
+    // ---- ROADS PAVED WITH GOLD: a glowing gold carpet down the lane, inlaid
+    // with a diamond-chain centerline ----
+    const goldLane = new THREE.Mesh(new THREE.PlaneGeometry(160, 9), glowMat(0xd9a838));
+    goldLane.material.transparent = true; goldLane.material.opacity = 0.55;
+    goldLane.rotation.x = -Math.PI / 2; goldLane.position.set(58, 0.02, 0); vegasG.add(goldLane);
+    for (let i = 0; i < 30; i++) {
+      const dia = new THREE.Mesh(new THREE.CircleGeometry(0.35, 4), glowMat(0xfff2c0));
+      dia.rotation.x = -Math.PI / 2; dia.rotation.z = Math.PI / 4;
+      dia.position.set(-14 + i * 4, 0.03, 0); vegasG.add(dia);
+      vegasNeon.push({ m: dia.material, base: 1, sp: 3, ph: i * 0.4 });
+    }
+
+    // ---- GREEK MARBLE STATUES on pillars (Caesar/Bellagio classical) ----
+    const marble = toonMat(0xf0ece0), gold = toonMat(0xd9a838);
+    for (const [sx, sz, kind] of [[16, -7.5, 0], [30, 7.8, 1], [50, -7.8, 0], [76, 7.6, 1], [92, -7.6, 0]]) {
+      const st = new THREE.Group();
+      const base = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 1.05, 0.6, 12), marble);
+      base.position.y = 0.3; st.add(base);
+      const col = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.55, 2.4, 14), marble);
+      col.position.y = 1.8; st.add(col);
+      for (let f = 0; f < 12; f++) {          // fluting
+        const fl = new THREE.Mesh(new THREE.BoxGeometry(0.06, 2.4, 0.06), toonMat(0xd8d2c4));
+        const a = f / 12 * Math.PI * 2; fl.position.set(Math.cos(a) * 0.52, 1.8, Math.sin(a) * 0.52); st.add(fl);
+      }
+      const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.5, 0.35, 14), marble);
+      cap.position.y = 3.2; st.add(cap);
+      // the figure: a robed classical body + head, one arm raised holding a torch
+      const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.42, 0.9, 4, 10), marble);
+      body.position.y = 4.1; st.add(body);
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 10, 10), marble);
+      head.position.y = 4.9; st.add(head);
+      const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.13, 0.7, 4, 8), marble);
+      arm.position.set(kind ? 0.5 : -0.5, 4.6, 0); arm.rotation.z = kind ? -0.9 : 0.9; st.add(arm);
+      const torch = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.5, 8), glowMat(0xffb020));
+      torch.position.set(kind ? 0.82 : -0.82, 5.2, 0); st.add(torch);
+      vegasNeon.push({ m: torch.material, base: 1, sp: 6, ph: sx });
+      const laurel = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.05, 6, 14), gold);
+      laurel.rotation.x = Math.PI / 2; laurel.position.y = 5.05; st.add(laurel);
+      st.position.set(sx, 0, sz); vegasG.add(st);
+    }
+
+    // ---- CARS cruising the Strip shoulders (glowing headlights) ----
+    const carCols = [0xd83a3a, 0x2f7ad8, 0xf4f0e2, 0x1a1a22, 0xffd23f];
+    for (let i = 0; i < 8; i++) {
+      const side = i % 2 ? 1 : -1, cx = 12 + i * 9.5;
+      const car = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.7, 1.2), toonMat(carCols[i % 5]));
+      body.position.y = 0.55; car.add(body);
+      const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.6, 1.1), toonMat(0x2a3038));
+      cabin.position.set(-0.1, 1.1, 0); car.add(cabin);
+      for (const [wx, wz] of [[0.9, 0.6], [0.9, -0.6], [-0.9, 0.6], [-0.9, -0.6]]) {
+        const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.24, 12), toonMat(0x14141c));
+        wheel.rotation.x = Math.PI / 2; wheel.position.set(wx, 0.32, wz); car.add(wheel);
+      }
+      for (const hz of [0.4, -0.4]) {
+        const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.14, 8, 8), glowMat(0xfff6d0));
+        lamp.position.set(1.35, 0.55, hz); car.add(lamp);
+      }
+      const tail = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.2, 1.0), glowMat(0xd83a3a));
+      tail.position.set(-1.32, 0.6, 0); car.add(tail);
+      car.position.set(cx, 0, side * 8.4); car.rotation.y = side > 0 ? Math.PI : 0;
+      vegasG.add(car);
+    }
+
+    // ---- roadside SLOT MACHINES, conspicuously on the shoulders ----
+    for (let i = 0; i < 7; i++) {
+      const side = i % 2 ? -1 : 1, mx = 20 + i * 10;
+      const slot = new THREE.Group();
+      const cab = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.8, 0.7), toonMat(0x8a1030));
+      cab.position.y = 0.9; slot.add(cab);
+      const screen = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.55, 0.05), glowMat(0xffe08a));
+      screen.position.set(0, 1.25, 0.38); slot.add(screen);
+      vegasNeon.push({ m: screen.material, base: 1, sp: 4, ph: mx });
+      for (let r = 0; r < 3; r++) {
+        const reel = new THREE.Mesh(new THREE.CircleGeometry(0.11, 12), toonMat(0x14141c));
+        reel.position.set(-0.24 + r * 0.24, 1.25, 0.41); slot.add(reel);
+      }
+      const lever = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.6, 8), toonMat(0xc9c2b5));
+      lever.position.set(0.55, 1.1, 0); lever.rotation.z = -0.4; slot.add(lever);
+      const ball = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), glowMat(0xd83a3a));
+      ball.position.set(0.72, 1.35, 0); slot.add(ball);
+      const topper = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.3, 0.7), glowMat(0xff2f8e));
+      topper.position.y = 1.95; slot.add(topper);
+      vegasNeon.push({ m: topper.material, base: 1, sp: 2.5, ph: mx + 1 });
+      slot.position.set(mx, 0, side * 6.2); slot.rotation.y = side > 0 ? -0.4 : 0.4;
+      vegasG.add(slot);
+    }
+
+    // ---- GIANT CARD BILLBOARDS towering over the Strip ----
+    const suits = [['A', '♠', 0x14141c], ['K', '♥', 0xd83a3a], ['Q', '♦', 0xd83a3a], ['J', '♣', 0x14141c]];
+    for (let i = 0; i < 4; i++) {
+      const [rank, suit, col] = suits[i];
+      const bx = 22 + i * 22, side = i % 2 ? 1 : -1;
+      const bb = new THREE.Group();
+      for (const s of [-1.4, 1.4]) {
+        const leg = new THREE.Mesh(new THREE.BoxGeometry(0.4, 9, 0.4), toonMat(0x2a2a33));
+        leg.position.set(0, 4.5, s); bb.add(leg);
+      }
+      const face = new THREE.Mesh(new THREE.BoxGeometry(0.3, 6, 4.2), toonMat(0xf4f0e2));
+      face.position.y = 11; bb.add(face);
+      const card = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 5.2),
+        new THREE.MeshBasicMaterial({ map: makeTextTexture(rank + suit, col === 0xd83a3a ? '#d83a3a' : '#14141c'), transparent: true }));
+      card.position.set(-0.17, 11, 0); card.rotation.y = -Math.PI / 2; bb.add(card);
+      const frame = new THREE.Mesh(new THREE.BoxGeometry(0.36, 6.4, 4.6), glowMat(0xffd23f));
+      frame.position.y = 11; bb.add(frame);
+      vegasNeon.push({ m: frame.material, base: 1, sp: 1.5 + i, ph: bx });
+      bb.position.set(bx, 0, side * 13); bb.rotation.y = side > 0 ? 0.3 : -0.3;
+      vegasG.add(bb);
+    }
+
     vegasG.traverse((m) => { if (m.isMesh && m.material.type !== 'MeshBasicMaterial') m.castShadow = true; });
     vegasG.visible = false;
     scene.add(vegasG);
@@ -3917,8 +4062,8 @@ export function createStage(canvas) {
     hell: { fog: [0x2a0f12, 34, 118], skyTint: 0x3a0f14, hemi: [0xd85a3a, 0x2a0c0c, 0.82], sun: [0xff5a2a, 1.45], fill: 0.22, cloud: 0x4a1a1a, maps: false, grass: 0x4a1f1c, lane: 0x6e2a1e, night: false, sunFace: false,
       group: 'hell', biome: 'hell', crowd: 'hell', pond: 0xff7a20,
       hideFarm: true, hideCloths: true, hideFences: true, barricade: 'redtape' },
-    vegas: { fog: [0x0e0a16, 40, 150], skyTint: 0x0a0710, hemi: [0x5a4a7a, 0x14101c, 0.55], sun: [0xff8ad0, 0.7], fill: 0.16, cloud: 0x1a1226, maps: false, grass: 0x1a0e26, lane: 0x120a1c, night: true, sunFace: false,
-      group: 'vegas', biome: 'vegas', crowd: 'vegas', pond: 0x2fd4ff, sunTint: [0xff8ad0, 0.5],
+    vegas: { fog: [0x3a2450, 60, 210], skyTint: 0x241640, hemi: [0xffd9a0, 0x4a2f6a, 1.05], sun: [0xffcf9a, 1.7], fill: 0.42, cloud: 0x4a2f6a, maps: false, grass: 0x3a2450, lane: 0xcaa03a, night: true, sunFace: false,
+      group: 'vegas', biome: 'vegas', crowd: 'vegas', pond: 0x2fd4ff, sunTint: [0xffe0b0, 0.8],
       hideFarm: true, hideBarn: true, hideFair: true, hideCloths: true, hideFences: true, barricade: 'chips' },
   };
   const WORLD_GROUPS = {
@@ -3984,6 +4129,9 @@ export function createStage(canvas) {
     for (const tr of orchardTrees) tr.visible = !t.hideFair;
     for (const cm of [cornIM, edgeCornIM, fieldCornIM]) cm.visible = !t.hideFair; // no cornfields on the Strip / a ship / the tar
     for (const tr of sceneTrees) tr.visible = !t.hideFair;
+    for (const d of fairDecor) d.visible = !t.hideFair;      // watermelons, county sign
+    for (const a of animals) a.g.visible = !t.hideFair;      // no wandering pigs on the Strip
+    sb.visible = !t.hideFair;                                // the "SLAPMANIA FAIR" board is fair-only
     for (const fh of farmhouses) fh.visible = !t.hideFarm;
     for (const fb of fenceBits) fb.visible = !t.hideFences;
     for (const c of cloths) c.mesh.visible = !t.hideCloths;
@@ -3997,7 +4145,7 @@ export function createStage(canvas) {
     renderer, scene, camera, updateCrowd, shake, applyShake, START_X,
     trackSun, spawnShock, spawnDust, updateFX, updateAmbient, setScoreboard, animals,
     breakBarricade, resetBarricade, isBarricadeBroken: () => barricade.broken,
-    sunMood, currentSunMood: () => sunCurrent, cowMoo, kidsCelebrate, spawnConfetti,
+    sunMood, currentSunMood: () => sunCurrent, cowMoo, kidsCelebrate, spawnConfetti, lavaBurst,
     summonSpirits, spawnBeam, spawnSparkles, slapDuel, scareBirds, solids, setWorldTheme, hasWorld,
     // strike the dojo's Great Gong: a big wobble that decays in updateAmbient
     ringGong: () => { if (gongDisc) gongDisc.rotation.x = 0.45; },
