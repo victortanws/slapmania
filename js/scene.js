@@ -605,6 +605,7 @@ export function createStage(canvas) {
   }
   scene.add(biomeIM(edgeCornIM, 280, { ice: 0xd9cfa8, desert: 0xcbb187, lava: 0x2a2220, hell: 0x2a1a18, heaven: 0xf0d060, dojo: 0xa8b86a, therapy: 0x7a6a94, haunted: 0x5a5244, tech: 0x4a5560 }));
 
+  const fairDecor = []; // every fair/farm prop that must vanish on non-fair worlds
   function scarecrow(x, z, ry = 0) {
     const g = new THREE.Group();
     const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 2.2, 6), toonMat(0x8a6a42));
@@ -630,6 +631,7 @@ export function createStage(canvas) {
     g.rotation.y = ry;
     g.position.set(x, 0, z);
     scene.add(g);
+    fairDecor.push(g);
     solids.push({ kind: 'cyl', x, z, r: 0.3, h: 2.1 });
   }
   scarecrow(30, 5.6, -0.5);
@@ -727,6 +729,7 @@ export function createStage(canvas) {
     g.traverse((o) => { o.castShadow = true; });
     g.position.set(x, 0, z);
     scene.add(g);
+    fairDecor.push(g);
   }
   for (let i = 0; i < 6; i++) sunflower(56 + i * 2.4, 6.4 + (i % 3) * 0.9, 0.9 + Math.random() * 0.4);
   for (let i = 0; i < 4; i++) sunflower(60 + i * 2.8, -6.8 - (i % 2) * 1.1, 0.9 + Math.random() * 0.4);
@@ -910,12 +913,10 @@ export function createStage(canvas) {
       const reed = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.035, 0.9 + Math.random() * 0.6, 4), biomeMat(toonMat(0x5c7a3a), { ice: 0xcbb98a, desert: 0x9a8a6a }));
       reed.position.set(40 + Math.cos(a) * (5.6 + Math.random()), 0.5, 24 + Math.sin(a) * (5.6 + Math.random()));
       scene.add(reed);
+      fairDecor.push(reed);
     }
   }
 
-  // fair-only décor (watermelons, the wooden scoreboard, the county-line sign,
-  // the wandering animals) — hidden wholesale on non-fair worlds via hideFair
-  const fairDecor = [];
   // watermelon patch by the ring-side fence
   for (let i = 0; i < 8; i++) {
     const w = new THREE.Mesh(new THREE.SphereGeometry(0.2 + Math.random() * 0.1, 10, 8), biomeMat(toonMat(0x3f7d3a), { ice: 0xeaf1f6, desert: 0xb0a06a }));
@@ -1609,6 +1610,13 @@ export function createStage(canvas) {
     fan.rotation.z += dt * 1.4;
     if (desertG.visible) {
       for (const tw of tumbleweeds) {
+        if (tw.camel) {                                     // camels amble a fixed line
+          const ph = ((time * tw.spd + tw.ph0) % 2 + 2) % 2, fwd = ph < 1;
+          tw.m.position.x = tw.x0 + tw.span * (fwd ? ph : 2 - ph);
+          tw.m.rotation.y = fwd ? 0 : Math.PI;
+          tw.m.position.y = Math.abs(Math.sin(time * 2.4 + tw.ph0)) * 0.08;
+          continue;
+        }
         tw.m.position.x += tw.speed * dt;
         tw.m.rotation.z -= (tw.speed / tw.r) * dt;          // roll like it means it
         tw.m.position.z = tw.z0 + Math.sin(time * 0.6 + tw.r * 20) * 1.6;
@@ -2562,6 +2570,29 @@ export function createStage(canvas) {
       tw.position.set(-20 + Math.random() * 130, r, -9 + Math.random() * 18);
       desertG.add(tw);
       tumbleweeds.push({ m: tw, r, speed: 3 + Math.random() * 2.5, z0: tw.position.z });
+    }
+    // CAMELS ambling the dunes (deterministic amble, like the lava salamander)
+    const camelTan = toonMat(0xc9a066);
+    for (const [cx, cz, span, spd, ph0] of [[20, -15, 44, 0.04, 0], [64, 16, 40, 0.033, 1], [40, -20, 36, 0.028, 2]]) {
+      const cam = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.7, 2.0, 6, 10), camelTan);
+      body.rotation.z = Math.PI / 2; body.position.y = 1.9; cam.add(body);
+      for (const hx of [-0.4, 0.5]) {          // two humps
+        const hump = new THREE.Mesh(new THREE.SphereGeometry(0.6, 10, 8), camelTan);
+        hump.position.set(hx, 2.5, 0); hump.scale.y = 0.9; cam.add(hump);
+      }
+      const neck = new THREE.Mesh(new THREE.CapsuleGeometry(0.28, 1.4, 4, 8), camelTan);
+      neck.position.set(1.4, 2.5, 0); neck.rotation.z = 0.7; cam.add(neck);
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.42, 10, 8), camelTan);
+      head.position.set(2.1, 3.2, 0); head.scale.x = 1.3; cam.add(head);
+      for (const [lx, lz] of [[-0.8, 0.35], [-0.8, -0.35], [0.8, 0.35], [0.8, -0.35]]) {
+        const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.13, 1.9, 7), camelTan);
+        leg.position.set(lx, 0.95, lz); cam.add(leg);
+      }
+      cam.position.set(cx, 0, cz);
+      cam.traverse((m) => { m.castShadow = true; });
+      desertG.add(cam);
+      tumbleweeds.push({ m: cam, camel: true, x0: cx, span, spd, ph0 });
     }
     desertG.visible = false;
     scene.add(desertG);
@@ -4272,10 +4303,10 @@ export function createStage(canvas) {
       group: 'dojo', biome: 'dojo', crowd: 'dojo', pond: 0x4a7a8a,
       hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, barricade: 'shoji' },
     lava: { fog: [0x5a2414, 48, 165], skyTint: 0x3a1810, hemi: [0xffb070, 0x5a2410, 1.12], sun: [0xff8a3a, 1.9], fill: 0.4, cloud: 0x6a2e1e, maps: false, grass: 0x201613, lane: 0x2a201c, night: false, sunFace: false,
-      group: 'lava', biome: 'lava', crowd: 'lava', pond: 0xff7a20,
+      group: 'lava', biome: 'lava', crowd: 'lava', pond: 0xff7a20, hideCrowd: true,
       hideFarm: true, hideBarn: true, hideFair: true, hideCloths: true, hideFences: true, barricade: 'boulders' },
     therapy: { fog: [0x4a3524, 85, 260], skyTint: 0x3a2a1c, hemi: [0xffe4b8, 0x6a4e34, 1.45], sun: [0xfff0d4, 1.8], fill: 0.6, cloud: 0x4a3524, maps: false, grass: 0x7a5636, lane: 0x8a2530, night: false, sunFace: false,
-      group: 'therapy', biome: 'therapy', crowd: 'therapy', pond: 0x14141c, sunTint: [0xf0e4ff, 0.9],
+      group: 'therapy', biome: 'therapy', crowd: 'therapy', pond: 0x14141c, sunTint: [0xf0e4ff, 0.9], hideCrowd: true,
       hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, hideBarn: true, barricade: 'books' },
     heaven: { fog: [0xf4f0e4, 30, 110], skyTint: 0xcfe4f8, hemi: [0xfff8e8, 0xd8d2c0, 1.15], sun: [0xfff6d8, 2.3], fill: 0.4, cloud: 0xffffff, maps: false, grass: 0xf2eede, lane: 0xf7e9b8, night: false, sunFace: true,
       group: 'heaven', biome: 'heaven', crowd: 'heaven', pond: 0xbfe0f4,
@@ -4352,7 +4383,10 @@ export function createStage(canvas) {
     for (const tr of sceneTrees) tr.visible = !t.hideFair;
     for (const d of fairDecor) d.visible = !t.hideFair;      // watermelons, county sign
     for (const a of animals) a.g.visible = !t.hideFair;      // no wandering pigs on the Strip
+    for (const b of birds) b.g.visible = !t.hideFair;        // no farm sparrows over hell
     sb.visible = !t.hideFair;                                // the "SLAPMANIA FAIR" board is fair-only
+    for (const im of [bodyIM, headIM, armIM, eyeIM, hairIM, skirtIM, brimIM, crownIM])
+      im.visible = !t.hideCrowd;                             // no human audience in lava or a therapy room
     balloon.visible = !t.hideFair;                           // the fair balloon doesn't drift over hell
     buntingG.visible = !t.hideFair;                          // no fairground pennants in a therapy room
     for (const fh of farmhouses) fh.visible = !t.hideFarm;
