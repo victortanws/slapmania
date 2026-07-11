@@ -280,24 +280,34 @@ export function showResult({ dist, pts, arch, part, foul, chain, line, n }) {
       ? 'BODY BLOW: −55% POWER. THE CHEEK PAYS FULL PRICE.'
       : 'CLEAN CHEEK CONTACT ✓';
   }
-  // contact flushness: FLUSH = struck level through the cheek's center; GRAZE =
-  // skimmed high/low. Teaches the read-the-heights game without a new meter.
-  const cqNote = chain && chain.cq != null
-    ? (chain.cq >= 106 ? ` · FLUSH +${chain.cq - 100}%` : chain.cq <= 94 ? ` · GRAZE −${100 - chain.cq}%` : '')
-    : '';
-  // launch-angle read: caught HIGH on the cheek → steeper arc, LOW → flatter.
-  // The aiming skill in tension with flushness — where you land vertically shapes the flight.
-  const arcNote = chain && chain.arc && chain.arc !== 'LEVEL'
-    ? (chain.arc === 'STEEP' ? ' · HIGH ↗ STEEP ARC' : ' · LOW ↘ FLAT ARC')
-    : '';
-  // arm-extension read: force transfers best near full extension. SHORT = arm
-  // still folding (fire the palm sooner); OVEREXTENDED = locked out past the peak.
-  const reachNote = chain && chain.reach && chain.reach !== 'FULL'
-    ? (chain.reach === 'SHORT' ? ' · SHORT ARM — EXTEND MORE' : ' · OVEREXTENDED')
-    : '';
-  el.resChain.textContent = chain
-    ? `CHAIN ${chain.pct}% OF PERFECT — SWIVEL ${chain.coil}% · LUNGE ${chain.l} · ARM ${chain.a} · PALM ${chain.p}${cqNote}${arcNote}${reachNote}${chain.ugly ? ' · (REBOUND FLAIL −70%)' : ''}${chain.bal != null && chain.bal < 95 ? ` · OFF-BALANCE −${100 - chain.bal}%` : ''}`
-    : '';
+  // ── HONEST POWER BREAKDOWN ──────────────────────────────────────────────
+  // Your distance is a PRODUCT of several factors, not just the chain. The old
+  // card headlined "CHAIN n% OF PERFECT" as if it were the whole score — but
+  // balance, flush and reach also multiply the power and were buried in
+  // dead-band-gated footnotes, so identical chains gave wildly different flights
+  // with no visible cause. Now every real lever shows every time, and we name
+  // the single WEAKEST LINK with a concrete fix so the player knows what to
+  // change next swing (the levers themselves are unchanged — only how they read).
+  if (foul || !chain) {
+    el.resChain.innerHTML = '';
+  } else {
+    const factors = [
+      { key: 'CHAIN', pct: chain.pct, tip: 'your S·L·A·P timing slipped — ride the green ring and fire in rhythm' },
+      { key: 'BALANCE', pct: chain.bal, tip: 'you slapped off-balance — a braced stance hits up to 45% harder' },
+    ];
+    if (chain.cq != null) factors.push({ key: 'FLUSH', pct: chain.cq,
+      tip: (chain.arc === 'STEEP' ? 'you caught him high' : chain.arc === 'FLAT' ? 'you caught him low' : 'you skimmed off-center') + ' — strike LEVEL through the cheek' });
+    if (chain.extPct != null) factors.push({ key: 'REACH', pct: chain.extPct, tip: 'your arm was still folding — EXTEND fully, then fire the palm' });
+    const bar = factors.map(f => `${f.key} <b>${f.pct}%</b>`).join('  ·  ');
+    // FLUSH can exceed 100 (a bonus); only sub-100 factors are "links to fix"
+    const weak = factors.filter(f => f.pct < 96).sort((a, b) => a.pct - b.pct)[0];
+    const takeaway = weak
+      ? `<span style="color:#ffd23f">▸ WEAKEST LINK — ${weak.key} ${weak.pct}%: ${weak.tip}.</span>`
+      : `<span style="color:#7dff8a">▸ TEXTBOOK FORM. Nothing to fix — now reach for distance.</span>`;
+    const flags = `${chain.ugly ? ' · REBOUND FLAIL −70%' : ''}${chain.arc && chain.arc !== 'LEVEL' ? (chain.arc === 'STEEP' ? ' · HIGH↗ ARC' : ' · LOW↘ ARC') : ''}`;
+    const detail = `<span style="opacity:.62;font-size:.86em">timing · SWIVEL ${chain.coil}% · LUNGE ${chain.l} · ARM ${chain.a} · PALM ${chain.p}${flags}</span>`;
+    el.resChain.innerHTML = `POWER  ·  ${bar}<br>${takeaway}<br>${detail}`;
+  }
   el.resLine.textContent = line;
   el.resNext.textContent = n >= 3 ? 'CLICK / ENTER → FINAL VERDICT' : `CLICK / ENTER → ATTEMPT ${n + 1} OF 3`;
 }
