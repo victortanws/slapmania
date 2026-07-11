@@ -290,8 +290,13 @@ export function showResult({ dist, pts, arch, part, foul, chain, line, n }) {
   const arcNote = chain && chain.arc && chain.arc !== 'LEVEL'
     ? (chain.arc === 'STEEP' ? ' · HIGH ↗ STEEP ARC' : ' · LOW ↘ FLAT ARC')
     : '';
+  // arm-extension read: force transfers best near full extension. SHORT = arm
+  // still folding (fire the palm sooner); OVEREXTENDED = locked out past the peak.
+  const reachNote = chain && chain.reach && chain.reach !== 'FULL'
+    ? (chain.reach === 'SHORT' ? ' · SHORT ARM — EXTEND MORE' : ' · OVEREXTENDED')
+    : '';
   el.resChain.textContent = chain
-    ? `CHAIN ${chain.pct}% OF PERFECT — SWIVEL ${chain.coil}% · LUNGE ${chain.l} · ARM ${chain.a} · PALM ${chain.p}${cqNote}${arcNote}${chain.ugly ? ' · (REBOUND FLAIL −70%)' : ''}${chain.bal != null && chain.bal < 95 ? ` · OFF-BALANCE −${100 - chain.bal}%` : ''}`
+    ? `CHAIN ${chain.pct}% OF PERFECT — SWIVEL ${chain.coil}% · LUNGE ${chain.l} · ARM ${chain.a} · PALM ${chain.p}${cqNote}${arcNote}${reachNote}${chain.ugly ? ' · (REBOUND FLAIL −70%)' : ''}${chain.bal != null && chain.bal < 95 ? ` · OFF-BALANCE −${100 - chain.bal}%` : ''}`
     : '';
   el.resLine.textContent = line;
   el.resNext.textContent = n >= 3 ? 'CLICK / ENTER → FINAL VERDICT' : `CLICK / ENTER → ATTEMPT ${n + 1} OF 3`;

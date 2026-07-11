@@ -829,6 +829,21 @@ function onContact(hit, fist) {
   // strike still lands hard (the Lil' Dynamite short-range-bruiser tradeoff).
   const MOM_REF = 10;
   power *= THREE.MathUtils.clamp(0.3 + 0.7 * player.armMass * speed / MOM_REF, 0.35, 1.6);
+  // EXTENSION BELL — force transfers best when the arm connects near FULL
+  // extension (peak reach + hand speed). A bell centred where a well-timed palm
+  // lands (~0.93 of the elbow's range) → PERFECT is 1.0 (base roster unchanged);
+  // connecting UNDER-extended (arm still folding — late P, or a heavy arm too
+  // slow to open) OR hyperextended/locked out costs force. This is the arm-based
+  // timing axis the spine grades miss: a giant arm can't reach full extension on
+  // a long whip in time, so it must strike SHORT to land flush — Dynamite's real
+  // downside. Fist punches keep their own model (elbow stays folded by design).
+  const elb = player.j.elbow;
+  const armExt = (elb.max - elb.a) / (elb.max - elb.min); // 0 folded → 1 straight
+  const extF = fist ? 1 : THREE.MathUtils.clamp(0.6 + 0.4 * Math.exp(-(((armExt - 0.93) / 0.16) ** 2)), 0.6, 1);
+  // extF is applied POST-CAP (below) so under-extension gates force even at the
+  // cap — a light arm caps AT full extension (extF≈1, untouched) but a heavy arm
+  // caps while still folding (extF<1), so it genuinely can't reach its ceiling on
+  // a long whip. That's the Dynamite downside the spine grades couldn't express.
   // rebound flail: only true multi-oscillation scuffles — a first-rebound catch
   // is a legitimate (already low-graded) beginner slap
   const ugly = chain.tFire != null && swingT - chain.tFire > 2.2;
@@ -879,6 +894,7 @@ function onContact(hit, fist) {
   // cap HIGHER — strength genuinely moves tonnage instead of dying at 30
   power = Math.min(power, 30 * player.strength);
   if (surging && chainPct >= sw.gate) power *= sw.punch; // the 85%-chain surge answer punches past the cap
+  power *= extF; // EXTENSION BELL (post-cap): under-extension can't reach the ceiling — the heavy-arm long-whip downside
 
   // he flies down the lane, carrying a hint of the sideways sweep — and the
   // arc follows the strike angle: an upward slap at a tall victim launches
@@ -965,6 +981,8 @@ function onContact(hit, fist) {
       bal: Math.round(balF * 100),
       cq: hit.part === 'head' ? Math.round(cq * 100) : null, // contact flushness (100 = level+square)
       arc: arcTag, // launch-angle read: STEEP (caught high) / FLAT (caught low) / LEVEL
+      reach: fist ? null : (armExt > 0.985 ? 'OVEREXTENDED' : armExt < 0.87 ? 'SHORT' : 'FULL'), // arm-extension read at contact
+      extPct: fist ? null : Math.round(extF * 100), // for tuning
       pct: chainPct, // % of theoretical max — same number the boss gates judge
     },
   };
