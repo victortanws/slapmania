@@ -409,3 +409,28 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   halo hal(heaven), larry(hell). New look flags: horns, halo, wings, inkblot.
   Campaign order: wonders→fair→secondwind(dlc, world:'dojo')→palm; tour `world:`
   pins apply via setWorldFull and restore on title.
+- **CAMPAIGN VERDICT + MOVEMENT WAVE (2026-07-11)**: campaign MATCH_END is a
+  VERDICT card (`ui.showMatch({tour})`): goal restated, CHALLENGE CLEARED ✔ /
+  FAILED ✘, boards+share hidden; fail → RETRY button relaunches the SAME
+  challenge via `startTourChallenge(ch)` (ESC = title), clear → `campaign.WINS`
+  beat (per-prefix pools, rotated by `winIdx`) or the outro for finales. Element
+  ids: matchTag/matchHint/matchShare. **Movement volunteers** (dlc:true —
+  public pick only with pack, campaigns summon by key): POGO McPHEE `hop`
+  (parabolic bounce, strike the touchdown; springShoes look), NAMASTE NADINE
+  `sway` (fore/aft sun salutation, strike the lean-in; yogaMat), HEAD-TURNING
+  HORTON `headTurn` (head yaws on a 2.4s metronome; power × `headFacing()`
+  0.56–1.1 — turned-away 29.8m vs flush 81.4m on the 30m headdist goal; hat:'top',
+  tails, bowtie look flags). Challenges w1c4/w2c4/w3c4; goal type `headdist`.
+  **o3c3 = skiRun** (replaced skiEscape): Ava parks 9m down the lane, whistle →
+  `beginEscape()`, skis past the player at 1.7 m/s (45% brake through the ring
+  pocket = the catch window), `escaped()` past exitX −8 → instant `foul('escape')`
+  + dedicated `campaign.ESCAPE_FAIL` beat (not the FAILS.o rotation); goal 6m.
+  **Contact integrity**: hand envelope 0.14 (true palm) + SWEPT test — main.js
+  keeps `prevHandSeg` and also tests tip/heel travel segments (fixes 60fps
+  tunneling at 14 m/s); wrap-around palms ≥3.5 m/s driving into the cheek count
+  (velDir.x gate exception; speed taper prices them). Deep matchups (Roy×Hoss)
+  are breath-phase sensitive BY DESIGN now — near-misses look like near-misses.
+  `checkAttempt` clears on replays too (verdict correct; done[] not re-pushed).
+  Retunes: o3c2 50m, t3c1 45m, v2c2 450, t2c2 50m. Portraits use
+  `temp.headMesh.getWorldPosition` (the 1.52·h estimate framed shirts).
+  8 tours in TOUR_ORDER; unknown keys sink (tourRank).
