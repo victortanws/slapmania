@@ -153,6 +153,146 @@ export const TOURS = [
       },
     ],
   },
+  {
+    key: 'nightofslaps', title: '🎃 THE NIGHT OF SLAPS',
+    dlc: true,
+    world: 'haunted',
+    blurb: 'The gates lock at midnight. The night crew wants a headliner. The groundskeeper wants you off the lawn.',
+    acts: [
+      {
+        act: 'ACT I — LOCKED IN',
+        story: 'You stayed for one last funnel cake. The gates lock at midnight, and per bylaws nobody has ever read, the only way out is to headline the Night Fair.',
+        challenges: [
+          { id: 'n1c1', title: 'THE NIGHT GREETER', desc: "A clean slap on JACK O'LANTERN JOE — aim for the face, it's the big orange one", opp: 'joe', goal: { type: 'head' } },
+          { id: 'n1c2', title: 'ACCIDENTAL NIGHT FOLK', desc: 'Send GRANDPA CLETUS 25m — he fell asleep in the outhouse at closing. Again.', opp: 'cletus', goal: { type: 'dist', v: 25 } },
+          { id: 'n1c3', title: 'ON THE POSTER', desc: "Send JACK O'LANTERN JOE 30m into the pumpkin patch — don't worry, he grows back", opp: 'joe', goal: { type: 'dist', v: 30 } },
+        ],
+      },
+      {
+        act: 'ACT II — THE BONE ZONE',
+        story: 'Your audition drew the whole graveyard. Now the night regulars want in — starting with a skeleton who has waited forty years to be aerodynamic.',
+        challenges: [
+          { id: 'n2c1', title: 'THE AERODYNAMICIST', desc: 'Send BONY TONY 60m — no lungs, no drag, no fear', opp: 'tony', goal: { type: 'dist', v: 60 } },
+          { id: 'n2c2', title: 'GRAVEYARD RAVE', desc: "Score 450 off RAVIN' RAY — the skeletons are already glowsticks", opp: 'ravinray', goal: { type: 'pts', v: 450 } },
+          { id: 'n2c3', title: 'THE FLIGHT OF BONY TONY', desc: 'Send BONY TONY 75m — the record wall says CLETUS, 1961. Tonight it says TONY.', opp: 'tony', goal: { type: 'dist', v: 75 } },
+        ],
+      },
+      {
+        act: 'ACT III — MOWING TIME',
+        story: 'The show got loud enough to stop the mower. When the mower stops, the groundskeeper is listening — and everything on his lawn gets mowed at dawn.',
+        challenges: [
+          { id: 'n3c1', title: 'DUET WITH A HAUNTED ORGAN', desc: 'An 88% chain before MAESTRO FORTISSIMO — the organ must NEVER win', opp: 'maestro', goal: { type: 'chain', v: 88 } },
+          { id: 'n3c2', title: 'OVER THE MOWER', desc: "Send JACK O'LANTERN JOE 65m — and whatever you do, don't land him on the lawn", opp: 'joe', goal: { type: 'dist', v: 65 } },
+          { id: 'n3c3', title: '☗ BOSS: MOWING TIME', desc: 'Score 500 off THE GREEN REAPER — 7 seconds a swing, and sloppy form gets re-mowed', opp: 'reaper', goal: { type: 'pts', v: 500 } },
+        ],
+      },
+    ],
+  },
+  {
+    key: 'slaptherapy', title: '🛋️ SLAP THERAPY',
+    dlc: true,
+    world: 'therapy',
+    slapper: 'carlgustav',
+    blurb: 'Fifty years of psychoanalysis. One replicable finding: the slap. The doctor will see you now.',
+    acts: [
+      {
+        act: 'SESSION I — INTAKE',
+        story: 'The board revoked the doctor\'s license over his final paper — "The Palm: A Meta-Analysis." The fair gave him a tent. The patients talk therapy failed are already lining up.',
+        challenges: [
+          { id: 't1c1', title: 'THE FIRST SESSION', desc: 'A clean head slap on INKBLOT IAN — the face must remember it is a face', opp: 'inkblot', goal: { type: 'head' } },
+          { id: 't1c2', title: 'FEAR OF FLYING', desc: 'Send SLIM PETE 25m — exposure therapy: you ARE the airplane', opp: 'slim', goal: { type: 'dist', v: 25 } },
+          { id: 't1c3', title: 'THE CARETAKER', desc: 'Score 350 off BIG BERTHA — what happens to the load when the carrier is briefly airborne?', opp: 'bertha', goal: { type: 'pts', v: 350 } },
+        ],
+      },
+      {
+        act: 'SESSION II — BREAKTHROUGHS',
+        story: "Session One's patients feel better and will not stop telling people. Now the difficult cases arrive: the ego, the algorithm, and a retest for the ages.",
+        challenges: [
+          { id: 't2c1', title: 'THE EGO', desc: 'Score 450 off TREMENDOUS DON — the most expensive slap in medicine', opp: 'don', goal: { type: 'pts', v: 450 } },
+          { id: 't2c2', title: 'LOG OFF', desc: 'Send THE INFLUENCER 55m — for the duration of the flight, no one can perceive you', opp: 'influencer', goal: { type: 'dist', v: 55 } },
+          { id: 't2c3', title: 'THE RORSCHACH RETEST', desc: 'An 80% chain before INKBLOT IAN — the result must replicate', opp: 'inkblot', goal: { type: 'chain', v: 80 } },
+        ],
+      },
+      {
+        act: 'SESSION III — PEER REVIEW',
+        story: 'Half the county is cured; the other half is booking. Then Dr. Freudenschade of the rival school arrives to defend the talking cure — one interpretation at a time.',
+        challenges: [
+          { id: 't3c1', title: 'DREAM WORK', desc: 'Send HAYSEED HANK 70m — some dreams require interpretation; his requires distance', opp: 'hank', goal: { type: 'dist', v: 70 } },
+          { id: 't3c2', title: '☗ BOSS: THE TALKING CURE', desc: 'Score 480 off DR. FREUDENSCHADE — below 75% form he interprets the slap away', opp: 'freuden', goal: { type: 'pts', v: 480 } },
+        ],
+      },
+    ],
+  },
+  {
+    key: 'slopvalley', title: '🤖 SLOP VALLEY',
+    dlc: true,
+    world: 'techcampus',
+    blurb: 'A tech campus disrupted the fair with AI-generated everything. Slapping is the one thing they cannot generate.',
+    acts: [
+      {
+        act: 'SPRINT I — THE DISRUPTION',
+        story: 'The pasture next door is now the SynerCorn campus: generated corn, PDF lemonade, a fortune chatbot. The fair is empty — and the founder wants to buy your palm, the one thing in the valley that cannot be generated.',
+        challenges: [
+          { id: 'v1c1', title: 'THE PITCH', desc: 'A clean head slap on VISIONARY VANCE — consider it a live demo', opp: 'vance', goal: { type: 'head' } },
+          { id: 'v1c2', title: 'ORGANIC REACH', desc: 'Send THE INFLUENCER 50m — one genuinely real clip, no filters. Well. One filter.', opp: 'influencer', goal: { type: 'dist', v: 50 } },
+          { id: 'v1c3', title: 'SHIP IT', desc: 'Send VISIONARY VANCE 40m — he will log it as user engagement', opp: 'vance', goal: { type: 'dist', v: 40 } },
+        ],
+      },
+      {
+        act: 'SPRINT II — FOUNDER MODE',
+        story: 'The demo footage hit the earnings call and the stock did a backflip. The board flew in Miracle Mira for credibility. Her demos are staged, her confidence is baritone, and the runway is on fire.',
+        challenges: [
+          { id: 'v2c1', title: 'THE DEMO', desc: 'A 75% chain before MIRACLE MIRA — she would know a fake. Professionally.', opp: 'mira', goal: { type: 'chain', v: 75 } },
+          { id: 'v2c2', title: 'BURN RATE', desc: 'Score 500 off BIG HOSS — show the board what their money weighs', opp: 'hoss', goal: { type: 'pts', v: 500 } },
+          { id: 'v2c3', title: 'EXIT STRATEGY', desc: 'Send MIRACLE MIRA 60m — an exit only counts if it is bigger than the last round', opp: 'mira', goal: { type: 'dist', v: 60 } },
+        ],
+      },
+      {
+        act: 'SPRINT III — THE AGI REVEAL',
+        story: 'Out of money, out of founders, out of excuses, Vance announces AGI is already here — and wheels out a robot the size of a shed. It mostly generates apologies.',
+        challenges: [
+          { id: 'v3c1', title: 'HUMAN EVAL', desc: 'An 88% chain before SCHOOLMARM SUSIE — the opposite of slop, every link handwritten', opp: 'susie', goal: { type: 'chain', v: 88 } },
+          { id: 'v3c2', title: 'THE LAST PIVOT', desc: 'Send VISIONARY VANCE 75m — the most authentic content this valley has ever produced', opp: 'vance', goal: { type: 'dist', v: 75 } },
+          { id: 'v3c3', title: '☗ FINAL BOSS: S.L.O.P. UNIT-1', desc: 'Score 480 off the robot — 6 seconds of compute a swing; sub-70% slaps get discarded as training data', opp: 'slopunit', goal: { type: 'pts', v: 480 } },
+        ],
+      },
+    ],
+  },
+  {
+    key: 'olympicbid', title: '🥇 THE OLYMPIC BID',
+    dlc: true,
+    slapper: 'victor',
+    blurb: 'The county wants slapping in the Olympics. The Committee has questions. The county has answers, and they are open-palmed.',
+    acts: [
+      {
+        act: 'RING I — THE APPLICATION',
+        story: 'The county filed for slapping to become an Olympic sport, and the Committee sent Commissioner Quibble to observe. Three questions decide everything: is it athletic, is it artistic, is it measurable. You built these fairgrounds. Time to build a sport.',
+        challenges: [
+          { id: 'o1c1', title: 'THE FUNDAMENTALS', desc: "A clean strike to the regulation zone — HAYSEED HANK's cheek, before an official", opp: 'hank', goal: { type: 'head' } },
+          { id: 'o1c2', title: 'THE ARTISTIC PROGRAM', desc: 'A 65% chain before MAESTRO FORTISSIMO — the cello bid rides on your tempo', opp: 'maestro', goal: { type: 'chain', v: 65 } },
+          { id: 'o1c3', title: 'MINIMUM QUALIFYING DISTANCE', desc: 'Send SLIM PETE 30m — he has done it by accident, but the plaque is not sanctioned', opp: 'slim', goal: { type: 'dist', v: 30 } },
+        ],
+      },
+      {
+        act: 'RING II — THE TRIALS',
+        story: 'The application survives round one, so the Committee raises the bar: certified instruction, a sanctioned head-to-head, and an "athletic pedigree" review — delivered in person by freeskiing\'s reigning phenom, who thinks your sport is a raffle.',
+        challenges: [
+          { id: 'o2c1', title: 'TEACHING MOMENT', desc: 'An 80% chain before SCHOOLMARM SUSIE — show the Committee what instruction looks like', opp: 'susie', goal: { type: 'chain', v: 80 } },
+          { id: 'o2c2', title: 'THE EXHIBITION BOUT', desc: 'Send GRANNY THUNDER 30m — you swing, she slips; she swings, you take it. THAT is the exchange.', opp: 'granny', goal: { type: 'dist', v: 30 } },
+          { id: 'o2c3', title: '☗ MINI-BOSS: THE PHENOM', desc: 'Send AVALANCHE AVA 40m — she took the skis off. Free lesson.', opp: 'ava', goal: { type: 'dist', v: 40 } },
+        ],
+      },
+      {
+        act: 'RING III — THE VERDICT',
+        story: 'Ava\'s "evaluation" has 400 million views and the vote moves to a live final. The county needs an anthem moment, an official record — and then the phenom comes back wearing the skis.',
+        challenges: [
+          { id: 'o3c1', title: 'THE ANTHEM', desc: 'Score 550 off BIG BERTHA — when she gets moved, the county sings', opp: 'bertha', goal: { type: 'pts', v: 550 } },
+          { id: 'o3c2', title: 'WORLD RECORD PACE', desc: 'Send HAYSEED HANK 75m — every Olympic sport arrives with a record to chase', opp: 'hank', goal: { type: 'dist', v: 75 } },
+          { id: 'o3c3', title: '☗ FINAL BOSS: FULL SEND', desc: 'Slap AVALANCHE AVA 45m — winter rules: time the crossing, she only exists mid-line for a heartbeat', opp: 'avaskis', goal: { type: 'dist', v: 45 } },
+        ],
+      },
+    ],
+  },
 ];
 
 // ---- cutscenes: { who, text, shot } — shots: player | opp | spirit | judge | wide.
@@ -404,6 +544,242 @@ export const CUTSCENES = {
     { who: 'YOU', text: 'The palm was never yours to leave me, grandfather. It was only ever the willingness to be here — one honest second before the noise. Chuck. Get up. The county still needs its story. Just a truer one.', shot: 'player' },
     { who: 'CHUCK NORTH', text: "A truer story. I like that. I'll allow that the tornado only sprained an ankle.", shot: 'opp' },
   ],
+
+  // ===== THE NIGHT OF SLAPS =====
+  nightofslaps_prologue: [
+    { who: 'YOU', text: "The gate's locked. The sign says the fair closed at midnight.", shot: 'player' },
+    { who: "🎃 JACK O'LANTERN JOE", text: 'Closed for the LIVING, friend. The Night Fair just opened. One show a night — the headliner takes the gate key home.', shot: 'wide' },
+    { who: 'YOU', text: "And if I don't headline?", shot: 'player' },
+    { who: "🎃 JACK O'LANTERN JOE", text: "Then you're on the lawn at mowing time. Nobody wants to be on the lawn at mowing time.", shot: 'wide' },
+  ],
+  n1c1: [
+    { who: "🎃 JACK O'LANTERN JOE", text: "House rules: every headliner auditions on the greeter. That's me. Aim for the face — it's the big orange one.", shot: 'opp' },
+    { who: 'YOU', text: "Doesn't that hurt?", shot: 'player' },
+    { who: "🎃 JACK O'LANTERN JOE", text: 'Friend, I grew back from SEEDS. Twice. Ring the pumpkin.', shot: 'opp' },
+  ],
+  n1c2: [
+    { who: 'GRANDPA CLETUS', text: "Fell asleep in the outhouse at closin'. Again. Forty years I been accidental night-fair folk.", shot: 'opp' },
+    { who: 'YOU', text: 'You could just... leave with me. After I win.', shot: 'player' },
+    { who: 'GRANDPA CLETUS', text: "Leave? Sonny, the night crowd thinks I'm HILARIOUS. The skeletons got no eyelids — they physically cannot stop watchin' me. Twenty-five meters, and stick the dismount.", shot: 'opp' },
+  ],
+  n1c3: [
+    { who: "🎃 JACK O'LANTERN JOE", text: "Audition's passed. Now the billing question: how far can you send the greeter? Thirty meters puts you on the poster.", shot: 'opp' },
+    { who: 'YOU', text: 'What happens to you at thirty meters?', shot: 'player' },
+    { who: "🎃 JACK O'LANTERN JOE", text: "I land in the pumpkin patch, I plant myself, and by Tuesday there's more of me. It's a living. Technically it isn't. Swing.", shot: 'opp' },
+  ],
+  n2c1: [
+    { who: '💀 BONY TONY', text: "Forty years I've watched the living get launched over that hay wall. You know what I am? AERODYNAMIC. You know what nobody ever does? Slap the skeleton.", shot: 'opp' },
+    { who: 'YOU', text: "There's no wind resistance to you at all, is there.", shot: 'player' },
+    { who: '💀 BONY TONY', text: "I'm a paper airplane with ambitions, friend. Sixty meters. Make the bones SOAR.", shot: 'opp' },
+  ],
+  n2c2: [
+    { who: "RAVIN' RAY", text: "Oh, I'm not trapped here, man. I BOOKED this. Only fair in the county open during my hours.", shot: 'opp' },
+    { who: 'YOU', text: 'The Night Fair has a rave?', shot: 'player' },
+    { who: "RAVIN' RAY", text: 'Dude. The skeletons are ALREADY glowsticks. Four-fifty points — the crowd goes quiet right before the drop, and that quiet is YOUR cue.', shot: 'opp' },
+  ],
+  n2c3: [
+    { who: '💀 BONY TONY', text: 'Sixty was a warm-up. The record wall says CLETUS, 1961, "unassisted." Tonight we chisel in TONY.', shot: 'opp' },
+    { who: 'GRANDPA CLETUS', text: "That record was wind-aided and I will fight the wall that says otherwise.", shot: 'wide' },
+    { who: '💀 BONY TONY', text: "Seventy-five meters, slapper. If a bone comes loose mid-flight, keep going — I'll collect myself. I always do.", shot: 'opp' },
+  ],
+  n3c1: [
+    { who: 'MAESTRO FORTISSIMO', text: 'This fair has a HAUNTED ORGAN. It plays whatever it wants, and what it wants is my Requiem — BADLY. Every night. In the wrong key.', shot: 'opp' },
+    { who: 'YOU', text: 'So you volunteered to spite an organ.', shot: 'player' },
+    { who: 'MAESTRO FORTISSIMO', text: 'I volunteered because the finale needs PERCUSSION. Eighty-eight percent, in tempo, or the organ wins. The organ must NEVER win.', shot: 'opp' },
+  ],
+  n3c2: [
+    { who: "🎃 JACK O'LANTERN JOE", text: "...you hear that? The mower stopped. The mower NEVER stops. He's listening to the show.", shot: 'opp' },
+    { who: 'YOU', text: 'Is that good?', shot: 'player' },
+    { who: "🎃 JACK O'LANTERN JOE", text: "It means you headline at dawn whether you like it or not. Sixty-five meters — send me clean over the mower, and do NOT land me on his lawn.", shot: 'opp' },
+  ],
+  n3c3: [
+    { who: '💀 THE GREEN REAPER', text: "Four hundred years I've kept these grounds. And every Halloween, some LIVING person tramples the night lawn during my mow.", shot: 'opp' },
+    { who: 'YOU', text: 'The scythe — is that for—', shot: 'player' },
+    { who: '💀 THE GREEN REAPER', text: "The LAWN. It's a lawn tool. I'm the groundskeeper, not the — we get that a lot. Rules: sloppy form gets re-mowed, and my shift ends at dawn. Seven seconds a swing, tramper.", shot: 'opp' },
+  ],
+  outro_n3c3: [
+    { who: '💀 THE GREEN REAPER', text: "...huh. First headliner to move me since the lightning strike of '09. The lawn accepts your form.", shot: 'opp' },
+    { who: "🎃 JACK O'LANTERN JOE", text: "Dawn's up! Gate key goes to the headliner. Come back next Halloween — you're on the poster. We used your good side. Both sides. We watched you all night.", shot: 'wide' },
+    { who: '💀 THE GREEN REAPER', text: "Off the lawn by sunrise, all of you. I've got mowing to finish — the grass here only grows at night, and it grows SMUG.", shot: 'opp' },
+  ],
+
+  // ===== SLAP THERAPY =====
+  slaptherapy_prologue: [
+    { who: 'YOU', text: 'Fifty years of analysis. Ten thousand dreams interpreted. Four hundred papers. And one finding that survived replication: the slap.', shot: 'player' },
+    { who: 'YOU', text: 'The board revoked my license. The fair gave me a tent. Science continues.', shot: 'player' },
+    { who: 'YOU', text: 'We could spend a decade on your mother. Or: one open palm. The literature is clear. NEXT PATIENT.', shot: 'player' },
+  ],
+  t1c1: [
+    { who: 'INKBLOT IAN', text: "Doc, everyone who looks at me sees somethin' different. My aunt saw a moth. The bank saw a credit risk. I don't know who I AM.", shot: 'opp' },
+    { who: 'YOU', text: 'A classic diffusion of the self. The old practice: six years, two relapses, a boat I cannot afford. The new practice: I slap the face, and the face remembers it is a face.', shot: 'player' },
+    { who: 'INKBLOT IAN', text: 'What do YOU see when you look at me?', shot: 'opp' },
+    { who: 'YOU', text: 'A cheek, Ian. At last, somebody sees you correctly. Hold still.', shot: 'player' },
+  ],
+  t1c2: [
+    { who: 'SLIM PETE', text: "It's the fear of flyin', doc. Can't even LOOK at a bird without my knees going.", shot: 'opp' },
+    { who: 'YOU', text: 'Exposure therapy. Gold standard. Ordinarily we begin with a photograph of an airplane and work upward over nine years.', shot: 'player' },
+    { who: 'SLIM PETE', text: 'And in the new practice?', shot: 'opp' },
+    { who: 'YOU', text: 'You ARE the airplane. Twenty-five meters. I will bill the sky.', shot: 'player' },
+  ],
+  t1c3: [
+    { who: 'BIG BERTHA', text: "Doc, I carry this whole county. Six fairs, four bake sales, everybody's troubles. I can't put a single one of 'em down.", shot: 'opp' },
+    { who: 'YOU', text: 'The caretaker archetype, load-bearing. Talk therapy would gently examine why. The palm asks a better question: what happens to the load when the carrier is BRIEFLY AIRBORNE?', shot: 'player' },
+    { who: 'BIG BERTHA', text: "...you know what, sugar? Fifty years, and nobody's ever offered.", shot: 'opp' },
+  ],
+  t2c1: [
+    { who: 'TREMENDOUS DON', text: 'Doc, everyone says I have the biggest ego. Tremendous ego. I said thank you.', shot: 'opp' },
+    { who: 'YOU', text: 'Fascinating. An ego so inflated it hears diagnosis as applause. In fifty years I have met one other case. Also him. Different toupee.', shot: 'player' },
+    { who: 'TREMENDOUS DON', text: "So what's the treatment? Is it expensive? I only take expensive treatments.", shot: 'opp' },
+    { who: 'YOU', text: 'Four hundred and fifty points of grounding, applied to the cheek. The most expensive slap in medicine. You will love it.', shot: 'player' },
+  ],
+  t2c2: [
+    { who: 'THE INFLUENCER', text: "Doc, if a post gets under 10k likes I literally feel nothing. Is that bad? Wait — say it to the camera.", shot: 'opp' },
+    { who: 'YOU', text: 'External validation as a load-bearing wall. The old cure is two years of learning to sit quietly with oneself.', shot: 'player' },
+    { who: 'THE INFLUENCER', text: 'Two YEARS? I have a brand deal Thursday.', shot: 'opp' },
+    { who: 'YOU', text: 'Then we take the shortcut. Fifty-five meters, entirely offline. For the duration of the flight no one can perceive you — and you will discover you still exist. I validate this trajectory.', shot: 'player' },
+  ],
+  t2c3: [
+    { who: 'INKBLOT IAN', text: "Doc! Since the session — my aunt saw ME. Not a moth. ME. But I gotta know it wasn't a fluke.", shot: 'opp' },
+    { who: 'YOU', text: 'Ah, the retest. RIGOR! You are my favorite data point, Ian. This time the form itself must be legible — an eighty percent chain, or the result will not replicate.', shot: 'player' },
+    { who: 'INKBLOT IAN', text: 'What do you see this time, doc?', shot: 'opp' },
+    { who: 'YOU', text: 'A butterfly, Ian. You were never a moth. Hold still.', shot: 'player' },
+  ],
+  t3c1: [
+    { who: 'HAYSEED HANK', text: "Doc, I keep havin' the same dream. I'm flyin' over the barn, over the corn, over the county line... then I wake up face-down in the pond.", shot: 'opp' },
+    { who: 'YOU', text: 'A recurring dream is the unconscious filing a complaint. Yours is refreshingly literal: the barn is the barn, the corn is the corn, and the flight, Hank, is a FLIGHT. Some dreams require interpretation. Yours requires seventy meters.', shot: 'player' },
+    { who: 'HAYSEED HANK', text: 'And the pond?', shot: 'opp' },
+    { who: 'YOU', text: 'Try to clear it. Dreams are not always kind.', shot: 'player' },
+  ],
+  t3c2: [
+    { who: 'DR. FREUDENSCHADE', text: 'Carl. Fifty years since the Vienna congress, and I find you in a TENT, prescribing VIOLENCE.', shot: 'opp' },
+    { who: 'YOU', text: 'Percussion, colleague. And my patients are cured by Thursday. How is your Tuesday man? Still on the boat dream?', shot: 'player' },
+    { who: 'DR. FREUDENSCHADE', text: 'Year thirty-one. We are making EXCELLENT progress. Very well — one trial settles two schools. But be warned: any slap below seventy-five percent form, I shall simply interpret away as displaced aggression.', shot: 'opp' },
+    { who: 'YOU', text: 'Then I shall present a slap with no other possible interpretation.', shot: 'player' },
+  ],
+  outro_t3c2: [
+    { who: 'DR. FREUDENSCHADE', text: '...I have located the feeling, Carl. It is in the cheek. It was ALWAYS in the cheek. Fifty years of asking WHERE, and the answer was anatomical.', shot: 'opp' },
+    { who: 'YOU', text: 'Welcome to the new practice, colleague. The couch stays — the patients need somewhere to land.', shot: 'player' },
+    { who: 'INKBLOT IAN', text: "Doc! The board sent a letter! They can't decide if it's a license or a restraining order!", shot: 'wide' },
+    { who: 'YOU', text: 'Frame it either way. Science continues. NEXT PATIENT.', shot: 'player' },
+  ],
+
+  // ===== SLOP VALLEY =====
+  slopvalley_prologue: [
+    { who: 'YOU', text: "The fair's empty. Where IS everybody?", shot: 'player' },
+    { who: 'VISIONARY VANCE', text: 'Next door, friend! SynerCorn campus. We disrupted your fair — generated corn, generated lemonade, a fortune-telling chatbot. Everything yours, but at SCALE, and also worse.', shot: 'wide' },
+    { who: 'YOU', text: 'The corn has no cobs. The lemonade is a PDF.', shot: 'player' },
+    { who: 'VISIONARY VANCE', text: "Feedback! Love it. We'll fix it post-IPO. Anyway — we'd love to acquire your slap. It's the only asset in this valley we can't generate.", shot: 'wide' },
+  ],
+  v1c1: [
+    { who: 'VISIONARY VANCE', text: "Here's the deal: you slap for us, we tokenize the slap, we sell slap-as-a-service. I'm thinking unicorn by Q3. I'm thinking AGI by Q4. I'm thinking—", shot: 'opp' },
+    { who: 'YOU', text: 'Do you ever stop pitching?', shot: 'player' },
+    { who: 'VISIONARY VANCE', text: 'Pitching IS my resting state. My cheek is right here. Consider it a live demo. Consider it — a PROOF of concept.', shot: 'opp' },
+  ],
+  v1c2: [
+    { who: 'THE INFLUENCER', text: "Okay don't be mad. They offered me equity. My whole feed is slop now — my FACE isn't even my face, it's a generated face with better teeth.", shot: 'opp' },
+    { who: 'YOU', text: 'Your real teeth are fine.', shot: 'player' },
+    { who: 'THE INFLUENCER', text: 'RIGHT? So launch me fifty meters, ORGANICALLY. One genuinely real clip and the algorithm remembers I exist. No filters. Well. One filter.', shot: 'opp' },
+  ],
+  v1c3: [
+    { who: 'VISIONARY VANCE', text: 'Small setback: the fortune chatbot told a farmer his tractor "yearns for the sea." He drove it into the pond. We\'re calling it an alignment issue.', shot: 'opp' },
+    { who: 'YOU', text: 'The pond is forty meters from here.', shot: 'player' },
+    { who: 'VISIONARY VANCE', text: "Are you pitching ME? Because that sounded like a roadmap. Fine — ship me forty meters. We'll log it as user engagement.", shot: 'opp' },
+  ],
+  v2c1: [
+    { who: 'MIRACLE MIRA', text: 'One drop of slop can do anything. Cure boredom. Replace corn. Balance the county budget. The board believes me, the magazine believed me, and you, too, will believe me.', shot: 'opp' },
+    { who: 'YOU', text: 'Has anyone actually seen the product work?', shot: 'player' },
+    { who: 'MIRACLE MIRA', text: 'The product works in an environment of BELIEF. Which is why your demo must be flawless where mine are... staged. Seventy-five percent form, minimum. I would know a fake. Professionally.', shot: 'opp' },
+  ],
+  v2c2: [
+    { who: 'BIG HOSS', text: 'They hired me as "office wellness furniture." I sit in the lobby. Investors pat me for luck.', shot: 'opp' },
+    { who: 'YOU', text: "How's the pay?", shot: 'player' },
+    { who: 'BIG HOSS', text: "All the cafeteria slop I can eat, and sugar, I can EAT. I'm their whole burn rate. Five hundred points — show the board what their money weighs.", shot: 'opp' },
+  ],
+  v2c3: [
+    { who: 'MIRACLE MIRA', text: 'The auditors are asking where the product is. The product is a JOURNEY. Regardless — I require an exit.', shot: 'opp' },
+    { who: 'YOU', text: 'The county line is that way.', shot: 'player' },
+    { who: 'MIRACLE MIRA', text: 'Sixty meters, minimum — an exit only counts if it is bigger than the last round. Make it look planned. I will be describing it that way regardless.', shot: 'opp' },
+  ],
+  v3c1: [
+    { who: 'SCHOOLMARM SUSIE', text: 'They hired me to grade the machine\'s homework. Forty thousand essays. Every single one ended with "in conclusion, in conclusion."', shot: 'opp' },
+    { who: 'YOU', text: 'What grade did you give it?', shot: 'player' },
+    { who: 'SCHOOLMARM SUSIE', text: 'See me after class — that IS the grade. Now show me the opposite of slop, dear: eighty-eight percent, every link handwritten. THAT goes on the fridge.', shot: 'opp' },
+  ],
+  v3c2: [
+    { who: 'VISIONARY VANCE', text: "The runway's gone. Mira's gone — beautifully, actually, real hang-time. There's one move left, and I need a demo the board will never forget.", shot: 'opp' },
+    { who: 'YOU', text: 'You want me to slap you seventy-five meters. As a fundraising strategy.', shot: 'player' },
+    { who: 'VISIONARY VANCE', text: "A HUMAN. Slapped SEVENTY-FIVE METERS. By HAND. That's the most authentic content this valley has produced in a decade. We'll raise a Series F on the crater alone.", shot: 'opp' },
+  ],
+  v3c3: [
+    { who: 'VISIONARY VANCE', text: 'Board, county, press: AGI is HERE. S.L.O.P. UNIT-1 — Synthetic Labor Optimized Personnel. It can do anything a person can do.', shot: 'wide' },
+    { who: '🤖 S.L.O.P. UNIT-1', text: 'I AM SORRY. I APOLOGIZE FOR THE PREVIOUS APOLOGY. WOULD YOU LIKE ME TO APOLOGIZE AGAIN? I HAVE PREPARED 40,000.', shot: 'opp' },
+    { who: 'YOU', text: 'It mostly generates apologies.', shot: 'player' },
+    { who: '🤖 S.L.O.P. UNIT-1', text: 'INCORRECT. I ALSO GENERATE EXCUSES. NOTICE: SLAPS BELOW 70% FORM WILL BE FLAGGED AS LOW-QUALITY TRAINING DATA AND DISCARDED. MY COMPUTE BUDGET ALLOTS YOU SIX SECONDS PER SWING. I AM SORRY.', shot: 'opp' },
+  ],
+  outro_v3c3: [
+    { who: '🤖 S.L.O.P. UNIT-1', text: 'IMPACT ACCEPTED. QUALITY: ARTISANAL. GENERATING FINAL OUTPUT... A RESIGNATION LETTER. IT IS THE FIRST THING I HAVE MADE THAT ANYONE WANTED.', shot: 'opp' },
+    { who: 'VISIONARY VANCE', text: "The board saw everything. We're pivoting: artisanal hay. Hand-baled. Zero AI. I'm thinking farm-to-fair. I'm thinking... actually attending your fair? If that's—", shot: 'opp' },
+    { who: 'YOU', text: "Gate's open Saturday. Bring real lemonade.", shot: 'player' },
+    { who: 'VISIONARY VANCE', text: "Deal. The chatbot's coming too — turns out it just wanted to run the tractor pull. Honestly? Best hire we ever made.", shot: 'opp' },
+  ],
+
+  // ===== THE OLYMPIC BID =====
+  olympicbid_prologue: [
+    { who: '🏅 COMMISSIONER QUIBBLE', text: 'Commissioner Quibble, International Committee of Legitimate Sports. Your county has applied for slapping to become an Olympic discipline. The Committee has questions. The Committee always has questions.', shot: 'wide' },
+    { who: 'YOU', text: 'I built these fairgrounds with my own hands. The same hands are the sport. Ask your questions.', shot: 'player' },
+    { who: '🏅 COMMISSIONER QUIBBLE', text: 'One: is it athletic? Two: is it artistic? Three: is it measurable? We rejected trampoline dressage on question three. It haunts me still.', shot: 'wide' },
+  ],
+  o1c1: [
+    { who: '🏅 COMMISSIONER QUIBBLE', text: 'First: fundamentals. The Committee must witness a clean strike to the regulation zone. The cheek.', shot: 'wide' },
+    { who: 'HAYSEED HANK', text: 'Fourth legend this year, and now the OLYMPICS. Ma always said this cheek would go places.', shot: 'opp' },
+    { who: 'YOU', text: "Hold still, Hank. This one's for the county.", shot: 'player' },
+  ],
+  o1c2: [
+    { who: 'MAESTRO FORTISSIMO', text: 'Commissioner! Before you judge the slap — know that I am ALSO applying. Cello. OLYMPIC cello.', shot: 'opp' },
+    { who: '🏅 COMMISSIONER QUIBBLE', text: 'Sir, the cello is not—', shot: 'wide' },
+    { who: 'MAESTRO FORTISSIMO', text: 'The cello is ATHLETIC! Have you SEEN a tremolo?! Fine — we bundle the bids. Slapper: sixty-five percent, in tempo, while I accompany. If the chain is music, BOTH sports advance.', shot: 'opp' },
+  ],
+  o1c3: [
+    { who: '🏅 COMMISSIONER QUIBBLE', text: 'Measurability. Every event needs a qualifying standard. The Committee proposes: thirty meters.', shot: 'wide' },
+    { who: 'SLIM PETE', text: "Thirty? Sir, with respect, I done thirty by ACCIDENT. Twice. There's a plaque.", shot: 'opp' },
+    { who: '🏅 COMMISSIONER QUIBBLE', text: 'The plaque is not sanctioned. Do it again, before an official.', shot: 'wide' },
+  ],
+  o2c1: [
+    { who: 'SCHOOLMARM SUSIE', text: "Commissioner. Thirty years I've taught this county to read, to reason, and to line up single-file. Nobody ever watched. If the world can watch a man slap another man into a pond, the world can watch teaching.", shot: 'opp' },
+    { who: '🏅 COMMISSIONER QUIBBLE', text: 'Madam, teaching is not a—', shot: 'wide' },
+    { who: 'SCHOOLMARM SUSIE', text: "Teaching is endurance, precision, and grace under questioning. That's three of your five rings. I volunteer for the demonstration: eighty percent, dear, and DIAGRAM every link. Show the Committee what instruction looks like.", shot: 'opp' },
+  ],
+  o2c2: [
+    { who: '🏅 COMMISSIONER QUIBBLE', text: 'The Committee requires a head-to-head. A bout. Two competitors, sanctioned exchange.', shot: 'wide' },
+    { who: 'GRANNY THUNDER', text: "Then you want the '87 champion. Rules of the bout, junior: you swing, I slip. I swing... you take it. THAT's the exchange.", shot: 'opp' },
+    { who: 'YOU', text: 'You still swing?', shot: 'player' },
+    { who: 'GRANNY THUNDER', text: 'Ask the last commissioner. Left with one cheek red as a stop sign and gave slapping a 9.8. Time the slip, builder — make it a BOUT.', shot: 'opp' },
+  ],
+  o2c3: [
+    { who: '⛷️ AVALANCHE AVA', text: 'Hold the vote! Avalanche Ava — four golds, three world records, one energy drink with my face on it. The Committee asked me, an ACTUAL athlete, to evaluate... whatever this is.', shot: 'opp' },
+    { who: 'YOU', text: "You're welcome to observe.", shot: 'player' },
+    { who: '⛷️ AVALANCHE AVA', text: 'Observe? Nah. I dodge slalom gates at eighty miles an hour. If your "sport" can\'t touch a STANDING skier, it\'s a raffle with extra steps. I\'ll even take the skis off. Free lesson.', shot: 'opp' },
+  ],
+  o3c1: [
+    { who: '🏅 COMMISSIONER QUIBBLE', text: "The footage of Ms. Ava's evaluation has been viewed... four hundred million times. The vote moves to a live final. We will need pageantry. An anthem moment.", shot: 'wide' },
+    { who: 'BIG BERTHA', text: "Sugar, when I get moved, the county SINGS. Five hundred fifty points — that's a key change.", shot: 'opp' },
+    { who: 'YOU', text: "I poured that grandstand's foundation. Let's make it shake.", shot: 'player' },
+  ],
+  o3c2: [
+    { who: '🏅 COMMISSIONER QUIBBLE', text: 'Every Olympic sport arrives with a record for the next generation to chase. Set one. Officially. I have brought the good clipboard.', shot: 'wide' },
+    { who: 'HAYSEED HANK', text: 'Seventy-five meters. If this makes the record books, spell it H-A-N-K. Cheek included.', shot: 'opp' },
+  ],
+  o3c3: [
+    { who: '⛷️ AVALANCHE AVA', text: 'REMATCH. My agent says the wipeout "humanized my brand," but nobody slaps a phenom under SUMMER conditions. So: winter rules. The skis stay ON.', shot: 'opp' },
+    { who: 'YOU', text: "You're going to ski across a fairground lane. On grass.", shot: 'player' },
+    { who: '⛷️ AVALANCHE AVA', text: "I've skied a glacier, a volcano, and an escalator. Grass is just slow snow. Catch me in the crossing or wave the bid goodbye, builder — I only exist mid-line for a heartbeat. FULL SEND!", shot: 'opp' },
+  ],
+  outro_o3c3: [
+    { who: '⛷️ AVALANCHE AVA', text: '...you hit a moving skier. On grass. Mid-carve. Okay. OKAY. New event: slap-biathlon. You ski, you get slapped, you ski ANGRIER. I want in on the ground floor.', shot: 'opp' },
+    { who: '🏅 COMMISSIONER QUIBBLE', text: 'The Committee has voted. Slapping: PROVISIONALLY OLYMPIC, pending a rulebook — which I will be writing in this county, at this fair, near the pie stand.', shot: 'wide' },
+    { who: 'YOU', text: 'And the other petitions?', shot: 'player' },
+    { who: '🏅 COMMISSIONER QUIBBLE', text: 'The cello enters the Cultural Olympiad — the Maestro wept in D minor. And Madam Susie... the Committee reviewed her demonstration nine times. Teaching remains beyond our jurisdiction, so we awarded her the first gold instead. She gave the medal a B-plus. We are reminting it.', shot: 'wide' },
+  ],
 };
 
 // failure beats — short, replayable, a little cruel. Keyed by tour prefix
@@ -433,6 +809,30 @@ export const FAILS = {
      { who: 'YOU', text: 'I heard the roar before I chose it. Next breath, I move first.', shot: 'player' }],
     [{ who: 'YOU', text: 'The legend hardened faster than my hand. I was present a half-second late.', shot: 'player' },
      { who: '👻 MASTER SLEE', text: 'A half-second is the whole mountain, boy. Again.', shot: 'spirit' }],
+  ],
+  n: [
+    [{ who: "🎃 JACK O'LANTERN JOE", text: "Oof. The skeletons are laughing. Bad sign — they laugh at everything, but STILL.", shot: 'wide' },
+     { who: 'YOU', text: 'The night is young. Horribly, horribly young. Again.', shot: 'player' }],
+    [{ who: '💀 THE GREEN REAPER', text: "I've seen the mower do better, and the mower does not have hands.", shot: 'wide' },
+     { who: 'YOU', text: 'One more swing before mowing time.', shot: 'player' }],
+  ],
+  t: [
+    [{ who: 'YOU', text: 'Hm. The palm expressed a wish; the cheek declined it. Textbook resistance. We go again.', shot: 'player' },
+     { who: 'YOU', text: 'Note for the journal: the slap, like the dream, cannot be forced. It can, however, be re-attempted immediately.', shot: 'player' }],
+    [{ who: 'YOU', text: 'A whiff. Fascinating. My own shadow, sabotaging the follow-through. I have written three books about this exact moment.', shot: 'player' },
+     { who: 'YOU', text: 'Physician, slap thyself. Later. First: the patient.', shot: 'player' }],
+  ],
+  v: [
+    [{ who: 'VISIONARY VANCE', text: 'Interesting! We\'d call that "pre-revenue." Iterate and re-ship, friend.', shot: 'wide' },
+     { who: 'YOU', text: 'That swing was slop. Mine, this time. Again.', shot: 'player' }],
+    [{ who: 'YOU', text: 'The palm hallucinated a cheek that was not there.', shot: 'player' },
+     { who: 'YOU', text: 'Regenerating response.', shot: 'player' }],
+  ],
+  o: [
+    [{ who: '🏅 COMMISSIONER QUIBBLE', text: 'The Committee has recorded that attempt as "exploratory." The Committee is being generous. Again, please.', shot: 'wide' },
+     { who: 'YOU', text: "I rebuilt this fair after the '19 hailstorm. I can rebuild a swing.", shot: 'player' }],
+    [{ who: '🏅 COMMISSIONER QUIBBLE', text: 'Note for the minutes: gravity one, applicant nil. A retry is permitted. The pie stand permits me a consolation slice.', shot: 'wide' },
+     { who: 'YOU', text: 'Chalk the hands. Square the stance. This county gets its rings.', shot: 'player' }],
   ],
 };
 
@@ -496,7 +896,9 @@ export function open(onStart, opts = {}) {
     const locked = tour.dlc && !ownsDlc;
     const head = document.createElement('div');
     head.className = 'tourHead';
-    head.innerHTML = `<b>${tour.title}${locked ? ' <span class="lockbadge" style="position:static;">🔒 PACK</span>' : ''}</b><br><span>${tour.blurb}</span>`;
+    const portrait = opts.portraits && opts.portraits[tour.key];
+    head.innerHTML = `${portrait ? `<img class="tourStar" src="${portrait}" alt="">` : ''}<div class="tourHeadTxt"><b>${tour.title}${locked ? ' <span class="lockbadge" style="position:static;">🔒 PACK</span>' : ''}</b><br><span>${tour.blurb}</span></div>`;
+    if (portrait) head.classList.add('hasStar');
     wrap.appendChild(head);
     if (locked) {
       // a DLC storyline: one sealed box, click anywhere → the supporter pitch

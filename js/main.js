@@ -437,12 +437,66 @@ const markScene = (id) => {
   if (!s.includes(id)) { s.push(id); localStorage.setItem('slapp_seen', JSON.stringify(s)); }
 };
 
+// ---- campaign portraits: each tour card stars its lead in a ¾ close-up ----
+// rendered live from the real character meshes, once per session, cached.
+const TOUR_STARS = {
+  wonders: { slapper: 'charlie' },
+  fair: { opp: 'don' },
+  palm: { slapper: 'bruceslee' },
+  secondwind: { opp: 'chuckboss' },
+  nightofslaps: { opp: 'reaper' },      // future tours resolve as their cast ships
+  slaptherapy: { slapper: 'carlgustav' },
+  slopvalley: { opp: 'slopunit' },
+  olympicbid: { slapper: 'victor' },
+};
+const tourPortraits = {};
+function capturePortraits() {
+  if (tourPortraits._done) return;
+  tourPortraits._done = true;
+  const pcam = new THREE.PerspectiveCamera(26, 1, 0.1, 60);
+  const cvs = document.createElement('canvas');
+  cvs.width = cvs.height = 180;
+  const c2d = cvs.getContext('2d');
+  const gl = stage.renderer.domElement;
+  player.root.visible = false;           // nobody photobombs the head shot
+  opponent.remove();
+  for (const [tourKey, star] of Object.entries(TOUR_STARS)) {
+    let temp = null, head = null;
+    try {
+      if (star.slapper) {
+        const look = SLAPPERS.find((x) => x.key === star.slapper);
+        if (!look) continue;
+        temp = new Player({ scene, world: phys.world, mat: phys.fleshMat, look });
+        temp.root.updateMatrixWorld(true);
+        head = new THREE.Vector3(temp.root.position.x, 1.52 * (look.height || 1), temp.root.position.z);
+      } else {
+        const arch = ROSTER.find((x) => x.key === star.opp);
+        if (!arch) continue;
+        temp = new Opponent({ scene, world: phys.world, mat: phys.fleshMat, arch, showcase: true });
+        head = temp.headPos();
+      }
+      // ¾ close-up from front-left, eye level, a touch of headroom
+      const facing = star.slapper ? 1 : -1;  // slappers face +x, volunteers −x
+      pcam.position.set(head.x + facing * 0.72, head.y + 0.08, head.z + 0.42);
+      pcam.lookAt(head.x, head.y - 0.02, head.z);
+      stage.renderer.render(stage.scene, pcam);
+      const side = Math.min(gl.width, gl.height);
+      c2d.drawImage(gl, (gl.width - side) / 2, (gl.height - side) / 2, side, side, 0, 0, 180, 180);
+      tourPortraits[tourKey] = cvs.toDataURL('image/jpeg', 0.82);
+    } catch (e) { console.warn('portrait failed:', tourKey, e); }
+    if (temp) temp.remove();
+  }
+  player.root.visible = true;
+  opponent = new Opponent({ scene, world: phys.world, mat: phys.fleshMat, arch: chosenArch || ROSTER[1] });
+}
+
 function openTourMenu() {
   setState('TOUR');
   ui.showTitle(false);
   ui.hideCards();
   ui.bubble(null);
   restoreBar();
+  capturePortraits();
   campaign.open((ch) => {
     campaign.setActive(ch);
     campaign.close();
@@ -479,6 +533,7 @@ function openTourMenu() {
       else playScene(lines, launch);
     } else launch();
   }, {
+    portraits: tourPortraits,
     ownsDlc: owned('bruceslee'),
     onLocked: (tour) => openUnlockModal({
       name: tour.title.replace(/^\S+\s/, ''),
