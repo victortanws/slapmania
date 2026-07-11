@@ -59,18 +59,49 @@ export const FOUL_BANNERS = {
   escape: ["SHE'S GONE!", 'THE PHENOM MADE THE GATE — UNSLAPPED'],
 };
 
-export function commentaryFor(d, haySplat) {
-  if (d > 95) return 'HE HAS LEFT SLAPP COUNTY. Cartographers have been notified.';
-  if (d > 80) return 'PAST THE COUNTY LINE. Somebody fetch a tractor.';
-  if (d > 62) return "HE CLEARED THE HAY AND VANISHED INTO THE CORN. The corn's keeping him.";
-  if (haySplat) return "HE'S IN THE HAY BALES. The county is still counting.";
-  if (d < 1) return 'The referee is trying very hard not to laugh.';
+// the commentary knows who flew: pronouns follow the volunteer (fem = arch.female),
+// and each tier rotates a couple of lines so repeat flights don't repeat the joke.
+// Deterministic-ish pick (by whole meters) so replaying a distance replays its line.
+export function commentaryFor(d, haySplat, fem) {
+  const P = fem
+    ? { He: 'SHE', he: 'she', His: 'HER', his: 'her', him: 'her' }
+    : { He: 'HE', he: 'he', His: 'HIS', his: 'his', him: 'him' };
+  const pick = (arr) => arr[Math.abs(Math.floor(d * 7)) % arr.length];
+  if (d > 95) return pick([
+    `${P.He} HAS LEFT SLAPP COUNTY. Cartographers have been notified.`,
+    `${P.He} HAS LEFT THE JURISDICTION. Extradition papers are being drafted.`,
+  ]);
+  if (d > 80) return pick([
+    'PAST THE COUNTY LINE. Somebody fetch a tractor.',
+    `PAST THE COUNTY LINE. ${P.He} pays taxes somewhere else now.`,
+  ]);
+  if (d > 62) return pick([
+    `${P.He} CLEARED THE HAY AND VANISHED INTO THE CORN. The corn's keeping ${P.him}.`,
+    `INTO THE CORN. The corn has accepted ${P.him} as one of its own.`,
+  ]);
+  if (haySplat) return `${P.He}'S IN THE HAY BALES. The county is still counting.`;
+  if (d < 1) return pick([
+    'The referee is trying very hard not to laugh.',
+    'The wind from that one knocked over a lemonade.',
+  ]);
   if (d < 3) return 'A firm rebuke. A strongly worded memo, delivered by hand.';
-  if (d < 7) return "He'll feel that one in the morning. And the morning after.";
+  if (d < 7) return pick([
+    `${P.He}'ll feel that one in the morning. And the morning after.`,
+    `${P.His} cheek has filed for workers' compensation.`,
+  ]);
   if (d < 13) return 'The referee has seen enough. The referee has seen too much.';
-  if (d < 20) return 'Someone fetch his hat. And his dignity.';
-  if (d < 30) return 'OUTRAGEOUS. Somebody call his family.';
-  return 'HE HAS BEEN DISPATCHED TO THE NEXT COUNTY.';
+  if (d < 20) return pick([
+    `Someone fetch ${P.his} hat. And ${P.his} dignity.`,
+    `${P.He} left ${P.his} shoes behind. The shoes look relieved.`,
+  ]);
+  if (d < 30) return pick([
+    `OUTRAGEOUS. Somebody call ${P.his} family.`,
+    `OUTRAGEOUS. ${P.His} family has been notified by the sound alone.`,
+  ]);
+  return pick([
+    `${P.He} HAS BEEN DISPATCHED TO THE NEXT COUNTY.`,
+    `${P.He} IS AIRBORNE MAIL NOW. Postage was paid in full.`,
+  ]);
 }
 
 export function setBest(entry) {

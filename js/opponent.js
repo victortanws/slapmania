@@ -110,7 +110,10 @@ export const ROSTER = [
   {
     key: 'pogo', name: 'POGO McPHEE', tag: 'PERPETUAL MOTION', dlc: true,
     w: 0.78, h: 1.0, mass: 0.62, noStache: true,
-    hop: { period: 0.9, height: 0.55 }, // the cheek visits the strike plane once per bounce
+    // lower, longer bounce than the original 0.9s/0.55m: the cheek now stays
+    // inside the swing envelope near every touchdown instead of flashing past
+    // it — face hits are genuinely ON the table, mistimed swings catch torso
+    hop: { period: 1.05, height: 0.4 },
     // carnival-prize athletic wear: mustard tee, red stripes, sweatband, ginger frizz
     skin: 0xe2b088, shirt: 0xf0c030, stripes: 0xd8404f, pants: 0x2f6fe0,
     hat: 'band', hatCol: 0xd8404f, hair: 'frizz', hairCol: 0xc06a2a, springShoes: 0xd8404f,
@@ -349,18 +352,21 @@ export const ROSTER = [
   },
   {
     key: 'ava', name: 'AVALANCHE AVA', tag: 'BOSS · THE PHENOM', boss: true,
-    w: 0.8, h: 1.0, mass: 0.85, female: true, weave: true, noStache: true,
-    // ice-blue race suit w/ white speed stripes, dark ponytail, goggles pushed UP
-    skin: 0xe8c2a0, shirt: 0x2f6fe0, pants: 0x2f6fe0, stripes: 0xf2ede1, skirt: 0x2f6fe0,
-    hair: 'pony', hairCol: 0x1a1a1f, goggles: 0xff8c1a,
+    w: 0.8, h: 1.0, mass: 0.85, female: true, weave: true, noStache: true, busty: true,
+    // RED race jumpsuit w/ white speed stripes, blonde ponytail, goggles pushed UP
+    // (was ice-blue + dark hair — read as neither blonde nor a jumpsuit; and the
+    // default rose skirt is suppressed so the suit reads as a one-piece)
+    skin: 0xeecfa8, shirt: 0xd8232e, pants: 0xd8232e, stripes: 0xf2ede1, noSkirt: true,
+    hair: 'pony', hairCol: 0xf0cf6a, goggles: 0xff8c1a,
     pickLine: 'Four golds. Three world records. One energy drink. Zero slaps taken.',
     taunts: ['I dodge trees at eighty. You are slower than a tree.', 'Is the county in slow motion, or is that just you?'],
   },
   {
     key: 'avaskis', name: 'AVALANCHE AVA', tag: 'BOSS · FULL SEND', boss: true,
-    w: 0.8, h: 1.0, mass: 0.9, female: true, noStache: true,
-    skin: 0xe8c2a0, shirt: 0x2f6fe0, pants: 0x2f6fe0, stripes: 0xf2ede1, skirt: 0x2f6fe0,
-    hair: 'pony', hairCol: 0x1a1a1f, goggles: 0xff8c1a, gogglesDown: true,
+    w: 0.8, h: 1.0, mass: 0.9, female: true, noStache: true, busty: true,
+    // same red jumpsuit, goggles DOWN, skis on — the skirt would hide the skis
+    skin: 0xeecfa8, shirt: 0xd8232e, pants: 0xd8232e, stripes: 0xf2ede1, noSkirt: true,
+    hair: 'pony', hairCol: 0xf0cf6a, goggles: 0xff8c1a, gogglesDown: true,
     skis: true, skiRun: { speed: 1.7, startX: 9, exitX: -8 },
     pickLine: 'She is DONE being slapped. One run, straight past you, out the gate.',
     taunts: ['Grass is just slow snow.', "Don't take it personally — I'm not dodging you. I'm LEAVING you."],
@@ -689,14 +695,18 @@ export class Opponent {
         earring.position.set(-0.01 * hr, -0.03 * hr, sgn * 0.168 * hr);
         head.add(earring);
       }
-      // a proper skirt over the pelvis — or a short bikini bottom — flies with the ragdoll
-      const skirt = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.22 * w, (arch.bikini ? 0.3 : 0.4) * w, (arch.bikini ? 0.14 : 0.42) * h, 12),
-        toonMat(arch.skirt || 0xc95d73)
-      );
-      skirt.position.y = (arch.bikini ? -0.02 : -0.14) * h;
-      skirt.castShadow = true;
-      P.pelvis.mesh.add(skirt);
+      // a proper skirt over the pelvis — or a short bikini bottom — flies with
+      // the ragdoll. noSkirt suppresses it (race jumpsuits, and anything with
+      // skis: the flare hid Ava's boards completely)
+      if (!arch.noSkirt) {
+        const skirt = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.22 * w, (arch.bikini ? 0.3 : 0.4) * w, (arch.bikini ? 0.14 : 0.42) * h, 12),
+          toonMat(arch.skirt || 0xc95d73)
+        );
+        skirt.position.y = (arch.bikini ? -0.02 : -0.14) * h;
+        skirt.castShadow = true;
+        P.pelvis.mesh.add(skirt);
+      }
       if (arch.busty) {
         // the dress has a figure — dress- (or crop-top-) colored
         for (const sgn of [-1, 1]) {

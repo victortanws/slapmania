@@ -478,7 +478,10 @@ function capturePortraits() {
         if (!look) continue;
         temp = new Player({ scene, world: phys.world, mat: phys.fleshMat, look });
         temp.root.updateMatrixWorld(true);
-        head = new THREE.Vector3(temp.root.position.x, 1.52 * (look.height || 1), temp.root.position.z);
+        // the REAL head, not an estimate — the ready stance crouches, and a
+        // guessed 1.52·h aimed the lens square at the shirt (maroon-blob cards)
+        head = new THREE.Vector3();
+        temp.headMesh.getWorldPosition(head);
       } else {
         const arch = ROSTER.find((x) => x.key === star.opp);
         if (!arch) continue;
@@ -847,7 +850,7 @@ function showResult() {
     refreshBest();
   }
   let line = isFoul ? ui.FOUL_LINES[slap.foul]
-    : (slap && slap.part === 'torso' ? ui.bodyLineFor(flew) : ui.commentaryFor(flew, opponent.wallSplat));
+    : (slap && slap.part === 'torso' ? ui.bodyLineFor(flew) : ui.commentaryFor(flew, opponent.wallSplat, !!arch.female));
   // world personality on the result card — deterministic garnish, never scoring
   const worldNow = activeWorld; // the world on stage, incl. tour pins
   if (worldNow === 'lava' && !isFoul) {
@@ -957,7 +960,8 @@ function advance() {
     const bestAttempt = attempts.reduce((a, b) => (b.pts > a.pts ? b : a), attempts[0]);
     track('match_completed', { best_pts: bestAttempt.pts, best_dist: +bestAttempt.dist.toFixed(1), opp: bestAttempt.opp });
     ui.hideCards();
-    let line = ui.commentaryFor(bestAttempt.dist, false);
+    const bestArch = ROSTER.find((r) => r.name === bestAttempt.opp);
+    let line = ui.commentaryFor(bestAttempt.dist, false, !!(bestArch && bestArch.female));
     if (challenge) {
       const won = bestAttempt.pts > challenge.pts;
       line += won ? ` ⚔️ CHALLENGE WON — ${challenge.by}'s ${challenge.pts} PTS is dust!`
