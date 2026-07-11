@@ -722,6 +722,9 @@ if (campaign.enabled()) {
   const b = document.getElementById('tourBtn');
   b.classList.remove('hidden');
   b.onclick = () => { sfx.ensure(); openTourMenu(); };
+  // first-timers (never reached SLAPMASTER) get pointed at the Tour as the
+  // on-ramp — Act I is already a metered lesson (head hit → short → medium).
+  if (!localStorage.getItem('slapp_master')) document.getElementById('tourNudge').classList.remove('hidden');
 }
 
 function startAttempt() {
@@ -1777,6 +1780,14 @@ function tick(now) {
       else if (!chain.l) ui.coach('TAP [L] — LUNGE THE HIPS!');
       else if (!chain.a) ui.coach('PRESS [A] — THROW THE FIST!  ·  do NOT press [P] — keep it CLOSED');
       else ui.coach('LAND THE CLOSED FIST — opening the palm [P] just slides off him');
+      shotClock -= dts;
+      ui.setClock(shotClock);
+    } else if (!chain.l && Math.abs(player.lean) > 0.7) {
+      // OFF-BALANCE before you commit the lunge (often left over from the last
+      // swing's recoil) — bracing is still possible, and a teetering stance is
+      // the biggest hidden power leak. Teach it live, the way the green ring
+      // teaches the palm. Only pre-lunge (once L fires the lean IS the swing).
+      ui.coach('⚖️ BRACE! — YOU\'RE OFF-BALANCE, AND A TEETERING STANCE SLAPS SOFT (up to −45%). SETTLE, THEN LUNGE');
       shotClock -= dts;
       ui.setClock(shotClock);
     } else {

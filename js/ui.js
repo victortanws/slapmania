@@ -190,6 +190,11 @@ export function setKeys(keys, wanted) {
 export function setMeters(lean) {
   const pct = 50 + Math.max(-1.05, Math.min(1.05, lean)) / 1.05 * 50;
   el.leanneedle.style.left = `${pct}%`;
+  // live balance coaching: amber past ~10% power cost, red once the needle reaches
+  // the danger zone (~0.71 lean = ~20%+ loss and climbing toward a foul)
+  const a = Math.abs(lean);
+  el.leanneedle.classList.toggle('warn', a > 0.5 && a <= 0.71);
+  el.leanneedle.classList.toggle('crit', a > 0.71);
 }
 
 // ---- the chain HUD: each link grades the instant it fires ----

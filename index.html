@@ -132,7 +132,11 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
 #leanbar .zone{position:absolute;top:0;bottom:0;width:16%;background:rgba(255,71,87,.5);}
 #leanbar .zone.left{left:0;border-radius:7px 0 0 7px;}
 #leanbar .zone.right{right:0;border-radius:0 7px 7px 0;}
-#leanneedle{position:absolute;top:-5px;width:7px;height:26px;background:var(--yellow);border:2px solid #000;border-radius:3px;left:50%;transform:translateX(-50%);}
+#leanneedle{position:absolute;top:-5px;width:7px;height:26px;background:var(--yellow);border:2px solid #000;border-radius:3px;left:50%;transform:translateX(-50%);transition:background .08s;}
+/* live balance coaching: the needle warns amber as you tip, flashes red in the danger zone (real power loss + foul risk) — the green-ring pattern, for the stance */
+#leanneedle.warn{background:#ff9f43;}
+#leanneedle.crit{background:#ff4757;animation:leanPulse .4s infinite;}
+@keyframes leanPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,71,87,.8);}50%{box-shadow:0 0 0 6px rgba(255,71,87,0);}}
 #chainwrap{text-align:center;}
 .chainrow{display:flex;gap:8px;justify-content:center;}
 .clink{width:70px;background:#1e2440;border:2px solid #000;border-radius:8px;padding:5px 0;}
@@ -509,6 +513,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
     <!-- campaign sits low: quick play is the front door, the tour is the destination
          you graduate to — and down here it never crowds the how-to-play spine -->
     <button id="tourBtn" class="hidden" style="font-size:15px;padding:10px 22px;background:var(--red);color:#fff;">🎪 CAMPAIGN MODE — THE COUNTY FAIR TOUR</button>
+    <div id="tourNudge" class="hidden" style="font-family:Arial,sans-serif;font-weight:bold;font-size:12px;color:var(--yellow);margin-top:-2px;text-shadow:1px 1px 0 #000;">🔰 NEW HERE? THE TOUR TEACHES YOU TO SLAP — ONE STEP AT A TIME ↑</div>
     <div id="worldWrap">
       <button id="worldPrev" class="worldArrow" aria-label="More worlds">‹</button>
       <div id="worldRow"></div>
