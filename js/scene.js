@@ -3594,9 +3594,13 @@ export function createStage(canvas) {
     const logo = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.22, 8, 18), toonMat(0xf2f2f0));
     logo.position.y = 13.2;
     flag2.add(logo);
-    const fsign = new THREE.Mesh(new THREE.PlaneGeometry(6, 1.5),
-      new THREE.MeshBasicMaterial({ map: makeTextTexture('SLOPCORP', '#ffffff'), transparent: true }));
-    fsign.position.set(-3.6, 10.5, 0);
+    // SLOPCORP, in big letters ON the tower: a dark backing band + bold text,
+    // running the full width of the lane-facing face so the name reads
+    const signBack = new THREE.Mesh(new THREE.BoxGeometry(0.15, 2.6, 6.6), toonMat(0x1a2230));
+    signBack.position.set(-3.55, 9.5, 0); flag2.add(signBack);
+    const fsign = new THREE.Mesh(new THREE.PlaneGeometry(6.4, 2.4),
+      new THREE.MeshBasicMaterial({ map: makeTextTexture('SLOPCORP', '#40ff80'), transparent: true }));
+    fsign.position.set(-3.63, 9.5, 0);
     fsign.rotation.y = -Math.PI / 2;
     flag2.add(fsign);
     hq(84, -27, 5, 8, 7, 0.5);
@@ -4103,7 +4107,7 @@ export function createStage(canvas) {
     day:   { fog: [0xdce9f2, 45, 160], skyTint: 0xffffff, hemi: [0xcfe2ff, 0x4f6b3a, 0.9], sun: [0xfff2d8, 1.9], fill: 0.35, cloud: 0xfff6ea, maps: true,  grass: 0xffffff, lane: 0xffffff, night: false, sunFace: true },
     haunted: { fog: [0x121a16, 34, 118], skyTint: 0x141f1a, hemi: [0x7a9c8a, 0x18221c, 0.55], sun: [0xbfe0c8, 0.75], fill: 0.12, cloud: 0x2a3a30, maps: true, grass: 0x55705f, lane: 0x6a7268, night: true, sunFace: false,
       group: 'haunted', biome: 'haunted', crowd: 'haunted', pond: 0x0e1418,
-      hideFarm: true, barricade: 'coffins' },
+      hideFarm: true, hideFair: true, hideBarn: true, barricade: 'coffins' },
     techcampus: { fog: [0xdde6ee, 60, 200], skyTint: 0xcfe0f2, hemi: [0xeaf2fa, 0x9aacb8, 1.0], sun: [0xf6faff, 2.0], fill: 0.42, cloud: 0xf4f8fc, maps: false, grass: 0xa8b0b8, lane: 0xc4c8ce, night: false, sunFace: true,
       group: 'techcampus', biome: 'tech', crowd: 'tech', pond: 0x2a8ae0, sunTint: [0xeef4ff, 0.7],
       hideFarm: true, hideBarn: true, hideFair: true, hideFences: true, hideCloths: true, barricade: 'boxes' },
@@ -4112,25 +4116,25 @@ export function createStage(canvas) {
       hideFarm: true, hideFences: true, hideCloths: true, barricade: 'snow' },
     desert: { fog: [0xead4a8, 60, 185], skyTint: 0xf2ddb4, hemi: [0xffe8bf, 0xc79a5a, 1.05], sun: [0xfff0cf, 2.2], fill: 0.24, cloud: 0xfff2df, maps: false, grass: 0xd8b878, lane: 0xc79a5e, night: false, sunFace: true,
       group: 'desert', biome: 'desert', crowd: 'desert', pond: 0xa8895a, sunTint: [0xffe2b0, 1],
-      hideFarm: true, hideCloths: true, barricade: 'barrels' },
+      hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, barricade: 'barrels' },
     jungle: { fog: [0xa9d3a2, 58, 165], skyTint: 0x9fd8ef, hemi: [0xd8f0d0, 0x2f5a2a, 1.0], sun: [0xfff4d0, 2.0], fill: 0.3, cloud: 0xffffff, maps: false, grass: 0x3e7a34, lane: 0x6a5230, night: false, sunFace: true,
       group: 'jungle', biome: 'jungle', crowd: 'jungle', pond: 0x3f6a4a,
-      hideFarm: true, hideCloths: true, barricade: 'bamboo' },
+      hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, barricade: 'bamboo' },
     dojo: { fog: [0xe8dfd0, 50, 170], skyTint: 0xf4e6d0, hemi: [0xf5e8d5, 0x8a7a5c, 0.95], sun: [0xffe8c0, 1.8], fill: 0.3, cloud: 0xfff4e2, maps: false, grass: 0xd9c9a8, lane: 0xc9b490, night: false, sunFace: true,
       group: 'dojo', biome: 'dojo', crowd: 'dojo', pond: 0x4a7a8a,
-      hideFarm: true, hideCloths: true, barricade: 'shoji' },
+      hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, barricade: 'shoji' },
     lava: { fog: [0x5a2414, 48, 165], skyTint: 0x3a1810, hemi: [0xffb070, 0x5a2410, 1.12], sun: [0xff8a3a, 1.9], fill: 0.4, cloud: 0x6a2e1e, maps: false, grass: 0x201613, lane: 0x2a201c, night: false, sunFace: false,
       group: 'lava', biome: 'lava', crowd: 'lava', pond: 0xff7a20,
       hideFarm: true, hideBarn: true, hideFair: true, hideCloths: true, hideFences: true, barricade: 'boulders' },
     therapy: { fog: [0xe6dff0, 40, 130], skyTint: 0xd9cfec, hemi: [0xece2f4, 0x9a8fb0, 0.95], sun: [0xfff0e0, 1.5], fill: 0.35, cloud: 0xf6f0fa, maps: false, grass: 0xb9aed4, lane: 0x8f82b8, night: false, sunFace: true,
       group: 'therapy', biome: 'therapy', crowd: 'therapy', pond: 0x14141c, sunTint: [0xf0e4ff, 0.9],
-      hideFarm: true, hideCloths: true, hideBarn: true, barricade: 'books' },
+      hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, hideBarn: true, barricade: 'books' },
     heaven: { fog: [0xf4f0e4, 30, 110], skyTint: 0xcfe4f8, hemi: [0xfff8e8, 0xd8d2c0, 1.15], sun: [0xfff6d8, 2.3], fill: 0.4, cloud: 0xffffff, maps: false, grass: 0xf2eede, lane: 0xf7e9b8, night: false, sunFace: true,
       group: 'heaven', biome: 'heaven', crowd: 'heaven', pond: 0xbfe0f4,
-      hideFarm: true, hideCloths: true, hideFences: true, barricade: 'cloud' },
+      hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, hideFences: true, barricade: 'cloud' },
     hell: { fog: [0x2a0f12, 34, 118], skyTint: 0x3a0f14, hemi: [0xd85a3a, 0x2a0c0c, 0.82], sun: [0xff5a2a, 1.45], fill: 0.22, cloud: 0x4a1a1a, maps: false, grass: 0x4a1f1c, lane: 0x6e2a1e, night: false, sunFace: false,
       group: 'hell', biome: 'hell', crowd: 'hell', pond: 0xff7a20,
-      hideFarm: true, hideCloths: true, hideFences: true, barricade: 'redtape' },
+      hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, hideFences: true, barricade: 'redtape' },
     vegas: { fog: [0x3a2450, 60, 210], skyTint: 0x241640, hemi: [0xffd9a0, 0x4a2f6a, 1.05], sun: [0xffcf9a, 1.7], fill: 0.42, cloud: 0x4a2f6a, maps: false, grass: 0x3a2450, lane: 0xcaa03a, night: true, sunFace: false,
       group: 'vegas', biome: 'vegas', crowd: 'vegas', pond: 0x2fd4ff, sunTint: [0xffe0b0, 0.8],
       hideFarm: true, hideBarn: true, hideFair: true, hideCloths: true, hideFences: true, barricade: 'chips' },
@@ -4201,6 +4205,7 @@ export function createStage(canvas) {
     for (const d of fairDecor) d.visible = !t.hideFair;      // watermelons, county sign
     for (const a of animals) a.g.visible = !t.hideFair;      // no wandering pigs on the Strip
     sb.visible = !t.hideFair;                                // the "SLAPMANIA FAIR" board is fair-only
+    balloon.visible = !t.hideFair;                           // the fair balloon doesn't drift over hell
     for (const fh of farmhouses) fh.visible = !t.hideFarm;
     for (const fb of fenceBits) fb.visible = !t.hideFences;
     for (const c of cloths) c.mesh.visible = !t.hideCloths;

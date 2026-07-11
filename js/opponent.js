@@ -228,7 +228,7 @@ export const ROSTER = [
   {
     key: 'slopberg', name: 'MARK SLOPBERG', tag: 'JUST A NORMAL GUY', world: 'techcampus',
     w: 0.95, h: 1.02, mass: 1.0, noStache: true,
-    skin: 0xf0dcc2, shirt: 0x8a8f98, pants: 0x4a6fa5,   // sunscreen-pale, gray tee, jeans
+    skin: 0xe3b083, shirt: 0x8a8f98, pants: 0x4a6fa5,   // natural tan, gray tee, jeans
     hair: 'frizz', hairCol: 0x4a3018,                    // tight curls
     pickLine: 'Owns the valley, the mansion, and nine cows. Will mention the cows.',
     taunts: [
@@ -434,7 +434,7 @@ export const ROSTER = [
   {
     key: 'slopbergboss', name: 'MARK SLOPBERG', tag: 'BOSS · BLUE BELT, TWO STRIPES', boss: true,
     w: 0.95, h: 1.02, mass: 1.0, noStache: true,
-    skin: 0xf0dcc2, shirt: 0x8a8f98, pants: 0x4a6fa5,
+    skin: 0xe3b083, shirt: 0x8a8f98, pants: 0x4a6fa5,
     hair: 'frizz', hairCol: 0x4a3018,
     vrHeadset: 0xe8e8ee,                          // NEW look flag: chunky pale visor over the eyes (reuse the goggles mount, scaled up)
     bjj: { period: 3.0, reach: 1.2, telegraph: 0.35 },   // NEW mechanic — see spec
