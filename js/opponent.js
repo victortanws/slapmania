@@ -1694,7 +1694,11 @@ export class Opponent {
   }
 
   distance() {
-    return Math.max(0, this.pelvisPos().x - this.startX);
+    // RADIAL travel from the launch spot: downrange (x) AND lateral (z) both
+    // count, so a body slapped off-axis flies free and still scores its true
+    // distance — no more "only the x-component matters" one-plane feel.
+    const p = this.pelvisPos();
+    return Math.max(0, Math.hypot(p.x - this.startX, p.z));
   }
 
   remove() {

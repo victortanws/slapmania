@@ -74,10 +74,13 @@ export function createWorld() {
   edge(1, 20, 45, -22, 20, 0);    // behind the fair
   edge(75, 20, 1, 48, 20, 37);    // north woods
   edge(75, 20, 1, 48, 20, -37);   // south woods
-  // low side rails near the RING only: they protect the crowd from ground-
-  // rollers, then it's open country — rolling into the pumpkins is a feature
-  fixed(new CANNON.Box(new CANNON.Vec3(17.5, 3, 0.15)), 2.5, 3, 2.9);
-  fixed(new CANNON.Box(new CANNON.Vec3(17.5, 3, 0.15)), 2.5, 3, -2.9);
+  // low side CURBS near the RING only: knee-high (hy 0.5), they stop ground-
+  // rollers from tumbling into the seated crowd — but an AIRBORNE flyer sails
+  // clean over them, so a slap can launch a body in ANY direction without
+  // smacking an invisible wall and dumping its energy. Beyond x=20 it's open
+  // country. (These were 6m-tall walls that ricocheted mid-air flights.)
+  fixed(new CANNON.Box(new CANNON.Vec3(17.5, 0.5, 0.15)), 2.5, 0.5, 2.9);
+  fixed(new CANNON.Box(new CANNON.Vec3(17.5, 0.5, 0.15)), 2.5, 0.5, -2.9);
 
   return { world, groundMat, fleshMat, setIce, setGround, setGravity };
 }
