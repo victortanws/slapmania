@@ -336,6 +336,7 @@ export const TOURS = [
           { id: 'c1c1', title: 'ABANDON ALL WHIFF', desc: 'LAND a clean head slap on LOW-LEVEL LARRY — witness the one slap his 400-year transfer needs', opp: 'larry', world: 'hell', goal: { type: 'head' } },
           { id: 'c1c2', title: 'THE FOURTH CIRCLE', desc: 'Score 400 off TREMENDOUS DON — he is not damned, he is INVESTED', opp: 'don', world: 'hell', goal: { type: 'pts', v: 400 } },
           { id: 'c1c3', title: '☗ BOSS: THE HONORABLE DAMNED', desc: 'SCORE 360 off JUDGE PENNYWHISTLE in six seconds a swing — LAND 50%+ form on every slap that counts; nothing down here is expedited', opp: 'pennywhistle', world: 'hell', goal: { type: 'pts', v: 360 } },
+          { id: 'c1c4', title: "☗ THE ICE-WARDEN'S TOLL", desc: "COLD-HAND CARMINE bars the way down to the ice. His toll: CATCH 3 of the cubes he throws — OPEN the palm [P] to catch, do NOT slap. The bottom of Hell has one last errand for you.", opp: 'carmine', world: 'hell', goal: { type: 'catch', v: 3 } },
         ],
       },
       {
@@ -994,6 +995,27 @@ export const CUTSCENES = {
     { who: 'JUDGE PENNYWHISTLE', text: 'Order! ORDER IN THE UNDERWORLD! ...Community service. Six thousand hours. It transpires that accepting blueprints in a gavel case is frowned upon in EVERY jurisdiction.', shot: 'opp' },
     { who: 'YOU', text: 'The corrupt judge, condemned to judge the condemned. The poetry writes itself. I shall not attempt to improve upon it.', shot: 'player' },
     { who: 'JUDGE PENNYWHISTLE', text: 'One honest slap reduces my sentence, champ — form 666-B, I checked. Six seconds a swing, half your form minimum, and NOTHING in this circle is expedited. I filed a complaint. It joined the queue.', shot: 'opp' },
+  ],
+  // THE ICE-WARDEN'S TOLL — the catch gate + the melting payoff (Exertion of Pointlessness)
+  c1c4: [
+    { who: 'YOU', text: 'Down, and ever down, to the ninth ring — Cocytus, the lake of ice at the bottom of the world, where even the fire has given up.', shot: 'player' },
+    { who: '👻 VIRGIL', text: "Last stop in the pit, poet. Nothin' burns down here. Everything freezes. That gentleman with the wings is why.", shot: 'wide' },
+    { who: 'COLD-HAND CARMINE', text: 'Six wings up top beat day and night, and the wind off them keeps the lake hard. This is the coldest place there is. I make it colder. That is the position.', shot: 'opp' },
+    { who: 'YOU', text: 'To freeze the frozen — to what end, dread one?', shot: 'player' },
+    { who: 'COLD-HAND CARMINE', text: 'No end. That is the whole of the job. Now — my hands are full of wind, and I have a second errand I cannot do. You will.', shot: 'opp' },
+    { who: 'COLD-HAND CARMINE', text: "I'll throw you things. Catch each — OPEN the palm, do not slap. Set them down over there in a tidy row and leave them. I'll want them. Later.", shot: 'opp' },
+    { who: 'COLD-HAND CARMINE', text: "Your palm will go cold and wet. Pay it no mind — everyone's does. And don't mistake my calm for kindness. I have not smiled since the Fall.", shot: 'opp' },
+    { who: '👻 VIRGIL', text: "Catch clean, set 'em down gentle. And poet — don't count 'em till the end.", shot: 'wide' },
+  ],
+  outro_c1c4: [
+    { who: 'YOU', text: 'The toll is paid! Now to my row — the harvest of my catching, laid in a line as I was bid. Behold, warden, I return them all to y—', shot: 'player' },
+    { who: 'YOU', text: '...There is nothing here. A wet streak on the ice where my row should be. Every catch — gone. Have I been robbed?', shot: 'player' },
+    { who: '👻 VIRGIL', text: 'Not robbed.', shot: 'wide' },
+    { who: 'COLD-HAND CARMINE', text: 'Ice. Off the lake. You caught it, you rowed it, it went home. I never wanted them back — I wanted you to WANT to bring them. That part worked.', shot: 'opp' },
+    { who: 'YOU', text: 'You had me CATCH water, and file it in rows... that could not survive being filed.', shot: 'player' },
+    { who: 'COLD-HAND CARMINE', text: 'Now you have it. Down here we do not punish with fire. We punish with ERRANDS — the labor that undoes itself is the labor that never ends. The Exertion of Pointlessness. The only steady work in Hell.', shot: 'opp' },
+    { who: 'YOU', text: 'I launched a damned soul forty meters, and I folded meltwater into a queue. History shall remember precisely one of these.', shot: 'player' },
+    { who: '👻 VIRGIL', text: "Everything's a county, poet. This one just don't keep records. Mind the puddle on the climb out — it's already gone.", shot: 'wide' },
   ],
   c2c1: [
     { who: '👻 VIRGIL', text: "Out of the pit and onto the foothills. Still smokin', but it's UP from here — the mountain works in terraces. First terrace: pride.", shot: 'wide' },

@@ -1499,7 +1499,27 @@ function schedule() {
 // melt to nothing later — that's the whole joke. Kinematic meshes, pooled. ---
 const iceCubes = [];
 const cubePool = [];
+const rowCubes = []; // the "tidy row" the player builds — then it melts (the joke)
 let catchCount = 0, catchMiss = 0, catchThrowT = 0, catchThrown = 0;
+// set a caught cube down in a growing line at the player's feet (the tidy row)
+function placeInRow(mesh) {
+  const b = player.root.position;
+  mesh.visible = true; mesh.scale.setScalar(1); mesh.rotation.set(0.2, 0.4, 0);
+  if (mesh.material) mesh.material.opacity = 0.82;
+  mesh.position.set(b.x + 0.5, 0.1, b.z - 0.55 - rowCubes.length * 0.24);
+  rowCubes.push(mesh);
+}
+// ...and this is Hell: the row melts to nothing. Shrink + fade over ~1.5s, then pool.
+function meltRow() {
+  const cubes = rowCubes.splice(0);
+  let t = 0;
+  const iv = setInterval(() => {
+    t += 0.05;
+    const s = Math.max(0, 1 - t / 1.5);
+    cubes.forEach((m) => { m.scale.setScalar(s); m.position.y = 0.1 * s; if (m.material) m.material.opacity = 0.82 * s; });
+    if (t >= 1.5) { clearInterval(iv); cubes.forEach((m) => { m.visible = false; cubePool.push(m); }); }
+  }, 50);
+}
 const CATCH_PERIOD = 1.35, CATCH_DUR = 0.85;
 function makeCube() {
   const m = new THREE.Mesh(
@@ -1510,7 +1530,8 @@ function makeCube() {
 }
 function resetCatch() {
   for (const c of iceCubes) { c.mesh.visible = false; cubePool.push(c.mesh); }
-  iceCubes.length = 0; catchCount = 0; catchMiss = 0; catchThrown = 0;
+  for (const m of rowCubes) { m.visible = false; cubePool.push(m); }
+  iceCubes.length = 0; rowCubes.length = 0; catchCount = 0; catchMiss = 0; catchThrown = 0;
   catchThrowT = CATCH_PERIOD - 0.55; // first cube arrives shortly after the swing opens
 }
 function throwCube() {
@@ -1540,18 +1561,38 @@ function updateCatch(dt) {
     p.y += Math.sin(Math.PI * k) * 0.4; // a little toss-arc
     c.mesh.position.copy(p);
     c.mesh.rotation.x += dt * 7; c.mesh.rotation.y += dt * 5;
-    // closest distance from the cube to the hand's swept path (or the live point)
+    // cube velocity, analytically from its path (deterministic — no dynamic body)
+    const dkdt = 1 / CATCH_DUR;
+    const cubeVel = new THREE.Vector3().subVectors(c.to, c.from).multiplyScalar(dkdt);
+    cubeVel.y += 0.4 * Math.PI * Math.cos(Math.PI * k) * dkdt;
+    // closest distance from the cube to the hand's SWEPT path (or the live point)
     let d = 9;
     if (seg) { const q = segSphereClosest(seg.p0, seg.p1, p); d = q.distanceTo(p); }
     else d = player.handPos.distanceTo(p);
-    // CATCH: open palm sweeping within reach of the cube inside the arrival window
     if (!c.caught && c.t > 0.6 && player.pUnlocked && d < 0.33) {
-      c.caught = true; c.live = false; c.mesh.visible = false; cubePool.push(c.mesh);
-      catchCount++;
-      ui.slapBurst('CAUGHT!', `ICE IN HAND — ${catchCount} SET DOWN IN A TIDY ROW`);
-      sfx.crack(0.28); stage.spawnShock(p);
-      const goal = campaign.active && campaign.active.goal;
-      if (goal && goal.type === 'catch' && catchCount >= goal.v) { finishCatchStage(); return; }
+      c.caught = true; c.live = false;
+      // SOFT HANDS: catch quality = how well the hand moves WITH the cube. A gentle
+      // reach (low relative speed) CRADLES it clean; a hard SWING slams into it and
+      // BATS it away. The slap engine used wrong, mastered anyway — a hard wind-up
+      // ruins a catch. This is the catch analog of the slap's cq/give grade.
+      const relSpeed = player.handVel.distanceTo(cubeVel);
+      const cGive = THREE.MathUtils.clamp(1 - relSpeed / 9, 0, 1);   // ~9 m/s (full slap) = a hard bat
+      const cCenter = 1 - THREE.MathUtils.clamp(d / 0.30, 0, 1);
+      if (cGive >= 0.28) {
+        catchCount++;
+        const clean = cGive >= 0.62 && cCenter >= 0.5;
+        placeInRow(c.mesh); // set it down in the tidy row (it'll melt later)
+        ui.slapBurst(clean ? 'CLEAN CATCH — SOFT HANDS!' : 'BOBBLE… SAVED!', `${catchCount} SET DOWN IN A TIDY ROW`);
+        sfx.crack(0.22 + 0.15 * cGive);
+        player.leanV += (1 - cGive) * 0.9; // a stiff catch shoves you (Newton's 3rd); soft hands absorb it
+        const goal = campaign.active && campaign.active.goal;
+        if (goal && goal.type === 'catch' && catchCount >= goal.v) { finishCatchStage(); return; }
+      } else {
+        // BATTED: you swung too hard — the cube rockets off, no catch
+        c.mesh.visible = false; cubePool.push(c.mesh); catchMiss++;
+        ui.slapBurst('BATTED IT AWAY!', 'A CATCH IS A SOFT REACH — NOT A SLAP');
+        sfx.crack(0.5); stage.spawnShock(p);
+      }
     } else if (c.t > 1.32) { // fell back into the lake, uncaught
       c.live = false; c.mesh.visible = false; cubePool.push(c.mesh);
       catchMiss++;
@@ -1571,6 +1612,7 @@ function finishCatchStage() {
   const bestAttempt = { dist: 0, pts: 0, foul: null, part: null, opp: arch.name };
   attempts.push(bestAttempt);
   iceCubes.forEach((c) => { c.mesh.visible = false; cubePool.push(c.mesh); }); iceCubes.length = 0;
+  meltRow(); // ...and the tidy row you built goes to nothing. The Exertion of Pointlessness.
   ui.hideCards();
   const line = won
     ? `❄️ ${catchCount} CAUGHT — every cube set down in a tidy row. The lake lets you pass.`
