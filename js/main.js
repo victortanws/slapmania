@@ -1813,7 +1813,10 @@ function tick(now) {
       // ~1mm and punches whiffed on tiny timing wobble (60fps roulette). 0.13
       // (still < the palm's 0.14, so the open hand keeps its reach edge) gives an
       // honest fist+forearm envelope that lands reliably. Palm unchanged.
-      const rh = fist ? 0.13 : 0.14;
+      // scale the contact radius with the VISIBLE mitt: handG is scaled up for
+      // big-arm slappers (bigArms/slapArm), so a fixed 0.14 let the giant hand
+      // sweep ~14cm through the cheek before the palm-center reached the sphere.
+      const rh = (fist ? 0.13 : 0.14) * player.handG.scale.x;
       const { p0, p1 } = player.handSeg;
       const hit = opponent.checkHit(p0, p1, rh)
         || (prevHandSeg && opponent.checkHit(prevHandSeg.p1, p1, rh))

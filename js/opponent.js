@@ -1672,7 +1672,12 @@ export class Opponent {
         const callOff = this.calledHigh == null ? 0 : (this.calledHigh ? -0.1 : 0.1);
         P.head.body.position.y = this.basePose.head.p.y - 0.38 * k + callOff * (1 - k);
         P.head.body.position.x = this.basePose.head.p.x + 0.32 * k;
-        P.head.body.position.z = this.basePose.head.p.z + sway;
+        // z is DEPTH (into-screen): the SWING camera looks down −z, so a z-sway is
+        // invisible on screen AND un-aimable (the chain swings in a fixed plane). At
+        // full ±0.20 it silently ate the whole contact margin — a screen-flush slap
+        // missed in 3D by ~6cm, worst exactly when the up-window says "strike now".
+        // Keep it cosmetic on the torso (below); hold the HEAD near the swing plane.
+        P.head.body.position.z = this.basePose.head.p.z + sway * 0.15;
         P.torso.body.position.y = this.basePose.torso.p.y - 0.19 * k;
         P.torso.body.position.x = this.basePose.torso.p.x + 0.16 * k;
         P.torso.body.position.z = this.basePose.torso.p.z + sway * 0.55;
