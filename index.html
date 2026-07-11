@@ -46,7 +46,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
 #tourActs{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;max-width:1040px;}
 .tourHead{width:100%;text-align:center;font-family:'Arial Black',Impact,sans-serif;font-size:16px;
   letter-spacing:2px;color:var(--yellow);text-shadow:2px 2px 0 #000;margin-top:8px;}
-.tourHead span{display:block;font-family:Arial,sans-serif;font-weight:bold;font-size:11.5px;
+.tourHead > span{display:block;font-family:Arial,sans-serif;font-weight:bold;font-size:11.5px;
   letter-spacing:.4px;color:#cfd4ee;margin-top:3px;text-shadow:1px 1px 0 #000;}
 .tourStory{font-size:11px;font-style:italic;font-weight:bold;color:#5a5f7d;line-height:1.4;margin:0 0 8px;}
 .tourAct{background:#fffbe8;color:#1b1d33;border:4px solid #000;border-radius:12px;padding:12px 16px;
@@ -64,6 +64,9 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
 }
 
 /* ---- world selector: the active world wears the red ---- */
+/* card children NEVER take the flex shrink — an overflowing card scrolls instead
+   of crushing a child (the world chips once collapsed to an 8px sliver) */
+.card>*{flex-shrink:0;}
 /* world chips: one scrollable row that scales to every world, DLC wears a 🔒 */
 #worldRow{display:flex;gap:6px;overflow-x:auto;max-width:min(92vw,760px);padding:4px 6px;
   scrollbar-width:none;-webkit-overflow-scrolling:touch;}
@@ -79,7 +82,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
 @media (max-width:560px){ #refBar{bottom:196px;font-size:11px;} }
 
 /* ---- challenge banner: a rival's gauntlet, pinned under the topbar ---- */
-#challengeBar{position:absolute;top:60px;left:0;right:0;margin:0 auto;width:fit-content;max-width:92vw;
+#challengeBar{position:absolute;top:84px;left:0;right:0;margin:0 auto;width:fit-content;max-width:92vw;
   background:#2a1140;border:3px solid var(--yellow);color:#fff;font-size:13px;letter-spacing:1px;
   padding:8px 16px;border-radius:10px;box-shadow:4px 4px 0 rgba(0,0,0,.5);z-index:40;text-align:center;}
 
@@ -96,7 +99,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
 @keyframes pop{from{transform:scale(.15) rotate(-14deg);opacity:0}to{transform:scale(1) rotate(-4deg);opacity:1}}
 
 /* ---- coach line ---- */
-#coach{position:absolute;top:136px;left:0;right:0;text-align:center;font-size:27px;color:var(--yellow);
+#coach{position:absolute;top:170px;left:0;right:0;text-align:center;font-size:27px;color:var(--yellow);
   -webkit-text-stroke:1.5px #000;text-shadow:4px 4px 0 rgba(0,0,0,.7);letter-spacing:1px;}
 
 /* ---- live key chips ---- */
@@ -237,7 +240,7 @@ body.touch #keysbar{display:none;} /* the buttons ARE the legend on touch */
 #bubble.withIntro{top:auto;bottom:30%;right:9%;}
 
 /* ---- cards ---- */
-.card{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+.card{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:safe center;
   background:rgba(10,12,26,.84);text-align:center;pointer-events:auto;gap:14px;padding:20px;overflow-y:auto;}
 .card h1{font-size:84px;margin:0;color:var(--red);-webkit-text-stroke:3px #000;
   text-shadow:6px 6px 0 var(--yellow),10px 10px 0 #000;transform:rotate(-4deg);letter-spacing:2px;}
@@ -291,18 +294,19 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
   #creditBar{display:none;} /* would sit under the world buttons on a short card */
   .bigdist{font-size:60px;} .bigdist.foul{font-size:44px;}
   #banner .big{font-size:42px;} #banner .sub{font-size:14px;}
-  #distance{font-size:40px;top:104px;} #clock{font-size:30px;min-width:80px;}
+  #distance{font-size:40px;top:118px;} #clock{font-size:30px;min-width:80px;}
   /* keep the challenge banner from growing down into the distance/coach lines */
   #challengeBar{font-size:11px;max-width:88vw;display:-webkit-box;-webkit-line-clamp:2;
     -webkit-box-orient:vertical;overflow:hidden;}
   .rules{padding:10px 14px;} .rules ol{font-size:11px;}
   .keys{font-size:13px;} .key{font-size:15px;padding:4px 9px;}
   #attempts,#best{min-width:110px;font-size:12px;}
+  #masterTag{display:none;}
   #bubble{max-width:180px;font-size:12px;}
   #introName{font-size:34px;}
   #intro{top:14%;padding:0 10px;}
   .verdict{font-size:14px;}
-  #coach{font-size:14px;top:110px;}
+  #coach{font-size:14px;top:168px;}
   #keysbar{bottom:84px;gap:8px;}
   .keychip{width:40px;} .keychip span{width:32px;height:32px;line-height:32px;font-size:15px;}
   .keychip label{font-size:7px;}
@@ -329,6 +333,10 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
 @media (max-height: 480px){
   .card{justify-content:flex-start;padding-top:12px;padding-bottom:20px;}
   #creditBar{display:none;}
+  /* short screens: keep the intro plate, quip bar and taunt bubble in separate bands */
+  #intro{top:6%;}
+  #refBar{bottom:10px;font-size:11px;}
+  #bubble.withIntro{bottom:12%;right:4%;}
 }
 @keyframes goPulse{50%{transform:scale(1.05);}}
 
@@ -340,7 +348,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
   padding:2px 7px;box-shadow:0 3px 0 #000;letter-spacing:.5px;}
 #unlockModal{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   background:rgba(6,7,16,.82);pointer-events:auto;z-index:60;padding:16px;}
-.unlockCard{position:relative;background:#fffbe8;color:#1b1d33;border:5px solid #000;border-radius:16px;
+.unlockCard{position:relative;box-sizing:border-box;max-width:min(340px,calc(100vw - 24px));background:#fffbe8;color:#1b1d33;border:5px solid #000;border-radius:16px;
   padding:24px 28px;max-width:340px;width:100%;text-align:center;box-shadow:8px 8px 0 rgba(0,0,0,.55);
   font-family:Arial,sans-serif;}
 .unlockX{position:absolute;top:8px;right:10px;background:none;border:none;box-shadow:none;
@@ -472,10 +480,10 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
       </ol>
     </div>
     <div class="keys">
-      <span class="key">S</span>SWIVEL
-      <span class="key">L</span>LUNGE
-      <span class="key">A</span>ARM
-      <span class="key">P</span>PALM
+      <span style="white-space:nowrap;"><span class="key">S</span>SWIVEL</span>
+      <span style="white-space:nowrap;"><span class="key">L</span>LUNGE</span>
+      <span style="white-space:nowrap;"><span class="key">A</span>ARM</span>
+      <span style="white-space:nowrap;"><span class="key">P</span>PALM</span>
     </div>
     <div class="tagline" style="font-size:12px;">FIRE 'EM IN THAT ORDER — TIMING IS EVERYTHING</div>
     <div class="pressany blink">PRESS ANY KEY TO MOSEY ON UP</div>
@@ -549,7 +557,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
       <a href="https://www.youtube.com/@VictorTan" target="_blank" rel="noopener" style="color:var(--yellow);text-decoration:none;">▶ YOUTUBE.COM/@VICTORTAN</a>
     </div>
     <button id="matchNext" class="blink" style="margin-top:6px;font-size:16px;">PICK YOUR NEXT VOLUNTEER ▶</button>
-    <div class="pressany" style="font-size:11px;letter-spacing:2px;opacity:.75;margin-top:4px;">tap the boards to browse · ENTER also works</div>
+    <div class="pressany" style="font-size:11px;letter-spacing:2px;opacity:.75;margin-top:4px;">scroll the boards to browse · ENTER = next</div>
   </div>
 
 </div>

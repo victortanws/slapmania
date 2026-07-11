@@ -499,6 +499,21 @@ Remaining juice backlog (documented): hit-sparks, sweat/spit spray, hitstop, mil
   hold or a drag/scroll never advances. VERIFIED: 600ms hold → no advance; 65px drag → no advance; quick tap →
   advances. Buttons/inputs still handle their own clicks; keyboard advance unchanged.
 
+### UI-OVERLAP AUDIT (all screens × 3 viewports) — reported + FIXED
+Exhaustive rect-measured sweep (desktop/mobile/landscape, every state). 2 BLOCKERs + 3 MAJORs + 7 MINORs.
+Fixes applied (verified: world chips 8px sliver → 36px full-height + tappable; short-desktop card top
+reachable via `safe center`):
+- **`.card>*{flex-shrink:0}` + `justify-content:safe center`** — structural: an overflowing card scrolls
+  instead of crushing children (killed the world-chips BLOCKER + desktop MATCH_END clipping, immunizes
+  future card children).
+- challengeBar top 60→84px (clears the shot clock + masterTag + attempts); mobile distance 104→118 +
+  coach 110→168 (no more commentary printed over the ticker); desktop coach 136→170.
+- landscape (≤480h): intro to 6%, refBar to bottom 10px, bubble to 12% — the faceoff three-layer pile-up.
+- lockbadge no longer renders as a full-width bar (`.tourHead > span`); unlock modal fits 375px
+  (box-sizing + max-width); key legend pairs `white-space:nowrap`; #masterTag hidden ≤560px;
+  "tap the boards" copy → "scroll the boards" (boards have no tap handler).
+Deferred (agent's sub-10px text note): 7-8px labels — raise to 9px floor in a polish pass.
+
 ## Left for the director
 
 ### How to review + ship
