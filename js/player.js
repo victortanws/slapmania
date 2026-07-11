@@ -872,9 +872,14 @@ export class Player {
       if (n === 'spine' && spineGated) { J.v = 0; J.a = Math.max(0, J.a - 0.55 * dt); continue; }
       if (n === 'shoulder' && !this.aUnlocked) { J.v = 0; continue; }
       if (n === 'elbow' && !this.pUnlocked) {
-        // folded tight when armed, gently bent when just standing around
         J.v = 0;
-        J.a += ((this._armed ? 1.2 : 0.35) - J.a) * Math.min(1, 8 * dt);
+        // a THROWN fist EXTENDS the arm — a punch reaches (target ~0.45, mostly
+        // straight). Only an armed-but-not-yet-thrown arm stays folded (1.2), idle
+        // 0.35. Without this the closed-fist body blow stopped ~7cm short of the
+        // cheek and whiffed on any timing wobble. The palm (P) still extends
+        // further (toward 0.06), keeping its reach edge.
+        const target = this.aUnlocked ? 0.45 : (this._armed ? 1.2 : 0.35);
+        J.a += (target - J.a) * Math.min(1, 8 * dt);
         continue;
       }
       if (n === 'wrist' && !this.pUnlocked) { J.v = 0; continue; }

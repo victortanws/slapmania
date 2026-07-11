@@ -1577,7 +1577,12 @@ function tick(now) {
       // the contact margin on deep matchups — so we also test the tip's and
       // heel's paths since last frame. Without this, whether Roy's perfect
       // swing touched Hoss was 60fps roulette.
-      const rh = fist ? 0.10 : 0.14;
+      // fist 0.13 (was 0.10): a closed-fist punch never opens the elbow, so the
+      // folded arm stops ~7cm short of the cheek — at 0.10 the contact margin was
+      // ~1mm and punches whiffed on tiny timing wobble (60fps roulette). 0.13
+      // (still < the palm's 0.14, so the open hand keeps its reach edge) gives an
+      // honest fist+forearm envelope that lands reliably. Palm unchanged.
+      const rh = fist ? 0.13 : 0.14;
       const { p0, p1 } = player.handSeg;
       const hit = opponent.checkHit(p0, p1, rh)
         || (prevHandSeg && opponent.checkHit(prevHandSeg.p1, p1, rh))
