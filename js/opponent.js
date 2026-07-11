@@ -1457,12 +1457,12 @@ export class Opponent {
     return null;
   }
 
-  launch(dir, power) {
+  launch(dir, power, spin) {
     if (this.launched) return;
     this.launched = true;
     this.target.visible = false;
     const speed = Math.min(power / this.knockback, 34);
-    this.rag.launch(dir, speed);
+    this.rag.launch(dir, speed, spin);
     this.handprint.visible = true;
     const hb = this.hatBody;
     if (hb) {

@@ -197,13 +197,17 @@ export function createRagdoll({ world, scene, mat, x = 0, z = 0, skin = 0xd9a066
 
   const api = {
     parts, constraints, group,
-    launch(dir, speed) {
+    launch(dir, speed, spin) {
       dynamize();
       // tight jitter: flights must be earned by technique, not decided by dice
       list.forEach(({ body }) => {
         const j = 0.96 + r() * 0.08;
         body.velocity.set(dir.x * speed * j, dir.y * speed * j, dir.z * speed * j);
-        body.angularVelocity.set((r() - 0.5) * 2.5, (r() - 0.5) * 2.5, speed * 0.25 * (0.8 + r() * 0.4));
+        // spin from the true contact geometry (main.js) — a coherent barrel-roll
+        // about the real axis, with a touch of per-part tumble; falls back to the
+        // old random spin for callers that don't supply one (topple, etc.)
+        if (spin) body.angularVelocity.set(spin.x + (r() - 0.5) * 0.8, spin.y + (r() - 0.5) * 0.8, spin.z + (r() - 0.5) * 0.8);
+        else body.angularVelocity.set((r() - 0.5) * 2.5, (r() - 0.5) * 2.5, speed * 0.25 * (0.8 + r() * 0.4));
       });
       parts.head.body.velocity.scale(1.1, parts.head.body.velocity);
     },

@@ -875,7 +875,29 @@ function onContact(hit, fist) {
   dir.y = fist ? 0.15 : THREE.MathUtils.clamp(0.34 + player.strikeLift * 0.55, 0.18, 0.52);
   dir.normalize();
 
-  opponent.launch(dir, power);
+  // TANGENTIAL SPIN — a whipping open palm drags ACROSS the cheek and sets the
+  // volunteer barrel-rolling; a straight fist drives in and barely turns them.
+  // Derived from the true contact geometry: the hand-velocity component across
+  // the surface normal (tang), about axis n×tang, scaled by flushness. Pure
+  // visual truth — angular velocity leaves the launch trajectory untouched, so
+  // it can NEVER perturb the measured distance. A clean slap just looks clean.
+  const spin = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, speed * 0.22);
+  if (hit.part === 'head') {
+    const n = new THREE.Vector3().subVectors(hit.point, hit.center).normalize();
+    const tang = velDir.clone().addScaledVector(n, -velDir.dot(n)); // sweep across the surface
+    const tMag = tang.length();
+    if (tMag > 1e-3) {
+      tang.normalize();
+      const axis = new THREE.Vector3().crossVectors(n, tang).normalize();
+      const flush = THREE.MathUtils.clamp((cq - 0.88) / 0.24, 0, 1);
+      // palm whips (full drag) vs fist driving straight in (little spin)
+      spin.copy(axis).multiplyScalar(speed * tMag * (fist ? 0.15 : 0.55) * (0.7 + 0.6 * flush));
+      spin.x += (Math.random() - 0.5) * 0.6;
+      spin.y += (Math.random() - 0.5) * 0.6;
+    }
+  }
+
+  opponent.launch(dir, power, spin);
   slap = {
     foul: null, part: hit.part, // a landed contact is never a foul (fouls use the FOULED path)
     chain: {
