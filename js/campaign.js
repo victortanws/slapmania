@@ -390,7 +390,7 @@ export const TOURS = [
         story: 'Down the second slope: the folks who are certain about YOU. They audit every swing for purity and reposition constantly to the right side of wherever anyone stands. The tar does not take sides. It takes legs.',
         challenges: [
           { id: 'x2c1', title: 'THE PREEMPTIVE APOLOGY', desc: 'ALLY ALVIN keeps repositioning to the correct side of wherever you stand. Time the sway and SEND him 7m through the tar', opp: 'alvin', goal: { type: 'dist', v: 7 } },
-          { id: 'x2c2', title: '☗ SMALL-BATCH FORM', desc: 'ETHICALLY-SOURCED ESME accepts only artisanal slaps — anything under 65% form is factory slop (×0.12). LAND one hand-thrown, single-origin strike, 6m', opp: 'esme', goal: { type: 'dist', v: 6 } },
+          { id: 'x2c2', title: '☗ SMALL-BATCH FORM', desc: 'ETHICALLY-SOURCED ESME rejects any slap under 65% form (×0.12). LAND one strike she cannot fault, 6m', opp: 'esme', goal: { type: 'dist', v: 6 } },
           { id: 'x2c3', title: '☗ BOSS: THE LIVESTREAM', desc: 'HASHTAG HARMONY is broadcasting her own unsticking and keeps slipping to find her good side. SCORE 70 while the chat watches', opp: 'harmony', goal: { type: 'pts', v: 70 } },
         ],
       },
@@ -422,14 +422,14 @@ export const TOURS = [
     dlc: true,
     slapper: 'roy',    // Roy's heavyweight patience vs a kingdom of professionals
     world: 'blackgold',
-    blurb: 'Don detected "the largest reserve in the hemisphere" under the neighbor kingdom and built a gold pipeline before finding any oil. The kingdom did not say no. The kingdom said something worse.',
+    blurb: 'Don detected "the largest reserve in the hemisphere" under the neighbor kingdom and built a gold pipeline before finding any oil. The kingdom did not say no.',
     acts: [
       {
         act: 'BARREL I — THE PERMIT',
         story: "Every drilling permit needs the Hand of the Bazaar's countersignature — and the Hand must first clear customs. Officer Saeed has stamped nothing in thirty years. Don has applied sixty-one times. Ask Saeed how that is going.",
         challenges: [
           { id: 'd1c1', title: 'THE VIBES SURVEY', desc: "LAND a clean head slap on GUSHER GARY, Don's chief geologist — he has never found oil but has found vibes, twice, and billed for both", opp: 'gary', goal: { type: 'head' } },
-          { id: 'd1c2', title: 'THE SHORTCUT', desc: 'SEND COMPASS KARIM 30m down the slick — he rents shortcuts by the hour and charges extra for the view', opp: 'karim', goal: { type: 'dist', v: 30 } },
+          { id: 'd1c2', title: 'THE SHORTCUT', desc: 'SEND COMPASS KARIM 30m down the slick — he rents shortcuts by the hour and charges extra for the map', opp: 'karim', goal: { type: 'dist', v: 30 } },
           { id: 'd1c3', title: '☗ BOSS: CUSTOMS', desc: 'STAMPLESS SAEED returns any slap under 65% form unstamped (×0.12). SCORE 240 and earn the first stamp of his entire career', opp: 'saeed', goal: { type: 'pts', v: 240 } },
         ],
       },
@@ -437,17 +437,17 @@ export const TOURS = [
         act: 'BARREL II — THE BAZAAR',
         story: "The permit needs three bazaar signatures: the spice queen, the auctioneer, and the date magnate who has not spoken above a whisper since 1988. Don's men keep fainting in the chili aisle. The camel remains neutral.",
         challenges: [
-          { id: 'd2c1', title: 'THE SPICE QUEEN', desc: 'SCORE 430 off FEARLESS FATIMAH — she weighs what the truth weighs, and she is not impressed by either of you. Mind the paprika', opp: 'fatimah', goal: { type: 'pts', v: 430 } },
+          { id: 'd2c1', title: 'THE SPICE QUEEN', desc: 'SCORE 430 off FEARLESS FATIMAH — she weighs what the truth weighs, and she is not impressed by either of you', opp: 'fatimah', goal: { type: 'pts', v: 430 } },
           { id: 'd2c2', title: 'LOT 40: THE MOMENT', desc: 'AUCTIONEER AZIZ has put your swing up for auction — 15 seconds before the hammer. SEND him 26m before the lot closes', opp: 'aziz', goal: { type: 'dist', v: 26 } },
-          { id: 'd2c3', title: '☗ BOSS: THE DATE MAGNATE', desc: "WHISPERIN' YUSUF tosses 900-year dates — CATCH 3 with an OPEN palm [P], do NOT slap. Bruise one and the whole harvest hears about it", opp: 'yusuf', goal: { type: 'catch', v: 3 } },
+          { id: 'd2c3', title: '☗ BOSS: THE DATE MAGNATE', desc: "WHISPERIN' YUSUF tosses 900-year dates — CATCH 3 with an OPEN palm [P], do NOT slap. Gently", opp: 'yusuf', goal: { type: 'catch', v: 3 } },
         ],
       },
       {
         act: 'BARREL III — THE GUSHER',
-        story: 'The vibes have localized: the reserve is under the bazaar, possibly under Fatimah. Don has bought a bigger drill and a smaller apology, and the derrick strikes something at dawn — black, sweet, and suspiciously fragrant.',
+        story: 'The vibes have localized: the reserve is under the bazaar, possibly under Fatimah. The derrick strikes something at dawn — black, sweet, and suspiciously fragrant.',
         challenges: [
           { id: 'd3c1', title: 'LOCALIZED VIBES', desc: 'SEND GUSHER GARY 38m — his dowsing rod now points wherever Don is standing, which is a different kind of accuracy', opp: 'gary', goal: { type: 'dist', v: 38 } },
-          { id: 'd3c2', title: 'INFRASTRUCTURE', desc: "SCORE 380 off TREMENDOUS DON — the pipeline now pumps 'toward the county, or from it, one of those.' It is connected to nothing on either end", opp: 'don', goal: { type: 'pts', v: 380 } },
+          { id: 'd3c2', title: 'INFRASTRUCTURE', desc: "SCORE 380 off TREMENDOUS DON — the pipeline is fully operational and connected to nothing on either end", opp: 'don', goal: { type: 'pts', v: 380 } },
           { id: 'd3c3', title: '☗ BOSS: DERRICK DON', desc: 'Don, gold hardhat, atop the derrick, announcing BARRELS — any slap under 55% form goes straight to his lawyers (×0.12), 20 seconds a swing. SCORE 400 before this reaches the shareholders', opp: 'derrickdon', goal: { type: 'pts', v: 400 } },
         ],
       },
@@ -456,7 +456,7 @@ export const TOURS = [
         story: 'The drill missed the syrup dome and opened stairs going down: the cave under the dunes, sealed by a gate shaped like a giant open hand. Ninety-eight wonders wait inside, every one catalogued and every one, between us, "fine." The catalogue has room for a ninety-ninth.',
         challenges: [
           { id: 'd4c1', title: '☗ BOSS: THE STONE PALM', desc: 'The gate wears a body when visitors come. Only 70%+ honest form moves stone (×0.12) — SEND the keeper of the gate 15m and the fingers open', opp: 'stonepalm', world: 'cave', goal: { type: 'dist', v: 15 } },
-          { id: 'd4c2', title: '☗ FINAL BOSS: THE 99TH WONDER', desc: 'THE KEEPER OF WONDERS has shelved 98 miracles and rated each one "fine." Bring the one thing no vault has held: LAND an 85% chain — a slap missing nothing', opp: 'keeper', world: 'cave', goal: { type: 'chain', v: 85 } },
+          { id: 'd4c2', title: '☗ FINAL BOSS: THE 99TH WONDER', desc: 'THE KEEPER OF WONDERS has shelved 98 miracles and rated each one "fine." LAND an 85% chain and complete the catalogue', opp: 'keeper', world: 'cave', goal: { type: 'chain', v: 85 } },
         ],
       },
     ],
@@ -472,7 +472,7 @@ export const CUTSCENES = {
     { who: '📋 THE COUNTY CLERK', text: 'Miss Fran. County business. The road out of town bends so hard both ends MEET. At the bottom: a hollow. In the hollow: the tar.', shot: 'wide' },
     { who: 'YOU', text: 'I know the hollow. Everything down there is stuck and hollering. Why me?', shot: 'player' },
     { who: '📋 THE COUNTY CLERK', text: "You unstick things. Tractors. Gates. Uncle Miltie's jar lids. The county now requires it of opinions.", shot: 'wide' },
-    { who: 'YOU', text: 'Opinions are jar lids with feelings. Get my gloves.', shot: 'player' },
+    { who: 'YOU', text: "Jar lids don't holler back. Otherwise, same job. Get my gloves.", shot: 'player' },
   ],
   x1c1: [
     { who: 'BROTHER COUNTDOWN', text: 'STOP. Before you swing, know that the end of all things arrives in fifteen seconds. I have the sign.', shot: 'opp' },
@@ -489,24 +489,25 @@ export const CUTSCENES = {
     { who: 'REVEREND DECIBEL', text: 'REPENT! Or attend the potluck! BOTH EVENTS ARE SATURDAY!', shot: 'opp' },
     { who: 'YOU', text: "Reverend, the megaphone has been on your face for nine years.", shot: 'player' },
     { who: 'REVEREND DECIBEL', text: "IT'S LOAD-BEARING.", shot: 'opp' },
-    { who: 'YOU', text: "Sixty percent form, then. Any quieter and you'll never know I agreed about the potluck.", shot: 'player' },
+    { who: 'YOU', text: "Sixty percent, Reverend. You'll hear this one.", shot: 'player' },
   ],
   x2c1: [
     { who: 'ALLY ALVIN', text: 'Before we start — I hear you, I see you, and I preemptively apologize for whatever my cheek is about to imply.', shot: 'opp' },
     { who: 'YOU', text: "It's a cheek, Alvin. It doesn't imply. It receives.", shot: 'player' },
-    { who: 'ALLY ALVIN', text: '...can I get that in writing? For my followers? Both of them are very intense.', shot: 'opp' },
+    { who: 'ALLY ALVIN', text: '...strongly agree. Wait. Is agreeing a stance? Hold on. I need to reposition.', shot: 'opp' },
   ],
   x2c2: [
     { who: 'ETHICALLY-SOURCED ESME', text: 'Wait. WAIT. Is that slap ethically sourced? Free-range coil? Single-origin lunge? I will NOT be moved by factory form.', shot: 'opp' },
     { who: 'YOU', text: 'Ma\'am, I raised this swing myself. From a seed.', shot: 'player' },
     { who: 'ETHICALLY-SOURCED ESME', text: '...locally?', shot: 'opp' },
-    { who: 'YOU', text: "Sixty-five percent, hand-thrown. You'll taste the terroir.", shot: 'player' },
+    { who: 'YOU', text: "Walking distance.", shot: 'player' },
   ],
   x2c3: [
     { who: 'HASHTAG HARMONY', text: "Okay chat, we're LIVE at the bottom of the county with the woman who thinks my outrage is — say it to the lens, bestie.", shot: 'opp' },
     { who: 'YOU', text: 'Your outrage is a subscription service.', shot: 'player' },
-    { who: 'HASHTAG HARMONY', text: "...that's GOOD. Pin that. Now try and hit me while I find my angle.", shot: 'opp' },
-    { who: 'HASHTAG HARMONY', text: "(off-mic) ...my mom watches these. She thinks the tar's a hot spring. Don't tell her. (live) NOW we're slapping, chat!", shot: 'opp' },
+    { who: 'HASHTAG HARMONY', text: "Pinned. That's the channel bio now. You'll hear from my merch guy.", shot: 'opp' },
+    { who: 'HASHTAG HARMONY', text: "(off-mic) ...my mom watches these. She thinks the tar's a hot spring. Don't tell her.", shot: 'opp' },
+    { who: 'HASHTAG HARMONY', text: "(live) NOW we're slapping, chat!", shot: 'opp' },
   ],
   x3c1: [
     { who: 'DRAWBRIDGE DWIGHT', text: 'Halt. Moat inspection. ...You may cross. The moat is three feet of dry dirt and one very committed bucket.', shot: 'opp' },
@@ -517,7 +518,7 @@ export const CUTSCENES = {
     { who: 'FLAGPOLE PHIL', text: "I've seen the tape of your so-called slaps. Frame 40 is CLEARLY doctored. The barn was added in post.", shot: 'opp' },
     { who: 'YOU', text: 'You watched me slap a man over that barn, Phil. You were there. You held the tape measure.', shot: 'player' },
     { who: 'FLAGPOLE PHIL', text: 'A paid actor held the tape measure.', shot: 'opp' },
-    { who: 'YOU', text: "Then here's sixty percent minimum, live, no cuts. Believe your cheek.", shot: 'player' },
+    { who: 'YOU', text: "Live, then. No cuts.", shot: 'player' },
   ],
   x3c3: [
     { who: 'GENERAL GRIEVANCE', text: 'Before you swing: item one, the fair moved my parking spot in 1994. Item two, nobody apologized. Items three through four thousand: assorted.', shot: 'opp' },
@@ -529,7 +530,7 @@ export const CUTSCENES = {
     { who: 'THE GENTLEMAN FROM BOTH ENDS', text: "This hollow was BUILT by big government — WRONG, it was RUINED by big business — who said that — I did — well he's RIGHT—", shot: 'opp' },
     { who: 'YOU', text: 'Sir. Sir. How long have you two been down here?', shot: 'player' },
     { who: 'THE GENTLEMAN FROM BOTH ENDS', text: 'Thirty years. We came down opposite roads, hollered across the pit, and one morning we woke up sharing a HAT.', shot: 'opp' },
-    { who: 'YOU', text: "The face swings like a barn door in a gale. I'll meet whichever side is mid-sentence.", shot: 'player' },
+    { who: 'YOU', text: "Keep arguing. I'll take whichever one of you shows up mid-sentence.", shot: 'player' },
   ],
   x4c2: [
     { who: 'YOU', text: 'The bottom of the bottom. And there he is — first man in. 1971.', shot: 'player' },
@@ -543,9 +544,9 @@ export const CUTSCENES = {
     { who: "OL' TWO-CENTS", text: "...I'm out. I'm OUT. Knees work. Opinion's still down there, though. Fossilized. Future folk will dig it up and put it in a museum.", shot: 'opp' },
     { who: 'YOU', text: "They'll label it 'early stubbornness, common era.'", shot: 'player' },
     { who: "OL' TWO-CENTS", text: 'Is the pie stand still—', shot: 'opp' },
-    { who: 'YOU', text: "Still there. Center of the fair. It never moved, Mr. Two-Cents. That's rather the point of it.", shot: 'player' },
+    { who: 'YOU', text: "Still there. Center of the fair. Never moved.", shot: 'player' },
     { who: '📋 THE COUNTY CLERK', text: 'For the record: the hollow is EMPTY. First time since 1971. The county will now argue about who gets credit.', shot: 'wide' },
-    { who: 'YOU', text: "Give it to the tar. It's the only thing down there that never took a side.", shot: 'player' },
+    { who: 'YOU', text: "Give it to the tar. It did most of the holding.", shot: 'player' },
   ],
 
   // ---- 🛢️ THE BLACK GOLD RUSH ----
@@ -561,8 +562,8 @@ export const CUTSCENES = {
     { who: 'GUSHER GARY', text: 'A dowsing rod. Peer-reviewed by two other sticks.', shot: 'opp' },
   ],
   d1c2: [
-    { who: 'COMPASS KARIM', text: "Champ! One coin, I sell you the shortcut through the dunes. Two coins, I tell you it's the long way. Information WANTS to be expensive.", shot: 'opp' },
-    { who: 'YOU', text: 'How about I send you thirty meters and we call it a survey.', shot: 'player' },
+    { who: 'COMPASS KARIM', text: "Champ! One coin, I sell you the shortcut through the dunes. Two coins, I tell you it's the long way.", shot: 'opp' },
+    { who: 'YOU', text: 'Thirty meters is the survey rate. No charge.', shot: 'player' },
     { who: 'COMPASS KARIM', text: 'Make it thirty-one. I charge for the view.', shot: 'opp' },
   ],
   d1c3: [
@@ -577,14 +578,14 @@ export const CUTSCENES = {
   ],
   d2c2: [
     { who: 'AUCTIONEER AZIZ', text: 'LOT 40! One county champion, gently used! Do I hear a swing? Fifteen seconds — the hammer waits for NOBODY—', shot: 'opp' },
-    { who: 'YOU', text: "You're auctioning ME?", shot: 'player' },
+    { who: 'YOU', text: "...'Gently used.'", shot: 'player' },
     { who: 'AUCTIONEER AZIZ', text: "I'm auctioning the MOMENT, friend. Provenance: fleeting. Going once.", shot: 'opp' },
   ],
   d2c3: [
     { who: "WHISPERIN' YUSUF", text: '(whispered) ...closer. the dates are nine hundred years old. they startle.', shot: 'opp' },
     { who: 'YOU', text: 'Why are we whispering?', shot: 'player' },
     { who: "WHISPERIN' YUSUF", text: "(whispered) ...you never shout at dates. shouting is how Mr. Don farms. you've seen his fruit. terrified.", shot: 'opp' },
-    { who: "WHISPERIN' YUSUF", text: "(whispered) ...I toss. you catch. open palm, gentle hands. bruise one and the whole harvest hears about it.", shot: 'opp' },
+    { who: "WHISPERIN' YUSUF", text: "(whispered) ...I toss. you catch. open palm. gently. they know.", shot: 'opp' },
   ],
   d3c1: [
     { who: 'GUSHER GARY', text: 'UPDATE: the vibes have LOCALIZED. The reserve is under the bazaar. Specifically under the spice stall. Possibly under Fatimah.', shot: 'opp' },
@@ -600,7 +601,7 @@ export const CUTSCENES = {
     { who: 'DERRICK DON', text: "BREAKING: we struck it, folks! Black gold! Rivers of it! I'm announcing from atop the derrick because the ground is, frankly, sticky.", shot: 'opp' },
     { who: 'YOU', text: "Don... that's not crude.", shot: 'player' },
     { who: 'DERRICK DON', text: "It's CRUDE-ADJACENT.", shot: 'opp' },
-    { who: 'YOU', text: 'It\'s date syrup. You drilled into a nine-hundred-year syrup dome. The whole bazaar can smell breakfast.', shot: 'player' },
+    { who: 'YOU', text: 'It\'s date syrup, Don. You sank a straw into nine hundred years of somebody\'s breakfast.', shot: 'player' },
     { who: 'DERRICK DON', text: 'The lawyers say I can still say BARRELS. Twenty seconds a swing, fifty-five percent — and NONE of this reaches the shareholders.', shot: 'opp' },
   ],
   outro_d3c3: [
@@ -610,10 +611,10 @@ export const CUTSCENES = {
     { who: 'DERRICK DON', text: 'I NEVER SHOUT.', shot: 'opp' },
   ],
   d4c1: [
-    { who: 'YOU', text: 'The drill missed the syrup and opened stairs going down. And at the bottom — a door shaped like the only tool I ever trained.', shot: 'player' },
+    { who: 'YOU', text: 'Drill missed the syrup, found stairs. Bottom of the stairs — a door with fingers.', shot: 'player' },
     { who: 'THE STONE PALM', text: 'Nine hundred years I keep the hoard. Kings brought armies. Merchants brought gold. You bring the one thing the cave respects.', shot: 'opp' },
     { who: 'YOU', text: 'A hand.', shot: 'player' },
-    { who: 'THE STONE PALM', text: "An HONEST one, or the fingers stay shut. Seventy percent. Stone doesn't grade on a curve.", shot: 'opp' },
+    { who: 'THE STONE PALM', text: "An HONEST one. Seventy percent. Stone does not round up.", shot: 'opp' },
   ],
   d4c2: [
     { who: 'THE KEEPER OF WONDERS', text: 'Welcome. Mind the coins. Ninety-eight wonders, all catalogued, all — between us — fine.', shot: 'opp' },
@@ -1406,7 +1407,7 @@ export const CUTSCENES = {
 export const FAILS = {
   x: [
     [{ who: '📋 THE COUNTY CLERK', text: "Still stuck, Miss Fran. And now it's smug about it.", shot: 'wide' },
-     { who: 'YOU', text: "Hand me the gloves back. This one's under warranty.", shot: 'player' }],
+     { who: 'YOU', text: "Gloves. Nothing's ever stuck twice on me.", shot: 'player' }],
     [{ who: 'YOU', text: "The tar's winning. That's embarrassing for everybody.", shot: 'player' },
      { who: '📋 THE COUNTY CLERK', text: 'The tar has a perfect record since 1971, ma\'am. You were always the underdog.', shot: 'wide' }],
   ],
@@ -1499,13 +1500,13 @@ export const TAKEDOWN_FAIL = [
 export const WINS = {
   x: [
     [{ who: 'YOU', text: 'Unstuck. Next.', shot: 'player' },
-     { who: '🧍 SOMEONE, FRESHLY UNSTUCK', text: "FELLAS! The pie stand's still there! It never moved! ...I'm going. I'm GOING.", shot: 'wide' }],
+     { who: '🧍 SOMEONE, FRESHLY UNSTUCK', text: "LEGS! Both of 'em! Which way's out — no, don't tell me. I'm done being told things.", shot: 'wide' }],
     [{ who: 'YOU', text: "That's one more opinion off the pile.", shot: 'player' },
      { who: '📋 THE COUNTY CLERK', text: 'Noted and filed. The filing cabinet is tar, but filed.', shot: 'wide' }],
   ],
   d: [
     [{ who: 'YOU', text: "Eight seconds. That's a full ride where I'm from.", shot: 'player' },
-     { who: '🐫 A BAZAAR TRADER', text: 'The bazaar approves. The camel remains neutral. Around here, that is a standing ovation.', shot: 'wide' }],
+     { who: '🐫 A BAZAAR TRADER', text: 'The camel looked at you. Briefly. The elders are calling it a miracle.', shot: 'wide' }],
     [{ who: 'STAMPLESS SAEED', text: '...stamped. STAMPED! Do you know how long I have waited to use the good ink?', shot: 'wide' },
      { who: 'YOU', text: 'Frame this one too.', shot: 'player' }],
   ],
@@ -1569,7 +1570,7 @@ export const WINS = {
 // storyline next, with the Master Slee scrolls beneath it.
 // Olympic Bid leads (free), Wonders second, the Open Palm third (free) —
 // then the Fair, then the supporter storylines.
-const TOUR_ORDER = ['wonders', 'fair', 'blackgold', 'palm', 'olympicbid', 'secondwind', 'nightofslaps', 'slaptherapy', 'horseshoe', 'slopvalley', 'commedia'];
+const TOUR_ORDER = ['wonders', 'fair', 'palm', 'olympicbid', 'secondwind', 'blackgold', 'nightofslaps', 'slaptherapy', 'horseshoe', 'slopvalley', 'commedia'];
 // unknown keys sink to the bottom instead of floating to the top (indexOf −1)
 const tourRank = (k) => { const i = TOUR_ORDER.indexOf(k); return i < 0 ? TOUR_ORDER.length : i; };
 TOURS.sort((a, b) => tourRank(a.key) - tourRank(b.key));

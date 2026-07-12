@@ -515,7 +515,7 @@ export const ROSTER = [
     skin: 0xd9a878, shirt: 0x5a4530, pants: 0x3a2c22, robe: true, whiteBeard: true,
     signProp: 'SOON-ISH',   // NEW look flag: a picket sign leaned on the shoulder
     pickLine: 'The end is scheduled. He has rescheduled it 61 times. Bring form before the deadline.',
-    taunts: ['Fifteen seconds, sinner. Roughly. Give or take an epoch.', 'I have penciled in your whiff.', 'The sign is load-bearing now.'],
+    taunts: ['Fifteen seconds, sinner. Roughly. Give or take an epoch.', 'I have penciled in your whiff.', 'No rush. You have until the end of all things.'],
   },
   {
     key: 'patience', name: 'PROPHET PATIENCE', tag: 'THE PULPIT END', world: 'tarpit',
@@ -530,8 +530,8 @@ export const ROSTER = [
     gateCry: "CAN'T HEAR YOU!", gateCrySub: 'BELOW 60% FORM HE GENUINELY CANNOT HEAR THE SLAP',
     skin: 0xd9a878, shirt: 0x2a2a35, pants: 0x1f1f28, suit: true, tie: 0x8a2f2f,
     hornProp: true,   // NEW look flag: the megaphone grew onto the lips years ago
-    pickLine: 'Preached through a megaphone so long it fused on. Only 70%+ form reads above his own volume.',
-    taunts: ['SPEAK UP.', 'I HAVE A PERMIT FOR THE VOLUME.', 'THE ACOUSTICS DOWN HERE ARE TREMENDOUS.'],
+    pickLine: 'Preached through a megaphone so long it fused on. Only 60%+ form reads above his own volume.',
+    taunts: ['SPEAK UP.', 'I HAVE A PERMIT FOR THE VOLUME.', 'I ALSO DO WEDDINGS.'],
   },
   {
     key: 'alvin', name: 'ALLY ALVIN', tag: 'THE COMMUNE END', world: 'tarpit',
@@ -578,7 +578,7 @@ export const ROSTER = [
     bulwark: { threshold: 200, label: 'GRIEVANCE STACK', sprungCry: 'DROPPED!', sprungSub: 'THIRTY YEARS OF GRIEVANCES TOPPLE AT ONCE' },
     skin: 0xd9a878, shirt: 0x4a4e42, pants: 0x3a3a32,
     pickLine: 'Carries every grievance since 1994, stacked. Every honest point stays landed — topple the stack.',
-    taunts: ['Item 4,072: your stance.', 'The stack absorbs. The stack remembers.', 'I have a grievance about your grievance.'],
+    taunts: ['Item 4,072: your stance.', 'The stack absorbs. The stack remembers.', 'It was a GOOD parking spot. Shaded.'],
   },
   {
     key: 'bothways', name: 'THE GENTLEMAN FROM BOTH ENDS', tag: 'BOSS · THE BOTTOM OF THE HORSESHOE', boss: true,
@@ -594,7 +594,7 @@ export const ROSTER = [
     gateCry: 'THE TAR DISAGREES!', gateCrySub: 'FORM UNDER 70% JUST SINKS — THE PIT KEEPS SLOPPY SWINGS',
     skin: 0x2a221a, shirt: 0x1f1811, pants: 0x18120d, hair: 'flat', hairCol: 0x16100c,   // tarred head to toe
     pickLine: 'Went in first, 1971. Tarred so long nobody remembers which end he came down. Neither does he.',
-    taunts: ['I came down a road. It was the wrong one. Or the right one, too hard.', 'My opinion is fossilizing. Hurry.', 'The mammoth started it.'],
+    taunts: ['Fifteen was correct. Was. IS.', 'My opinion is fossilizing. Hurry.', 'The mammoth started it.'],
   },
 
   // ==================== THE BLACK GOLD RUSH (bazaar + cave) ====================
@@ -621,7 +621,7 @@ export const ROSTER = [
     gateCry: 'DENIED!', gateCrySub: 'FORM BELOW 65% IS RETURNED UNSTAMPED — RESUBMIT',
     skin: 0xb5885a, shirt: 0x3a3f4a, pants: 0x2a2f38, tie: 0x8a2f2f,
     pickLine: 'Thirty years at the border stamp. Has approved nothing. Not once. Bring form worth ink.',
-    taunts: ['The stamp has dried waiting for you.', 'Your paperwork is beautiful. DENIED.', 'Mr. Don applied 61 times. I framed one, as a warning.'],
+    taunts: ['The stamp has dried waiting for you.', 'Your paperwork is beautiful. DENIED.', 'There is a complaints window. It is painted on.'],
   },
   {
     key: 'fatimah', name: 'FEARLESS FATIMAH', tag: 'THE SPICE QUEEN', world: 'blackgold',
@@ -641,6 +641,7 @@ export const ROSTER = [
   {
     key: 'yusuf', name: "WHISPERIN' YUSUF", tag: 'BOSS · THE DATE MAGNATE', boss: true,
     w: 1.05, h: 1.02, mass: 1.1, beard: true, robe: true, throwIce: true,
+    keffiyeh: { cloth: 0xf6f1e4, agal: 0x1a1a1e },   // NEW look flag: the sheikh headpiece — white ghutra + black agal cord
     cubeColor: 0x6a4226, cubeGlow: 0x3a2412,   // he throws DATES, not ice — bruise nothing
     skin: 0xb5885a, shirt: 0xf2e6cc, pants: 0xd9c9a8,
     pickLine: 'The date magnate. Never speaks above a whisper — you never shout at dates. Catch, do not bruise.',
@@ -1455,6 +1456,35 @@ export class Opponent {
       drape.position.y = -hrr * 0.85;
       P.head.mesh.add(drape);
     }
+    if (arch.keffiyeh) {
+      // the sheikh headpiece: white ghutra cloth over the crown, two hanging
+      // side flaps + a back flap, and the black agal cord holding it all on.
+      // Face stays fully open (-x is forward).
+      const kc = toonMat(arch.keffiyeh.cloth || 0xf6f1e4);
+      const hk = 0.21 * (arch.h || 1);
+      const cap = new THREE.Mesh(new THREE.SphereGeometry(hk * 1.06, 14, 8, 0, Math.PI * 2, 0, Math.PI * 0.36), kc);
+      cap.position.y = 0.045;
+      P.head.mesh.add(cap);
+      // side flaps hang past the jaw; back flap covers the neck
+      for (const sgn of [-1, 1]) {
+        const flap = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.3, 0.035), kc);
+        flap.position.set(0.02, -0.06, sgn * hk * 1.02);
+        flap.rotation.x = sgn * 0.12;
+        P.head.mesh.add(flap);
+      }
+      const back = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.32, 0.2), kc);
+      back.position.set(hk * 1.0, -0.07, 0);
+      back.rotation.z = -0.1;
+      P.head.mesh.add(back);
+      // the agal: a doubled black cord around the crown
+      const agalMat = toonMat(arch.keffiyeh.agal || 0x1a1a1e);
+      for (const [ay, ar] of [[0.115, 0.98], [0.088, 1.01]]) {
+        const cord = new THREE.Mesh(new THREE.TorusGeometry(hk * 0.92 * ar, 0.02, 6, 18), agalMat);
+        cord.rotation.x = Math.PI / 2;
+        cord.position.y = ay;
+        P.head.mesh.add(cord);
+      }
+    }
     if (arch.whiteBeard || arch.beard) {
       // a chin beard — wispy white sage by default, or a fuller colored beard for arch.beard
       const full = !!arch.beard;
@@ -1635,26 +1665,47 @@ export class Opponent {
     }
     this.hatOff = this.hatBody ? this.hatBody.position.vsub(this.rag.parts.head.body.position) : null;
 
-    // THE SINKING (arch.sinkGoop): the tar's grip, visible — a dark mound
-    // swallowing the ankles that SHRINKS as the bulwark meter drains, until
-    // the pit loses its hold and the slap pops them free (springOut).
-    // Purely visual: sits on the ground at the stance, never moves the body
-    // or the strike plane, hides the instant they're launched.
-    if (arch.sinkGoop) {
-      const px = this.rag.parts.pelvis.body.position;
-      const goopMat = new THREE.MeshBasicMaterial({ color: 0x14100c });
-      const g = this.goop = new THREE.Group();
-      const mound = new THREE.Mesh(new THREE.SphereGeometry(0.52 * arch.w, 12, 8), goopMat);
-      mound.scale.y = 0.42;
-      g.add(mound);
-      for (let i = 0; i < 4; i++) {
-        const blob = new THREE.Mesh(new THREE.SphereGeometry(0.13, 8, 6), goopMat);
-        blob.position.set(Math.cos(i * 1.7) * 0.5 * arch.w, 0.02, Math.sin(i * 1.7) * 0.45 * arch.w);
-        g.add(blob);
-      }
-      g.position.set(px.x, 0.05, px.z);
-      scene.add(g);
+    // THE SINKING: bulwark bosses stand IN the tar from the start (the meter
+    // is the grip); in the tar-pit world EVERY volunteer gets the treatment
+    // (main.js calls addTarGrip after spawn). See addTarGrip below.
+    if (arch.sinkGoop) this.addTarGrip();
+  }
+
+  // The tar's grip, visible: a glossy black mound swallowing the ankles, tar
+  // strands climbing the shins, a puddle spreading around the stance. For
+  // bulwark bosses it SHRINKS as the meter drains (update() reads bulwarkPct)
+  // until the freeing slap pops them out; for everyone else it holds steady.
+  // Purely visual — ground-anchored, never moves the body or the strike plane,
+  // hides the instant they're launched.
+  addTarGrip() {
+    if (this.goop) return;
+    const arch = this.arch;
+    const px = this.rag.parts.pelvis.body.position;
+    const goopMat = new THREE.MeshPhongMaterial({ color: 0x0b0908, shininess: 90, specular: 0xa8845a });
+    const g = this.goop = new THREE.Group();
+    const puddle = new THREE.Mesh(new THREE.CircleGeometry(0.72 * arch.w, 18), goopMat);
+    puddle.rotation.x = -Math.PI / 2;
+    puddle.position.y = -0.01;
+    g.add(puddle);
+    const mound = new THREE.Mesh(new THREE.SphereGeometry(0.52 * arch.w, 12, 8), goopMat);
+    mound.scale.y = 0.5;
+    g.add(mound);
+    // tar strands climbing the shins — the pit actively holding on
+    for (let i = 0; i < 3; i++) {
+      const strand = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.075, 0.5, 6), goopMat);
+      strand.position.set(Math.cos(i * 2.2 - 0.4) * 0.16 * arch.w, 0.32, Math.sin(i * 2.2 - 0.4) * 0.15 * arch.w);
+      strand.rotation.z = (i - 1) * 0.18;
+      g.add(strand);
     }
+    for (let i = 0; i < 4; i++) {
+      const blob = new THREE.Mesh(new THREE.SphereGeometry(0.13, 8, 6), goopMat);
+      blob.position.set(Math.cos(i * 1.7) * 0.52 * arch.w, 0.04, Math.sin(i * 1.7) * 0.47 * arch.w);
+      blob.scale.y = 0.6;
+      g.add(blob);
+    }
+    g.traverse((m) => { m.castShadow = true; });
+    g.position.set(px.x, 0.05, px.z);
+    this.scene.add(g);
   }
 
   // "c'mere, champ" — bob, offer the cheek, beckon with one arm

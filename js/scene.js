@@ -2128,6 +2128,49 @@ export function createStage(canvas) {
     }
   }
 
+  // --- TAR SPLAT: the landing that sells the pit. A burst of glossy black
+  // blobs arcs out of the impact, a dark splash ring expands, and a permanent
+  // stain (pool + goop lumps) stays under the body — the tar TOOK him. Stains
+  // reset per attempt (resetTarStains from main).
+  const tarStains = [];
+  const tarSplatMat = new THREE.MeshPhongMaterial({ color: 0x0b0908, shininess: 90, specular: 0xa8845a });
+  function tarSplat(point) {
+    for (let i = 0; i < 10; i++) {
+      const r = 0.09 + Math.random() * 0.13;
+      const m = new THREE.Mesh(new THREE.SphereGeometry(r, 7, 6), tarSplatMat);
+      m.position.set(point.x, Math.max(0.15, point.y * 0.5), point.z);
+      const a = (i / 10) * Math.PI * 2;
+      const v = new THREE.Vector3(Math.cos(a) * (1 + Math.random() * 2.2), 2.2 + Math.random() * 2.6, Math.sin(a) * (1 + Math.random() * 2.2));
+      scene.add(m);
+      fx.push({ mesh: m, t: 0, life: 1.1 + Math.random() * 0.4, type: 'tarblob', v });
+    }
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.3, 0.85, 20),
+      new THREE.MeshBasicMaterial({ color: 0x0b0908, transparent: true, opacity: 0.85, side: THREE.DoubleSide, depthWrite: false }));
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.set(point.x, 0.06, point.z);
+    scene.add(ring);
+    fx.push({ mesh: ring, t: 0, life: 0.8, type: 'tarring' });
+    // the permanent claim: a pool under the body + lumps of displaced tar
+    const stain = new THREE.Group();
+    const pool = new THREE.Mesh(new THREE.CircleGeometry(1.15, 18), tarSplatMat);
+    pool.rotation.x = -Math.PI / 2;
+    pool.position.y = 0.045;
+    stain.add(pool);
+    for (let i = 0; i < 4; i++) {
+      const lump = new THREE.Mesh(new THREE.SphereGeometry(0.14 + Math.random() * 0.1, 7, 6), tarSplatMat);
+      lump.position.set(Math.cos(i * 1.8) * 0.85, 0.05, Math.sin(i * 1.8) * 0.8);
+      lump.scale.y = 0.55;
+      stain.add(lump);
+    }
+    stain.position.set(point.x, 0, point.z);
+    scene.add(stain);
+    tarStains.push(stain);
+  }
+  function resetTarStains() {
+    for (const s of tarStains) scene.remove(s);
+    tarStains.length = 0;
+  }
+
   function updateFX(dt, cam) {
     // barricade debris: tumbles with the flyer's momentum, comes to rest as wreckage
     for (const d of debris) {
@@ -2181,6 +2224,19 @@ export function createStage(canvas) {
       } else if (f.type === 'beam') {
         f.mesh.material.opacity = Math.sin(k * Math.PI) * 0.3;
         f.mesh.rotation.y += dt * 0.6;
+      } else if (f.type === 'tarblob') {
+        // flung tar: arcs out, lands, squashes flat, melts back into the ground
+        f.mesh.position.addScaledVector(f.v, dt);
+        f.v.y -= 12 * dt;
+        if (f.mesh.position.y < 0.08 && f.v.y < 0) {
+          f.mesh.position.y = 0.08;
+          f.v.set(0, 0, 0);
+          f.mesh.scale.y = 0.4;
+        }
+        if (k > 0.7) f.mesh.scale.setScalar(Math.max(0.01, 1 - (k - 0.7) / 0.3));
+      } else if (f.type === 'tarring') {
+        f.mesh.scale.setScalar(1 + k * 3.2);
+        f.mesh.material.opacity = 0.85 * (1 - k);
       } else if (f.type === 'spark') {
         f.mesh.position.addScaledVector(f.v, dt);
         f.mesh.material.opacity = 0.9 * (1 - k);
@@ -4510,9 +4566,12 @@ export function createStage(canvas) {
   // half-sunk furniture from every end of the road (a pulpit, a podium, a flag).
   const tarpitG = new THREE.Group();
   const tarBubbles = [];
+  // GLOSSY tar — Phong with a warm amber specular so the dusk sun glints off
+  // every pool; flat black read as asphalt, this reads as liquid
+  const tarShine = new THREE.MeshPhongMaterial({ color: 0x0b0908, shininess: 90, specular: 0xa8845a });
   {
-    const boneMat = toonMat(0xe8e0cc), tarMat = new THREE.MeshBasicMaterial({ color: 0x0d0b0a });
-    const rimMat = toonMat(0x2e2620), snagMat = toonMat(0x241c14);
+    const boneMat = toonMat(0xe8e0cc), tarMat = tarShine;
+    const rimMat = toonMat(0x3a3028), snagMat = toonMat(0x241c14);
     // dead-snag belt on the perimeter line
     tarpitG.add(mkBelt((g, x, z, i) => {
       const h = 5 + (i % 4);
@@ -4527,20 +4586,41 @@ export function createStage(canvas) {
         g.add(br);
       }
     }));
-    // the pits: near-black pools with raised rims (visual only — the LANE is the arena)
-    const pools = [[30, -16, 7], [55, 14, 9], [12, 18, 5], [78, -12, 6]];
+    // THE PITS — on the FLIGHT LANE, not politely off to the side. Bodies get
+    // launched INTO tar (the first pool starts right past the volunteer), and
+    // two big side pools hold the megafauna. Each pool: raised dirt rim,
+    // glossy black surface, an amber sheen streak, and fat slow bubbles.
+    const pools = [
+      [7, 0, 3.6], [16, 2.5, 3.4], [30, -3, 4.8], [47, 3, 5.2], [66, -2, 6], [84, 2, 5], // the lane run
+      [30, -16, 7], [55, 14, 9], [12, 18, 5],                                            // the flanks
+    ];
+    const sheenMat = new THREE.MeshBasicMaterial({ color: 0x6a5238, transparent: true, opacity: 0.5, depthWrite: false });
     for (const [px, pz, pr] of pools) {
-      const rim = new THREE.Mesh(new THREE.RingGeometry(pr, pr + 0.7, 22), rimMat);
+      const rim = new THREE.Mesh(new THREE.RingGeometry(pr, pr + 0.8, 24), rimMat);
       rim.rotation.x = -Math.PI / 2; rim.position.set(px, 0.02, pz); tarpitG.add(rim);
-      const pool = new THREE.Mesh(new THREE.CircleGeometry(pr, 22), tarMat);
-      pool.rotation.x = -Math.PI / 2; pool.position.set(px, 0.03, pz); tarpitG.add(pool);
-      // bubbles: rise, swell, pop (animated in updateAmbient)
+      const pool = new THREE.Mesh(new THREE.CircleGeometry(pr, 24), tarMat);
+      pool.rotation.x = -Math.PI / 2; pool.position.set(px, 0.035, pz); tarpitG.add(pool);
+      // the dusk sun's smear across the surface — what makes it read WET
+      const sheen = new THREE.Mesh(new THREE.CircleGeometry(pr * 0.32, 14), sheenMat);
+      sheen.rotation.x = -Math.PI / 2;
+      sheen.scale.x = 2.2;
+      sheen.position.set(px - pr * 0.25, 0.045, pz + pr * 0.2);
+      tarpitG.add(sheen);
+      // bubbles: fat, slow, glossy — rise, swell, pop (animated in updateAmbient)
       for (let b = 0; b < 3; b++) {
-        const bub = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 7), tarMat);
-        bub.position.set(px + Math.cos(b * 2.1) * pr * 0.5, 0.1, pz + Math.sin(b * 2.1) * pr * 0.5);
+        const bub = new THREE.Mesh(new THREE.SphereGeometry(0.34, 9, 8), tarMat);
+        bub.position.set(px + Math.cos(b * 2.1 + px) * pr * 0.45, 0.1, pz + Math.sin(b * 2.1 + px) * pr * 0.45);
         tarpitG.add(bub);
-        tarBubbles.push({ m: bub, t: b * 0.37, sp: 0.5 + (b % 3) * 0.2, r: 0.8 + (b % 2) * 0.5 });
+        tarBubbles.push({ m: bub, t: b * 0.37 + px * 0.1, sp: 0.4 + (b % 3) * 0.18, r: 0.9 + (b % 2) * 0.6 });
       }
+    }
+    // tar STRANDS between lane pools — drips and pulls, like the whole lane is
+    // one connected pit wearing a dirt disguise
+    for (const [sx, sz, sl, ry] of [[11.5, 1.4, 5.5, 0.12], [23, 0, 8, -0.18], [38.5, 0.2, 9, 0.2], [56.5, 0.8, 10, -0.15], [75, 0, 9, 0.14]]) {
+      const strand = new THREE.Mesh(new THREE.PlaneGeometry(sl, 1.1), tarMat);
+      strand.rotation.set(-Math.PI / 2, 0, ry);
+      strand.position.set(sx, 0.03, sz);
+      tarpitG.add(strand);
     }
     // the MAMMOTH, half-sunk in the big pool — mid-sentence since the Pleistocene
     {
@@ -5101,6 +5181,7 @@ export function createStage(canvas) {
     breakBarricade, resetBarricade, isBarricadeBroken: () => barricade.broken,
     sunMood, currentSunMood: () => sunCurrent, cowMoo, kidsCelebrate, spawnConfetti, lavaBurst,
     summonSpirits, spawnBeam, spawnSparkles, slapDuel, scareBirds, solids, setWorldTheme, hasWorld,
+    tarSplat, resetTarStains,
     // strike the dojo's Great Gong: a big wobble that decays in updateAmbient
     ringGong: () => { if (gongDisc) gongDisc.rotation.x = 0.45; },
     // the flyer passing through a ghost sends it darting skyward, briefly faded

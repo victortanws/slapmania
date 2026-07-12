@@ -53,6 +53,7 @@ let slap = null;        // outcome of the current attempt {foul, part}
 let contact = null;     // impact info {point, power}
 let settleT = 0;
 let dustCool = 0;
+let tarSplatted = false; // one tar splat per attempt, on first touchdown
 let clapT = 0;
 let swellT = 0;
 let barricadeHit = false;
@@ -423,6 +424,7 @@ function startMatch() {
 // Escape from anywhere: back to the front porch
 function goToTitle() {
   if (chosenArch && chosenArch.boss) chosenArch = null;   // bosses don't loiter on the porch
+  stage.resetTarStains(); // no tar claims on the title screen
   // a tour may have pinned its own world (the dojo) — restore the player's pick
   const homeWorld = localStorage.getItem('slapp_world') || 'day';
   if (stage.hasWorld(homeWorld)) setWorldFull(homeWorld);
@@ -526,7 +528,7 @@ const TOUR_STARS = {
   olympicbid: { slapper: 'victor' },
   commedia: { slapper: 'dante' },
   horseshoe: { opp: 'bothways' },   // the gentleman from both ends — the hollow in one face
-  blackgold: { opp: 'derrickdon' }, // Don in a gold hardhat sells the whole premise
+  blackgold: { opp: 'yusuf' },      // the whispering date sheikh — Don already fronts SAVE THE FAIR, one Don card is plenty
 };
 const tourPortraits = {};
 function capturePortraits() {
@@ -823,6 +825,13 @@ function startAttempt() {
   calledHigh = arch.calledShot ? attempts.length % 2 === 0 : null; // Dale calls HIGH, LOW, HIGH
   opponent.calledHigh = calledHigh; // he PRESENTS the called half in his pocket
   if (arch.bulwark) opponent.bulwarkPct = Math.max(0, Math.ceil(100 - bulwarkPts / (arch.bulwark.threshold / 100)));
+  // THE TAR PIT: every volunteer stands shin-deep in the tar (bulwark bosses
+  // already built theirs); last attempt's splat stains wash for the fresh take
+  tarSplatted = false;
+  if (activeWorld === 'tarpit') {
+    stage.resetTarStains();
+    if (!opponent.goop) opponent.addTarGrip();
+  }
   // (tookTakedown persists across attempts — the match-end beat wants to know it happened)
   // the goal banner returns for the swing (it hides at contact so it never
   // sits on top of the flight distance ticker)
@@ -1986,6 +1995,15 @@ function tick(now) {
       excite = Math.min(1, excite + 0.5);
       ui.slapBurst('THROUGH THE BARRICADE!', '');
       stage.sunMood('happy', 4);
+    }
+    // THE TAR PIT: first touchdown throws a SPLAT — flung tar, a splash ring,
+    // and a permanent stain that claims the body where it stops (the pit keeps
+    // what it catches, visibly)
+    if (!tarSplatted && activeWorld === 'tarpit' && pel.y < 0.55 && opponent.rag.maxSpeed() > 2) {
+      tarSplatted = true;
+      stage.tarSplat(pel);
+      stage.shake(0.15);
+      sfx.crash();
     }
     // LAVA LAND: drift off the crust causeway into the molten sea and the
     // volunteer is FLAME-BROILED — a real reaction, not a silent pass-through
