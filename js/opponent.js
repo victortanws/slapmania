@@ -504,6 +504,171 @@ export const ROSTER = [
     pickLine: "He took up BJJ 'for fun.' The fun is takedowns.",
     taunts: ['My coach says I am coachable. At my net worth, that means TERRIFYING.', 'Reach is a gift. I reach every three seconds.', 'This is round one. I have acquired all subsequent rounds.'],
   },
+
+  // ==================== HORSESHOE HOLLOW (tar pits) ====================
+  // The county road bends so hard both ends meet at the bottom. Everyone down
+  // here dug into a position until the tar took the legs. All invented county
+  // archetypes; the tar does not check which end of the road you came down.
+  {
+    key: 'countdown', name: 'BROTHER COUNTDOWN', tag: 'THE PULPIT END', world: 'tarpit',
+    w: 0.95, h: 1.0, mass: 0.9, shotClock: 15,
+    skin: 0xd9a878, shirt: 0x5a4530, pants: 0x3a2c22, robe: true, whiteBeard: true,
+    signProp: 'SOON-ISH',   // NEW look flag: a picket sign leaned on the shoulder
+    pickLine: 'The end is scheduled. He has rescheduled it 61 times. Bring form before the deadline.',
+    taunts: ['Fifteen seconds, sinner. Roughly. Give or take an epoch.', 'I have penciled in your whiff.', 'The sign is load-bearing now.'],
+  },
+  {
+    key: 'patience', name: 'PROPHET PATIENCE', tag: 'THE PULPIT END', world: 'tarpit',
+    w: 0.9, h: 0.95, mass: 0.8, female: true, noStache: true,
+    skin: 0xc98a5e, shirt: 0x8a6f4a, pants: 0x5a4530, skirt: 0x6e5638, hat: 'sun', hatCol: 0xd9c9a8, glasses: true,
+    pickLine: 'Has waited for the end so long she brought a lawn chair. Deeply rested. Impossible to rattle.',
+    taunts: ['I can wait longer than you can swing.', 'The end is late. You may go first.', 'I knitted through three prophecies.'],
+  },
+  {
+    key: 'decibel', name: 'REVEREND DECIBEL', tag: 'BOSS · THE MEGAPHONE', boss: true,
+    w: 1.15, h: 1.05, mass: 1.3, chainGate: 60, brow: true,
+    gateCry: "CAN'T HEAR YOU!", gateCrySub: 'BELOW 60% FORM HE GENUINELY CANNOT HEAR THE SLAP',
+    skin: 0xd9a878, shirt: 0x2a2a35, pants: 0x1f1f28, suit: true, tie: 0x8a2f2f,
+    hornProp: true,   // NEW look flag: the megaphone grew onto the lips years ago
+    pickLine: 'Preached through a megaphone so long it fused on. Only 70%+ form reads above his own volume.',
+    taunts: ['SPEAK UP.', 'I HAVE A PERMIT FOR THE VOLUME.', 'THE ACOUSTICS DOWN HERE ARE TREMENDOUS.'],
+  },
+  {
+    key: 'alvin', name: 'ALLY ALVIN', tag: 'THE COMMUNE END', world: 'tarpit',
+    w: 0.92, h: 1.0, mass: 0.95, noStache: true, lanyard: true,
+    sway: { period: 2.8, amp: 0.45 },   // he keeps repositioning to the right side of wherever you stand
+    skin: 0xe0b48e, shirt: 0x7a8f5a, pants: 0x4a4458, hair: 'flat', hairCol: 0x6e4a2c,
+    pickLine: 'Apologizes preemptively, repositions constantly. The cheek arrives whenever he agrees with you.',
+    taunts: ["Sorry — I was standing where you're standing. Morally.", 'I co-sign this slap. Wait. Let me re-read it.', 'I apologize for my cheek. And on its behalf.'],
+  },
+  {
+    key: 'esme', name: 'ETHICALLY-SOURCED ESME', tag: 'BOSS · SMALL BATCH', boss: true,
+    w: 0.9, h: 1.0, mass: 0.9, female: true, noStache: true, chainGate: 65, glasses: true,
+    gateCry: 'NOT ARTISANAL!', gateCrySub: 'SHE ACCEPTS ONLY SMALL-BATCH FORM — 65%+ OR IT IS FACTORY SLOP',
+    skin: 0xdda379, shirt: 0x7a8f5a, pants: 0x5a4530, hair: 'bun', hairCol: 0x8a4a2a,
+    pickLine: 'Will not accept a mass-produced slap. Hand-thrown, locally coiled, single-origin form only.',
+    taunts: ['Was that swing FREE RANGE?', 'I can taste the assembly line on that one.', 'My outrage is homemade. Match it.'],
+  },
+  {
+    key: 'harmony', name: 'HASHTAG HARMONY', tag: 'BOSS · LIVE IN 3.. 2..', boss: true,
+    w: 0.9, h: 1.0, mass: 0.95, female: true, noStache: true, weave: true, phone: true,
+    skin: 0xe2b088, shirt: 0xd85a8a, pants: 0x2a2a35, hair: 'flow', hairCol: 0x2a1a12, hairFlow: true,
+    pickLine: 'Livestreams her own unsticking. The slip is not a dodge — she is chasing her good side.',
+    taunts: ['Chat says you miss left.', 'This is going on the channel either way, bestie.', 'Hold on — the outrage needs better lighting.'],
+  },
+  {
+    key: 'dwight', name: 'DRAWBRIDGE DWIGHT', tag: 'THE COMPOUND END', world: 'tarpit',
+    w: 1.1, h: 1.02, mass: 1.25, beard: true, suspenders: true,
+    skin: 0xd9a878, shirt: 0x6e5638, pants: 0x3a3a42,
+    pickLine: 'Wants a moat around the county. Has a bucket. Started without permission or water.',
+    taunts: ['The moat keeps out folks like you. Eventually.', 'I dug three feet already. THREE.', 'You may cross TODAY. The drawbridge is a plank.'],
+  },
+  {
+    key: 'phil', name: 'FLAGPOLE PHIL', tag: 'BOSS · SEEING IS DISBELIEVING', boss: true,
+    w: 1.1, h: 1.03, mass: 1.15, chainGate: 60, stripes: 0xa83030, hat: 'cap', hatCol: 0xa83030, brow: true,
+    gateCry: 'FAKE SLAP!', gateCrySub: 'BELOW 60% FORM HE DECLARES THE SLAP NEVER HAPPENED',
+    skin: 0xe0b48e, shirt: 0xf2e6cc, pants: 0x30508a,
+    pickLine: 'Any slap below 60% form he simply declares fake. His cheek runs on belief. Overwhelm it.',
+    taunts: ['I have DONE the research on your palm.', 'They don\'t want you to land this one. Neither do I.', 'That last gust? Staged.'],
+  },
+  {
+    key: 'grievance', name: 'GENERAL GRIEVANCE', tag: 'BOSS · THE FULL STACK', boss: true,
+    w: 1.25, h: 1.05, mass: 1.5, brow: true, hat: 'band', hatCol: 0x3a3a42,
+    bulwark: { threshold: 200, label: 'GRIEVANCE STACK', sprungCry: 'DROPPED!', sprungSub: 'THIRTY YEARS OF GRIEVANCES TOPPLE AT ONCE' },
+    skin: 0xd9a878, shirt: 0x4a4e42, pants: 0x3a3a32,
+    pickLine: 'Carries every grievance since 1994, stacked. Every honest point stays landed — topple the stack.',
+    taunts: ['Item 4,072: your stance.', 'The stack absorbs. The stack remembers.', 'I have a grievance about your grievance.'],
+  },
+  {
+    key: 'bothways', name: 'THE GENTLEMAN FROM BOTH ENDS', tag: 'BOSS · THE BOTTOM OF THE HORSESHOE', boss: true,
+    w: 1.05, h: 1.04, mass: 1.2, brow: true,
+    headTurn: { period: 2.2, arc: 1.25 },   // forever turning to rebut himself — catch the face mid-argument
+    skin: 0xdca77c, shirt: 0x8a8f98, pants: 0x4a4e5a, suit: true, tie: 0x5a5a6a, hair: 'flat', hairCol: 0x8a8578,
+    pickLine: 'Two men argued in the tar for thirty years and merged. He now rebuts himself. Strike mid-turn.',
+    taunts: ['WRONG — no, HE\'S wrong — we are BOTH — quiet!', 'I came down the left road. HE came down the right. We forget which was which.', 'Point of order! Against myself!'],
+  },
+  {
+    key: 'twocents', name: "OL' TWO-CENTS", tag: 'FINAL BOSS · FIRST IN THE TAR', boss: true,
+    w: 1.15, h: 1.05, mass: 1.35, shotClock: 20, chainGate: 70, brow: true, noStache: true,
+    gateCry: 'THE TAR DISAGREES!', gateCrySub: 'FORM UNDER 70% JUST SINKS — THE PIT KEEPS SLOPPY SWINGS',
+    skin: 0x2a221a, shirt: 0x1f1811, pants: 0x18120d, hair: 'flat', hairCol: 0x16100c,   // tarred head to toe
+    pickLine: 'Went in first, 1971. Tarred so long nobody remembers which end he came down. Neither does he.',
+    taunts: ['I came down a road. It was the wrong one. Or the right one, too hard.', 'My opinion is fossilizing. Hurry.', 'The mammoth started it.'],
+  },
+
+  // ==================== THE BLACK GOLD RUSH (bazaar + cave) ====================
+  // Don annexes the neighbor kingdom's pasture with a gold pipeline. The locals
+  // are the smartest people in the campaign; Don is the joke. Original parody
+  // characters throughout (per house rule: invented names, never real people).
+  {
+    key: 'gary', name: 'GUSHER GARY', tag: 'CHIEF GEOLOGIST (VIBES)', world: 'blackgold',
+    w: 1.0, h: 1.0, mass: 1.0, lanyard: true, hat: 'cap', hatCol: 0xf2c53d, goggles: true,
+    skin: 0xe0b48e, shirt: 0xd8801f, pants: 0x3a3f4a,
+    pickLine: "Don's geologist. Has never found oil. Has found vibes, twice, and billed for both.",
+    taunts: ['The readings are STRONG under your feet. Or my feet. Feet are involved.', 'I majored in confidence.', 'The dowsing rod agrees with whoever holds it.'],
+  },
+  {
+    key: 'karim', name: 'COMPASS KARIM', tag: 'SHORTCUT VENDOR', world: 'blackgold',
+    w: 0.62, h: 0.88, mass: 0.5, noStache: true, hat: 'cap', hatCol: 0x2a8a8a,
+    skin: 0xb5885a, shirt: 0x2a8a8a, pants: 0xf2e6cc,
+    pickLine: 'Rents shortcuts by the hour. Knows every dune. Light as a rumor — flies like one too.',
+    taunts: ['For one coin I tell you where I land.', 'The shortcut to my cheek is closed for maintenance.', 'I have flown further for less.'],
+  },
+  {
+    key: 'saeed', name: 'STAMPLESS SAEED', tag: 'BOSS · CUSTOMS', boss: true,
+    w: 1.0, h: 1.02, mass: 1.05, chainGate: 65, glasses: true, bowtie: true, suit: true, noStache: false,
+    gateCry: 'DENIED!', gateCrySub: 'FORM BELOW 65% IS RETURNED UNSTAMPED — RESUBMIT',
+    skin: 0xb5885a, shirt: 0x3a3f4a, pants: 0x2a2f38, tie: 0x8a2f2f,
+    pickLine: 'Thirty years at the border stamp. Has approved nothing. Not once. Bring form worth ink.',
+    taunts: ['The stamp has dried waiting for you.', 'Your paperwork is beautiful. DENIED.', 'Mr. Don applied 61 times. I framed one, as a warning.'],
+  },
+  {
+    key: 'fatimah', name: 'FEARLESS FATIMAH', tag: 'THE SPICE QUEEN', world: 'blackgold',
+    w: 1.3, h: 1.0, mass: 1.9, female: true, noStache: true,
+    scarf: 0x2a8a8a,   // NEW look flag: headscarf + shoulder drape
+    skin: 0xb5885a, shirt: 0x8a4aa8, pants: 0x5a3a6a, skirt: 0x6a4a7a,
+    pickLine: "Runs the spice row. Don's men keep fainting in her chili aisle. Unimpressed by everything, ever.",
+    taunts: ['My chili has moved grown men further than you will.', 'Sugar, I weigh what the truth weighs.', 'The pipeline? I have seen better plumbing in a teapot.'],
+  },
+  {
+    key: 'aziz', name: 'AUCTIONEER AZIZ', tag: 'GOING ONCE', world: 'blackgold',
+    w: 1.0, h: 1.0, mass: 1.0, beard: true, shotClock: 15, suit: true,
+    skin: 0xb5885a, shirt: 0x8a4aa8, pants: 0x3a2c22, tie: 0xd4881f,
+    pickLine: 'Sells a rug in nine seconds. Your swing is lot 40 — the hammer waits for no chain.',
+    taunts: ['Going once. Going TWICE.', 'SOLD — to the gentleman who hesitated. That is a lesson.', 'The rug flew further, and it is a rug.'],
+  },
+  {
+    key: 'yusuf', name: "WHISPERIN' YUSUF", tag: 'BOSS · THE DATE MAGNATE', boss: true,
+    w: 1.05, h: 1.02, mass: 1.1, beard: true, robe: true, throwIce: true,
+    cubeColor: 0x6a4226, cubeGlow: 0x3a2412,   // he throws DATES, not ice — bruise nothing
+    skin: 0xb5885a, shirt: 0xf2e6cc, pants: 0xd9c9a8,
+    pickLine: 'The date magnate. Never speaks above a whisper — you never shout at dates. Catch, do not bruise.',
+    taunts: ['(whispered) ...the dates remember every hand.', '(whispered) ...catch. gently. they are older than the pipeline.', '(whispered) ...Mr. Don shouts. that is why his fruit is afraid.'],
+  },
+  {
+    key: 'derrickdon', name: 'DERRICK DON', tag: 'BOSS · CEO, TREMENDOUS DRILLING', boss: true,
+    w: 1.15, h: 1.03, mass: 1.3, shotClock: 20, chainGate: 55, noStache: true,
+    gateCry: 'CONTESTED!', gateCrySub: 'ANY SLAP UNDER 55% FORM GOES STRAIGHT TO HIS LAWYERS',
+    skin: 0xe8934a, shirt: 0x1f2a44, pants: 0x1a2438, hair: 'swoop', hairCol: 0xf2c230, suit: true, tie: 0xc9302c,
+    hat: 'cap', hatCol: 0xd4af37,   // the gold hardhat — safety first, gold second, oil never
+    pickLine: 'Don, gold hardhat, atop a derrick that has produced zero barrels. The lawyers bill by the whiff.',
+    taunts: ['This derrick is the most beautiful derrick. Ask the pipeline.', 'We are days from oil. BEAUTIFUL days.', 'My hardhat? Solid gold. Very safe. The safest metal.'],
+  },
+  {
+    key: 'stonepalm', name: 'THE STONE PALM', tag: 'BOSS · KEEPER OF THE GATE', boss: true,
+    w: 1.5, h: 1.15, mass: 2.2, chainGate: 70, ironJaw: true, brow: true, noStache: true,
+    gateCry: 'THE HAND STAYS SHUT!', gateCrySub: 'ONLY 70%+ HONEST FORM MOVES STONE',
+    skin: 0x8a8078, shirt: 0x6e675e, pants: 0x5a544c, hair: 'flat', hairCol: 0x6a6258,
+    pickLine: 'The gate wears a body when visitors come. Only a palm with nothing to hide moves stone.',
+    taunts: ['Nine hundred years. Two honest palms. Neither shouted.', 'The cave weighs the hand, not the arm.', 'Stone is patient. Stone is the JOB.'],
+  },
+  {
+    key: 'keeper', name: 'THE KEEPER OF WONDERS', tag: 'FINAL BOSS · CATALOGUE COMPLETE', boss: true,
+    w: 0.8, h: 0.85, mass: 0.7, whiteBeard: true, glasses: true, robe: true, noStache: true,
+    skin: 0xc98a5e, shirt: 0x5a4530, pants: 0x3a2c22,
+    pickLine: 'Has catalogued 98 wonders and rated each one "fine." The 99th must be a slap missing nothing.',
+    taunts: ['The gold? Fine. The lamp? Fine. Your coil? We will see.', 'I have shelved miracles, young hand. Impress the shelf.', 'The cave collects. I merely file.'],
+  },
 ];
 
 // every volunteer speaks with their own voice, and has enough lines that
@@ -520,6 +685,16 @@ const MORE_TAUNTS = {
   influencer: ['Wait — let me get my angle.', 'This is content GOLD, besties.', 'Ring light? No. Ring FIGHT.'],
   susie: ['Posture. POSTURE.', 'I have detention slips with your name on them.', 'Show your work, dear.'],
   maestro: ['This will be in D minor. The saddest key.', 'ALLEGRO, you savage!', 'The cello forgives. I do NOT.'],
+  // the hollow + bazaar locals joined the public pick — deep pools so repeat
+  // rounds in their home worlds keep surprising
+  countdown: ['The sign committee meets Thursdays. Bring a casserole.', 'I predicted this swing. Loosely. Directionally.', 'EVENTUALLY is not a threat, friend. It is a schedule.'],
+  patience: ['Take your time. I certainly have.', 'The chair reclines. The prophecy does not.', 'You swing like the end of days: late.'],
+  alvin: ['I stand corrected. And re-corrected. Hourly.', 'My apology has an apology.', 'I agree with your stance. Physically. Look.'],
+  dwight: ['The geese were going to be layer three.', 'I inspect the moat at dawn. The moat is fine. Dry, but fine.', 'State your business, then state it again at the second plank.'],
+  gary: ['The vibes are off the CHART. I lost the chart.', 'I once found water. Nobody asked for water.', 'My margin of error has its own margin.'],
+  karim: ['Half price if you land in the soft dune. I know which one.', 'For three coins I gasp dramatically.', 'The view from thirty meters is honestly worth it.'],
+  fatimah: ['The paprika outranks you.', 'I have haggled with worse and won by lunch.', "Don's men lasted four minutes in the chili aisle. The record is mine."],
+  aziz: ['Do I hear a coil? A LUNGE? Anyone?', 'Lot 41 is your dignity. Bidding starts low.', 'The hammer is ceremonial. The deadline is NOT.'],
 };
 ROSTER.forEach((r) => { if (MORE_TAUNTS[r.key]) r.taunts.push(...MORE_TAUNTS[r.key]); });
 
@@ -772,6 +947,19 @@ export class Opponent {
       bridge.position.set(-0.152 * hr, 0.038 * hr, 0);
       bridge.scale.setScalar(hr);
       head.add(bridge);
+    }
+    if (arch.hornProp) {
+      // REVEREND DECIBEL: the megaphone fused onto the lips years ago
+      const horn = new THREE.Mesh(new THREE.ConeGeometry(0.085, 0.2, 10, 1, true), toonMat(0xa83030));
+      horn.rotation.z = Math.PI / 2;
+      horn.position.set(-0.26 * hr, -0.05 * hr, 0);
+      horn.scale.setScalar(hr);
+      head.add(horn);
+      const mouthpiece = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.02, 0.06, 8), toonMat(0x3a3a42));
+      mouthpiece.rotation.z = Math.PI / 2;
+      mouthpiece.position.set(-0.17 * hr, -0.05 * hr, 0);
+      mouthpiece.scale.setScalar(hr);
+      head.add(mouthpiece);
     }
     if (arch.whistleProp) {
       // the famous silver whistle, on its cord at the lips
@@ -1229,6 +1417,42 @@ export class Opponent {
       mat.position.set(tr + 0.06, 0.12 * h, 0);
       mat.castShadow = true;
       P.torso.mesh.add(mat);
+    }
+    if (arch.signProp) {
+      // a picket sign leaned on the shoulder (Brother Countdown's deadline).
+      // Text painted onto a tiny canvas so the punchline reads at pick range.
+      const stick = new THREE.Mesh(new THREE.BoxGeometry(0.05, 1.15, 0.05), toonMat(0x6a5238));
+      stick.rotation.z = -0.3;
+      stick.position.set(0.12, 0.42, 0.3);
+      stick.castShadow = true;
+      P.torso.mesh.add(stick);
+      const cvs = document.createElement('canvas');
+      cvs.width = 256; cvs.height = 128;
+      const cx = cvs.getContext('2d');
+      cx.fillStyle = '#e8ddc4'; cx.fillRect(0, 0, 256, 128);
+      cx.strokeStyle = '#6a5238'; cx.lineWidth = 10; cx.strokeRect(5, 5, 246, 118);
+      cx.fillStyle = '#3a2f24'; cx.font = 'bold 52px Georgia'; cx.textAlign = 'center'; cx.textBaseline = 'middle';
+      cx.fillText(String(arch.signProp), 128, 64);
+      const board = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.31),
+        new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cvs), side: THREE.DoubleSide }));
+      board.rotation.set(0, Math.PI / 2, -0.3);
+      board.position.set(0.28, 0.92, 0.3);
+      P.torso.mesh.add(board);
+    }
+    if (arch.scarf) {
+      // headscarf: a back-half shell over the hair + a face-rim band + a short
+      // drape at the neck (the face itself stays fully open, -x is forward)
+      const hrr = 0.205 * (arch.h || 1);
+      const shell = new THREE.Mesh(new THREE.SphereGeometry(hrr, 12, 9, -Math.PI / 2, Math.PI), toonMat(arch.scarf));
+      shell.scale.setScalar(1.06);
+      P.head.mesh.add(shell);
+      const rim = new THREE.Mesh(new THREE.TorusGeometry(hrr * 0.98, 0.026, 6, 16), toonMat(arch.scarf));
+      rim.rotation.y = Math.PI / 2;
+      rim.position.x = -0.012;
+      P.head.mesh.add(rim);
+      const drape = new THREE.Mesh(new THREE.CylinderGeometry(hrr * 1.02, hrr * 1.3, 0.16, 12, 1, true), toonMat(arch.scarf));
+      drape.position.y = -hrr * 0.85;
+      P.head.mesh.add(drape);
     }
     if (arch.whiteBeard || arch.beard) {
       // a chin beard — wispy white sage by default, or a fuller colored beard for arch.beard

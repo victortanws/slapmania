@@ -363,12 +363,275 @@ export const TOURS = [
       },
     ],
   },
+  {
+    // BOTH ENDS OF THE ROAD, ONE PIT. Even-handed by construction: each end
+    // gets the same act shape (story → trial → boss), the same flaw (certain,
+    // loud, secretly delighted to have an audience) and the same redemption
+    // (unstuck people remember they like pie). The tar never checks which end
+    // of the road you came down. Physics note: the tar KEEPS what it catches —
+    // dead landings, no slide — so every distance goal here is tar-calibrated.
+    key: 'horseshoe', title: '🧲 HORSESHOE HOLLOW',
+    dlc: true,
+    slapper: 'fran',   // Fran unsticks things for a living: tractors, gates, opinions
+    world: 'tarpit',
+    blurb: 'The county road bends so hard both ends meet at the bottom — in the tar. Everyone stuck down there dug into a position until the pit took their legs. One honest slap pops a person free.',
+    acts: [
+      {
+        act: 'BEND I — THE PULPIT END',
+        story: 'Down the first slope: the folks who are certain about the END. The end is scheduled, rescheduled, and running 46 years late. They are stuck exactly as deep as everyone they shout at.',
+        challenges: [
+          { id: 'x1c1', title: 'THE DEADLINE', desc: 'BROTHER COUNTDOWN has 15 seconds until the end of all things (he has rescheduled 61 times). LAND a clean head slap before his deadline', opp: 'countdown', goal: { type: 'head' } },
+          { id: 'x1c2', title: 'THE LAWN CHAIR', desc: 'Send PROPHET PATIENCE 8m — a mile, in tar. She has waited for the end since 1979 and would rather not be interrupted', opp: 'patience', goal: { type: 'dist', v: 8 } },
+          { id: 'x1c3', title: '☗ BOSS: THE MEGAPHONE', desc: "REVEREND DECIBEL cannot hear any slap below 60% form over his own volume. SCORE 80 — make the county's loudest man hear ONE honest thing", opp: 'decibel', goal: { type: 'pts', v: 80 } },
+        ],
+      },
+      {
+        act: 'BEND II — THE COMMUNE END',
+        story: 'Down the second slope: the folks who are certain about YOU. They audit every swing for purity and reposition constantly to the right side of wherever anyone stands. The tar does not take sides. It takes legs.',
+        challenges: [
+          { id: 'x2c1', title: 'THE PREEMPTIVE APOLOGY', desc: 'ALLY ALVIN keeps repositioning to the correct side of wherever you stand. Time the sway and SEND him 7m through the tar', opp: 'alvin', goal: { type: 'dist', v: 7 } },
+          { id: 'x2c2', title: '☗ SMALL-BATCH FORM', desc: 'ETHICALLY-SOURCED ESME accepts only artisanal slaps — anything under 65% form is factory slop (×0.12). LAND one hand-thrown, single-origin strike, 6m', opp: 'esme', goal: { type: 'dist', v: 6 } },
+          { id: 'x2c3', title: '☗ BOSS: THE LIVESTREAM', desc: 'HASHTAG HARMONY is broadcasting her own unsticking and keeps slipping to find her good side. SCORE 70 while the chat watches', opp: 'harmony', goal: { type: 'pts', v: 70 } },
+        ],
+      },
+      {
+        act: 'BEND III — THE COMPOUND END',
+        story: 'Down the third slope: the folks who are certain about THEM. A moat with no water, a flag with no wind, and a man who declares any slap he dislikes fake. The tar, again, is not registered with a party.',
+        challenges: [
+          { id: 'x3c1', title: 'MOAT INSPECTION', desc: 'DRAWBRIDGE DWIGHT dug three feet of dry moat around a tar pit for security reasons. Send him 6m — clean over his own moat', opp: 'dwight', goal: { type: 'dist', v: 6 } },
+          { id: 'x3c2', title: '☗ SEEING IS DISBELIEVING', desc: 'FLAGPOLE PHIL declares any slap under 60% form FAKE — it simply never happened (×0.12). LAND one undeniable strike, 6m, live, no cuts', opp: 'phil', goal: { type: 'dist', v: 6 } },
+          { id: 'x3c3', title: '☗ BOSS: THE FULL STACK', desc: 'GENERAL GRIEVANCE has carried every grievance since 1994, stacked. Every honest point STAYS landed, across all three swings — pile up 200 and topple the stack', opp: 'grievance', goal: { type: 'bulwark', v: 200 } },
+        ],
+      },
+      {
+        act: 'THE BOTTOM — WHERE THE ENDS MEET',
+        story: 'The last two residents of the hollow. One is two men who argued so long they merged. The other went in first, in 1971, and no longer remembers which end of the road he came down. Neither does the tar. That is the whole lesson, and the pie stand is still at the center of the fair.',
+        challenges: [
+          { id: 'x4c1', title: '☗ BOSS: THE GENTLEMAN FROM BOTH ENDS', desc: 'Two men argued across the pit for thirty years and merged into one, forever turning to rebut himself. CATCH the face mid-argument, incoming, and SEND him 5m', opp: 'bothways', goal: { type: 'headdist', v: 5 } },
+          { id: 'x4c2', title: "☗ FINAL BOSS: OL' TWO-CENTS", desc: 'First man in the tar, 1971 — the pit keeps any swing under 70% form, and his fossil patience gives you 20 seconds each. Send him 6m and walk him to the pie stand', opp: 'twocents', goal: { type: 'dist', v: 6 } },
+        ],
+      },
+    ],
+  },
+  {
+    // DON GOES DRILLING. The neighbor kingdom's locals are the smartest people
+    // in the campaign; Don is the joke, start to finish. Original parody
+    // characters only (house rule). The lane is oil-slicked — bodies HYDROPLANE,
+    // so distance goals run long. The finale descends into the Cave of Wonders.
+    key: 'blackgold', title: '🛢️ THE BLACK GOLD RUSH',
+    dlc: true,
+    slapper: 'roy',    // Roy's heavyweight patience vs a kingdom of professionals
+    world: 'blackgold',
+    blurb: 'Don detected "the largest reserve in the hemisphere" under the neighbor kingdom and built a gold pipeline before finding any oil. The kingdom did not say no. The kingdom said something worse.',
+    acts: [
+      {
+        act: 'BARREL I — THE PERMIT',
+        story: "Every drilling permit needs the Hand of the Bazaar's countersignature — and the Hand must first clear customs. Officer Saeed has stamped nothing in thirty years. Don has applied sixty-one times. Ask Saeed how that is going.",
+        challenges: [
+          { id: 'd1c1', title: 'THE VIBES SURVEY', desc: "LAND a clean head slap on GUSHER GARY, Don's chief geologist — he has never found oil but has found vibes, twice, and billed for both", opp: 'gary', goal: { type: 'head' } },
+          { id: 'd1c2', title: 'THE SHORTCUT', desc: 'SEND COMPASS KARIM 30m down the slick — he rents shortcuts by the hour and charges extra for the view', opp: 'karim', goal: { type: 'dist', v: 30 } },
+          { id: 'd1c3', title: '☗ BOSS: CUSTOMS', desc: 'STAMPLESS SAEED returns any slap under 65% form unstamped (×0.12). SCORE 240 and earn the first stamp of his entire career', opp: 'saeed', goal: { type: 'pts', v: 240 } },
+        ],
+      },
+      {
+        act: 'BARREL II — THE BAZAAR',
+        story: "The permit needs three bazaar signatures: the spice queen, the auctioneer, and the date magnate who has not spoken above a whisper since 1988. Don's men keep fainting in the chili aisle. The camel remains neutral.",
+        challenges: [
+          { id: 'd2c1', title: 'THE SPICE QUEEN', desc: 'SCORE 430 off FEARLESS FATIMAH — she weighs what the truth weighs, and she is not impressed by either of you. Mind the paprika', opp: 'fatimah', goal: { type: 'pts', v: 430 } },
+          { id: 'd2c2', title: 'LOT 40: THE MOMENT', desc: 'AUCTIONEER AZIZ has put your swing up for auction — 15 seconds before the hammer. SEND him 26m before the lot closes', opp: 'aziz', goal: { type: 'dist', v: 26 } },
+          { id: 'd2c3', title: '☗ BOSS: THE DATE MAGNATE', desc: "WHISPERIN' YUSUF tosses 900-year dates — CATCH 3 with an OPEN palm [P], do NOT slap. Bruise one and the whole harvest hears about it", opp: 'yusuf', goal: { type: 'catch', v: 3 } },
+        ],
+      },
+      {
+        act: 'BARREL III — THE GUSHER',
+        story: 'The vibes have localized: the reserve is under the bazaar, possibly under Fatimah. Don has bought a bigger drill and a smaller apology, and the derrick strikes something at dawn — black, sweet, and suspiciously fragrant.',
+        challenges: [
+          { id: 'd3c1', title: 'LOCALIZED VIBES', desc: 'SEND GUSHER GARY 38m — his dowsing rod now points wherever Don is standing, which is a different kind of accuracy', opp: 'gary', goal: { type: 'dist', v: 38 } },
+          { id: 'd3c2', title: 'INFRASTRUCTURE', desc: "SCORE 380 off TREMENDOUS DON — the pipeline now pumps 'toward the county, or from it, one of those.' It is connected to nothing on either end", opp: 'don', goal: { type: 'pts', v: 380 } },
+          { id: 'd3c3', title: '☗ BOSS: DERRICK DON', desc: 'Don, gold hardhat, atop the derrick, announcing BARRELS — any slap under 55% form goes straight to his lawyers (×0.12), 20 seconds a swing. SCORE 400 before this reaches the shareholders', opp: 'derrickdon', goal: { type: 'pts', v: 400 } },
+        ],
+      },
+      {
+        act: 'EPILOGUE — THE CAVE OF WONDERS',
+        story: 'The drill missed the syrup dome and opened stairs going down: the cave under the dunes, sealed by a gate shaped like a giant open hand. Ninety-eight wonders wait inside, every one catalogued and every one, between us, "fine." The catalogue has room for a ninety-ninth.',
+        challenges: [
+          { id: 'd4c1', title: '☗ BOSS: THE STONE PALM', desc: 'The gate wears a body when visitors come. Only 70%+ honest form moves stone (×0.12) — SEND the keeper of the gate 15m and the fingers open', opp: 'stonepalm', world: 'cave', goal: { type: 'dist', v: 15 } },
+          { id: 'd4c2', title: '☗ FINAL BOSS: THE 99TH WONDER', desc: 'THE KEEPER OF WONDERS has shelved 98 miracles and rated each one "fine." Bring the one thing no vault has held: LAND an 85% chain — a slap missing nothing', opp: 'keeper', world: 'cave', goal: { type: 'chain', v: 85 } },
+        ],
+      },
+    ],
+  },
 ];
 
 // ---- cutscenes: { who, text, shot } — shots: player | opp | spirit | judge | wide.
 // 'YOU' becomes the slapper's name. palm_prologue plays once when the tour menu
 // first opens; outro_* scenes play after clearing their boss. ENTER advances.
 export const CUTSCENES = {
+  // ---- 🧲 HORSESHOE HOLLOW ----
+  horseshoe_prologue: [
+    { who: '📋 THE COUNTY CLERK', text: 'Miss Fran. County business. The road out of town bends so hard both ends MEET. At the bottom: a hollow. In the hollow: the tar.', shot: 'wide' },
+    { who: 'YOU', text: 'I know the hollow. Everything down there is stuck and hollering. Why me?', shot: 'player' },
+    { who: '📋 THE COUNTY CLERK', text: "You unstick things. Tractors. Gates. Uncle Miltie's jar lids. The county now requires it of opinions.", shot: 'wide' },
+    { who: 'YOU', text: 'Opinions are jar lids with feelings. Get my gloves.', shot: 'player' },
+  ],
+  x1c1: [
+    { who: 'BROTHER COUNTDOWN', text: 'STOP. Before you swing, know that the end of all things arrives in fifteen seconds. I have the sign.', shot: 'opp' },
+    { who: 'YOU', text: 'The sign says SOON-ISH.', shot: 'player' },
+    { who: 'BROTHER COUNTDOWN', text: 'The committee made me soften it. The original said EVENTUALLY.', shot: 'opp' },
+    { who: 'YOU', text: "Fifteen seconds is plenty. I've unstuck combines in ten.", shot: 'player' },
+  ],
+  x1c2: [
+    { who: 'PROPHET PATIENCE', text: "Don't rush on my account, dear. I've been waiting for the end since '79. It's late. I brought a chair.", shot: 'opp' },
+    { who: 'YOU', text: "You're the calmest stuck person I've ever met.", shot: 'player' },
+    { who: 'PROPHET PATIENCE', text: "Certainty is very restful. It's being WRONG at the bottom of a tar pit that ages you. Ask the boys.", shot: 'opp' },
+  ],
+  x1c3: [
+    { who: 'REVEREND DECIBEL', text: 'REPENT! Or attend the potluck! BOTH EVENTS ARE SATURDAY!', shot: 'opp' },
+    { who: 'YOU', text: "Reverend, the megaphone has been on your face for nine years.", shot: 'player' },
+    { who: 'REVEREND DECIBEL', text: "IT'S LOAD-BEARING.", shot: 'opp' },
+    { who: 'YOU', text: "Sixty percent form, then. Any quieter and you'll never know I agreed about the potluck.", shot: 'player' },
+  ],
+  x2c1: [
+    { who: 'ALLY ALVIN', text: 'Before we start — I hear you, I see you, and I preemptively apologize for whatever my cheek is about to imply.', shot: 'opp' },
+    { who: 'YOU', text: "It's a cheek, Alvin. It doesn't imply. It receives.", shot: 'player' },
+    { who: 'ALLY ALVIN', text: '...can I get that in writing? For my followers? Both of them are very intense.', shot: 'opp' },
+  ],
+  x2c2: [
+    { who: 'ETHICALLY-SOURCED ESME', text: 'Wait. WAIT. Is that slap ethically sourced? Free-range coil? Single-origin lunge? I will NOT be moved by factory form.', shot: 'opp' },
+    { who: 'YOU', text: 'Ma\'am, I raised this swing myself. From a seed.', shot: 'player' },
+    { who: 'ETHICALLY-SOURCED ESME', text: '...locally?', shot: 'opp' },
+    { who: 'YOU', text: "Sixty-five percent, hand-thrown. You'll taste the terroir.", shot: 'player' },
+  ],
+  x2c3: [
+    { who: 'HASHTAG HARMONY', text: "Okay chat, we're LIVE at the bottom of the county with the woman who thinks my outrage is — say it to the lens, bestie.", shot: 'opp' },
+    { who: 'YOU', text: 'Your outrage is a subscription service.', shot: 'player' },
+    { who: 'HASHTAG HARMONY', text: "...that's GOOD. Pin that. Now try and hit me while I find my angle.", shot: 'opp' },
+    { who: 'HASHTAG HARMONY', text: "(off-mic) ...my mom watches these. She thinks the tar's a hot spring. Don't tell her. (live) NOW we're slapping, chat!", shot: 'opp' },
+  ],
+  x3c1: [
+    { who: 'DRAWBRIDGE DWIGHT', text: 'Halt. Moat inspection. ...You may cross. The moat is three feet of dry dirt and one very committed bucket.', shot: 'opp' },
+    { who: 'YOU', text: 'Dwight. You dug a moat around a tar pit.', shot: 'player' },
+    { who: 'DRAWBRIDGE DWIGHT', text: 'Security has LAYERS. The moat is one. The bucket is two. Layer three was going to be geese, but they left. ...Everything leaves.', shot: 'opp' },
+  ],
+  x3c2: [
+    { who: 'FLAGPOLE PHIL', text: "I've seen the tape of your so-called slaps. Frame 40 is CLEARLY doctored. The barn was added in post.", shot: 'opp' },
+    { who: 'YOU', text: 'You watched me slap a man over that barn, Phil. You were there. You held the tape measure.', shot: 'player' },
+    { who: 'FLAGPOLE PHIL', text: 'A paid actor held the tape measure.', shot: 'opp' },
+    { who: 'YOU', text: "Then here's sixty percent minimum, live, no cuts. Believe your cheek.", shot: 'player' },
+  ],
+  x3c3: [
+    { who: 'GENERAL GRIEVANCE', text: 'Before you swing: item one, the fair moved my parking spot in 1994. Item two, nobody apologized. Items three through four thousand: assorted.', shot: 'opp' },
+    { who: 'YOU', text: "You've been carrying the whole stack down here?", shot: 'player' },
+    { who: 'GENERAL GRIEVANCE', text: 'The stack is my POSTURE now.', shot: 'opp' },
+    { who: 'YOU', text: "Then hold still. I'm repossessing thirty years of filing.", shot: 'player' },
+  ],
+  x4c1: [
+    { who: 'THE GENTLEMAN FROM BOTH ENDS', text: "This hollow was BUILT by big government — WRONG, it was RUINED by big business — who said that — I did — well he's RIGHT—", shot: 'opp' },
+    { who: 'YOU', text: 'Sir. Sir. How long have you two been down here?', shot: 'player' },
+    { who: 'THE GENTLEMAN FROM BOTH ENDS', text: 'Thirty years. We came down opposite roads, hollered across the pit, and one morning we woke up sharing a HAT.', shot: 'opp' },
+    { who: 'YOU', text: "The face swings like a barn door in a gale. I'll meet whichever side is mid-sentence.", shot: 'player' },
+  ],
+  x4c2: [
+    { who: 'YOU', text: 'The bottom of the bottom. And there he is — first man in. 1971.', shot: 'player' },
+    { who: "OL' TWO-CENTS", text: 'I came down a road. Wrong one. Or the right one, too hard. The distinction has stopped mattering to the tar.', shot: 'opp' },
+    { who: 'YOU', text: 'What was the argument even about?', shot: 'player' },
+    { who: "OL' TWO-CENTS", text: '...the SPEED LIMIT.', shot: 'opp' },
+    { who: "OL' TWO-CENTS", text: "Fifteen versus twenty. I had FIGURES. The fella I hollered at sank in '82 still holding up nineteen fingers. A compromiser.", shot: 'opp' },
+    { who: 'YOU', text: 'Twenty seconds a swing, seventy percent form, and we get you to the pie stand. They do a truce special.', shot: 'player' },
+  ],
+  outro_x4c2: [
+    { who: "OL' TWO-CENTS", text: "...I'm out. I'm OUT. Knees work. Opinion's still down there, though. Fossilized. Future folk will dig it up and put it in a museum.", shot: 'opp' },
+    { who: 'YOU', text: "They'll label it 'early stubbornness, common era.'", shot: 'player' },
+    { who: "OL' TWO-CENTS", text: 'Is the pie stand still—', shot: 'opp' },
+    { who: 'YOU', text: "Still there. Center of the fair. It never moved, Mr. Two-Cents. That's rather the point of it.", shot: 'player' },
+    { who: '📋 THE COUNTY CLERK', text: 'For the record: the hollow is EMPTY. First time since 1971. The county will now argue about who gets credit.', shot: 'wide' },
+    { who: 'YOU', text: "Give it to the tar. It's the only thing down there that never took a side.", shot: 'player' },
+  ],
+
+  // ---- 🛢️ THE BLACK GOLD RUSH ----
+  blackgold_prologue: [
+    { who: '🐫 A BAZAAR TRADER', text: 'He came in over the dunes with a GOLD pipeline. Built it before he found any oil. Nobody had told him which order that goes in.', shot: 'wide' },
+    { who: 'TREMENDOUS DON', text: "The pipeline's DONE, folks! Beautiful pipeline. All we need now is the oil, the permits, and the — what's the word — RIGHTS.", shot: 'wide' },
+    { who: 'YOU', text: 'And the kingdom said no?', shot: 'player' },
+    { who: '🐫 A BAZAAR TRADER', text: "The kingdom said the thing worse than no. The kingdom said: 'talk to customs.'", shot: 'wide' },
+  ],
+  d1c1: [
+    { who: 'GUSHER GARY', text: 'You must be the local champion! Great news: my instruments detect a MASSIVE reserve directly under wherever Mr. Don is standing.', shot: 'opp' },
+    { who: 'YOU', text: "Son, your instrument's a stick.", shot: 'player' },
+    { who: 'GUSHER GARY', text: 'A dowsing rod. Peer-reviewed by two other sticks.', shot: 'opp' },
+  ],
+  d1c2: [
+    { who: 'COMPASS KARIM', text: "Champ! One coin, I sell you the shortcut through the dunes. Two coins, I tell you it's the long way. Information WANTS to be expensive.", shot: 'opp' },
+    { who: 'YOU', text: 'How about I send you thirty meters and we call it a survey.', shot: 'player' },
+    { who: 'COMPASS KARIM', text: 'Make it thirty-one. I charge for the view.', shot: 'opp' },
+  ],
+  d1c3: [
+    { who: 'STAMPLESS SAEED', text: 'Permit application, form 7-DUNE. Your slap requires certification: sixty-five percent form, minimum. I have approved... let me check... nothing. Ever.', shot: 'opp' },
+    { who: 'YOU', text: 'Not one?', shot: 'player' },
+    { who: 'STAMPLESS SAEED', text: 'Mr. Don applied sixty-one times. I framed one denial as a gift. He hung it. He believes it is a diploma.', shot: 'opp' },
+  ],
+  d2c1: [
+    { who: 'FEARLESS FATIMAH', text: "So you're the palm the county sent. I have weighed melons with more menace.", shot: 'opp' },
+    { who: 'YOU', text: "Ma'am, I've moved bulls.", shot: 'player' },
+    { who: 'FEARLESS FATIMAH', text: 'Bulls WANT to move, sugar. I have a stall to run and no opinion of your chances. Mind the paprika.', shot: 'opp' },
+  ],
+  d2c2: [
+    { who: 'AUCTIONEER AZIZ', text: 'LOT 40! One county champion, gently used! Do I hear a swing? Fifteen seconds — the hammer waits for NOBODY—', shot: 'opp' },
+    { who: 'YOU', text: "You're auctioning ME?", shot: 'player' },
+    { who: 'AUCTIONEER AZIZ', text: "I'm auctioning the MOMENT, friend. Provenance: fleeting. Going once.", shot: 'opp' },
+  ],
+  d2c3: [
+    { who: "WHISPERIN' YUSUF", text: '(whispered) ...closer. the dates are nine hundred years old. they startle.', shot: 'opp' },
+    { who: 'YOU', text: 'Why are we whispering?', shot: 'player' },
+    { who: "WHISPERIN' YUSUF", text: "(whispered) ...you never shout at dates. shouting is how Mr. Don farms. you've seen his fruit. terrified.", shot: 'opp' },
+    { who: "WHISPERIN' YUSUF", text: "(whispered) ...I toss. you catch. open palm, gentle hands. bruise one and the whole harvest hears about it.", shot: 'opp' },
+  ],
+  d3c1: [
+    { who: 'GUSHER GARY', text: 'UPDATE: the vibes have LOCALIZED. The reserve is under the bazaar. Specifically under the spice stall. Possibly under Fatimah.', shot: 'opp' },
+    { who: 'YOU', text: 'You told Don that?', shot: 'player' },
+    { who: 'GUSHER GARY', text: 'He has already bought a bigger drill and a smaller apology.', shot: 'opp' },
+  ],
+  d3c2: [
+    { who: 'TREMENDOUS DON', text: "The locals love me. The camel? LOVES me. Doesn't show it — that's respect. Anyway, the pipeline now pumps toward the county. Or from it. One of those.", shot: 'opp' },
+    { who: 'YOU', text: "Don, it isn't connected to anything on either end.", shot: 'player' },
+    { who: 'TREMENDOUS DON', text: "That's called INFRASTRUCTURE, Roy. Look it up.", shot: 'opp' },
+  ],
+  d3c3: [
+    { who: 'DERRICK DON', text: "BREAKING: we struck it, folks! Black gold! Rivers of it! I'm announcing from atop the derrick because the ground is, frankly, sticky.", shot: 'opp' },
+    { who: 'YOU', text: "Don... that's not crude.", shot: 'player' },
+    { who: 'DERRICK DON', text: "It's CRUDE-ADJACENT.", shot: 'opp' },
+    { who: 'YOU', text: 'It\'s date syrup. You drilled into a nine-hundred-year syrup dome. The whole bazaar can smell breakfast.', shot: 'player' },
+    { who: 'DERRICK DON', text: 'The lawyers say I can still say BARRELS. Twenty seconds a swing, fifty-five percent — and NONE of this reaches the shareholders.', shot: 'opp' },
+  ],
+  outro_d3c3: [
+    { who: "WHISPERIN' YUSUF", text: '(whispered) ...told you. the dunes never held oil. they held dessert.', shot: 'wide' },
+    { who: 'DERRICK DON', text: 'TREMENDOUS DATES. It came to me mid-flight. The most beautiful dates. Sticky. Luxurious. NINE HUNDRED YEARS of brand heritage.', shot: 'opp' },
+    { who: "WHISPERIN' YUSUF", text: '(whispered) ...welcome to the business. rule one: never shout at them.', shot: 'wide' },
+    { who: 'DERRICK DON', text: 'I NEVER SHOUT.', shot: 'opp' },
+  ],
+  d4c1: [
+    { who: 'YOU', text: 'The drill missed the syrup and opened stairs going down. And at the bottom — a door shaped like the only tool I ever trained.', shot: 'player' },
+    { who: 'THE STONE PALM', text: 'Nine hundred years I keep the hoard. Kings brought armies. Merchants brought gold. You bring the one thing the cave respects.', shot: 'opp' },
+    { who: 'YOU', text: 'A hand.', shot: 'player' },
+    { who: 'THE STONE PALM', text: "An HONEST one, or the fingers stay shut. Seventy percent. Stone doesn't grade on a curve.", shot: 'opp' },
+  ],
+  d4c2: [
+    { who: 'THE KEEPER OF WONDERS', text: 'Welcome. Mind the coins. Ninety-eight wonders, all catalogued, all — between us — fine.', shot: 'opp' },
+    { who: 'YOU', text: "Just fine? There's a lamp over there older than my county.", shot: 'player' },
+    { who: 'THE KEEPER OF WONDERS', text: 'It is fine. The gems are fine. The mirror that shows your truest self? Fine, and a bit rude.', shot: 'opp' },
+    { who: 'THE KEEPER OF WONDERS', text: 'The catalogue wants a ninety-ninth. Not gold — the cave is FULL of gold. Bring the thing no vault has held: a slap missing nothing. Eighty-five percent.', shot: 'opp' },
+    { who: 'YOU', text: "One swing, whole and honest. If it comes out 'fine,' I'll go practice and shame us both.", shot: 'player' },
+  ],
+  outro_d4c2: [
+    { who: 'THE KEEPER OF WONDERS', text: '...entry ninety-nine. One county slap, complete. Assessment...', shot: 'opp' },
+    { who: 'THE KEEPER OF WONDERS', text: '...not fine. Wonderful.', shot: 'opp' },
+    { who: 'THE STONE PALM', text: 'The gate stays open for that hand. Nine hundred years. Third one through.', shot: 'wide' },
+    { who: 'YOU', text: 'Who were the other two?', shot: 'player' },
+    { who: 'THE KEEPER OF WONDERS', text: 'A midwife, 1312. And a boy returning a coin he found. The cave keeps a short list. But it keeps it.', shot: 'opp' },
+    { who: 'TREMENDOUS DON', text: "GREAT cave. Love the palm. Quick thought: my name, on the fingers, in gold—", shot: 'wide' },
+    { who: 'YOU', text: 'The fingers are closing, Don.', shot: 'player' },
+    { who: 'TREMENDOUS DON', text: '...TREMENDOUS DATES, everybody. Grand opening Saturday.', shot: 'wide' },
+  ],
   palm_prologue: [
     { who: '👻 MASTER SLEE', text: 'Sixty years I chased one perfect slap. The Fourth Form. I reached ninety-nine percent.', shot: 'spirit' },
     { who: 'BRUCE SLEE', text: 'I trained under him from the day I could stand. Every morning, the same words: the last percent is not in the arm.', shot: 'bruce' },
@@ -1141,6 +1404,18 @@ export const CUTSCENES = {
 // ('a' = Palm, 'f' = Fair, 'w' = Wonders, 'b' = Second Wind); rotated so
 // repeated failure stays fresh-ish.
 export const FAILS = {
+  x: [
+    [{ who: '📋 THE COUNTY CLERK', text: "Still stuck, Miss Fran. And now it's smug about it.", shot: 'wide' },
+     { who: 'YOU', text: "Hand me the gloves back. This one's under warranty.", shot: 'player' }],
+    [{ who: 'YOU', text: "The tar's winning. That's embarrassing for everybody.", shot: 'player' },
+     { who: '📋 THE COUNTY CLERK', text: 'The tar has a perfect record since 1971, ma\'am. You were always the underdog.', shot: 'wide' }],
+  ],
+  d: [
+    [{ who: 'STAMPLESS SAEED', text: 'DENIED. And I was rooting for you, which the form does not permit.', shot: 'wide' },
+     { who: 'YOU', text: 'Re-chalk the hands. Resubmit.', shot: 'player' }],
+    [{ who: 'AUCTIONEER AZIZ', text: 'SOLD — one whiff, to the wind, for nothing!', shot: 'wide' },
+     { who: 'YOU', text: 'The wind overpaid. Run the lot again.', shot: 'player' }],
+  ],
   a: [
     [{ who: '👻 MASTER SLEE', text: 'We do not speak of that swing. Again.', shot: 'spirit' },
      { who: 'YOU', text: "...I had it. And then I didn't.", shot: 'player' }],
@@ -1222,6 +1497,18 @@ export const TAKEDOWN_FAIL = [
 // victory beats — short, replayable, played after clearing a NON-final
 // challenge (outro_* scenes own the finales). Keyed by tour prefix; rotated.
 export const WINS = {
+  x: [
+    [{ who: 'YOU', text: 'Unstuck. Next.', shot: 'player' },
+     { who: '🧍 SOMEONE, FRESHLY UNSTUCK', text: "FELLAS! The pie stand's still there! It never moved! ...I'm going. I'm GOING.", shot: 'wide' }],
+    [{ who: 'YOU', text: "That's one more opinion off the pile.", shot: 'player' },
+     { who: '📋 THE COUNTY CLERK', text: 'Noted and filed. The filing cabinet is tar, but filed.', shot: 'wide' }],
+  ],
+  d: [
+    [{ who: 'YOU', text: "Eight seconds. That's a full ride where I'm from.", shot: 'player' },
+     { who: '🐫 A BAZAAR TRADER', text: 'The bazaar approves. The camel remains neutral. Around here, that is a standing ovation.', shot: 'wide' }],
+    [{ who: 'STAMPLESS SAEED', text: '...stamped. STAMPED! Do you know how long I have waited to use the good ink?', shot: 'wide' },
+     { who: 'YOU', text: 'Frame this one too.', shot: 'player' }],
+  ],
   a: [
     [{ who: '👻 MASTER SLEE', text: 'Hm. Adequate. ...no. No. It was good. Forty years dead and the word still sticks in my teeth.', shot: 'spirit' },
      { who: 'YOU', text: 'One scroll at a time, master.', shot: 'player' }],
@@ -1282,7 +1569,7 @@ export const WINS = {
 // storyline next, with the Master Slee scrolls beneath it.
 // Olympic Bid leads (free), Wonders second, the Open Palm third (free) —
 // then the Fair, then the supporter storylines.
-const TOUR_ORDER = ['wonders', 'fair', 'palm', 'olympicbid', 'secondwind', 'nightofslaps', 'slaptherapy', 'slopvalley', 'commedia'];
+const TOUR_ORDER = ['wonders', 'fair', 'blackgold', 'palm', 'olympicbid', 'secondwind', 'nightofslaps', 'slaptherapy', 'horseshoe', 'slopvalley', 'commedia'];
 // unknown keys sink to the bottom instead of floating to the top (indexOf −1)
 const tourRank = (k) => { const i = TOUR_ORDER.indexOf(k); return i < 0 ? TOUR_ORDER.length : i; };
 TOURS.sort((a, b) => tourRank(a.key) - tourRank(b.key));

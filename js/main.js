@@ -525,6 +525,8 @@ const TOUR_STARS = {
   slopvalley: { opp: 'slopunit' },
   olympicbid: { slapper: 'victor' },
   commedia: { slapper: 'dante' },
+  horseshoe: { opp: 'bothways' },   // the gentleman from both ends — the hollow in one face
+  blackgold: { opp: 'derrickdon' }, // Don in a gold hardhat sells the whole premise
 };
 const tourPortraits = {};
 function capturePortraits() {
@@ -659,6 +661,9 @@ const WORLDS = [
   { key: 'hell',    label: '🔥 HELL', dlc: true },
   { key: 'techcampus', label: '💻 SLOP VALLEY', dlc: true },
   { key: 'vegas',   label: '🎰 SLAP VEGAS', dlc: true },
+  { key: 'tarpit',  label: '🦴 TAR PITS', dlc: true },
+  { key: 'blackgold', label: '🛢️ BLACK GOLD', dlc: true },
+  { key: 'cave',    label: '💎 CAVE OF WONDERS', dlc: true },
 ];
 // theme + that world's ONE physics quirk, together — used by the selector,
 // the tour world-pin, and the return-to-title restore, so visuals and physics
@@ -669,6 +674,8 @@ function setWorldFull(key) {
   stage.setWorldTheme(key);
   if (key === 'ice') phys.setGround({ friction: 0.03, restitution: 0.3 });        // bodies glide
   else if (key === 'jungle') phys.setGround({ friction: 0.38, restitution: 0.62 }); // springmoss BOING
+  else if (key === 'tarpit') phys.setGround({ friction: 0.95, restitution: 0.02 }); // THE TAR KEEPS WHAT IT CATCHES — dead landing, no slide (goals calibrated down)
+  else if (key === 'blackgold') phys.setGround({ friction: 0.05, restitution: 0.28 }); // the spill: bodies HYDROPLANE down the slick
   else phys.setGround(null);                                                       // farm default
   phys.setGravity(key === 'heaven' ? -8.8 : null);                                 // floaty grace
   if (player.halo) player.halo.visible = key === 'heaven';                         // the slapper becomes an angel in Heaven
@@ -1135,7 +1142,7 @@ function onContact(hit, fist) {
   else if (fist) { ui.slapBurst('BODY BLOW — CLOSED FIST!', 'A REAL HIT — OPEN THE PALM [P] FOR THE FLUSH SLAP + THE SWEET SPOT'); sfx.whistle(); }
   else if (tooSoft) ui.slapBurst('TOO SOFT!', "HE ONLY FEELS A FIST — CLOSE THE HAND, DON'T PRESS [P]");
   else if (ugly) ui.slapBurst('SLOPPY SLAP!', 'THE CHAIN WAS LONG GONE');
-  else if (noSold) ui.slapBurst('NO-SOLD!', `HE NEEDS A ${opponent.arch.chainGate}% CHAIN TO EVEN BLINK`);
+  else if (noSold) ui.slapBurst(opponent.arch.gateCry || 'NO-SOLD!', opponent.arch.gateCrySub || `HE NEEDS A ${opponent.arch.chainGate}% CHAIN TO EVEN BLINK`);
   else if (greased) ui.slapBurst('IT SLID OFF!', 'ONLY A PERFECT PALM GRIPS THE GREASE');
   else if (noSnap) ui.slapBurst('NO SNAP!', 'ONLY A CRACKING ARM — A FAST WHIP — MOVES THE MASTER');
   else if (unwound) ui.slapBurst('UNWOUND!', `WIND THE COIL PAST ${opponent.arch.coilExam}% OR THE SPRING NEVER TRIPS`);
@@ -1201,6 +1208,11 @@ function showResult() {
     } else {
       line += ' Booing intensifies with every meter. SIN QUALITY: POOR.';
     }
+  } else if (worldNow === 'tarpit' && !isFoul) {
+    // the tar keeps what it catches — every landing is a future exhibit
+    line += ` FOSSIL REPORT: ${dist < 4 ? 'immediate preservation. The tar thanks you.' : dist < 7 ? 'partial sink. Museum-adjacent.' : dist < 10 ? 'a DIG SITE someday. Respectable.' : 'cleared the pit entirely — the paleontologists boo.'}`;
+  } else if (worldNow === 'blackgold' && !isFoul) {
+    line += ` BARREL ESTIMATE: ${dist < 18 ? 'dry well.' : dist < 30 ? 'trace deposits.' : dist < 45 ? 'COMMERCIALLY VIABLE.' : 'GUSHER. The pipeline weeps with joy.'}`;
   }
   // tour goals are judged per attempt, from numbers this function already has
   if (opponent.arch.bulwark && !isFoul) {
@@ -1209,8 +1221,9 @@ function showResult() {
     const th = opponent.arch.bulwark.threshold;
     const pct = Math.max(0, Math.ceil(100 - bulwarkPts / (th / 100)));
     ui.bulwark(pct);
-    if (pct <= 0) { ui.slapBurst('SPRUNG!', 'THE MAINSPRING LETS GO — UNSLAPPABLE, REVISED'); opponent.springOut(); sfx.fanfare(); stage.shake(0.5); }
-    else ui.slapBurst('ABSORBED!', `IMMOVABILITY ${pct}% — EVERY POINT STAYS LANDED`);
+    const bw = opponent.arch.bulwark;
+    if (pct <= 0) { ui.slapBurst(bw.sprungCry || 'SPRUNG!', bw.sprungSub || 'THE MAINSPRING LETS GO — UNSLAPPABLE, REVISED'); opponent.springOut(); sfx.fanfare(); stage.shake(0.5); }
+    else ui.slapBurst('ABSORBED!', `${bw.label || 'IMMOVABILITY'} ${pct}% — EVERY POINT STAYS LANDED`);
   }
   if (campaign.active) {
     const cleared = campaign.checkAttempt({
@@ -1238,6 +1251,11 @@ function showResult() {
   pendingCard = {
     dist, pts, arch, part: slap && !isFoul ? slap.part : null,
     foul: isFoul ? slap.foul : null, chain: slap ? slap.chain : null, line, n: attempts.length,
+    // a campaign STORY BEAT resolves on this card — one decisive strike, no
+    // best-of-3 — so the footer must not promise an 'ATTEMPT 2 OF 3'
+    next: campaign.active && !isBossTrial(campaign.active)
+      ? (lastClearedId === campaign.active.id ? 'CLICK / ENTER → CONTINUE THE STORY' : 'CLICK / ENTER → TRY AGAIN')
+      : null,
   };
   cardDelay = 1.1;
   // SLAPMASTER: he cleared the hay wall itself (60.5m) — the landmark IS the bar
@@ -1659,6 +1677,11 @@ function resetCatch() {
 function throwCube() {
   const mesh = cubePool.pop() || makeCube();
   mesh.visible = true;
+  // the projectile takes the thrower's colors: ice by default, or e.g. Yusuf's
+  // DATES (arch.cubeColor + a warm glow). Pool meshes get retinted every spawn.
+  const cc = opponent.arch.cubeColor;
+  mesh.material.color.setHex(cc || 0xbfe9ff);
+  mesh.material.emissive.setHex(cc ? (opponent.arch.cubeGlow || 0x3a2412) : 0x5ab0e0);
   const hc = opponent.headPos();
   // Carmine HURLS it: a big, high, SLOW lob from his raised hand that sails up and
   // arcs down into a CATCH ZONE out in front of the player, at the palm's reach.

@@ -1705,6 +1705,27 @@ export function createStage(canvas) {
         j.m.scale.y = h / 3; j.m.position.y = 1.5 + h / 2;
       }
     }
+    if (tarpitG.visible) {
+      // tar bubbles: swell out of the pool, hang, pop (deterministic loop)
+      for (const b of tarBubbles) {
+        b.t += dt * b.sp;
+        const ph = b.t % 1;
+        b.m.visible = ph < 0.82;
+        const s = 0.25 + ph * b.r;
+        b.m.scale.setScalar(ph < 0.65 ? s : Math.max(0.01, s * (1 - (ph - 0.65) * 4.5)));
+        b.m.position.y = 0.04 + ph * 0.3;
+      }
+    }
+    if (oilG.visible) {
+      for (const p of pumpJacks) p.pivot.rotation.z = Math.sin(time * p.sp + p.ph) * 0.16; // the nod
+      for (const j of oilJets) {
+        const h = 1.6 + Math.abs(Math.sin(time * 1.5 + j.ph)) * 3.2;
+        j.m.scale.y = h / 3; j.m.position.y = h / 2;
+      }
+    }
+    if (caveG.visible) {
+      for (const c of caveCrystals) c.m.material.opacity = 0.5 + Math.abs(Math.sin(time * c.sp + c.ph)) * 0.5;
+    }
     if (heavenG.visible) {
       for (const ch of cherubs) {
         const a = time * 0.4 + ch.ph;
@@ -4483,6 +4504,381 @@ export function createStage(canvas) {
     }
   });
 
+  // --- 🦴 TAR PITS (Horseshoe Hollow) --- the county road bends so hard both
+  // ends meet in a hollow, and at the bottom: the tar. Dusk-amber light, black
+  // pools that BUBBLE, a mammoth who argued with a saber-tooth too long, and
+  // half-sunk furniture from every end of the road (a pulpit, a podium, a flag).
+  const tarpitG = new THREE.Group();
+  const tarBubbles = [];
+  {
+    const boneMat = toonMat(0xe8e0cc), tarMat = new THREE.MeshBasicMaterial({ color: 0x0d0b0a });
+    const rimMat = toonMat(0x2e2620), snagMat = toonMat(0x241c14);
+    // dead-snag belt on the perimeter line
+    tarpitG.add(mkBelt((g, x, z, i) => {
+      const h = 5 + (i % 4);
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.3, h, 6), snagMat);
+      trunk.position.set(x, h / 2, z);
+      trunk.rotation.z = ((i % 5) - 2) * 0.06;
+      g.add(trunk);
+      for (let b = 0; b < 2; b++) {
+        const br = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.1, 1.6 + (i % 3) * 0.5, 5), snagMat);
+        br.position.set(x + (b ? 0.5 : -0.4), h * 0.62 + b * 0.8, z);
+        br.rotation.z = b ? -1.1 : 1.2;
+        g.add(br);
+      }
+    }));
+    // the pits: near-black pools with raised rims (visual only — the LANE is the arena)
+    const pools = [[30, -16, 7], [55, 14, 9], [12, 18, 5], [78, -12, 6]];
+    for (const [px, pz, pr] of pools) {
+      const rim = new THREE.Mesh(new THREE.RingGeometry(pr, pr + 0.7, 22), rimMat);
+      rim.rotation.x = -Math.PI / 2; rim.position.set(px, 0.02, pz); tarpitG.add(rim);
+      const pool = new THREE.Mesh(new THREE.CircleGeometry(pr, 22), tarMat);
+      pool.rotation.x = -Math.PI / 2; pool.position.set(px, 0.03, pz); tarpitG.add(pool);
+      // bubbles: rise, swell, pop (animated in updateAmbient)
+      for (let b = 0; b < 3; b++) {
+        const bub = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 7), tarMat);
+        bub.position.set(px + Math.cos(b * 2.1) * pr * 0.5, 0.1, pz + Math.sin(b * 2.1) * pr * 0.5);
+        tarpitG.add(bub);
+        tarBubbles.push({ m: bub, t: b * 0.37, sp: 0.5 + (b % 3) * 0.2, r: 0.8 + (b % 2) * 0.5 });
+      }
+    }
+    // the MAMMOTH, half-sunk in the big pool — mid-sentence since the Pleistocene
+    {
+      const mx = 55, mz = 14;
+      const skull = new THREE.Mesh(new THREE.SphereGeometry(1.1, 10, 8), boneMat);
+      skull.scale.set(1.25, 0.95, 0.9); skull.position.set(mx - 2, 1.4, mz); tarpitG.add(skull);
+      for (const sgn of [-1, 1]) {
+        const tusk = new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.14, 6, 12, Math.PI * 0.8), boneMat);
+        tusk.position.set(mx - 3, 1.2, mz + sgn * 0.7);
+        tusk.rotation.set(0.2 * sgn, sgn * 0.5, 1.9);
+        tarpitG.add(tusk);
+      }
+      for (let r = 0; r < 4; r++) {
+        const rib = new THREE.Mesh(new THREE.TorusGeometry(1.5 - r * 0.12, 0.1, 6, 10, Math.PI), boneMat);
+        rib.position.set(mx + 0.5 + r * 0.9, 0.5, mz);
+        rib.rotation.set(0, Math.PI / 2, 0);
+        tarpitG.add(rib);
+      }
+      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.3, 2.6, 7), boneMat);
+      leg.position.set(mx + 4.4, 1.0, mz - 0.6); leg.rotation.z = -0.5; tarpitG.add(leg);
+      // the saber-tooth he was arguing with, on the rim, also not done talking
+      const cat = new THREE.Mesh(new THREE.SphereGeometry(0.4, 8, 7), boneMat);
+      cat.scale.set(1.2, 0.8, 0.8); cat.position.set(mx + 7.6, 0.5, mz + 3); tarpitG.add(cat);
+      for (const sgn of [-1, 1]) {
+        const fang = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.5, 5), boneMat);
+        fang.position.set(mx + 7.9, 0.2, mz + 3 + sgn * 0.16); fang.rotation.x = Math.PI; tarpitG.add(fang);
+      }
+    }
+    // half-sunk positions (one per end of the road): a pulpit, a podium, a flagpole
+    const woodMat = toonMat(0x5a4530), greyMat = toonMat(0x6a6e78);
+    const pulpit = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.8, 1.2), woodMat);
+    pulpit.position.set(28, 0.5, -14); pulpit.rotation.set(0.35, 0.6, 0.2); tarpitG.add(pulpit);
+    const podium = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.7, 1.6, 8), greyMat);
+    podium.position.set(57, 0.4, 16.5); podium.rotation.z = 0.5; tarpitG.add(podium);
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.09, 7, 6), greyMat);
+    pole.position.set(79, 2.2, -11); pole.rotation.z = 0.7; tarpitG.add(pole);
+    const flag = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.0), toonMat(0xa83030));
+    flag.position.set(76.5, 4.6, -11); flag.rotation.z = 0.7; tarpitG.add(flag);
+    // stuck signage — every sign a former last stand
+    for (const [sx, sz, ry, txt] of [[24, 8, 0.4, 'MY LAST STAND — 1987'], [46, -8, -0.5, 'NOT MOVING'], [68, 10, 0.2, 'ASK ME WHY'], [36, 16, -0.3, 'STILL RIGHT']]) {
+      const stick = new THREE.Mesh(new THREE.BoxGeometry(0.09, 1.6, 0.09), woodMat);
+      stick.position.set(sx, 0.6, sz); stick.rotation.z = ry; tarpitG.add(stick);
+      const board = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 0.7),
+        new THREE.MeshBasicMaterial({ map: makeTextTexture(txt, '#3a2f24', '#e8ddc4'), side: THREE.DoubleSide }));
+      board.position.set(sx + ry * 0.5, 1.45, sz); board.rotation.set(0, 0.3, ry * 0.5); tarpitG.add(board);
+    }
+    // the HORSESHOE gate behind the ring — both ends of the road, meeting
+    const shoe = new THREE.Mesh(new THREE.TorusGeometry(5.5, 0.5, 8, 22, Math.PI), toonMat(0x8a7a5e));
+    shoe.rotation.y = Math.PI / 2; shoe.position.set(-9, 0.4, 0); tarpitG.add(shoe);
+    for (const sgn of [-1, 1]) {
+      const nub = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.62, 1.2, 8), toonMat(0x8a7a5e));
+      nub.position.set(-9, 0.6, sgn * 5.5); tarpitG.add(nub);
+    }
+    tarpitG.traverse((m) => { if (m.isMesh && m.material.type !== 'MeshBasicMaterial') m.castShadow = true; });
+    tarpitG.visible = false;
+    scene.add(tarpitG);
+  }
+  // picket-sign wall at the 20m crash zone — opinions, stacked two high
+  const picketBarricade = mkBarricade((arr, bx) => {
+    const wood = toonMat(0x6a5238);
+    const face = toonMat(0xe8ddc4);
+    for (const [by, count] of [[0.7, 4], [1.9, 3]]) {
+      for (let i = 0; i < count; i++) {
+        const g = new THREE.Group();
+        const stick = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1.5, 0.1), wood);
+        stick.position.y = -0.4; g.add(stick);
+        const board = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.8, 1.1), face);
+        board.position.y = 0.5; g.add(board);
+        const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.14, 0.9), toonMat(i % 2 ? 0xa83030 : 0x30508a));
+        stripe.position.y = 0.5; g.add(stripe);
+        g.position.set(bx + (i % 2 ? 0.15 : -0.1), by, -1.8 + i * (3.6 / Math.max(1, count - 1)));
+        g.rotation.y = ((i + count) % 3 - 1) * 0.2;
+        arr.push(g);
+      }
+    }
+  });
+
+  // --- 🛢️ BLACK GOLD (the bazaar + Don's derricks) --- a desert kingdom whose
+  // pasture Don has annexed with a GOLD pipeline he built before finding any
+  // oil ("that's called confidence"). Nodding pump jacks, a spice bazaar, date
+  // palms — and one gusher that has never once gushed crude.
+  const oilG = new THREE.Group();
+  const pumpJacks = [];
+  const oilJets = [];
+  {
+    const goldMat = toonMat(0xd4af37), steelMat = toonMat(0x3a3f4a), crude = new THREE.MeshBasicMaterial({ color: 0x120f0d });
+    const palmTrunk = toonMat(0x8a6844), frond = toonMat(0x4a7a3a);
+    // date-palm belt
+    oilG.add(mkBelt((g, x, z, i) => {
+      const h = 6 + (i % 3);
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.3, h, 6), palmTrunk);
+      trunk.position.set(x, h / 2, z);
+      trunk.rotation.z = ((i % 5) - 2) * 0.05;
+      g.add(trunk);
+      for (let f = 0; f < 5; f++) {
+        const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.16, 2.4, 4), frond);
+        const a = (f / 5) * Math.PI * 2;
+        leaf.position.set(x + Math.cos(a) * 0.9, h + 0.3, z + Math.sin(a) * 0.9);
+        leaf.rotation.set(Math.sin(a) * 1.25, 0, Math.cos(a) * -1.25);
+        g.add(leaf);
+      }
+      const dates = new THREE.Mesh(new THREE.SphereGeometry(0.3, 7, 6), toonMat(0x6a4226));
+      dates.position.set(x + 0.35, h - 0.25, z); dates.scale.y = 1.4; g.add(dates);
+    }));
+    // PUMP JACKS — nodding donkeys (beam rocks in updateAmbient)
+    for (const [px, pz, ph] of [[34, -17, 0], [62, 18, 1.4], [90, -16, 2.8]]) {
+      const base = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.5, 1.6), steelMat);
+      base.position.set(px, 0.25, pz); oilG.add(base);
+      const frame = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.22, 3.4, 6), steelMat);
+      frame.position.set(px, 2.0, pz); oilG.add(frame);
+      const pivot = new THREE.Group();
+      pivot.position.set(px, 3.6, pz); oilG.add(pivot);
+      const beam = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.35, 0.5), goldMat);
+      pivot.add(beam);
+      const head = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.0, 0.6), goldMat);
+      head.position.set(2.5, -0.2, 0); pivot.add(head);
+      const weight = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 0.4, 12), toonMat(0xa83030));
+      weight.rotation.x = Math.PI / 2; weight.position.set(-2.3, -0.3, 0); pivot.add(weight);
+      pumpJacks.push({ pivot, sp: 1.1 + ph * 0.1, ph });
+    }
+    // THE GOLD PIPELINE on stilts, pumping with confidence in no direction
+    for (let s = 0; s < 12; s++) {
+      const x = -8 + s * 9.5;
+      const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 9.6, 8), goldMat);
+      pipe.rotation.z = Math.PI / 2; pipe.position.set(x + 4.75, 3.1, -21); oilG.add(pipe);
+      const stilt = new THREE.Mesh(new THREE.BoxGeometry(0.3, 3.1, 0.3), steelMat);
+      stilt.position.set(x, 1.55, -21); oilG.add(stilt);
+    }
+    // the DERRICK — a gold oil tower nobody asked for
+    {
+      const dx = 70, dz = -14;
+      for (const [ox, oz] of [[-1.6, -1.6], [1.6, -1.6], [-1.6, 1.6], [1.6, 1.6]]) {
+        const leg = new THREE.Mesh(new THREE.BoxGeometry(0.3, 13, 0.3), goldMat);
+        leg.position.set(dx + ox * 0.72, 6.5, dz + oz * 0.72);
+        leg.rotation.set(oz * -0.085, 0, ox * 0.085);
+        oilG.add(leg);
+      }
+      for (let b = 0; b < 4; b++) {
+        const brace = new THREE.Mesh(new THREE.BoxGeometry(3.2 - b * 0.6, 0.2, 3.2 - b * 0.6), goldMat);
+        brace.position.set(dx, 2.5 + b * 3.2, dz); oilG.add(brace);
+      }
+      const crown = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.8, 1.4), goldMat);
+      crown.position.set(dx, 13.3, dz); oilG.add(crown);
+      // the gusher: black jets that will turn out to be syrup (animated)
+      for (let j = 0; j < 3; j++) {
+        const jet = new THREE.Mesh(new THREE.CylinderGeometry(0.14 + j * 0.05, 0.3, 3, 6), crude);
+        jet.position.set(dx + (j - 1) * 0.3, 1.5, dz);
+        oilG.add(jet);
+        oilJets.push({ m: jet, ph: j * 1.1, base: 0 });
+      }
+      const pool = new THREE.Mesh(new THREE.CircleGeometry(2.6, 18), crude);
+      pool.rotation.x = -Math.PI / 2; pool.position.set(dx, 0.03, dz); oilG.add(pool);
+    }
+    // THE BAZAAR — striped canopies, spice cones, rug rolls, date crates
+    const stallCols = [[0xc94a3a, 0xf2e6cc], [0x2a8a8a, 0xf2e6cc], [0x8a4aa8, 0xf2e6cc], [0xd4881f, 0xf2e6cc]];
+    const spiceCols = [0xd4881f, 0xa83030, 0x8a6f1f, 0x2a8a6a];
+    for (let s = 0; s < 4; s++) {
+      const sx = 14 + s * 11, sz = s % 2 ? 12 : 15;
+      const g = new THREE.Group();
+      for (const [px, pz] of [[-1.4, -1], [1.4, -1], [-1.4, 1], [1.4, 1]]) {
+        const post = new THREE.Mesh(new THREE.BoxGeometry(0.14, 2.4, 0.14), palmTrunk);
+        post.position.set(px, 1.2, pz); g.add(post);
+      }
+      const [ca, cb] = stallCols[s % 4];
+      for (let st = 0; st < 4; st++) {
+        const strip = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.08, 2.6), toonMat(st % 2 ? cb : ca));
+        strip.position.set(-1.28 + st * 0.85, 2.5 + Math.sin(st * 1.2) * 0.06, 0);
+        strip.rotation.z = 0.08;
+        g.add(strip);
+      }
+      const counter = new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.8, 1.2), toonMat(0x9a7a4e));
+      counter.position.y = 0.4; g.add(counter);
+      if (s % 2 === 0) { // spice stall: bright cones
+        for (let c = 0; c < 3; c++) {
+          const cone = new THREE.Mesh(new THREE.ConeGeometry(0.28, 0.55, 10), toonMat(spiceCols[(s + c) % 4]));
+          cone.position.set(-0.8 + c * 0.8, 1.08, 0.1); g.add(cone);
+        }
+      } else { // rug stall: rolled cylinders leaning
+        for (let c = 0; c < 3; c++) {
+          const rug = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 1.7, 8), toonMat(spiceCols[(s + c + 1) % 4]));
+          rug.position.set(-0.6 + c * 0.6, 1.2, 0.2); rug.rotation.z = 0.4 - c * 0.15; g.add(rug);
+        }
+      }
+      g.position.set(sx, 0, sz); g.rotation.y = (s % 2 ? -1 : 1) * 0.25;
+      oilG.add(g);
+    }
+    // one camel with saddlebags, unimpressed by the pipeline
+    {
+      const camelTan = toonMat(0xc9a066);
+      const cam = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.7, 2.0, 6, 10), camelTan);
+      body.rotation.z = Math.PI / 2; body.position.y = 1.9; cam.add(body);
+      const hump = new THREE.Mesh(new THREE.SphereGeometry(0.62, 10, 8), camelTan);
+      hump.position.set(0, 2.5, 0); cam.add(hump);
+      const neck = new THREE.Mesh(new THREE.CapsuleGeometry(0.28, 1.4, 4, 8), camelTan);
+      neck.position.set(1.4, 2.5, 0); neck.rotation.z = 0.7; cam.add(neck);
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.42, 10, 8), camelTan);
+      head.position.set(2.1, 3.2, 0); head.scale.x = 1.3; cam.add(head);
+      for (const [lx, lz] of [[-0.8, 0.35], [-0.8, -0.35], [0.8, 0.35], [0.8, -0.35]]) {
+        const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.13, 1.9, 7), camelTan);
+        leg.position.set(lx, 0.95, lz); cam.add(leg);
+      }
+      for (const sgn of [-1, 1]) {
+        const bag = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.6, 0.35), toonMat(0xa83030));
+        bag.position.set(-0.3, 1.8, sgn * 0.75); cam.add(bag);
+      }
+      cam.position.set(48, 0, 17); cam.rotation.y = -0.6;
+      oilG.add(cam);
+    }
+    oilG.traverse((m) => { if (m.isMesh && m.material.type !== 'MeshBasicMaterial') m.castShadow = true; });
+    oilG.visible = false;
+    scene.add(oilG);
+  }
+  // oil-drum barricade — black drums, gold TD band (Tremendous Drilling)
+  const drumBarricade = mkBarricade((arr, bx) => {
+    const drum = toonMat(0x16130f), band = toonMat(0xd4af37);
+    for (const [by, count] of [[0.6, 4], [1.8, 3]]) {
+      for (let i = 0; i < count; i++) {
+        const g = new THREE.Group();
+        const body = new THREE.Mesh(new THREE.CylinderGeometry(0.52, 0.52, 1.15, 10), drum);
+        g.add(body);
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(0.53, 0.05, 6, 14), band);
+        ring.rotation.x = Math.PI / 2; g.add(ring);
+        g.position.set(bx + (i % 2 ? 0.15 : -0.12), by, -1.9 + i * (3.8 / Math.max(1, count - 1)));
+        arr.push(g);
+      }
+    }
+  });
+
+  // --- 💎 THE CAVE OF WONDERS --- under the dunes: treasure mounds, glow
+  // crystals, a 900-year date hoard, and the STONE PALM — a gate shaped like
+  // a giant open hand (in this county, of course it's a hand).
+  const caveG = new THREE.Group();
+  const caveCrystals = [];
+  {
+    const stone = toonMat(0x5a5048), stoneDk = toonMat(0x3a332c), gold = toonMat(0xd4af37);
+    const glowCrystal = (hex) => new THREE.MeshBasicMaterial({ color: hex, transparent: true, opacity: 0.85 });
+    // stalagmite belt + glow crystals
+    caveG.add(mkBelt((g, x, z, i) => {
+      for (let c = 0; c < 3; c++) {
+        const h = 3 + ((i + c) % 5) * 1.6;
+        const spike = new THREE.Mesh(new THREE.ConeGeometry(0.7 - c * 0.15, h, 6), c ? stoneDk : stone);
+        spike.position.set(x + (c - 1) * 1.1, h / 2, z + ((c + i) % 3 - 1) * 0.8);
+        g.add(spike);
+      }
+      if (i % 4 === 0) {
+        const cry = new THREE.Mesh(new THREE.ConeGeometry(0.35, 1.8, 5), glowCrystal(i % 8 ? 0x2fd4c8 : 0x9a5aff));
+        cry.position.set(x, 0.9, z + 2.2);
+        cry.rotation.z = ((i % 3) - 1) * 0.3;
+        g.add(cry);
+        caveCrystals.push({ m: cry, sp: 0.8 + (i % 3) * 0.4, ph: i });
+      }
+    }));
+    // stalactites over the lane
+    for (let i = 0; i < 10; i++) {
+      const h = 2.5 + (i % 4);
+      const tip = new THREE.Mesh(new THREE.ConeGeometry(0.55, h, 6), stoneDk);
+      tip.rotation.x = Math.PI;
+      tip.position.set(-6 + i * 12, 15 - h / 2, (i % 2 ? 1 : -1) * (9 + (i % 3) * 3));
+      caveG.add(tip);
+    }
+    // TREASURE MOUNDS + coins + gems along the shoulders
+    for (const [tx, tz, tr] of [[18, 11, 2.4], [36, -12, 3.0], [58, 13, 2.6], [80, -12, 3.4], [44, 15, 1.8]]) {
+      const mound = new THREE.Mesh(new THREE.SphereGeometry(tr, 12, 9), gold);
+      mound.scale.y = 0.45; mound.position.set(tx, 0.2, tz); caveG.add(mound);
+      for (let c = 0; c < 5; c++) {
+        const coin = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.05, 10), gold);
+        coin.position.set(tx + Math.cos(c * 1.9) * (tr + 0.7), 0.05, tz + Math.sin(c * 1.9) * (tr * 0.7));
+        coin.rotation.set(0.3, c, 0);
+        caveG.add(coin);
+      }
+      const gem = new THREE.Mesh(new THREE.IcosahedronGeometry(0.35, 0), glowCrystal([0xd83a5a, 0x2fae5a, 0x2f7ad8][(tx | 0) % 3]));
+      gem.position.set(tx, tr * 0.45 + 0.35, tz);
+      caveG.add(gem);
+      caveCrystals.push({ m: gem, sp: 1.3, ph: tx });
+    }
+    // the 900-year DATE HOARD — amphorae + a heap of dates (the true treasure)
+    for (let a = 0; a < 4; a++) {
+      const urn = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.5, 1.3, 9), toonMat(0xa87848));
+      urn.position.set(64 + a * 1.1, 0.65, 16 - (a % 2) * 0.9);
+      urn.rotation.z = a === 2 ? 0.9 : 0;
+      caveG.add(urn);
+    }
+    const dateHeap = new THREE.Mesh(new THREE.SphereGeometry(1.2, 10, 8), toonMat(0x6a4226));
+    dateHeap.scale.y = 0.5; dateHeap.position.set(67, 0.25, 14.5); caveG.add(dateHeap);
+    // the magic lamp, on a pedestal, unrubbed (the county respects boundaries)
+    const ped = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.65, 1.1, 8), stone);
+    ped.position.set(40, 0.55, 13); caveG.add(ped);
+    const lampBody = new THREE.Mesh(new THREE.SphereGeometry(0.32, 10, 8), gold);
+    lampBody.scale.y = 0.6; lampBody.position.set(40, 1.3, 13); caveG.add(lampBody);
+    const spout = new THREE.Mesh(new THREE.ConeGeometry(0.09, 0.55, 6), gold);
+    spout.rotation.z = 1.25; spout.position.set(40.42, 1.42, 13); caveG.add(spout);
+    const handle = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.035, 6, 10, Math.PI * 1.3), gold);
+    handle.position.set(39.68, 1.42, 13); handle.rotation.z = -0.5; caveG.add(handle);
+    // fallen column + standing columns
+    for (const [cx, cz, fall] of [[10, -12, 0], [30, 14, 0], [52, -14, 1], [92, 12, 0]]) {
+      const col = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.8, 7, 10), stone);
+      if (fall) { col.rotation.z = Math.PI / 2 - 0.06; col.position.set(cx, 0.8, cz); }
+      else col.position.set(cx, 3.5, cz);
+      caveG.add(col);
+    }
+    // THE STONE PALM — the gate at the far end: a giant open hand, fingers up
+    {
+      const gx = 103;
+      const palm = new THREE.Mesh(new THREE.BoxGeometry(1.6, 7.5, 8.5), stone);
+      palm.position.set(gx, 3.75, 0); caveG.add(palm);
+      for (let f = 0; f < 4; f++) {
+        const fh = 4.6 - Math.abs(f - 1.4) * 0.9;
+        const finger = new THREE.Mesh(new THREE.BoxGeometry(1.3, fh, 1.55), stone);
+        finger.position.set(gx, 7.5 + fh / 2 - 0.3, -3 + f * 2.0);
+        finger.rotation.x = (f - 1.5) * 0.06;
+        caveG.add(finger);
+      }
+      const thumb = new THREE.Mesh(new THREE.BoxGeometry(1.3, 3.4, 1.5), stone);
+      thumb.position.set(gx, 5.4, 5.1); thumb.rotation.x = -0.55; caveG.add(thumb);
+      // a life line carved across the palm (the county checked — it's long)
+      const line = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.3, 5.4), stoneDk);
+      line.position.set(gx - 0.82, 4.4, 0.4); line.rotation.x = 0.3; caveG.add(line);
+    }
+    caveG.traverse((m) => { if (m.isMesh && m.material.type !== 'MeshBasicMaterial') m.castShadow = true; });
+    caveG.visible = false;
+    scene.add(caveG);
+  }
+  // gold-bar barricade — somebody stacked the treasury at 20m
+  const goldbarBarricade = mkBarricade((arr, bx) => {
+    const gold = toonMat(0xd4af37);
+    for (const [by, count] of [[0.35, 5], [1.0, 4], [1.65, 3]]) {
+      for (let i = 0; i < count; i++) {
+        const g = new THREE.Group();
+        const bar = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.6, 1.05), gold);
+        g.add(bar);
+        g.position.set(bx + (i % 2 ? 0.1 : -0.1), by, -1.7 + i * (3.4 / Math.max(1, count - 1)));
+        g.rotation.y = ((i + count) % 3 - 1) * 0.12;
+        arr.push(g);
+      }
+    }
+  });
+
   const CROWD_PALETTES = {
     winter: [0x9c4a4a, 0x4a6b8c, 0x5c7a5c, 0x8a7a9c, 0xe8e2d4, 0x7a5a44], // muted coats vs snow
     desert: [0xb5885a, 0x9c7a4a, 0xc9a86a, 0x7a6a4a, 0xd8b878, 0x8a5a3a], // dusty earth tones
@@ -4495,6 +4891,8 @@ export function createStage(canvas) {
     haunted:[0x2a2a33, 0x3a2a3a, 0x4a3a2e, 0x33333c, 0x5a4a5a, 0x262e2a], // mourners' Sunday best
     tech:   [0x3a3f4a, 0x2a2a33, 0x4a5a6e, 0x2a6a6a, 0x6e7a8a, 0x1f2a3a], // hoodies, all of them
     vegas:  [0xff2f8e, 0x2fd4ff, 0xffd23f, 0x141018, 0x8a2fff, 0xf4f0e2], // showgirl neon + tux blacks
+    tarpit: [0x8a6a3a, 0x6a4e34, 0x9c7a4a, 0x5c5a42, 0xa8894e, 0x74543a], // 70s corduroy vs the dusk
+    bazaar: [0x2a8a8a, 0xc94a3a, 0xd4881f, 0x8a4aa8, 0xf2e6cc, 0x2a6a4a], // souk jewel tones
   };
   let crowdOrig = null;
   function setCrowdPalette(key) {
@@ -4596,15 +4994,34 @@ export function createStage(canvas) {
     vegas: { fog: [0x3a2450, 60, 210], skyTint: 0x241640, hemi: [0xffd9a0, 0x4a2f6a, 1.05], sun: [0xffcf9a, 1.7], fill: 0.42, cloud: 0x4a2f6a, maps: false, grass: 0x3a2450, lane: 0xcaa03a, night: true, sunFace: false,
       group: 'vegas', biome: 'vegas', crowd: 'vegas', pond: 0x2fd4ff, sunTint: [0xffe0b0, 0.8],
       hideFarm: true, hideBarn: true, hideFair: true, hideCloths: true, hideFences: true, barricade: 'chips' },
+    // HORSESHOE HOLLOW's tar pits: a permanent La Brea dusk — amber haze, black
+    // pools, dirt the color of an old argument. Crowd stays (the county gathers
+    // to watch unstickings); desert biome tints the hills dusty.
+    tarpit: { fog: [0xc09468, 50, 165], skyTint: 0xc9925a, hemi: [0xe8c9a0, 0x6a5240, 1.05], sun: [0xffb87a, 1.8], fill: 0.42, cloud: 0xd9a878, maps: false, grass: 0x7a6248, lane: 0x2e2620, night: false, sunFace: false,
+      group: 'tarpit', biome: 'desert', crowd: 'tarpit', pond: 0x0c0a0a, sunTint: [0xffc98a, 0.9],
+      hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, hideFences: true, barricade: 'picket' },
+    // BLACK GOLD: the desert kingdom's bazaar under Don's gold hardware — high
+    // desert light, teal oasis pond, and an oil-slicked lane (the glide lives
+    // in ragdoll.js; main.js drives both).
+    blackgold: { fog: [0xead4a8, 60, 190], skyTint: 0xf2ddb4, hemi: [0xffe8bf, 0xc79a5a, 1.05], sun: [0xfff0cf, 2.1], fill: 0.26, cloud: 0xfff2df, maps: false, grass: 0xd8b878, lane: 0x241e18, night: false, sunFace: true,
+      group: 'blackgold', biome: 'desert', crowd: 'bazaar', pond: 0x2fa8a0, sunTint: [0xffe2b0, 1],
+      hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, hideFences: true, barricade: 'drums' },
+    // THE CAVE OF WONDERS: warm-dark treasure light. night:true reads as the
+    // cave here — the "stars" are ceiling glints, the ring lanterns are torches.
+    // Lava biome keeps the distant hills near-black (cave walls). No crowd.
+    cave: { fog: [0x453222, 60, 200], skyTint: 0x1c130c, hemi: [0xffd9a0, 0x3a2a18, 1.05], sun: [0xffd88a, 1.5], fill: 0.62, cloud: 0x2e2114, maps: false, grass: 0x3e352a, lane: 0x4a4032, night: true, sunFace: false,
+      group: 'cave', biome: 'lava', crowd: null, pond: 0x1a6a7a, hideCrowd: true,
+      hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, hideFences: true, barricade: 'goldbars' },
   };
   const WORLD_GROUPS = {
     ice: winterG, desert: desertG, jungle: jungleG, dojo: dojoG,
     lava: lavaG, heaven: heavenG, hell: hellG, therapy: therapyG,
     haunted: hauntedG, techcampus: techG, vegas: vegasG,
+    tarpit: tarpitG, blackgold: oilG, cave: caveG,
   };
   // every non-farm world re-dresses the perimeter, so pine hides whenever any
   // kit with its own belt is up (each belt lives inside its kit group)
-  const BELT_WORLDS = new Set(['desert', 'jungle', 'dojo', 'lava', 'heaven', 'hell', 'therapy', 'haunted', 'techcampus', 'vegas']);
+  const BELT_WORLDS = new Set(['desert', 'jungle', 'dojo', 'lava', 'heaven', 'hell', 'therapy', 'haunted', 'techcampus', 'vegas', 'tarpit', 'blackgold', 'cave']);
   const WORLD_FX = {                                 // per-world extras beyond the kit
     ice: (on) => {
       snowPts.visible = on;
@@ -4619,6 +5036,7 @@ export function createStage(canvas) {
     bamboo: bambooBarricade, shoji: shojiBarricade, boulders: boulderBarricade,
     cloud: cloudBarricade, redtape: redtapeBarricade, books: booksBarricade,
     coffins: coffinsBarricade, boxes: boxesBarricade, chips: chipBarricade,
+    picket: picketBarricade, drums: drumBarricade, goldbars: goldbarBarricade,
   };
   const hasWorld = (n) => !!WORLD_THEMES[n];
 

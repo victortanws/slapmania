@@ -270,7 +270,7 @@ export function foulBanner(type) {
 
 export function showTitle(on) { el.title.classList.toggle('hidden', !on); }
 
-export function showResult({ dist, pts, arch, part, foul, chain, line, n }) {
+export function showResult({ dist, pts, arch, part, foul, chain, line, n, next }) {
   el.result.classList.remove('hidden');
   if (foul) {
     el.resDist.textContent = 'FOUL — 0 PTS';
@@ -314,7 +314,7 @@ export function showResult({ dist, pts, arch, part, foul, chain, line, n }) {
     el.resChain.innerHTML = `POWER  ·  ${bar}<br>${takeaway}<br>${detail}`;
   }
   el.resLine.textContent = line;
-  el.resNext.textContent = n >= 3 ? 'CLICK / ENTER → FINAL VERDICT' : `CLICK / ENTER → ATTEMPT ${n + 1} OF 3`;
+  el.resNext.textContent = next || (n >= 3 ? 'CLICK / ENTER → FINAL VERDICT' : `CLICK / ENTER → ATTEMPT ${n + 1} OF 3`);
 }
 
 export function showMatch({ bestAttempt, line, board, shareUrl, tour }) {
