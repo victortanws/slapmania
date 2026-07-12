@@ -269,6 +269,15 @@ export const ROSTER = [
     taunts: ['Mountains ask ME for advice.', 'I have never taken a single step.'],
   },
   {
+    // THE HUMAN BOARD — a chop-only boss: arch.chop forces player.mode='chop', so
+    // the whole swing becomes a downward edge-strike. A slap never even happens.
+    key: 'cinderblock', name: 'MASTER TILE', tag: 'BOSS · THE HUMAN BOARD', boss: true, chop: true,
+    w: 1.02, h: 1.05, mass: 1.1, noStache: true,
+    skin: 0xd9b48a, shirt: 0xe8e4dc, pants: 0x2a2f38, brow: true,
+    pickLine: 'A slap glances off. Bring the EDGE. Bring it DOWN.',
+    taunts: ['Forty years the students broke boards on me.', 'A slap merely annoys me.', 'Raise it overhead. Then let gravity finish.'],
+  },
+  {
     // SCROLL IV — THE FORBIDDEN FORM. bodyBlow bosses: the open palm is TOO SOFT
     // (no-sold ×0.12); only a CLOSED FIST reaches them. Campaign-only (boss:true).
     key: 'callus_cal', name: 'CALLUS CAL', tag: 'BOSS · FEELS NO PALM', boss: true,

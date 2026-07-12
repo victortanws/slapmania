@@ -149,6 +149,7 @@ export const TOURS = [
           { id: 'b1c1', title: 'THE EMPTY HAND', desc: 'LAND a clean head slap on HAYSEED HANK — no want, no fear, no borrowed force', opp: 'hank', goal: { type: 'head' } },
           { id: 'b1c2', title: 'BECOME WATER', desc: 'Send SLIM PETE 23m — do not push the river; become it', opp: 'slim', goal: { type: 'dist', v: 23 } },
           { id: 'b1c3', title: '☗ BOSS: THE MOUNTAIN AT THE GATE', desc: 'Score 380 off BOULDER BOB — he does not move for the unready', opp: 'boulder', goal: { type: 'pts', v: 380 } },
+          { id: 'b1c4', title: '☗ THE STRIKE THAT COMES DOWN', desc: 'A slap glances off MASTER TILE. Land one clean KARATE CHOP: RAISE overhead [S], DROP your weight [L], SNAP the forearm [A], roll the EDGE [P].', opp: 'cinderblock', goal: { type: 'head' } },
         ],
       },
       {
@@ -652,6 +653,11 @@ export const CUTSCENES = {
     { who: '👻 MASTER SLEE', text: 'The mountain at the trailhead. Bob has guarded this ground since before the fence. He does not move for the unready — do not ask him to.', shot: 'spirit' },
     { who: 'BOULDER BOB', text: 'Many earnest young men have monologued at me. The lichen finds them relaxing.', shot: 'opp' },
     { who: 'YOU', text: 'I do not ask you to move, mountain. I ask the stone in you to remember it once rolled. Four hundred and twenty times.', shot: 'player' },
+  ],
+  b1c4: [
+    { who: '👻 MASTER SLEE', text: 'One strike the open palm never taught you, grandson. The one that comes DOWN. Tile has spent forty years being the board.', shot: 'spirit' },
+    { who: 'MASTER TILE', text: 'A slap? A slap just annoys me. The students break boards on ME. Bring the EDGE of the hand. Raise it overhead — then let gravity finish the sentence.', shot: 'opp' },
+    { who: 'YOU', text: 'No swivel, then. Only weight, and a straight line down. Raise, drop, snap, edge. Hold still, master.', shot: 'player' },
   ],
   b2c1: [
     { who: '👻 MASTER SLEE', text: 'Chuck\'s first legend: "He cannot be caught." Dale is where that story lives. Catch the uncatchable, and one third of the myth unravels.', shot: 'spirit' },

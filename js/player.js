@@ -867,7 +867,7 @@ export class Player {
       // A = snap the FOREARM down; P = roll the hand edge-on. Peak hand velocity
       // is DOWNWARD — handVel captures it, so the power formula works unchanged.
       if (keys.s) t.shoulderPitch += 80 * strT;
-      if (keys.l) { t.shoulderPitch -= (16 + 26 * Math.max(0, this.j.shoulderPitch.a)) * strT; this.leanV += 1.1 * dt; }
+      if (keys.l) { t.shoulderPitch -= (16 + 26 * Math.max(0, this.j.shoulderPitch.a)) * strT; this.leanV += 0.45 * dt; } // weight-drop, but gentle enough not to self-foul the chop
       if (this.aUnlocked && keys.a) t.elbow -= 150 * strT;
       if (this.pUnlocked && keys.p) t.wrist -= 170 * strT;
     } else {
