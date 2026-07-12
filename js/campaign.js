@@ -585,12 +585,12 @@ export const CUTSCENES = {
     { who: 'YOU', text: 'The formal specimen. Top hat, tails, and a skull in continuous rotation. I have asked it to hold still. It heard me twice — once with each ear, in passing.', shot: 'player' },
     { who: '🎬 DIRECTOR VANE', text: "He's DASHING, Charlie. He's METRONOMIC. Marry the shot to the turn and this is our poster.", shot: 'wide' },
     { who: 'YOU', text: "Note the cheek presents itself only mid-turn, like the beam of a lighthouse. One does not chase a lighthouse.", shot: 'player' },
-    { who: 'YOU', text: "One anchors, waits, and greets the light as it sweeps in. This is not patience. It is angular data.", shot: 'player' },
+    { who: 'YOU', text: "One anchors, waits, and greets the light as it sweeps in. Patience implies I mind the wait. I do not. I am reading angles.", shot: 'player' },
   ],
   w2c1: [
     { who: '🎬 DIRECTOR VANE', text: 'The tape LEAKED. Forty million views. They call you "the calmest man alive" and I HATE how well it tests. Now — megafauna. And Charlie: feel something.', shot: 'wide' },
     { who: 'YOU', text: 'Note the mass. When a specimen of this magnitude relocates, the county registers it underfoot. This is not excitement. It is seismology.', shot: 'player' },
-    { who: 'BIG BERTHA', text: 'You want the ground to feel somethin, sugar? Then swing like you MEAN it.', shot: 'opp' },
+    { who: 'BIG BERTHA', text: 'You want the ground to feel somethin, sugar? Then quit narratin and SWING.', shot: 'opp' },
   ],
   w2c2: [
     { who: 'THE INFLUENCER', text: "Okay so your little documentary is trending and I cannot — CANNOT — let a slapping tape out-clip me. I'm inserting myself into the ecosystem.", shot: 'opp' },
@@ -599,7 +599,7 @@ export const CUTSCENES = {
   ],
   w2c3: [
     { who: 'MASTER MANTIS', text: 'I have seen your little film, biologist. Forty million views, and not one of them noticed: you narrate the palm as if it were a beetle. I have narrated MEN as if they were weather.', shot: 'opp' },
-    { who: 'YOU', text: 'A rival deadpan enters the study. He critiques the observer. Note the audacity — and the robe. The robe is excellent. This is not admiration. It is taxonomy.', shot: 'player' },
+    { who: 'YOU', text: 'A rival deadpan enters the study. He critiques the observer. Note the audacity — and the robe. The robe is excellent. I am not admiring the robe. I am cataloguing it.', shot: 'player' },
     { who: 'MASTER MANTIS', text: 'Then observe closely. Only a genuine SNAP moves a master — on EVERY swing. A lazy arm is not a slap. It is merely... narration.', shot: 'opp' },
     { who: 'YOU', text: 'We shall learn whose voice stays flat when the other cracks the air. Begin.', shot: 'player' },
   ],
@@ -641,7 +641,7 @@ export const CUTSCENES = {
   b1c1: [
     { who: '👻 MASTER SLEE', text: 'Before the mountain, the pebble. Hank\'s cheek is honest. Meet it with an empty hand — no want, no fear, no borrowed force.', shot: 'spirit' },
     { who: 'HAYSEED HANK', text: "I've been the honest pebble in THREE separate legends now. Somebody in this county owes me a raise.", shot: 'opp' },
-    { who: 'YOU', text: 'There is no empty in the empty hand, honest one. There is only the hand, and the willingness. Hold still.', shot: 'player' },
+    { who: 'YOU', text: 'It is, Hank. An empty hand, and the willingness to use it. Hold still.', shot: 'player' },
   ],
   b1c2: [
     { who: 'YOU', text: 'Water does not push the river. It becomes the river. Watch the featherweight learn this — twenty-five meters downstream.', shot: 'player' },
@@ -651,22 +651,22 @@ export const CUTSCENES = {
   b1c3: [
     { who: '👻 MASTER SLEE', text: 'The mountain at the trailhead. Bob has guarded this ground since before the fence. He does not move for the unready — do not ask him to.', shot: 'spirit' },
     { who: 'BOULDER BOB', text: 'Many earnest young men have monologued at me. The lichen finds them relaxing.', shot: 'opp' },
-    { who: 'YOU', text: 'I do not ask you to move, mountain. I ask the weight in you to remember it was once a stone that rolled. Remember it four hundred and twenty times.', shot: 'player' },
+    { who: 'YOU', text: 'I do not ask you to move, mountain. I ask the stone in you to remember it once rolled. Four hundred and twenty times.', shot: 'player' },
   ],
   b2c1: [
     { who: '👻 MASTER SLEE', text: 'Chuck\'s first legend: "He cannot be caught." Dale is where that story lives. Catch the uncatchable, and one third of the myth unravels.', shot: 'spirit' },
-    { who: 'DODGY DALE', text: 'I taught Chuck the slip. Or he taught me — the story changes at every fair. Four hundred palms, zero landings. I keep the tears in a jar.', shot: 'opp' },
+    { who: 'DODGY DALE', text: 'I taught Chuck the slip. Or he taught me — the story changes at every fair. Four hundred palms, zero landings, one signed apology each.', shot: 'opp' },
     { who: 'YOU', text: 'A slip has a rhythm. A rhythm is a promise. I will meet you at the honest word of it — forty-five meters.', shot: 'player' },
   ],
   b2c2: [
     { who: '👻 MASTER SLEE', text: 'Second legend: "He slides through any grip." Pete carries that story in nine years of pig-grease. Only a true palm holds — a perfect one, or none.', shot: 'spirit' },
-    { who: 'GREASED PETE', text: "You can't grip a legend, kid. You can't grip me either. Same physics.", shot: 'opp' },
+    { who: 'GREASED PETE', text: "You can't grip a legend, kid. And nine years of pig-grease says you won't hold this one. Same physics.", shot: 'opp' },
     { who: 'YOU', text: 'I do not wish to hold you. I wish to ARRIVE so completely, so perfectly, that the grease has nothing left to refuse. Forty meters, on an open palm.', shot: 'player' },
   ],
   b2c3: [
     { who: '👻 MASTER SLEE', text: 'The last facet: "He never budges." McGraw is Chuck\'s stubbornness, cast in iron. Below seventy percent he will not grant you so much as a blink.', shot: 'spirit' },
     { who: 'IRON-JAW McGRAW', text: "Move me and you've moved the mountain's opinion of you. Seventy percent. Show the form, or don't waste the wind.", shot: 'opp' },
-    { who: 'YOU', text: 'Form is not decoration, iron man. Form is the whole sentence. I will speak it clearly — and you will feel thirty meters of it.', shot: 'player' },
+    { who: 'YOU', text: 'Form is not decoration, iron man. It is the whole sentence. Let me speak it clearly — thirty meters clearly.', shot: 'player' },
   ],
   b3c1: [
     { who: '👻 MASTER SLEE', text: 'No gatekeepers now. Only the long road, the thin air, and your own honesty. Send Hank fifty meters down the open lane — pure form, no tricks.', shot: 'spirit' },
@@ -771,6 +771,7 @@ export const CUTSCENES = {
     { who: 'INKBLOT IAN', text: 'What do YOU see when you look at me?', shot: 'opp' },
     { who: 'YOU', text: 'The Red Book is open to a fresh page, Ian. Whatever you are about to become, it will be recorded — in red ink, and better handwriting than the board deserves.', shot: 'player' },
     { who: 'YOU', text: 'A cheek, Ian. At last, somebody sees you correctly. Hold still.', shot: 'player' },
+    { who: "🐈 THE CAT", text: "(the cat, large as a hay wagon, watches from the couch. It does not blink. It, too, is taking notes.)", shot: "wide" },
   ],
   t1c2: [
     { who: 'SLIM PETE', text: "It's the fear of flyin', doc. Can't even LOOK at a bird without my knees going.", shot: 'opp' },
@@ -788,6 +789,7 @@ export const CUTSCENES = {
     { who: 'YOU', text: 'Fascinating. An ego so inflated it hears diagnosis as applause. In fifty years I have met one other case. Also him. Different toupee.', shot: 'player' },
     { who: 'TREMENDOUS DON', text: "So what's the treatment? Is it expensive? I only take expensive treatments.", shot: 'opp' },
     { who: 'YOU', text: 'Four hundred and fifty points of grounding, applied to the cheek. The most expensive slap in medicine. You will love it.', shot: 'player' },
+    { who: "🐈 THE CAT", text: "(the cat has heard this exact breakthrough before. The cat remains unimpressed. The cat is always unimpressed.)", shot: "wide" },
   ],
   t2c2: [
     { who: 'THE INFLUENCER', text: "Doc, if a post gets under 10k likes I literally feel nothing. Is that bad? Wait — say it to the camera.", shot: 'opp' },
@@ -808,6 +810,7 @@ export const CUTSCENES = {
     { who: 'YOU', text: "The flight, Hank, is a FLIGHT. Some dreams require interpretation. Yours requires forty-five meters.", shot: 'player' },
     { who: 'HAYSEED HANK', text: 'And the pond?', shot: 'opp' },
     { who: 'YOU', text: 'Try to clear it. Dreams are not always kind.', shot: 'player' },
+    { who: "🐈 THE CAT", text: "(the cat attends every session and bills nothing. In this one respect, the cat is the better analyst.)", shot: "wide" },
   ],
   t3c2: [
     { who: 'DR. FREUDENSCHADE', text: 'Carl. Fifty years since the Vienna congress, and I find you in a TENT, prescribing VIOLENCE.', shot: 'opp' },
@@ -984,6 +987,7 @@ export const CUTSCENES = {
     { who: "🎃 JACK O'LANTERN JOE", text: "Evenin', doc. First visit? Face like yours — fixed smile, professional, nothin' behind the eyes — you'll fit right in. Mine's carved on too.", shot: 'opp' },
     { who: 'YOU', text: "The persona, literalized in gourd. Patient presents as a mask that GREW here. Flush on the carved cheek, thirty meters.", shot: 'player' },
     { who: 'YOU', text: "And note, in red ink: when I strike the mask, we find out whose face I kept underneath mine.", shot: 'player' },
+    { who: "🐈 THE CAT", text: "(the cat is already inside the Haunted Fair. It got in before you. It always gets in first.)", shot: "wide" },
   ],
   t4c2: [
     { who: '💀 BONY TONY', text: "Heard there's a doctor on the grounds! Forty years dead and my back still hurts. What's your rate?", shot: 'opp' },
@@ -1051,7 +1055,7 @@ export const CUTSCENES = {
     { who: '👻 VIRGIL', text: 'Not robbed.', shot: 'wide' },
     { who: 'COLD-HAND CARMINE', text: 'Ice. Off the lake. You caught it, you rowed it, it went home. I never wanted them back — I wanted you to WANT to bring them. That part worked.', shot: 'opp' },
     { who: 'YOU', text: 'You had me CATCH water, and file it in rows... that could not survive being filed.', shot: 'player' },
-    { who: 'COLD-HAND CARMINE', text: 'Now you have it. Down here we do not punish with fire. We punish with ERRANDS — the labor that undoes itself is the labor that never ends. The Exertion of Pointlessness. The only steady work in Hell.', shot: 'opp' },
+    { who: 'COLD-HAND CARMINE', text: 'Now you have it. We do not punish with fire down here. We punish with ERRANDS — the labor that undoes itself. The Exertion of Pointlessness.', shot: 'opp' },
     { who: 'YOU', text: 'I launched a damned soul forty meters, and I folded meltwater into a queue. History shall remember precisely one of these.', shot: 'player' },
     { who: '👻 VIRGIL', text: "Everything's a county, poet. This one just don't keep records. Mind the puddle on the climb out — it's already gone.", shot: 'wide' },
   ],

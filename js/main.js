@@ -787,6 +787,7 @@ document.getElementById('dlcGallery').onclick = (e) => { if (e.target.id === 'dl
 function startAttempt() {
   const arch = chosenArch;
   player.reset();
+  player.mode = arch && arch.chop ? 'chop' : 'slap'; // KARATE CHOP stage: S·L·A·P remaps to a downward edge-strike
   opponent.remove();
   opponent = new Opponent({ scene, world: phys.world, mat: phys.fleshMat, arch });
   // 3D honesty: the swing plane aims at THIS opponent's cheek height
@@ -1831,7 +1832,16 @@ function tick(now) {
     else if (!chain.p && snapCue) wanted = 'p';
     ui.setKeys(keys, wanted);
     opponent.setTargetHot(snapLvl);
-    if (opponent.arch.throwIce) {
+    if (player.mode === 'chop') {
+      // KARATE CHOP stage — a vertical DOWNWARD edge-strike, same 4-beat rhythm.
+      if (chain.tRel === null) ui.coach(keys.s ? `RAISING... ${coilPct}% — HOLD [S], OVERHEAD` : 'HOLD [S] — RAISE THE HAND OVERHEAD (this one takes a CHOP, not a slap)');
+      else if (!chain.l) ui.coach('TAP [L] — DROP YOUR WEIGHT INTO IT!');
+      else if (!chain.a) ui.coach('PRESS [A] — SNAP THE FOREARM DOWN!');
+      else if (!chain.p) ui.coach(snapCue ? '[P]!! EDGE!!' : 'WAIT FOR THE GREEN RING... THEN [P] — ROLL THE EDGE');
+      else ui.coach(null);
+      shotClock -= dts;
+      ui.setClock(shotClock);
+    } else if (opponent.arch.throwIce) {
       // CATCH STAGE: no slapping, no countdown — the toll is a WAVE of ice to catch.
       const need = (campaign.active && campaign.active.goal && campaign.active.goal.type === 'catch') ? campaign.active.goal.v : 3;
       ui.coach(`❄️ CATCH THE ICE — OPEN THE PALM [P] AS IT ARRIVES, DON'T SLAP  ·  CAUGHT ${catchCount}/${need}`);

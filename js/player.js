@@ -976,7 +976,10 @@ export class Player {
       // stay near neutral so it's a clean downward arc.
       this.torsoG.rotation.y = 0;
       this.headMesh.rotation.y = 0;
-      this.shoulderG.rotation.y = 0.15;
+      // aim the vertical swing plane at the target's centerline: the slapping arm
+      // hangs ~0.33 off the body's z, so a raw downward chop lands BESIDE the head.
+      // rotate the arm inward so the hand descends on z≈0 (onto the cheek).
+      this.shoulderG.rotation.y = -0.55;
       this.shoulderG.rotation.z = this.j.shoulderPitch.a; // + = overhead, − = chopped down
       this.elbowG.rotation.y = this.j.elbow.a;
       this.handG.rotation.y = -(0.9 - this.j.wrist.a) * 0.4;
