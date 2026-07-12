@@ -1289,8 +1289,67 @@ function challengeUrl(bestAttempt) {
   return `https://slapmania.org/?cpts=${bestAttempt.pts}&copp=${oppKey}&csl=${player.look?.key || ''}&cby=${encodeURIComponent(by)}`;
 }
 
+// A campaign challenge is a BOSS TRIAL — best-of-3 and a VERDICT card (the pause, the
+// ✔/✘, the RETRY button) — when it is a titled boss or its opponent is a boss arch
+// (the capstones plus the mechanic-gate exams). Every other challenge is a STORY BEAT:
+// one decisive strike, the ordinary result card as feedback, then straight into the
+// next scene — no verdict ceremony. Keeping the weight for the bosses makes the bosses
+// land harder by contrast.
+function isBossTrial(ch) {
+  if (!ch) return false;
+  if (/BOSS/i.test(ch.title)) return true;
+  const a = ROSTER.find((r) => r.key === ch.opp);
+  return !!(a && a.boss);
+}
+
+// Play a campaign challenge's aftermath — shared by the story-beat flow (reached
+// straight off the result card) and the boss verdict card. Clear → the outro scene
+// (or a rotating win beat) → back to the tour. Miss → a one-time humbling fail beat,
+// then straight back into the SAME challenge (repeat retries skip the sad cutscene).
+function resolveTourOutcome(ch, cleared) {
+  const you = (l) => (l.who === 'YOU' ? { ...l, who: player.look.name } : l);
+  if (!cleared) {
+    const retry = () => startTourChallenge(ch);
+    if (failSceneShown.has(ch.id)) { retry(); return; }
+    failSceneShown.add(ch.id);
+    const escapeBeat = chosenArch && chosenArch.skiRun; // she made the gate — her victory lap plays, not a whiff joke
+    const takedownBeat = chosenArch && chosenArch.bjj && tookTakedown; // he folded you like a term sheet
+    const pool = campaign.FAILS[ch.id[0]] || [];
+    const fail = takedownBeat ? campaign.TAKEDOWN_FAIL : escapeBeat ? campaign.ESCAPE_FAIL : (pool.length ? pool[failIdx++ % pool.length] : null);
+    if (fail) playScene(fail.map(you), retry, { sad: true });
+    else retry();
+    return;
+  }
+  campaign.clearActive();
+  failSceneShown.delete(ch.id); // a future replay of this cleared challenge earns its beat again
+  if (chosenArch && chosenArch.boss) chosenArch = null;
+  restoreBar();
+  const outroId = 'outro_' + ch.id;
+  const outro = campaign.CUTSCENES[outroId];
+  if (outro && !seenScene(outroId)) {
+    markScene(outroId);
+    playScene(outro.map(you), () => openTourMenu());
+  } else {
+    const pool = campaign.WINS[ch.id[0]] || [];
+    const win = pool.length ? pool[winIdx++ % pool.length] : null;
+    if (win) playScene(win.map(you), () => openTourMenu());
+    else openTourMenu();
+  }
+}
+
 function advance() {
   if (pendingCard) return; // the ceremony finishes before the paperwork
+  // STORY BEAT: no verdict card and no best-of-3 grind — the strike that clears the
+  // goal ends the match and flows straight to the aftermath; a miss drops into the
+  // light fail beat + retry. Bosses fall through to the verdict-card path below.
+  if (campaign.active && !isBossTrial(campaign.active) && attempts.length >= 1) {
+    const ch = campaign.active;
+    const clearedNow = lastClearedId === ch.id;
+    lastClearedId = null;
+    ui.hideCards();
+    resolveTourOutcome(ch, clearedNow);
+    return;
+  }
   if (attempts.length >= 3) {
     const bestAttempt = attempts.reduce((a, b) => (b.pts > a.pts ? b : a), attempts[0]);
     track('match_completed', { best_pts: bestAttempt.pts, best_dist: +bestAttempt.dist.toFixed(1), opp: bestAttempt.opp });
@@ -1389,43 +1448,13 @@ function advanceScreens(code) {
     // never lingers as the quick-match default. Final bosses get their payoff
     // scene (the master rests / the verdict) before the menu returns.
     if (campaign.active) {
+      // Only bosses reach this verdict card (story beats resolve straight off the
+      // result card in advance()). CLEARED → the outro/win beat; FAILED → the light
+      // fail beat + retry. The card's other button / ESC leaves to the tour menu.
       const ch = campaign.active;
       const clearedNow = lastClearedId === ch.id; // judged on THIS match, not old checkmarks
       lastClearedId = null;
-      const you = (l) => (l.who === 'YOU' ? { ...l, who: player.look.name } : l);
-      if (!clearedNow) {
-        // FAILED → TRY AGAIN: a short, humiliating beat the FIRST time you fail
-        // this challenge, then straight back into the SAME challenge. Repeat
-        // retries skip the scene (nobody wants the sad cutscene on loop). The
-        // card's other button / ESC leaves to the tour menu (handled elsewhere).
-        const retry = () => startTourChallenge(ch);
-        if (failSceneShown.has(ch.id)) { retry(); return true; }
-        failSceneShown.add(ch.id);
-        const escapeBeat = chosenArch && chosenArch.skiRun; // she made the gate — her victory lap plays, not a whiff joke
-        const takedownBeat = chosenArch && chosenArch.bjj && tookTakedown; // he folded you like a term sheet
-        const pool = campaign.FAILS[ch.id[0]] || [];
-        const fail = takedownBeat ? campaign.TAKEDOWN_FAIL : escapeBeat ? campaign.ESCAPE_FAIL : (pool.length ? pool[failIdx++ % pool.length] : null);
-        if (fail) playScene(fail.map(you), retry, { sad: true });
-        else retry();
-        return true;
-      }
-      // CLEARED: finales get their payoff scene (the master rests / the verdict);
-      // every other clear earns a quick victory beat before the menu returns
-      campaign.clearActive();
-      failSceneShown.delete(ch.id); // a future replay of this cleared challenge earns its beat again
-      if (chosenArch && chosenArch.boss) chosenArch = null;
-      restoreBar();
-      const outroId = 'outro_' + ch.id;
-      const outro = campaign.CUTSCENES[outroId];
-      if (outro && !seenScene(outroId)) {
-        markScene(outroId);
-        playScene(outro.map(you), () => openTourMenu());
-      } else {
-        const pool = campaign.WINS[ch.id[0]] || [];
-        const win = pool.length ? pool[winIdx++ % pool.length] : null;
-        if (win) playScene(win.map(you), () => openTourMenu());
-        else openTourMenu();
-      }
+      resolveTourOutcome(ch, clearedNow);
       return true;
     }
     openOppPick();
