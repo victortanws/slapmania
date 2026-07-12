@@ -439,7 +439,7 @@ export const CUTSCENES = {
     { who: '👻 MASTER SLEE', text: "He speaks true, student. Cal made his face a callus. The palm you spent three scrolls perfecting, he cannot feel.", shot: 'spirit' },
     { who: '👻 MASTER SLEE', text: "To reach him you must do the one thing I forbade. Close your hand. Do NOT press the palm.", shot: 'spirit' },
     { who: 'YOU', text: 'Everything you taught me was to open it.', shot: 'player' },
-    { who: '👻 MASTER SLEE', text: 'And now you must understand the hand well enough to break my rule. Close it. Strike Cal once, honestly. Heresy begins with a single knuckle.', shot: 'spirit' },
+    { who: '👻 MASTER SLEE', text: 'Now break my rule — knowing the hand well enough to. Close it. Strike Cal once, honestly. Heresy begins with a single knuckle.', shot: 'spirit' },
   ],
   a4c2: [
     { who: '👻 MASTER SLEE', text: 'Cal was the doorway. This is the wall. Gristle ate open palms for a living — a nickel a slap, county to county, and he kept the nickels.', shot: 'spirit' },
@@ -461,13 +461,13 @@ export const CUTSCENES = {
     { who: '👻 MASTER SLEE', text: "Rise, Gnarl. The scroll is unsealed and answered. Come to Sunday's field. Mabel is owed a 'good,' and you are owed a 'sorry.' Sixty years late, both.", shot: 'spirit' },
     { who: 'BRUCE SLEE', text: "Two old ghosts arguing about hands. ...I'll bring chairs.", shot: 'bruce' },
   ],
+  fair_prologue: [
+    { who: "🎈 A FAIR KID", text: "It's the SIXTIETH season! The mayor's got the scissors up — and is that a HELICOPTER? Why is the helicopter GOLD?", shot: "wide" },
+    { who: "🌭 THE HOT DOG VENDOR", text: "A helicopter, a motorcade, AND a gold bulldozer, kid. Nobody brings a bulldozer to a ribbon-cutting unless he brought his OWN ribbon to cut instead.", shot: "wide" },
+    { who: "TREMENDOUS DON", text: "SORRY I'm late — I was cutting a BETTER ribbon. My people are paving Parking Structure Seven. But first — point me at that LIVESTOCK banner. ...No reason. Sportsman's whim.", shot: "wide" },
+  ],
   f1c1: [
-    { who: '🎈 A FAIR KID', text: "It's the SIXTIETH season! The mayor's cutting the ribbon and — is that a HELICOPTER? Why is the helicopter GOLD?", shot: 'wide' },
-    { who: '🌭 THE HOT DOG VENDOR', text: "That's a helicopter, a motorcade, AND a gold bulldozer, kid. Nobody brings a bulldozer to a ribbon-cutting unless he brought his OWN ribbon to cut instead.", shot: 'wide' },
-    { who: 'TREMENDOUS DON', text: "SORRY I'm late — I was cutting a BETTER ribbon. Beautiful fairground. Terrible fairground.", shot: 'wide' },
-    { who: 'TREMENDOUS DON', text: "My people are paving it: Parking Structure Seven — the last unpaved lot between my two garages. The greatest of the sevens.", shot: 'wide' },
     { who: 'BIG BERTHA', text: 'Over my sixty seasons, sugar. This county does not sell.', shot: 'opp' },
-    { who: 'TREMENDOUS DON', text: "It's not about the money, Bertha — I have all of it. It's about... that banner. 'LIVESTOCK & BLUE RIBBONS.' Pave that corner FIRST. No reason. Sportsman's whim.", shot: 'wide' },
     { who: 'JUDGE PENNYWHISTLE', text: "Mr. Don proposes a WAGER — his lawyers drafted it on the bulldozer's hood. Name one champion, clear every trial, and he tears the permit ON CAMERA. Fail one... Structure Seven.", shot: 'judge' },
     { who: 'JUDGE PENNYWHISTLE', text: "I notarized it. The pen was gold. I did not look him in the eye.", shot: 'judge' },
     { who: 'YOU', text: 'Give me the contract.', shot: 'player' },
@@ -667,7 +667,7 @@ export const CUTSCENES = {
   b2c2: [
     { who: '👻 MASTER SLEE', text: 'Second legend: "He slides through any grip." Pete carries that story in nine years of pig-grease. Only a true palm holds — a perfect one, or none.', shot: 'spirit' },
     { who: 'GREASED PETE', text: "You can't grip a legend, kid. And nine years of pig-grease says you won't hold this one. Same physics.", shot: 'opp' },
-    { who: 'YOU', text: 'I do not wish to hold you. I wish to ARRIVE so completely, so perfectly, that the grease has nothing left to refuse. Forty meters, on an open palm.', shot: 'player' },
+    { who: 'YOU', text: 'I do not wish to hold you, Pete. I wish to ARRIVE so completely the grease has nothing left to refuse. Forty meters.', shot: 'player' },
   ],
   b2c3: [
     { who: '👻 MASTER SLEE', text: 'The last facet: "He never budges." McGraw is Chuck\'s stubbornness, cast in iron. Below seventy percent he will not grant you so much as a blink.', shot: 'spirit' },
@@ -677,7 +677,7 @@ export const CUTSCENES = {
   b3c1: [
     { who: '👻 MASTER SLEE', text: 'No gatekeepers now. Only the long road, the thin air, and your own honesty. Send Hank fifty meters down the open lane — pure form, no tricks.', shot: 'spirit' },
     { who: 'HAYSEED HANK', text: 'Fifty meters. From a man who talks like a folded-up fortune. And somehow I believe him.', shot: 'opp' },
-    { who: 'YOU', text: 'The road up is the same as the road in. Breathe. Coil. Become present. Fifty meters is only a long exhale.', shot: 'player' },
+    { who: 'YOU', text: 'The road up is the road in. Breathe. Coil. Fifty meters is one long exhale.', shot: 'player' },
   ],
   b3c2: [
     { who: 'SCHOOLMARM SUSIE', text: "Chuck's porch has a sign-in sheet, and I am the sign-in sheet. Ninety percent, in red ink, or you do not pass. I have never once passed anyone.", shot: 'opp' },
@@ -687,13 +687,13 @@ export const CUTSCENES = {
   b3c3: [
     { who: '👻 MASTER SLEE', text: "There he is. Say nothing you don't mean — he can smell a borrowed word. And boy — strike in the QUIET. The moment they start to chant, he is no longer a man.", shot: 'spirit' },
     { who: 'CHUCK NORTH', text: 'I once slapped a tornado. It apologized and went home. I once counted to infinity — twice. Nobody\'s laid a hand on me, son, because nobody\'s fast enough to beat the crowd.', shot: 'opp' },
-    { who: 'YOU', text: 'I did not climb this mountain to slap a legend. I climbed it to slap the MAN inside it — before your county finishes building you. There is a quiet before the roar. I will live there.', shot: 'player' },
+    { who: 'YOU', text: 'I did not climb this mountain to slap a legend. I climbed it to slap the MAN inside it — before your county finishes building him.', shot: 'player' },
     { who: 'CHUCK NORTH', text: 'Four seconds of quiet, boy. Then they believe out loud, and I catch my second wind. Been forty years since anybody swung in the quiet.', shot: 'opp' },
   ],
   outro_b3c3: [
     { who: 'CHUCK NORTH', text: '...huh. You swung in the quiet. Forty years, and the boy swung in the quiet.', shot: 'opp' },
     { who: '👻 MASTER SLEE', text: 'You struck before the legend hardened. THAT is the whole art, grandson. Not the arm. The moment.', shot: 'spirit' },
-    { who: 'YOU', text: 'The palm was never yours to leave me, grandfather. It was only ever the willingness to be here — one honest second before the noise. Chuck. Get up. The county still needs its story. Just a truer one.', shot: 'player' },
+    { who: 'YOU', text: 'It was never the arm, grandfather. Only the willingness to be here, one second before the noise. Chuck. Get up. The county still needs its story. A truer one.', shot: 'player' },
     { who: 'CHUCK NORTH', text: "A truer story. I like that. I'll allow that the tornado only sprained an ankle.", shot: 'opp' },
   ],
 
@@ -978,10 +978,8 @@ export const CUTSCENES = {
       // the podium beat: jingoism arrives, and the sport itself answers it
       { who: 'JUDGE PENNYWHISTLE', text: 'And for the record — YES! That is one for the United States of America! I have alerted the anthem committee. Both anthems. ALL the anthems.', shot: 'judge' },
       { who: '⛷️ AVALANCHE EILEEN', text: 'Your honor. I train in Utah. I compete for China. My skis are Austrian, my sponsor is a beverage, and the cheek you are pointing at is on county property.', shot: 'opp' },
-      { who: 'YOU', text: 'American or not... does it matter, your honor?', shot: 'player' },
       { who: 'JUDGE PENNYWHISTLE', text: '...', shot: 'judge' },
       { who: '⛷️ AVALANCHE EILEEN', text: 'Slapping has no nationality, boys. The cheek does not check your passport. That is the whole sport — I get it now.', shot: 'opp' },
-      { who: '🏅 COMMISSIONER QUIBBLE', text: 'The Committee will be quoting that. On the rings. In eleven languages. Provisionally.', shot: 'wide' },
     ],
 
 
