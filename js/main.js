@@ -1218,10 +1218,10 @@ function showResult() {
   if (opponent.arch.bulwark && !isFoul) {
     // TICK-TOCK v2: every point stays landed — the meter only goes down
     bulwarkPts += pts;
-    const th = opponent.arch.bulwark.threshold;
-    const pct = Math.max(0, Math.ceil(100 - bulwarkPts / (th / 100)));
-    ui.bulwark(pct);
     const bw = opponent.arch.bulwark;
+    const pct = Math.max(0, Math.ceil(100 - bulwarkPts / (bw.threshold / 100)));
+    ui.bulwark(pct, bw.label, bw.sprungCry);
+    opponent.bulwarkPct = pct; // the sink goop reads this — the grip loosens on the spot
     if (pct <= 0) { ui.slapBurst(bw.sprungCry || 'SPRUNG!', bw.sprungSub || 'THE MAINSPRING LETS GO — UNSLAPPABLE, REVISED'); opponent.springOut(); sfx.fanfare(); stage.shake(0.5); }
     else ui.slapBurst('ABSORBED!', `${bw.label || 'IMMOVABILITY'} ${pct}% — EVERY POINT STAYS LANDED`);
   }
@@ -1817,7 +1817,7 @@ function tick(now) {
       // THE GREAT ESCAPE: the whistle is her cue too — she pushes off for the gate
       if (opponent.arch.skiRun) opponent.beginEscape();
       if (calledHigh !== null) ui.slapBurst(calledHigh ? 'DALE CALLS: HIGH CHEEK!' : 'DALE CALLS: LOW CHEEK!', 'ONLY THE CALLED HALF COUNTS — LAND IT FLUSH');
-      if (opponent.arch.bulwark) ui.bulwark(Math.max(0, Math.ceil(100 - bulwarkPts / (opponent.arch.bulwark.threshold / 100))));
+      if (opponent.arch.bulwark) ui.bulwark(Math.max(0, Math.ceil(100 - bulwarkPts / (opponent.arch.bulwark.threshold / 100))), opponent.arch.bulwark.label, opponent.arch.bulwark.sprungCry);
       surgeFired = false; // reset Chuck's Second Wind telegraph for this attempt
       if (opponent.arch.throwIce) resetCatch(); // fresh row of ice to catch
       setState('SWING');

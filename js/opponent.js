@@ -574,6 +574,7 @@ export const ROSTER = [
   {
     key: 'grievance', name: 'GENERAL GRIEVANCE', tag: 'BOSS · THE FULL STACK', boss: true,
     w: 1.25, h: 1.05, mass: 1.5, brow: true, hat: 'band', hatCol: 0x3a3a42,
+    sinkGoop: true,   // he is IN the tar — the mound shrinks as the stack drains, the freeing slap pops him out
     bulwark: { threshold: 200, label: 'GRIEVANCE STACK', sprungCry: 'DROPPED!', sprungSub: 'THIRTY YEARS OF GRIEVANCES TOPPLE AT ONCE' },
     skin: 0xd9a878, shirt: 0x4a4e42, pants: 0x3a3a32,
     pickLine: 'Carries every grievance since 1994, stacked. Every honest point stays landed — topple the stack.',
@@ -1633,6 +1634,27 @@ export class Opponent {
       this.basePose[n] = { p: b.position.clone(), q: b.quaternion.clone() };
     }
     this.hatOff = this.hatBody ? this.hatBody.position.vsub(this.rag.parts.head.body.position) : null;
+
+    // THE SINKING (arch.sinkGoop): the tar's grip, visible — a dark mound
+    // swallowing the ankles that SHRINKS as the bulwark meter drains, until
+    // the pit loses its hold and the slap pops them free (springOut).
+    // Purely visual: sits on the ground at the stance, never moves the body
+    // or the strike plane, hides the instant they're launched.
+    if (arch.sinkGoop) {
+      const px = this.rag.parts.pelvis.body.position;
+      const goopMat = new THREE.MeshBasicMaterial({ color: 0x14100c });
+      const g = this.goop = new THREE.Group();
+      const mound = new THREE.Mesh(new THREE.SphereGeometry(0.52 * arch.w, 12, 8), goopMat);
+      mound.scale.y = 0.42;
+      g.add(mound);
+      for (let i = 0; i < 4; i++) {
+        const blob = new THREE.Mesh(new THREE.SphereGeometry(0.13, 8, 6), goopMat);
+        blob.position.set(Math.cos(i * 1.7) * 0.5 * arch.w, 0.02, Math.sin(i * 1.7) * 0.45 * arch.w);
+        g.add(blob);
+      }
+      g.position.set(px.x, 0.05, px.z);
+      scene.add(g);
+    }
   }
 
   // "c'mere, champ" — bob, offer the cheek, beckon with one arm
@@ -1761,6 +1783,15 @@ export class Opponent {
     if (this.surging && this.auraRing) {
       const p = 1 + Math.sin(this.time * 9) * 0.2; // breathe like an energy field, not a decal
       this.auraRing.scale.set(p, p, 1);
+    }
+    if (this.goop) {
+      // the tar's grip tracks the meter: full mound at 100%, nearly gone at 0 —
+      // then the freeing slap launches them and the goop stays behind, empty
+      this.goop.visible = !this.launched;
+      const grip = 0.3 + ((this.bulwarkPct != null ? this.bulwarkPct : 100) / 100) * 0.7;
+      this.goop.scale.set(grip, 0.5 + grip * 0.5, grip);
+      // a slow, hungry pulse so the pit reads alive
+      this.goop.children[0].scale.y = 0.42 + Math.sin(this.time * 1.1) * 0.03;
     }
     if (this.launched) {
       this.rag.sync();
@@ -1945,6 +1976,7 @@ export class Opponent {
       this.world.removeBody(this.hatBody);
       this.scene.remove(this.hatMesh);
     }
+    if (this.goop) this.scene.remove(this.goop);
     this.scene.remove(this.target);
   }
 }

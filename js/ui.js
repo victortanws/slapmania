@@ -39,7 +39,7 @@ export function refBar(text) {
 }
 
 // Tick-Tock's IMMOVABILITY chip — top-anchored under the goal banner (never on refBar)
-export function bulwark(pct) {
+export function bulwark(pct, label, sprungCry) {
   let el2 = document.getElementById('bulwarkChip');
   if (!el2) {
     el2 = document.createElement('div');
@@ -49,7 +49,7 @@ export function bulwark(pct) {
   }
   if (pct == null) { el2.style.display = 'none'; return; }
   el2.style.display = '';
-  el2.textContent = pct <= 0 ? 'SPRUNG!' : `IMMOVABILITY: ${pct}%`;
+  el2.textContent = pct <= 0 ? (sprungCry || 'SPRUNG!') : `${label || 'IMMOVABILITY'}: ${pct}%`;
 }
 
 // a rival's gauntlet, pinned under the topbar for the whole session
