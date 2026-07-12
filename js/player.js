@@ -825,6 +825,22 @@ export class Player {
     this.leanV += 0.25;      // weight shifts forward — modest price
   }
 
+  // SLAPPED AN IMMOVABLE OBJECT: the strike is thrown straight back at you. The
+  // whole arm swing reverses (the hand is reflected the way it came), the elbow
+  // folds, and your weight is rocked onto your heels — a real recoil, but kept
+  // shy of the balance-foul threshold so you can re-arm and swing again.
+  rebound(mag) {
+    const k = Math.min(1, mag / 26);
+    for (const n of ['spine', 'shoulder', 'shoulderPitch', 'elbow', 'wrist']) {
+      this.j[n].v = -this.j[n].v * 0.85;      // the swing bounces back
+    }
+    this.j.elbow.v += 6 * k;                   // arm snaps folded/retracted
+    this.j.shoulder.v += 4 * k;
+    this.leanV = Math.min(this.leanV, -1.25 * k); // rocked back (kept below the foul lean)
+    this.handVel.multiplyScalar(-0.6);         // the hand reverses direction
+    this._reboundT = 0.35;                     // brief flag so pose() can hold the retract read
+  }
+
   get strength() { return this.phys.str; }
   get handSpeed() { return this.handVel.length(); }
   get handPos() { return this._cur; }

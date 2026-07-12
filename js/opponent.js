@@ -382,11 +382,12 @@ export const ROSTER = [
   {
       key: 'clockwork', name: 'TICK-TOCK TOM', tag: 'BOSS · UNSLAPPABLE (SELF-DECLARED)', boss: true,
       w: 1.1, h: 1.02, mass: 3.2,   // solid brass all the way through — slopunit-class tonnage in a carnival body
-      bounce: { period: 0.8, height: 0.16 },   // bounces in place — a confidence display, not a dodge
-      // BULWARK: cumulative points across the match's 3 attempts fill a hidden
-      // meter; the HUD chip shows the inverse ('IMMOVABILITY: 97%'). At zero the
-      // mainspring lets go and he BLOWS AWAY downrange on a stored impulse.
-      bulwark: { threshold: 600, label: 'IMMOVABILITY' }, // 900→600: drainable in 2 of 3 good swings (one off attempt is forgiven), not 3/3
+      // TRULY IMMOVABLE: no idle hop — feet planted like a bolted statue (he only
+      // breathes). BULWARK: each slap's FORCE drains a hidden meter (main.js,
+      // onContact) while he stays PLANTED and the slapper's hand REBOUNDS off him;
+      // the HUD chip shows the inverse ('IMMOVABILITY: 97%'). ONLY when the meter
+      // hits zero does the mainspring let go and he BLOWS AWAY downrange.
+      bulwark: { threshold: 50, label: 'IMMOVABILITY' }, // drainable in ~2 of 3 good swings (one off attempt forgiven)
       skin: 0xc9a24b, shirt: 0x9a7a34, pants: 0x6e5626,
       windKey: true, paintedGrin: 0xc0202a, brow: true,
       pickLine: 'Declares himself UNSLAPPABLE. The meter disagrees. Slowly.',
@@ -575,7 +576,7 @@ export const ROSTER = [
     key: 'grievance', name: 'GENERAL GRIEVANCE', tag: 'BOSS · THE FULL STACK', boss: true,
     w: 1.25, h: 1.05, mass: 1.5, brow: true, hat: 'band', hatCol: 0x3a3a42,
     sinkGoop: true,   // he is IN the tar — the mound shrinks as the stack drains, the freeing slap pops him out
-    bulwark: { threshold: 200, label: 'GRIEVANCE STACK', sprungCry: 'DROPPED!', sprungSub: 'THIRTY YEARS OF GRIEVANCES TOPPLE AT ONCE' },
+    bulwark: { threshold: 45, label: 'GRIEVANCE STACK', sprungCry: 'DROPPED!', sprungSub: 'THIRTY YEARS OF GRIEVANCES TOPPLE AT ONCE' },
     skin: 0xd9a878, shirt: 0x4a4e42, pants: 0x3a3a32,
     pickLine: 'Carries every grievance since 1994, stacked. Every honest point stays landed — topple the stack.',
     taunts: ['Item 4,072: your stance.', 'The stack absorbs. The stack remembers.', 'It was a GOOD parking spot. Shaded.'],
@@ -1812,6 +1813,12 @@ export class Opponent {
     return null;
   }
 
+  // an immovable bulwark ate the slap but does NOT move — trigger the planted
+  // shudder (feet stay; head/torso ring). The meter drain is handled in main.js.
+  absorbHit(mag) {
+    this._absorbShake = Math.min(0.32, 0.12 + (mag || 0) / 60);
+  }
+
   launch(dir, power, spin) {
     if (this.launched) return;
     this.launched = true;
@@ -1852,7 +1859,7 @@ export class Opponent {
       this.animateShowcase();
     } else {
       const A = this.arch;
-      const gimmick = A.weave || A.skiRun || A.hop || A.sway || A.headTurn || A.bjj || A.bounce;
+      const gimmick = A.weave || A.skiRun || A.hop || A.sway || A.headTurn || A.bjj;
       if (!gimmick) {
         // every volunteer BREATHES: a slow, readable rise-and-fall of the cheek
         // (~4.5s period, ±5cm). Never enough to whiff — but a flush hit wants
@@ -1860,8 +1867,20 @@ export class Opponent {
         // Deterministic sine; sin(0)=0 so the strike plane is set at rest height.
         const breathe = Math.sin(this.time * 1.4) * 0.05;
         const P = this.rag.parts;
-        P.head.body.position.y = this.basePose.head.p.y + breathe;
-        P.torso.body.position.y = this.basePose.torso.p.y + breathe * 0.35;
+        // ABSORB SHUDDER: an immovable bulwark that just ate a slap RINGS — a
+        // fast decaying jitter of head + torso ONLY (feet stay planted). This is
+        // the "he felt it but did not budge" tell; the meter is the real damage.
+        let sx = 0, sy = 0;
+        if (this._absorbShake > 0) {
+          this._absorbShake = Math.max(0, this._absorbShake - dt * 3.2);
+          const a = this._absorbShake;
+          sx = Math.sin(this.time * 62) * a;      // buzz sideways
+          sy = Math.sin(this.time * 55) * a * 0.5;
+        }
+        P.head.body.position.x = this.basePose.head.p.x + sx;
+        P.head.body.position.y = this.basePose.head.p.y + breathe + sy;
+        P.torso.body.position.x = this.basePose.torso.p.x + sx * 0.6;
+        P.torso.body.position.y = this.basePose.torso.p.y + breathe * 0.35 + sy * 0.6;
         if (this.hatBody && this.hatOff) this.hatBody.position.copy(P.head.body.position.vadd(this.hatOff));
         this.rag.sync();
         this.syncHat();
@@ -1901,11 +1920,11 @@ export class Opponent {
         this.rag.sync();
         this.syncHat();
       }
-      if (A.hop || A.bounce) {
+      if (A.hop) {
         // PERPETUAL MOTION: a parabolic bounce, feet find the dirt once per
         // period — the cheek is only at swing height around each landing.
         // Deterministic; time the whip for the touchdown.
-        const hp = A.hop || A.bounce;
+        const hp = A.hop;
         // a rattled bulwark bounces scared: the period stutters short below 40%
         const per = hp.period * (this.bulwarkPct != null && this.bulwarkPct < 40 ? 0.65 : 1);
         const ph = (this.time % per) / per;

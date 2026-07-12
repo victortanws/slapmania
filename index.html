@@ -320,11 +320,20 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
   .keys{font-size:13px;} .key{font-size:15px;padding:4px 9px;}
   #attempts,#best{min-width:110px;font-size:12px;}
   #masterTag{display:none;}
-  #bubble{max-width:180px;font-size:12px;}
-  #introName{font-size:34px;}
-  #intro{top:14%;padding:0 10px;}
+  #bubble{max-width:170px;font-size:12px;}
+  #introName{font-size:30px;}
+  /* clear the 2-line goal banner (ends ~138px): the name plate starts below it,
+     not painted into it */
+  #intro{top:148px;padding:0 10px;}
+  #introHow{font-size:11px;padding:7px 12px;margin-top:8px;}
+  /* FACEOFF has three talking bands on a phone: goal (top) · name+taunt (mid) ·
+     judge (bottom). The taunt used to drop to the lower third and collide with
+     the judge bar — pin it to its own mid band, clear of both. */
+  #bubble.withIntro{top:334px;bottom:auto;right:6%;left:auto;}
   .verdict{font-size:14px;}
-  #coach{font-size:14px;top:168px;}
+  /* lighter stroke+shadow at phone size — the 27px desktop treatment ghosts
+     the glyphs at 14px */
+  #coach{font-size:14px;top:168px;-webkit-text-stroke:0.6px #000;text-shadow:2px 2px 0 rgba(0,0,0,.6);}
   /* key chips hug the bottom edge; the stacked meters sit in their own band
      ABOVE them (they used to crush into each other around y~700) */
   #keysbar{bottom:6px;gap:8px;}

@@ -1116,8 +1116,34 @@ function onContact(hit, fist) {
   spin.x += (Math.random() - 0.5) * 0.5; // a touch of natural tumble, never sterile
   spin.y += (Math.random() - 0.5) * 0.5;
 
-  opponent.launch(dir, power, spin);
+  // ===== IMMOVABLE BULWARK (Tick-Tock Tom): UNSLAPPABLE until drained =====
+  // He does NOT fly on a hit. Each slap's FORCE drains a hidden meter while he
+  // stays PLANTED (feet down) and the strike REBOUNDS off him. Only the hit that
+  // empties the meter frees the mainspring and launches him. The drain is scaled
+  // to the would-be launch impulse (speed × mass), matching the old distance-based
+  // point scale, so the 600 threshold and "~2 good swings" balance are unchanged.
+  const bw = opponent.arch.bulwark;
+  let absorbed = false;
+  if (bw) {
+    // drain by raw slap FORCE (power) — world- and mass-independent, so the
+    // physics of where he'd land never enters it. Each boss's toughness lives in
+    // its `threshold` (power-units). A feeble graze barely dents; a flush cracker
+    // takes a big bite.
+    bulwarkPts += power;
+    const pct = Math.max(0, Math.ceil(100 - bulwarkPts / (bw.threshold / 100)));
+    opponent.bulwarkPct = pct;
+    ui.bulwark(pct, bw.label, bw.sprungCry);
+    absorbed = pct > 0;                 // still immovable → he holds his ground
+  }
+  if (absorbed) {
+    opponent.absorbHit(power);          // planted shudder; feet stay
+    player.rebound(power);              // the hand is thrown back the way it came
+  } else {
+    opponent.launch(dir, power, spin);
+    if (bw) { opponent.springOut(); sfx.fanfare(); stage.shake(0.5); } // the mainspring lets go
+  }
   slap = {
+    absorbed,
     foul: null, part: hit.part, fist, // a landed contact is never a foul (fouls use the FOULED path)
     chain: {
       coil: Math.round(Math.min(1, coilFrac) * 100), l: lg.label, a: ag.label, p: pg.label, ugly,
@@ -1147,7 +1173,9 @@ function onContact(hit, fist) {
   // the sun judges TECHNIQUE, not tonnage — chain quality decides its mood
   if (ugly || hit.part === 'torso' || slap.chain.pct < 25) stage.sunMood('meh', 3.5);
   else if (slap.chain.pct >= 60) stage.sunMood('happy', 5);
-  if (fist && opponent.arch.bodyBlow) ui.slapBurst('FIST FLUSH!', 'THE CLOSED HAND BREAKS THROUGH — HE FELT THAT ONE');
+  if (absorbed) ui.slapBurst('ABSORBED!', `${bw.label || 'IMMOVABILITY'} ${opponent.bulwarkPct}% — HE DOES NOT BUDGE`);
+  else if (bw) ui.slapBurst(bw.sprungCry || 'SPRUNG!', bw.sprungSub || 'THE MAINSPRING LETS GO — UNSLAPPABLE, REVISED');
+  else if (fist && opponent.arch.bodyBlow) ui.slapBurst('FIST FLUSH!', 'THE CLOSED HAND BREAKS THROUGH — HE FELT THAT ONE');
   else if (fist) { ui.slapBurst('BODY BLOW — CLOSED FIST!', 'A REAL HIT — OPEN THE PALM [P] FOR THE FLUSH SLAP + THE SWEET SPOT'); sfx.whistle(); }
   else if (tooSoft) ui.slapBurst('TOO SOFT!', "HE ONLY FEELS A FIST — CLOSE THE HAND, DON'T PRESS [P]");
   else if (ugly) ui.slapBurst('SLOPPY SLAP!', 'THE CHAIN WAS LONG GONE');
@@ -1189,6 +1217,7 @@ function showResult() {
     refreshBest();
   }
   let line = isFoul ? ui.FOUL_LINES[slap.foul]
+    : (slap && slap.absorbed) ? `IMMOVABLE — he doesn't budge an inch. But the ${opponent.arch.bulwark.label || 'meter'} just dropped to ${opponent.bulwarkPct}%. Keep chipping.`
     : (slap && slap.part === 'torso' ? ui.bodyLineFor(flew) : ui.commentaryFor(flew, opponent.wallSplat, !!arch.female));
   // world personality on the result card — deterministic garnish, never scoring
   const worldNow = activeWorld; // the world on stage, incl. tour pins
@@ -1223,17 +1252,9 @@ function showResult() {
   } else if (worldNow === 'blackgold' && !isFoul) {
     line += ` BARREL ESTIMATE: ${dist < 18 ? 'dry well.' : dist < 30 ? 'trace deposits.' : dist < 45 ? 'COMMERCIALLY VIABLE.' : 'GUSHER. The pipeline weeps with joy.'}`;
   }
-  // tour goals are judged per attempt, from numbers this function already has
-  if (opponent.arch.bulwark && !isFoul) {
-    // TICK-TOCK v2: every point stays landed — the meter only goes down
-    bulwarkPts += pts;
-    const bw = opponent.arch.bulwark;
-    const pct = Math.max(0, Math.ceil(100 - bulwarkPts / (bw.threshold / 100)));
-    ui.bulwark(pct, bw.label, bw.sprungCry);
-    opponent.bulwarkPct = pct; // the sink goop reads this — the grip loosens on the spot
-    if (pct <= 0) { ui.slapBurst(bw.sprungCry || 'SPRUNG!', bw.sprungSub || 'THE MAINSPRING LETS GO — UNSLAPPABLE, REVISED'); opponent.springOut(); sfx.fanfare(); stage.shake(0.5); }
-    else ui.slapBurst('ABSORBED!', `${bw.label || 'IMMOVABILITY'} ${pct}% — EVERY POINT STAYS LANDED`);
-  }
+  // tour goals are judged per attempt, from numbers this function already has.
+  // (BULWARK draining + the SPRUNG/ABSORBED feedback now happen at CONTACT time in
+  // onContact — he's immovable until the meter empties — not here post-flight.)
   if (campaign.active) {
     const cleared = campaign.checkAttempt({
       dist, pts,

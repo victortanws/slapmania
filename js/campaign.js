@@ -130,7 +130,7 @@ export const TOURS = [
           { id: 'w3c1', title: 'PEER REVIEW', desc: 'LAND an 81% chain before MAESTRO FORTISSIMO — the specimen grades the observer; give him nothing to mark', opp: 'maestro', goal: { type: 'chain', v: 81 } },
           { id: 'w3c2', title: 'TERMINAL VELOCITY', desc: 'Send SLIM PETE 79m — the featherweight achieves escape velocity on camera', opp: 'slim', goal: { type: 'dist', v: 79 } },
           { id: 'w3c4', title: 'THE LIGHTHOUSE EFFECT', desc: "CATCH HEAD-TURNING HORTON's face mid-turn, incoming, and SEND him 27m — flush on the sweep, like greeting a lighthouse", opp: 'horton', goal: { type: 'headdist', v: 27 } },
-          { id: 'w3c3', title: '☗ FINAL BOSS: THE UNSLAPPABLE SPECIMEN', desc: "DRAIN TICK-TOCK TOM's IMMOVABILITY to zero — every point you land STAYS landed, so two good swings out of three does it (one off attempt is forgiven)", opp: 'clockwork', goal: { type: 'bulwark', v: 600 } },
+          { id: 'w3c3', title: '☗ FINAL BOSS: THE UNSLAPPABLE SPECIMEN', desc: "DRAIN TICK-TOCK TOM's IMMOVABILITY to zero — every point you land STAYS landed, so two good swings out of three does it (one off attempt is forgiven)", opp: 'clockwork', goal: { type: 'bulwark', v: 50 } },
         ],
       },
     ],
@@ -400,7 +400,7 @@ export const TOURS = [
         challenges: [
           { id: 'x3c1', title: 'MOAT INSPECTION', desc: 'DRAWBRIDGE DWIGHT dug three feet of dry moat around a tar pit for security reasons. Send him 6m — clean over his own moat', opp: 'dwight', goal: { type: 'dist', v: 6 } },
           { id: 'x3c2', title: '☗ SEEING IS DISBELIEVING', desc: 'FLAGPOLE PHIL declares any slap under 60% form FAKE — it simply never happened (×0.12). LAND one undeniable strike, 6m, live, no cuts', opp: 'phil', goal: { type: 'dist', v: 6 } },
-          { id: 'x3c3', title: '☗ BOSS: THE FULL STACK', desc: 'GENERAL GRIEVANCE has carried every grievance since 1994, stacked. Every honest point STAYS landed, across all three swings — pile up 200 and topple the stack', opp: 'grievance', goal: { type: 'bulwark', v: 200 } },
+          { id: 'x3c3', title: '☗ BOSS: THE FULL STACK', desc: 'GENERAL GRIEVANCE has carried every grievance since 1994, stacked. Every honest point STAYS landed, across all three swings — pile up 200 and topple the stack', opp: 'grievance', goal: { type: 'bulwark', v: 45 } },
         ],
       },
       {
