@@ -268,6 +268,7 @@ function unlockPack(code, how) {
   localStorage.setItem('slapp_pack', '1');
   if (code) localStorage.setItem('slapp_code', code);
   closeUnlockModal();
+  try { refreshDlcBtn(); } catch {} // you're a supporter now — drop the "Supporter Pack" ad button
   ui.challengeBar('🏆 SUPPORTER PACK UNLOCKED — ALL SIX LEGENDS ARE YOURS. THANK YOU!');
   sfx.fanfare();
   track(how === 'redeem' ? 'pack_redeemed' : 'pack_purchased', {});
@@ -775,6 +776,10 @@ function buildDlcGallery() {
 }
 function openDlcGallery() { buildDlcGallery(); document.getElementById('dlcGallery').classList.remove('hidden'); }
 function closeDlcGallery() { document.getElementById('dlcGallery').classList.add('hidden'); }
+// once you OWN the pack, the "Supporter Pack" title button is just an ad for
+// something you already bought — hide it. (Everything's unlocked in-game anyway.)
+function refreshDlcBtn() { document.getElementById('dlcBtn').classList.toggle('hidden', owned('bruceslee')); }
+refreshDlcBtn();
 document.getElementById('dlcBtn').onclick = () => { sfx.ensure(); openDlcGallery(); };
 document.getElementById('dlcClose').onclick = closeDlcGallery;
 document.getElementById('dlcGallery').onclick = (e) => { if (e.target.id === 'dlcGallery') closeDlcGallery(); }; // click backdrop to dismiss
@@ -802,6 +807,7 @@ function startAttempt() {
   cardDelay = 0;
   stage.resetBarricade();
   resetChain();
+  if (arch && arch.throwIce) resetCatch(); // catch stages: wipe every stale cube/count up front so a REPLAY always starts clean (also re-run at FACEOFF→SWING)
   shotClock = arch.shotClock || 30; // 30s standard; time-limited bosses run a tighter 20s courtroom
   timeScale = 1;
   prevHandSeg = null; // no stale sweep across attempts
@@ -1606,7 +1612,7 @@ function meltRow() {
     if (t >= 1.5) { clearInterval(iv); cubes.forEach((m) => { m.visible = false; cubePool.push(m); }); }
   }, 50);
 }
-const CATCH_PERIOD = 1.7, CATCH_DUR = 1.2; // slower cadence + flight so the throw is trackable
+const CATCH_PERIOD = 1.7, CATCH_DUR = 1.5; // slower cadence + flight so the throw is trackable
 function makeCube() {
   const m = new THREE.Mesh(
     new THREE.BoxGeometry(0.3, 0.3, 0.3), // bigger so the throw READS across the arena
@@ -1624,11 +1630,12 @@ function throwCube() {
   const mesh = cubePool.pop() || makeCube();
   mesh.visible = true;
   const hc = opponent.headPos();
-  // Carmine HURLS it: from high up and beyond his shoulder, in a big arc, down to
-  // a CATCH ZONE in front of the player (at the palm's reach) — a clear throw
-  // across the arena, not a lob at his own head.
-  const from = new THREE.Vector3(hc.x + 0.7, hc.y + 1.6, -0.3);
-  const to = new THREE.Vector3(player.root.position.x + 0.55, 1.4, 0);
+  // Carmine HURLS it: a big, high, SLOW lob from his raised hand that sails up and
+  // arcs down into a CATCH ZONE out in front of the player, at the palm's reach.
+  // Tall + slow (see CATCH_DUR / the sine arc) so it reads as a real incoming
+  // projectile you track and intercept, even though the ring is tight.
+  const from = new THREE.Vector3(hc.x + 0.5, hc.y + 1.7, -0.25);
+  const to = new THREE.Vector3(player.root.position.x + 0.58, 1.42, 0);
   iceCubes.push({ mesh, t: 0, from, to, caught: false, live: true });
   catchThrown++;
 }
@@ -1650,7 +1657,7 @@ function updateCatch(dt) {
     c.t += dt / CATCH_DUR;
     const k = Math.min(1, c.t);
     const p = c.from.clone().lerp(c.to, k);
-    p.y += Math.sin(Math.PI * k) * 1.1; // a big, readable toss-arc
+    p.y += Math.sin(Math.PI * k) * 1.9; // a big, readable toss-arc (tall so it reads as incoming)
     c.mesh.position.copy(p);
     c.mesh.rotation.x += dt * 7; c.mesh.rotation.y += dt * 5;
     // cube velocity, analytically from its path (deterministic — no dynamic body)
