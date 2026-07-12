@@ -637,6 +637,7 @@ export const CUTSCENES = {
     { who: 'YOU', text: "It belongs to whoever is present enough to hold it. I'll prove it — against the one slap nobody believes is real.", shot: 'player' },
     { who: '👻 MASTER SLEE', text: 'Chuck North. Never been slapped — not because he is untouchable, but because every challenger waits too long, and this county\'s tall tales wind him tighter than any coil.', shot: 'spirit' },
     { who: '👻 MASTER SLEE', text: 'Hear me, boy. Strike in the QUIET. The instant the crowd begins to chant, he stops being a man and becomes a story. And stories do not fall.', shot: 'spirit' },
+    { who: "👤 BRUCE SLEE", text: "(offstage, chewing) Great speech, ghost. Counterpoint: slap him mid-sentence, before the legend finishes loading. That's the whole shortcut. You're welcome.", shot: 'bruce' },
     { who: 'YOU', text: 'Then I will become present enough to strike in the silence — one honest breath before belief becomes muscle. Show me the road.', shot: 'player' },
   ],
   b1c1: [
@@ -661,12 +662,12 @@ export const CUTSCENES = {
   ],
   b2c1: [
     { who: '👻 MASTER SLEE', text: 'Chuck\'s first legend: "He cannot be caught." Dale is where that story lives. Catch the uncatchable, and one third of the myth unravels.', shot: 'spirit' },
-    { who: 'DODGY DALE', text: 'I taught Chuck the slip. Or he taught me — the story changes at every fair. Four hundred palms, zero landings, one signed apology each.', shot: 'opp' },
+    { who: 'DODGY DALE', text: 'I taught Chuck the slip. Or he taught me — the story changes at every fair. Six seasons, not one landing, and every miss gets a signed apology.', shot: 'opp' },
     { who: 'YOU', text: 'A slip has a rhythm. A rhythm is a promise. I will meet you at the honest word of it — forty-five meters.', shot: 'player' },
   ],
   b2c2: [
-    { who: '👻 MASTER SLEE', text: 'Second legend: "He slides through any grip." Pete carries that story in nine years of pig-grease. Only a true palm holds — a perfect one, or none.', shot: 'spirit' },
-    { who: 'GREASED PETE', text: "You can't grip a legend, kid. And nine years of pig-grease says you won't hold this one. Same physics.", shot: 'opp' },
+    { who: '👻 MASTER SLEE', text: 'Second legend: "He slides through any grip." Pete has spent a decade making that sentence true. Only a real palm holds — a perfect one, or none.', shot: 'spirit' },
+    { who: 'GREASED PETE', text: "Chuck wrote me into a TALE, kid. You don't HOLD a tale — you retell it bigger. Slide off me and you just make me famous.", shot: 'opp' },
     { who: 'YOU', text: 'I do not wish to hold you, Pete. I wish to ARRIVE so completely the grease has nothing left to refuse. Forty meters.', shot: 'player' },
   ],
   b2c3: [
@@ -973,7 +974,7 @@ export const CUTSCENES = {
       { who: '🏅 COMMISSIONER QUIBBLE', text: "The Committee is satisfied on all three questions — and moved by a fourth it never thought to ask: INEVITABILITY.", shot: 'wide' },
       { who: '🏅 COMMISSIONER QUIBBLE', text: "The Olympic motto is Faster, Higher, Stronger. Your county has proposed an amendment: Regardless.", shot: 'wide' },
       { who: 'YOU', text: 'Regardless. Stamp it. Slapping is Olympic.', shot: 'player' },
-      { who: '🏅 COMMISSIONER QUIBBLE', text: "PROVISIONALLY Olympic — the rulebook remains, and I shall be writing it here, near the pie stand. The cello enters the Cultural Olympiad; the Maestro wept in D minor.", shot: 'wide' },
+      { who: '🏅 COMMISSIONER QUIBBLE', text: "PROVISIONALLY Olympic — the rulebook remains, and I shall be writing it here, near the pie stand.", shot: 'wide' },
       { who: '🏅 COMMISSIONER QUIBBLE', text: "One open item, in writing from the flag office: when Ms. Eileen is slapped, whose medal table does the LANDING count for?", shot: 'wide' },
       // the podium beat: jingoism arrives, and the sport itself answers it
       { who: 'JUDGE PENNYWHISTLE', text: 'And for the record — YES! That is one for the United States of America! I have alerted the anthem committee. Both anthems. ALL the anthems.', shot: 'judge' },
