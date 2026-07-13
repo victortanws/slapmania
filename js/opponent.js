@@ -802,11 +802,12 @@ export class Opponent {
     set('torso', START_X - 0.05, 1.33, 0, 0, 0, 0.22);
     set('head', START_X - 0.16, 1.56, 0, 0.18, 0, arch.lookUp ? -0.5 : 0.35);   // lookUp tilts the face skyward
     if (arch.phone) {
-      // one CONNECTED raised arm: shoulder → elbow → hand → stick. Positive z
-      // euler tilts the segment toward her face (-x); the old negative values
-      // scattered the two segments and read as a third arm.
-      set('uaL', START_X - 0.05, 1.52, 0.22, 0, 0, 0.5);
-      set('faL', START_X - 0.17, 1.74, 0.18, 0, 0, 0.45);
+      // one CONNECTED raised arm holding the selfie stick — routed OUT TO THE SIDE
+      // (higher z) so the forearm + stick clear the wide floppy-hat brim
+      // (radius 0.43) instead of spearing straight through it. Positive z eulers
+      // keep the two segments connected (negatives scattered them into a 3rd arm).
+      set('uaL', START_X + 0.0, 1.48, 0.45, 0, 0, 0.62);
+      set('faL', START_X - 0.1, 1.76, 0.62, 0, 0, 0.42);
     } else {
       set('uaL', START_X + 0.08, 1.38, 0.24, 0, 0, 0.45);
       set('faL', START_X + 0.20, 1.06, 0.10, 0.9, 0, 0.3);

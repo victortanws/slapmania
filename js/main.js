@@ -195,18 +195,37 @@ ui.setAttempts(attempts, 0);
 ui.initName();
 ui.setMaster(localStorage.getItem('slapp_emperor') ? 2 : localStorage.getItem('slapp_master') ? 1 : 0);
 
-function setState(s) { state = s; tState = 0; syncTouchPad(); }
+function setState(s) { state = s; tState = 0; syncTouchPad(); syncBackBtn(); }
 
 // ---------- touch controls: thumbs are welcome at this fair ----------
 // Left thumb coils and drives (S/L), right thumb whips and snaps (A/P).
 // Buttons speak fluent keyboard, so every rule stays in one place.
 const touchPad = document.getElementById('touchPad');
-const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0
+  || new URLSearchParams(location.search).get('touch') === '1';   // ?touch=1 forces the touch UI for testing on desktop
 if (isTouch) document.body.classList.add('touch');
 const PLAY_STATES = new Set(['FACEOFF', 'SWING', 'IMPACT', 'FLIGHT', 'FOULED']);
 function syncTouchPad() {
   touchPad.classList.toggle('inplay', isTouch && PLAY_STATES.has(state));
 }
+// the mobile ESC: a touch-only back button (no keyboard to bail out with). Shown
+// in every non-title state except during a cutscene (the dialog has its own SKIP).
+const backBtn = document.getElementById('backBtn');
+function syncBackBtn() {
+  const show = isTouch && state !== 'TITLE' && !document.body.classList.contains('cine');
+  backBtn.style.display = show ? 'block' : 'none';
+  document.body.classList.toggle('backon', show);
+}
+// context-aware "back", shared by ESC and the mobile button: skip a cutscene,
+// close the DLC gallery, step a campaign verdict back to the tour menu, else porch.
+function goBack() {
+  sfx.ensure();
+  if (dlg.isActive()) { dlg.stop(); return; }
+  if (!document.getElementById('dlcGallery').classList.contains('hidden')) { closeDlcGallery(); return; }
+  if (state === 'MATCH_END' && campaign.active) { campaign.clearActive(); openTourMenu(); return; }
+  if (state !== 'TITLE') goToTitle();
+}
+backBtn.addEventListener('click', goBack);
 for (const btn of touchPad.querySelectorAll('.tbtn')) {
   const code = btn.dataset.code;
   const down = (e) => { e.preventDefault(); btn.classList.add('held'); dispatchEvent(new KeyboardEvent('keydown', { code })); };
@@ -460,6 +479,7 @@ function goToTitle() {
 function playScene(lines, after, opts = {}) {
   const cast = lines.map((l) => l.who).join(' ');
   document.body.classList.add('cine');
+  syncBackBtn();   // the cutscene has its own SKIP — hide the porch button
   if (opts.sad) {
     // the walk of shame: shoulders forward, head hung — held while frozen
     player.j.spine.a = -0.4; player.j.spine.v = 0;
@@ -471,9 +491,11 @@ function playScene(lines, after, opts = {}) {
   if (cast.includes('PENNYWHISTLE') || campaign.active) stage.setJudge(true);
   dlg.play(lines, () => {
     document.body.classList.remove('cine');
+    syncBackBtn();
     stage.setSpirit(false);
     stage.setBruce(false);
     stage.setJudge(false);
+    if (stage.setCatCine) { stage.setCatCine(false); stage.setCatReact(false); }
     if (after) after();
   });
 }
@@ -508,6 +530,15 @@ if (!localStorage.getItem('slapp_mig1')) {
     localStorage.setItem('slapp_seen', JSON.stringify(seen));
   } catch {}
   localStorage.setItem('slapp_mig1', '1');
+}
+// mig2: t3c1 was rewritten (the giant-cat "is slapping the cat therapy?" gag) —
+// clear its seen-mark so existing therapy players get the new scene.
+if (!localStorage.getItem('slapp_mig2')) {
+  try {
+    const seen = JSON.parse(localStorage.getItem('slapp_seen') || '[]').filter((id) => id !== 't3c1');
+    localStorage.setItem('slapp_seen', JSON.stringify(seen));
+  } catch {}
+  localStorage.setItem('slapp_mig2', '1');
 }
 const seenScene = (id) => !TOURDEV && JSON.parse(localStorage.getItem('slapp_seen') || '[]').includes(id);
 const markScene = (id) => {
@@ -1556,8 +1587,7 @@ addEventListener('keydown', (e) => {
   }
   // ESC out of a campaign verdict returns to the TOUR menu (campaign selection),
   // not all the way to the title — you're still inside the storyline.
-  if (e.code === 'Escape' && state === 'MATCH_END' && campaign.active) { campaign.clearActive(); openTourMenu(); return; }
-  if (e.code === 'Escape' && state !== 'TITLE') { goToTitle(); return; }
+  if (e.code === 'Escape') { goBack(); return; }
   if (state === 'TITLE' && e.code === 'KeyT' && campaign.enabled()) { openTourMenu(); return; }
   if (state === 'SELECT_SLAPPER' || state === 'SELECT_OPP') {
     const n = state === 'SELECT_SLAPPER' ? SLAPPERS.length : OPP_LIST.length;
@@ -1840,16 +1870,27 @@ function tick(now) {
   if (dlg.isActive()) {
     opponent.update(dt);
     const shot = dlg.currentShot();
+    // SLAP THERAPY cat gag: the cat leans in & slow-blinks while it's the subject
+    // ('cat'/'catno'); the tent facepalms on the "NO!!!" and reaction beats.
+    if (campaign.active && stage.setCatCine) {
+      stage.setCatCine(shot === 'cat' || shot === 'catno');
+      stage.setCatReact(shot === 'catno' || shot === 'facepalm');
+    }
     if (shot !== 'wide') {
       // 3/4 close-up on whoever is speaking: face + a shoulder, slightly above
       const tgt = new THREE.Vector3();
-      let off;
+      let off, snap = 5;
       if (shot === 'opp') { tgt.copy(opponent.headPos()); off = new THREE.Vector3(-1.35, 0.3, 0.95); }
       else if (shot === 'spirit') { tgt.copy(stage.cinePoints.spirit()); off = new THREE.Vector3(1.4, 0.2, 1.0); }
       else if (shot === 'judge') { tgt.copy(stage.cinePoints.judge()); off = new THREE.Vector3(1.35, 0.3, 1.0); }
       else if (shot === 'bruce') { tgt.copy(stage.cinePoints.bruce()); off = new THREE.Vector3(-1.35, 0.25, 1.0); }
+      else if (shot === 'cat') { tgt.copy(stage.cinePoints.cat()); off = new THREE.Vector3(-3.4, 1.0, 3.4); }
+      // "NO!!!" — a hard, low push-in on the recoiling tent (dramatic angle)
+      else if (shot === 'catno') { tgt.set(2.3, 1.35, -1.4); off = new THREE.Vector3(0.5, -0.15, 3.0); snap = 9; }
+      // hold wide on the whole tent burying its face in its hands
+      else if (shot === 'facepalm') { tgt.set(2.3, 1.5, -1.4); off = new THREE.Vector3(0.7, 1.5, 5.4); }
       else { player.headMesh.getWorldPosition(tgt); off = new THREE.Vector3(1.35, 0.3, 0.95); }
-      camera.position.lerp(tgt.clone().add(off), 1 - Math.exp(-5 * dt));
+      camera.position.lerp(tgt.clone().add(off), 1 - Math.exp(-snap * dt));
       camera.lookAt(tgt);
     }
     if (!skipRender) renderer.render(scene, camera);

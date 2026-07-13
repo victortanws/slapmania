@@ -195,11 +195,14 @@ export function createStage(canvas) {
   lane.receiveShadow = true;
   scene.add(lane);
 
-  // contest ring + chalk distance lines
+  // contest ring + chalk distance lines. Sits at y=0.06 — ABOVE any world floor
+  // decal (the therapy rug + vegas gold lane both live at 0.02) so the ring never
+  // z-fights the floor and STROBES as the camera moves (an epilepsy hazard).
   const ring = new THREE.Mesh(new THREE.RingGeometry(1.25, 1.4, 48),
-    new THREE.MeshBasicMaterial({ color: 0xfff3d0 }));
+    new THREE.MeshBasicMaterial({ color: 0xfff3d0, depthWrite: false }));
   ring.rotation.x = -Math.PI / 2;
-  ring.position.set(0.5, 0.02, 0);
+  ring.position.set(0.5, 0.06, 0);
+  ring.renderOrder = 2;
   scene.add(ring);
 
   const START_X = 0.95;
@@ -1785,6 +1788,18 @@ export function createStage(canvas) {
         if (d.userData && d.userData.baseY != null) d.position.y = d.userData.baseY + Math.sin(time * 0.8 + d.position.x) * 0.15;
       }
     }
+    if (therapyG.visible && therapyCat) {
+      // the cat: idle tail sway + the odd blink; when it's the subject of a
+      // cutscene beat (cine) it leans toward the couch and slow-blinks at Carl
+      const ud = therapyCat.userData;
+      const flick = ud.cine ? 2.6 : 1.0;
+      ud.tail.rotation.x = Math.sin(time * flick) * (ud.cine ? 0.55 : 0.22);
+      const sy = ud.cine ? (0.3 + 0.7 * Math.abs(Math.cos(time * 1.5)))
+                         : ((time % 5) > 4.85 ? 0.12 : 1);
+      ud.eyes.forEach((e) => { e.scale.y = sy; });
+      ud.pupils.forEach((p) => { p.scale.y = sy; });
+      therapyCat.rotation.z += ((ud.cine ? -0.14 : 0) - therapyCat.rotation.z) * Math.min(1, dt * 3);
+    }
     ferrisSpin.rotation.z += dt * 0.22;
     for (const car of ferrisCars) {
       const a = car.userData.a + ferrisSpin.rotation.z;
@@ -2349,13 +2364,45 @@ export function createStage(canvas) {
     bruceG.visible = false;
     scene.add(bruceG);
   }
+  // SLAP THERAPY — the collective facepalm. A little gallery of the tent's
+  // patients who bury their faces in their palms when Carl eyes the cat as a
+  // patient. Shown only during the cat cutscene's reaction beats (setCatReact).
+  const catReactG = new THREE.Group();
+  {
+    const skins = [0xe0ab7a, 0xc98e63, 0xf0c9a0];
+    const shirts = [0x6a8fbf, 0xbf6a7a, 0x7abf8f];
+    const spots = [[2.6, -1.4, -1.35], [4.0, 0.1, -1.5], [0.7, -2.6, -1.15]];
+    spots.forEach(([x, z, ry], i) => {
+      const g = new THREE.Group();
+      const legs = new THREE.Mesh(new THREE.CapsuleGeometry(0.16, 0.5, 4, 8), toonMat(0x40424e));
+      legs.position.y = 0.5; g.add(legs);
+      const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.2, 0.42, 4, 10), toonMat(shirts[i]));
+      torso.position.y = 1.05; g.add(torso);
+      // head bowed forward into the hand — the arm rises nearly vertical to a
+      // flat palm pressed over the whole face: unmistakably a facepalm
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.16, 12, 12), toonMat(skins[i]));
+      head.position.set(0.06, 1.52, 0); g.add(head);
+      const upper = new THREE.Mesh(new THREE.CapsuleGeometry(0.055, 0.36, 4, 6), toonMat(skins[i]));
+      upper.position.set(0.17, 1.42, 0.04); upper.rotation.set(-0.22, 0, -0.2); g.add(upper);
+      const hand = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.2, 0.06), toonMat(skins[i]));
+      hand.position.set(0.21, 1.55, 0); g.add(hand);
+      g.position.set(x, 0, z); g.rotation.set(0.16, ry, 0);
+      g.traverse((m) => { m.castShadow = true; });
+      catReactG.add(g);
+    });
+    catReactG.visible = false;
+    scene.add(catReactG);
+  }
   const setSpirit = (on) => { spiritG.visible = on; };
   const setJudge = (on) => { judgeG.visible = on; };
   const setBruce = (on) => { bruceG.visible = on; };
+  const setCatReact = (on) => { catReactG.visible = on; };
+  const setCatCine = (on) => { if (therapyCat) therapyCat.userData.cine = on; };
   const cinePoints = {
     spirit: () => new THREE.Vector3(spiritG.position.x, spiritG.position.y + 1.85, spiritG.position.z),
     judge: () => new THREE.Vector3(judgeG.position.x, judgeG.position.y + 1.42, judgeG.position.z),
     bruce: () => new THREE.Vector3(bruceG.position.x, 1.55, bruceG.position.z),
+    cat: () => { const v = new THREE.Vector3(); if (therapyCat) therapyCat.userData.head.getWorldPosition(v); return v; },
   };
 
   // --- FROZEN LAKE winter kit: mountains, snowmen, snowball kids, fur coats,
@@ -3764,24 +3811,28 @@ export function createStage(canvas) {
     }
     couch.position.set(14, 0, -4.5); couch.rotation.y = 0.25;
     therapyG.add(couch);
-    // ---- THE GIANT CAT, watching the whole session from the far end ----
+    // ---- THE GIANT CAT, presiding over every session from stage-right. It is
+    // the campaign's silent foil; the SLAP THERAPY 'cat' cutscene beats lean it
+    // in and make it slow-blink at Carl (refs stashed on userData for the loop).
     therapyCat = new THREE.Group();
     const catFur = toonMat(0x3a3a42);
     const catBody = new THREE.Mesh(new THREE.CapsuleGeometry(2.2, 2.6, 6, 12), catFur);
     catBody.rotation.z = Math.PI / 2; catBody.position.set(0, 2.2, 0); catBody.scale.z = 1.4; therapyCat.add(catBody);
     const catHead = new THREE.Mesh(new THREE.SphereGeometry(1.9, 14, 12), catFur);
     catHead.position.set(-2.6, 4.4, 0); therapyCat.add(catHead);
+    const catEyes = [], catPupils = [];
     for (const s of [-1, 1]) {
       const ear = new THREE.Mesh(new THREE.ConeGeometry(0.7, 1.3, 4), catFur);
       ear.position.set(-2.6, 6, s * 1.1); therapyCat.add(ear);
       const eye = new THREE.Mesh(new THREE.SphereGeometry(0.4, 10, 10), glowMat(0x8adf5a));
-      eye.position.set(-4.2, 4.6, s * 0.8); eye.scale.x = 0.5; therapyCat.add(eye);
+      eye.position.set(-4.2, 4.6, s * 0.8); eye.scale.x = 0.5; therapyCat.add(eye); catEyes.push(eye);
       const pupil = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.5, 0.1), toonMat(0x141014));
-      pupil.position.set(-4.42, 4.6, s * 0.8); therapyCat.add(pupil);
+      pupil.position.set(-4.42, 4.6, s * 0.8); therapyCat.add(pupil); catPupils.push(pupil);
     }
-    const tail = new THREE.Mesh(new THREE.CapsuleGeometry(0.35, 4, 4, 8), catFur);
-    tail.position.set(2.8, 1.4, 2.6); tail.rotation.z = 0.7; therapyCat.add(tail);
-    therapyCat.position.set(98, 0, 4); therapyCat.rotation.y = -0.6;
+    const catTail = new THREE.Mesh(new THREE.CapsuleGeometry(0.35, 4, 4, 8), catFur);
+    catTail.position.set(2.8, 1.4, 2.6); catTail.rotation.z = 0.7; therapyCat.add(catTail);
+    therapyCat.position.set(30, 0, 10); therapyCat.rotation.y = -0.78;
+    therapyCat.userData = { head: catHead, eyes: catEyes, pupils: catPupils, tail: catTail, cine: false };
     therapyG.add(therapyCat);
     // ---- THE RED BOOK on a brass lectern (glowing), ringside ----
     const lectern = new THREE.Group();
@@ -5194,6 +5245,6 @@ export function createStage(canvas) {
     },
     isHauntedUp: () => hauntedG.visible,
     isDojoUp: () => dojoG.visible,
-    setSpirit, setJudge, setBruce, cinePoints,
+    setSpirit, setJudge, setBruce, setCatReact, setCatCine, cinePoints,
   };
 }

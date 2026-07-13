@@ -1078,10 +1078,13 @@ export const CUTSCENES = {
   t3c1: [
     { who: 'HAYSEED HANK', text: "Doc, I keep havin' the same dream. I'm flyin' over the barn, over the corn, over the county line... then I wake up face-down in the pond.", shot: 'opp' },
     { who: 'YOU', text: "A recurring dream is the unconscious filing a complaint. Yours is refreshingly literal: the barn is the barn, the corn is the corn.", shot: 'player' },
-    { who: 'YOU', text: "The flight, Hank, is a FLIGHT. Some dreams require interpretation. Yours requires forty-five meters.", shot: 'player' },
-    { who: 'HAYSEED HANK', text: 'And the pond?', shot: 'opp' },
-    { who: 'YOU', text: 'Try to clear it. Dreams are not always kind.', shot: 'player' },
-    { who: "🐈 THE CAT", text: "(the cat attends every session and bills nothing. In this one respect, the cat is the better analyst.)", shot: "wide" },
+    { who: 'YOU', text: "The flight, Hank, is a FLIGHT. Some dreams require interpretation. Yours requires forty-five meters. ...One moment. The cat is doing it AGAIN.", shot: 'player' },
+    { who: '🐈 THE CAT', text: "(sprawled at the edge of the tent, the cat holds Carl's stare and slow-blinks. To a cat, a slow blink means trust. To a man out-analyzed by it for a month, it means WAR.)", shot: 'cat' },
+    { who: 'YOU', text: "Fifty years of practice. Four hundred papers. And the finest analyst in this tent is a cat the size of a hay wagon that bills NOTHING and is NEVER WRONG. One intervention remains. Ready the palm.", shot: 'player' },
+    { who: 'HAYSEED HANK', text: "Uh — Doc? Is... is slappin' the cat part of the therapy?", shot: 'opp' },
+    { who: 'ALL', text: 'NO!!!', shot: 'catno' },
+    { who: 'ALL', text: "(the whole tent — patients, the ref, a fella just here for the lemonade — claps one hand to its forehead in perfect unison. Even the Red Book seems to wince.)", shot: 'facepalm' },
+    { who: 'YOU', text: "...Noted. The cat stays. As the control group. Now — where were we. The pond, Hank. Try to clear it. Dreams are not always kind.", shot: 'player' },
   ],
   t3c2: [
     { who: 'DR. FREUDENSCHADE', text: 'Carl. Fifty years since the Vienna congress, and I find you in a TENT, prescribing VIOLENCE.', shot: 'opp' },

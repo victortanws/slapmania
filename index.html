@@ -38,6 +38,16 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
 #clock.hot{color:var(--red);animation:throb .5s infinite alternate;}
 @keyframes throb{from{transform:scale(1)}to{transform:scale(1.12)}}
 #best{font-size:15px;color:var(--yellow);text-align:right;text-shadow:2px 2px 0 #000;min-width:200px;}
+/* mobile back button — the touch stand-in for the ESC key (no keyboard to bail
+   with). Hidden by default; shown by JS (syncBackBtn) on touch in play states. */
+#backBtn{position:absolute;top:12px;left:12px;z-index:7;display:none;pointer-events:auto;
+  font-family:inherit;font-weight:800;font-size:13px;letter-spacing:1px;color:var(--yellow);
+  background:rgba(20,16,28,.74);border:2px solid rgba(255,210,63,.6);border-radius:11px;
+  padding:9px 14px;cursor:pointer;text-shadow:1px 1px 0 #000;box-shadow:2px 2px 0 rgba(0,0,0,.5);
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+#backBtn:active{transform:translateY(1px);background:rgba(40,30,54,.9);}
+/* drop the attempts dots to a second row so they clear the back button (touch only) */
+body.backon #attempts{transform:translateY(42px);}
 #masterTag{position:absolute;top:64px;right:24px;font-size:12px;letter-spacing:2px;color:#ffe9a0;
   text-shadow:2px 2px 0 #a8720f,3px 3px 0 #000;}
 
@@ -441,6 +451,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
     <div id="clock" class="hidden">30.0</div>
     <div id="best"></div>
   </div>
+  <button id="backBtn" aria-label="Back to menu">‹ BACK</button>
   <div id="masterTag" class="hidden">★ SLAPMASTER ★</div>
   <div id="challengeBar" class="hidden"></div>
   <div id="refBar" class="hidden"></div>
