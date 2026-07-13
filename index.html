@@ -94,6 +94,12 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
 #challengeBar{position:absolute;top:84px;left:0;right:0;margin:0 auto;width:fit-content;max-width:92vw;
   background:#2a1140;border:3px solid var(--yellow);color:#fff;font-size:13px;letter-spacing:1px;
   padding:8px 16px;border-radius:10px;box-shadow:4px 4px 0 rgba(0,0,0,.5);z-index:40;text-align:center;}
+/* the IMMOVABILITY / GRIEVANCE-STACK meter chip (created in ui.js). Sits BELOW
+   the goal banner and ABOVE the coach on desktop; the mobile block re-slots it
+   so it never lands on 'STEP 1: HOLD [S]…'. Lighter shadow than before. */
+#bulwarkChip{position:absolute;top:132px;left:0;right:0;margin:0 auto;width:fit-content;
+  background:#3a2a10;border:3px solid var(--yellow);color:#ffd23f;font-size:13px;letter-spacing:1px;
+  padding:5px 14px;border-radius:9px;box-shadow:2px 2px 0 rgba(0,0,0,.4);z-index:41;text-align:center;}
 
 /* ---- flight distance ticker ---- */
 #distance{position:absolute;top:72px;left:0;right:0;text-align:center;font-size:66px;color:#fff;
@@ -312,10 +318,14 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
   .bigdist{font-size:60px;} .bigdist.foul{font-size:44px;}
   #banner .big{font-size:42px;} #banner .sub{font-size:14px;}
   #distance{font-size:40px;top:118px;} #clock{font-size:30px;min-width:80px;}
-  /* keep the challenge banner from growing down into the distance/coach lines
-     (max-height backs up the clamp: without it line 3 paints into the padding box) */
-  #challengeBar{font-size:11px;max-width:88vw;display:-webkit-box;-webkit-line-clamp:2;
-    -webkit-box-orient:vertical;overflow:hidden;line-height:1.45;max-height:calc(2.9em + 16px);}
+  /* the goal banner is SCROLLABLE on a phone: long boss briefs (Tick-Tock Tom)
+     used to clip at 2 lines with no way to read the rest. Now the full text is
+     present and swipes/scrolls within a 3-line window. */
+  #challengeBar{font-size:11px;max-width:88vw;line-height:1.45;
+    max-height:calc(4.35em + 16px);overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  /* IMMOVABILITY meter: re-slotted below the banner's full 3-line height (max
+     ~170) and above the coach; smaller + lighter shadow at phone size */
+  #bulwarkChip{top:176px;font-size:11px;padding:4px 12px;box-shadow:2px 2px 0 rgba(0,0,0,.35);}
   .rules{padding:10px 14px;} .rules ol{font-size:11px;}
   .keys{font-size:13px;} .key{font-size:15px;padding:4px 9px;}
   #attempts,#best{min-width:110px;font-size:12px;}
@@ -332,8 +342,8 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
   #bubble.withIntro{top:334px;bottom:auto;right:6%;left:auto;}
   .verdict{font-size:14px;}
   /* lighter stroke+shadow at phone size — the 27px desktop treatment ghosts
-     the glyphs at 14px */
-  #coach{font-size:14px;top:168px;-webkit-text-stroke:0.6px #000;text-shadow:2px 2px 0 rgba(0,0,0,.6);}
+     the glyphs at 14px — and pushed BELOW the meter chip so they never stack */
+  #coach{font-size:14px;top:214px;-webkit-text-stroke:0.6px #000;text-shadow:2px 2px 0 rgba(0,0,0,.6);}
   /* key chips hug the bottom edge; the stacked meters sit in their own band
      ABOVE them (they used to crush into each other around y~700) */
   #keysbar{bottom:6px;gap:8px;}

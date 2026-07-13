@@ -44,7 +44,9 @@ export function bulwark(pct, label, sprungCry) {
   if (!el2) {
     el2 = document.createElement('div');
     el2.id = 'bulwarkChip';
-    el2.style.cssText = 'position:absolute;top:150px;left:0;right:0;margin:0 auto;width:fit-content;background:#3a2a10;border:3px solid var(--yellow);color:#ffd23f;font-size:13px;letter-spacing:1px;padding:5px 14px;border-radius:9px;box-shadow:4px 4px 0 rgba(0,0,0,.5);z-index:40;text-align:center;';
+    // position + look live in index.html CSS (#bulwarkChip) so they can go
+    // responsive — the mobile block moves it clear of the coach and lightens
+    // the shadow (it used to collide with 'STEP 1: HOLD [S]…' on a phone).
     document.getElementById('hud') ? document.getElementById('hud').appendChild(el2) : document.body.appendChild(el2);
   }
   if (pct == null) { el2.style.display = 'none'; return; }
@@ -136,7 +138,13 @@ export function intro(arch) {
   el.introTag.textContent = `${arch.tag} — SCORE ×${arch.mass}`;
 }
 
-export function setAttempts(attempts, current) {
+export function setAttempts(attempts, current, max = 3) {
+  // attrition bosses (Tick-Tock Tom, 10 swings) don't fit three dots — show a
+  // compact "SWING x / 10" counter instead.
+  if (max > 5) {
+    el.attempts.innerHTML = `ATTEMPTS<br><span class="dot" style="font-size:22px">${Math.min(current + 1, max)}<small>/ ${max}</small></span>`;
+    return;
+  }
   let html = '';
   for (let i = 0; i < 3; i++) {
     const a = attempts[i];

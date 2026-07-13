@@ -382,23 +382,37 @@ export const ROSTER = [
   {
       key: 'clockwork', name: 'TICK-TOCK TOM', tag: 'BOSS · UNSLAPPABLE (SELF-DECLARED)', boss: true,
       w: 1.1, h: 1.02, mass: 3.2,   // solid brass all the way through — slopunit-class tonnage in a carnival body
-      // TRULY IMMOVABLE: no idle hop — feet planted like a bolted statue (he only
-      // breathes). BULWARK: each slap's FORCE drains a hidden meter (main.js,
-      // onContact) while he stays PLANTED and the slapper's hand REBOUNDS off him;
-      // the HUD chip shows the inverse ('IMMOVABILITY: 97%'). ONLY when the meter
-      // hits zero does the mainspring let go and he BLOWS AWAY downrange.
-      bulwark: { threshold: 50, label: 'IMMOVABILITY' }, // drainable in ~2 of 3 good swings (one off attempt forgiven)
+      // TRULY IMMOVABLE: no idle hop — feet planted, BOLTED to the ground by his
+      // own clockwork (groundBolt). A WAR OF ATTRITION: 10 attempts, cumulative
+      // FORCE drains a hidden meter (main.js onContact) while he stays PLANTED and
+      // the hand REBOUNDS; after each slap he tells the next beat of his origin
+      // (slapStory). ONLY at zero does the mainspring let go — the bolts SHEAR and
+      // he blows away.
+      bulwark: { threshold: 160, label: 'IMMOVABILITY' }, // ~7 solid slaps of the 10 you get
+      attempts: 10,          // a cumulative pummel, not best-of-3
+      groundBolt: true,      // bolted down by his own clockwork (opponent build); shears on spring-out
       skin: 0xc9a24b, shirt: 0x9a7a34, pants: 0x6e5626,
       windKey: true, paintedGrin: 0xc0202a, brow: true,
-      pickLine: 'Declares himself UNSLAPPABLE. The meter disagrees. Slowly.',
+      pickLine: 'Slapped ONCE, age six, at this fair. Spent forty years and his entire body ensuring it never happens again. Bolted himself down for good measure.',
+      // the origin, told one beat per slap as you chip his IMMOVABILITY down —
+      // shown as his taunt on each result card (main.js reads slapStory[hitNo])
+      slapStory: [
+        'You FELT that? Impossible. I had the nerves removed in ’84. Sentiment is a structural weakness.',
+        'I was slapped ONCE. Age six. Right here, by the tilt-a-whirl. I have spent forty years making certain of a second opinion.',
+        'First, the diet. Brass filings and RESOLVE, nothing else, for a decade. Observe the sheen. That is not a tan.',
+        'The color? I DYED myself. Slappable men are PINK, soft, apologetic. I chose the hue of a bank vault door.',
+        'I replaced my spine with a mainspring. You are not slapping a man, child. You are WINDING A CLOCK.',
+        'The bolts? Mine. A moving target may be missed — but a BOLTED one cannot be moved. It is simple geometry. I am geometry.',
+        '...that one had a tingle to it. Merely a draft. My warranty is VOID on weather and I intend to honor that.',
+        'My mother said I would never amount to anything. I amounted to nine hundred pounds of unslappable brass. Ring her.',
+        'The mainspring is... loosening. This is INTENTIONAL. I am CHOOSING to feel my legs again. It is a gift I give myself.',
+        'No. NO. I ENGRAVED it. UNSLAPPABLE. It is in the METAL. You cannot argue with ENGRAVING, you cannot argue with a MAN who—',
+      ],
       taunts: [
         'UNSLAPPABLE. I had it engraved. On myself.',
         'Tick. Tock. Still here.',
         'I absorbed that one. I absorb ALL of them. It is called posture.',
         'Was that a slap or a suggestion?',
-        'Ninety-seven percent immovable. The three percent is paint.',
-        'Hear the mainspring laughing? Tick. Tick. That is laughter.',
-        'Bouncing is not dodging. Bouncing is CONFIDENCE.',
         'The last man to move me was a licensed piano mover. He had a DOLLY.',
       ],
     },
@@ -1670,6 +1684,69 @@ export class Opponent {
     // is the grip); in the tar-pit world EVERY volunteer gets the treatment
     // (main.js calls addTarGrip after spawn). See addTarGrip below.
     if (arch.sinkGoop) this.addTarGrip();
+    // TICK-TOCK TOM bolts himself to the earth with his own clockwork — a steel
+    // base plate, four brass bolts, ankle chains, a big wound mainspring.
+    if (arch.groundBolt) this.addGroundBolt();
+  }
+
+  // the clockwork fastener that pins Tom to one spot. Purely visual — it never
+  // touches the strike plane. breakBolt() scatters it when the mainspring goes.
+  addGroundBolt() {
+    if (this.boltRig) return;
+    const brass = new THREE.MeshPhongMaterial({ color: 0xb8902a, shininess: 70, specular: 0x8a7a4a });
+    const steel = new THREE.MeshStandardMaterial({ color: 0x4a4e58, metalness: 0.7, roughness: 0.45 });
+    const px = this.rag.parts.pelvis.body.position;
+    const g = this.boltRig = new THREE.Group();
+    this.boltPieces = [];
+    const plate = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 1.06, 0.14, 14), steel);
+    plate.position.y = 0.07;
+    g.add(plate);
+    this.boltPieces.push(plate);
+    // four corner bolts, big hex brass heads
+    for (let i = 0; i < 4; i++) {
+      const a = i * Math.PI / 2 + Math.PI / 4;
+      const bolt = new THREE.Group();
+      const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.32, 6), brass);
+      shaft.position.y = 0.16; bolt.add(shaft);
+      const head = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.11, 6), brass);
+      head.position.y = 0.34; bolt.add(head);
+      bolt.position.set(Math.cos(a) * 0.74, 0, Math.sin(a) * 0.74);
+      g.add(bolt);
+      this.boltPieces.push(bolt);
+    }
+    // ankle chains: plate up to each shin
+    for (const sgn of [-1, 1]) {
+      const chain = new THREE.Group();
+      for (let l = 0; l < 5; l++) {
+        const link = new THREE.Mesh(new THREE.TorusGeometry(0.075, 0.026, 6, 10), steel);
+        link.position.set(sgn * 0.28, 0.16 + l * 0.15, 0.02);
+        link.rotation.x = l % 2 ? 0 : Math.PI / 2;
+        chain.add(link);
+      }
+      g.add(chain);
+      this.boltPieces.push(chain);
+    }
+    // a big wound mainspring at his back (the visible clockwork)
+    const pts = [];
+    for (let t = 0; t <= 44; t++) { const a = t / 44 * Math.PI * 7; pts.push(new THREE.Vector3(Math.cos(a) * 0.2, t / 44 * 0.8, Math.sin(a) * 0.2)); }
+    const spring = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 52, 0.032, 6), brass);
+    spring.position.set(0.44, 0.25, 0); // behind him (front faces -x, toward the slapper)
+    g.add(spring);
+    this.boltPieces.push(spring);
+    g.traverse((m) => { if (m.isMesh) m.castShadow = true; });
+    g.position.set(px.x, 0.02, px.z);
+    this.scene.add(g);
+  }
+
+  // the mainspring lets go: bolts shear, chains snap, the plate cracks free —
+  // every piece takes an outward impulse and tumbles (decayed in update()).
+  breakBolt() {
+    if (!this.boltRig || this._boltBreakT) return;
+    this._boltBreakT = 1.6;
+    for (const p of this.boltPieces) {
+      p.userData.vel = new THREE.Vector3((Math.random() - 0.5) * 5, 3 + Math.random() * 5, (Math.random() - 0.5) * 5);
+      p.userData.av = new THREE.Vector3((Math.random() - 0.5) * 12, (Math.random() - 0.5) * 12, (Math.random() - 0.5) * 12);
+    }
   }
 
   // The tar's grip, visible: a glossy black mound swallowing the ankles, tar
@@ -1850,6 +1927,26 @@ export class Opponent {
       this.goop.scale.set(grip, 0.5 + grip * 0.5, grip);
       // a slow, hungry pulse so the pit reads alive
       this.goop.children[0].scale.y = 0.42 + Math.sin(this.time * 1.1) * 0.03;
+    }
+    if (this.boltRig) {
+      // the mainspring winds a little tighter as the meter falls (visible strain);
+      // once broken, every piece flies apart and the rig vanishes
+      if (this._boltBreakT > 0) {
+        this._boltBreakT -= dt;
+        for (const p of this.boltPieces) {
+          if (!p.userData.vel) continue;
+          p.position.addScaledVector(p.userData.vel, dt);
+          p.userData.vel.y -= 11 * dt;
+          p.rotation.x += p.userData.av.x * dt;
+          p.rotation.y += p.userData.av.y * dt;
+          p.rotation.z += p.userData.av.z * dt;
+        }
+        if (this._boltBreakT <= 0) { this.scene.remove(this.boltRig); this.boltRig = null; }
+      } else if (this.boltSpring) {
+        // strain: the coil squashes down as immovability drains
+        const t = (this.bulwarkPct != null ? this.bulwarkPct : 100) / 100;
+        this.boltSpring.scale.y = 0.6 + t * 0.4;
+      }
     }
     if (this.launched) {
       this.rag.sync();
@@ -2047,6 +2144,7 @@ export class Opponent {
       this.scene.remove(this.hatMesh);
     }
     if (this.goop) this.scene.remove(this.goop);
+    if (this.boltRig) this.scene.remove(this.boltRig);
     this.scene.remove(this.target);
   }
 }

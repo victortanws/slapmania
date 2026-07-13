@@ -838,7 +838,7 @@ function startAttempt() {
   if (campaign.active) ui.challengeBar(campaign.goalText());
   ui.hideCards();
   ui.showTitle(false);
-  ui.setAttempts(attempts, attempts.length);
+  ui.setAttempts(attempts, attempts.length, (opponent.arch && opponent.arch.attempts) || 3);
   ui.setClock(null);
   ui.showDistance(null);
   ui.showMeters(false);
@@ -1140,7 +1140,7 @@ function onContact(hit, fist) {
     player.rebound(power);              // the hand is thrown back the way it came
   } else {
     opponent.launch(dir, power, spin);
-    if (bw) { opponent.springOut(); sfx.fanfare(); stage.shake(0.5); } // the mainspring lets go
+    if (bw) { opponent.springOut(); if (opponent.breakBolt) opponent.breakBolt(); sfx.fanfare(); stage.shake(0.6); } // the mainspring lets go — the bolts SHEAR
   }
   slap = {
     absorbed,
@@ -1194,6 +1194,19 @@ function onContact(hit, fist) {
   setState('IMPACT');
 }
 
+// the result-card line for an ABSORBED bulwark hit. Tick-Tock Tom narrates his
+// origin one beat per slap as the meter drains (slapStory); other bulwark bosses
+// (Grievance) get the plain "keep chipping" read.
+function absorbLine(arch) {
+  const pct = opponent.bulwarkPct;
+  const label = (arch.bulwark && arch.bulwark.label) || 'meter';
+  if (arch.slapStory && arch.slapStory.length) {
+    const i = Math.min(attempts.length - 1, arch.slapStory.length - 1);
+    return `${arch.name}: “${arch.slapStory[i]}”  (${label}: ${pct}%)`;
+  }
+  return `IMMOVABLE — he doesn't budge an inch. But the ${label} just dropped to ${pct}%. Keep chipping.`;
+}
+
 function showResult() {
   timeScale = 1;
   const arch = opponent.arch;
@@ -1217,7 +1230,7 @@ function showResult() {
     refreshBest();
   }
   let line = isFoul ? ui.FOUL_LINES[slap.foul]
-    : (slap && slap.absorbed) ? `IMMOVABLE — he doesn't budge an inch. But the ${opponent.arch.bulwark.label || 'meter'} just dropped to ${opponent.bulwarkPct}%. Keep chipping.`
+    : (slap && slap.absorbed) ? absorbLine(arch)
     : (slap && slap.part === 'torso' ? ui.bodyLineFor(flew) : ui.commentaryFor(flew, opponent.wallSplat, !!arch.female));
   // world personality on the result card — deterministic garnish, never scoring
   const worldNow = activeWorld; // the world on stage, incl. tour pins
@@ -1275,7 +1288,7 @@ function showResult() {
   ui.coach(null);
   ui.refBar(null);
   ui.showDistance(null);
-  ui.setAttempts(attempts, attempts.length);
+  ui.setAttempts(attempts, attempts.length, (opponent.arch && opponent.arch.attempts) || 3);
   // the card waits: first the camera settles on WHERE he landed, then any
   // earned honors play out, and only then does the scoreboard interrupt
   pendingCard = {
@@ -1398,7 +1411,12 @@ function advance() {
     resolveTourOutcome(ch, clearedNow);
     return;
   }
-  if (attempts.length >= 3) {
+  // most bosses are best-of-3; a bulwark attrition boss (Tick-Tock Tom) grants
+  // its own budget (arch.attempts) AND ends the instant he's SPRUNG — no need to
+  // burn the remaining swings once the meter's empty.
+  const maxA = (opponent.arch && opponent.arch.attempts) || 3;
+  const bulwarkDone = !!(opponent.arch && opponent.arch.bulwark && opponent.bulwarkPct <= 0);
+  if (attempts.length >= maxA || bulwarkDone) {
     const bestAttempt = attempts.reduce((a, b) => (b.pts > a.pts ? b : a), attempts[0]);
     track('match_completed', { best_pts: bestAttempt.pts, best_dist: +bestAttempt.dist.toFixed(1), opp: bestAttempt.opp });
     ui.hideCards();
@@ -2074,11 +2092,18 @@ function tick(now) {
     // a flyer barging through the flock: feathers, outrage, evacuation
     if (stage.isHauntedUp() && stage.spookGhosts(pel)) sfx.wail();
     if (stage.scareBirds(pel)) sfx.squawk();
-    if (opponent.rag.maxSpeed() < 0.6) settleT += dt; else settleT = 0;
-    // never call the result while he's still visibly travelling — a monster slap
-    // can tumble a long time, and a stale card looks like a scoring bug. The
-    // tState floor guarantees even a dead-stop crash gets its moment on camera.
-    if (tState > 2.2 && (settleT > 1.2 || (tState > 12 && opponent.rag.maxSpeed() < 1.2) || tState > 20)) showResult();
+    // an ABSORBED bulwark hit never launches — the body is PLANTED (and the
+    // shudder keeps maxSpeed up, so the settle test below would never fire). It
+    // has nothing to travel or settle: give the ABSORBED beat a moment, resolve.
+    if (!opponent.launched) {
+      if (tState > 1.5) showResult();
+    } else {
+      if (opponent.rag.maxSpeed() < 0.6) settleT += dt; else settleT = 0;
+      // never call the result while he's still visibly travelling — a monster slap
+      // can tumble a long time, and a stale card looks like a scoring bug. The
+      // tState floor guarantees even a dead-stop crash gets its moment on camera.
+      if (tState > 2.2 && (settleT > 1.2 || (tState > 12 && opponent.rag.maxSpeed() < 1.2) || tState > 20)) showResult();
+    }
   } else if (state === 'FOULED') {
     player.update(dts, keys);
     if (tState > 2.2) showResult();
