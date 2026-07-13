@@ -130,7 +130,7 @@ export const TOURS = [
           { id: 'w3c1', title: 'PEER REVIEW', desc: 'LAND an 81% chain before MAESTRO FORTISSIMO — the specimen grades the observer; give him nothing to mark', opp: 'maestro', goal: { type: 'chain', v: 81 } },
           { id: 'w3c2', title: 'TERMINAL VELOCITY', desc: 'Send SLIM PETE 79m — the featherweight achieves escape velocity on camera', opp: 'slim', goal: { type: 'dist', v: 79 } },
           { id: 'w3c4', title: 'THE LIGHTHOUSE EFFECT', desc: "CATCH HEAD-TURNING HORTON's face mid-turn, incoming, and SEND him 27m — flush on the sweep, like greeting a lighthouse", opp: 'horton', goal: { type: 'headdist', v: 27 } },
-          { id: 'w3c3', title: '☗ FINAL BOSS: THE UNSLAPPABLE SPECIMEN', desc: "TICK-TOCK TOM is bolted to the ground and self-declared UNSLAPPABLE. Pummel his IMMOVABILITY to zero — every slap's force STAYS landed. You get 10.", opp: 'clockwork', goal: { type: 'bulwark', v: 160 } },
+          { id: 'w3c3', title: '☗ FINAL BOSS: THE UNSLAPPABLE SPECIMEN', desc: "TICK-TOCK TOM is bolted to the ground and self-declared UNSLAPPABLE. Pummel his IMMOVABILITY to zero — every slap's force STAYS landed. You get 10.", opp: 'clockwork', goal: { type: 'bulwark', v: 125 } },
         ],
       },
     ],

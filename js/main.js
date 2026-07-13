@@ -413,6 +413,7 @@ function openOppPick() {
 function startMatch() {
   tookTakedown = false;
   bulwarkPts = 0;
+  absorbIdx = 0;   // fresh branching-dialogue sequence per match
   ui.bulwark(null);
   attempts = [];
   submitted = false;
@@ -1125,11 +1126,12 @@ function onContact(hit, fist) {
   const bw = opponent.arch.bulwark;
   let absorbed = false;
   if (bw) {
-    // drain by raw slap FORCE (power) — world- and mass-independent, so the
-    // physics of where he'd land never enters it. Each boss's toughness lives in
-    // its `threshold` (power-units). A feeble graze barely dents; a flush cracker
-    // takes a big bite.
-    bulwarkPts += power;
+    // drain by slap FORCE, SUPERLINEAR (power²/25) — world- and mass-independent.
+    // The square widens the gap between a flush cracker and a mediocre pat: a
+    // decently good player (power ~24) clears ~5 of 10; a mediocre one (power ~16)
+    // drains half as fast and can run out the clock and FAIL. Each boss's toughness
+    // lives in its `threshold`.
+    bulwarkPts += (power * power) / 25;
     const pct = Math.max(0, Math.ceil(100 - bulwarkPts / (bw.threshold / 100)));
     opponent.bulwarkPct = pct;
     ui.bulwark(pct, bw.label, bw.sprungCry);
@@ -1194,15 +1196,19 @@ function onContact(hit, fist) {
   setState('IMPACT');
 }
 
-// the result-card line for an ABSORBED bulwark hit. Tick-Tock Tom narrates his
-// origin one beat per slap as the meter drains (slapStory); other bulwark bosses
+// the result-card line for an ABSORBED bulwark hit. Tick-Tock Tom BRANCHES on
+// durability — confident (>60%) → mechanisms cracking (25–60%) → panic (<25%) —
+// with Charlie ('YOU') narrating his science between; other bulwark bosses
 // (Grievance) get the plain "keep chipping" read.
+let absorbIdx = 0;
 function absorbLine(arch) {
   const pct = opponent.bulwarkPct;
   const label = (arch.bulwark && arch.bulwark.label) || 'meter';
-  if (arch.slapStory && arch.slapStory.length) {
-    const i = Math.min(attempts.length - 1, arch.slapStory.length - 1);
-    return `${arch.name}: “${arch.slapStory[i]}”  (${label}: ${pct}%)`;
+  if (arch.slapTiers) {
+    const pool = pct < 25 ? arch.slapTiers.low : pct < 60 ? arch.slapTiers.mid : arch.slapTiers.high;
+    const beat = pool[absorbIdx++ % pool.length];
+    const who = beat.who === 'YOU' ? player.look.name : beat.who;
+    return `${who}: “${beat.text}”  (${label}: ${pct}%)`;
   }
   return `IMMOVABLE — he doesn't budge an inch. But the ${label} just dropped to ${pct}%. Keep chipping.`;
 }

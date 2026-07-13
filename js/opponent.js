@@ -388,25 +388,46 @@ export const ROSTER = [
       // the hand REBOUNDS; after each slap he tells the next beat of his origin
       // (slapStory). ONLY at zero does the mainspring let go — the bolts SHEAR and
       // he blows away.
-      bulwark: { threshold: 160, label: 'IMMOVABILITY' }, // ~7 solid slaps of the 10 you get
+      // superlinear drain (main.js): a decently good player (~5 slaps of 10)
+      // clears it; a mediocre one drains too slowly and can FAIL at the tenth.
+      bulwark: { threshold: 125, label: 'IMMOVABILITY' },
       attempts: 10,          // a cumulative pummel, not best-of-3
       groundBolt: true,      // bolted down by his own clockwork (opponent build); shears on spring-out
       skin: 0xc9a24b, shirt: 0x9a7a34, pants: 0x6e5626,
       windKey: true, paintedGrin: 0xc0202a, brow: true,
       pickLine: 'Slapped ONCE, age six, at this fair. Spent forty years and his entire body ensuring it never happens again. Bolted himself down for good measure.',
-      // the origin, told one beat per slap as you chip his IMMOVABILITY down —
-      // shown as his taunt on each result card (main.js reads slapStory[hitNo])
-      slapStory: [
-        'You FELT that? Impossible. I had the nerves removed in ’84. Sentiment is a structural weakness.',
-        'I was slapped ONCE. Age six. Right here, by the tilt-a-whirl. I have spent forty years making certain of a second opinion.',
-        'First, the diet. Brass filings and RESOLVE, nothing else, for a decade. Observe the sheen. That is not a tan.',
-        'The color? I DYED myself. Slappable men are PINK, soft, apologetic. I chose the hue of a bank vault door.',
-        'I replaced my spine with a mainspring. You are not slapping a man, child. You are WINDING A CLOCK.',
-        'The bolts? Mine. A moving target may be missed — but a BOLTED one cannot be moved. It is simple geometry. I am geometry.',
-        '...that one had a tingle to it. Merely a draft. My warranty is VOID on weather and I intend to honor that.',
-        'My mother said I would never amount to anything. I amounted to nine hundred pounds of unslappable brass. Ring her.',
-        'The mainspring is... loosening. This is INTENTIONAL. I am CHOOSING to feel my legs again. It is a gift I give myself.',
-        'No. NO. I ENGRAVED it. UNSLAPPABLE. It is in the METAL. You cannot argue with ENGRAVING, you cannot argue with a MAN who—',
+      // BRANCHING by durability: which pool speaks is chosen by the live meter, not
+      // the slap count — so the arc (futile boasting → mechanisms cracking → panic)
+      // tracks how broken he actually is. 'YOU' is Charlie, continuing for science.
+      // main.js absorbLine() picks the tier and cycles within it.
+      slapTiers: {
+        high: [ // IMMOVABILITY > 60 — confident, futile, the origin
+          { who: 'TICK-TOCK TOM', text: 'You FELT that? Impossible. I had the nerves removed in ’84. Sentiment is a structural weakness.' },
+          { who: 'YOU', text: 'The specimen absorbs the impulse and re-declares itself unslappable. Futile, it says. Noted. We continue — for the record.' },
+          { who: 'TICK-TOCK TOM', text: 'I was slapped ONCE. Age six. Right here, by the tilt-a-whirl. I have spent forty years making certain of the sequel.' },
+          { who: 'TICK-TOCK TOM', text: 'The color? I DYED myself. Slappable men are PINK, soft, apologetic. I chose the hue of a bank vault door.' },
+          { who: 'YOU', text: 'Note the vault-grey dermis and the brass sub-structure. Science does not stop for a paint job. Again.' },
+          { who: 'TICK-TOCK TOM', text: 'I replaced my spine with a mainspring. You are not slapping a man, child. You are WINDING A CLOCK.' },
+        ],
+        mid: [ // 25–60 — the mechanisms crack, denial begins
+          { who: 'TICK-TOCK TOM', text: 'A BOLT just — that bolt was DECORATIVE. Mostly decorative. The important bolts remain. I have a spreadsheet.' },
+          { who: 'YOU', text: 'For the log: a fastener has departed the specimen. Immovability is holding at a nervous number. I keep slapping.' },
+          { who: 'TICK-TOCK TOM', text: '...that one had a TINGLE. Merely a draft. My warranty is VOID on weather and I intend to honor that.' },
+          { who: 'TICK-TOCK TOM', text: 'My mother said I would never amount to anything. I amounted to nine hundred pounds of brass. It is COMING LOOSE, mother.' },
+        ],
+        low: [ // < 25 — panic, the clockwork failing, and Charlie unbothered
+          { who: 'TICK-TOCK TOM', text: 'The mainspring — NO — I am CHOOSING to feel my legs again. This is a GIFT. I GIVE it to MYSELF—' },
+          { who: 'YOU', text: 'The specimen is disassembling in real time. Remarkable. I will require additional swings to confirm the trend.' },
+          { who: 'TICK-TOCK TOM', text: 'I ENGRAVED it. UNSLAPPABLE. It is in the METAL. You cannot argue with ENGRAVING, you cannot argue with a MAN who—' },
+          { who: 'TICK-TOCK TOM', text: 'Forty years. FORTY. For a Tuesday I did not even — the chains are — this was NOT in the maintenance schedule—' },
+        ],
+      },
+      taunts: [
+        'UNSLAPPABLE. I had it engraved. On myself.',
+        'Tick. Tock. Still here.',
+        'I absorbed that one. I absorb ALL of them. It is called posture.',
+        'Was that a slap or a suggestion?',
+        'The last man to move me was a licensed piano mover. He had a DOLLY.',
       ],
       taunts: [
         'UNSLAPPABLE. I had it engraved. On myself.',
@@ -1929,24 +1950,43 @@ export class Opponent {
       this.goop.children[0].scale.y = 0.42 + Math.sin(this.time * 1.1) * 0.03;
     }
     if (this.boltRig) {
-      // the mainspring winds a little tighter as the meter falls (visible strain);
-      // once broken, every piece flies apart and the rig vanishes
-      if (this._boltBreakT > 0) {
-        this._boltBreakT -= dt;
-        for (const p of this.boltPieces) {
-          if (!p.userData.vel) continue;
-          p.position.addScaledVector(p.userData.vel, dt);
-          p.userData.vel.y -= 11 * dt;
-          p.rotation.x += p.userData.av.x * dt;
-          p.rotation.y += p.userData.av.y * dt;
-          p.rotation.z += p.userData.av.z * dt;
+      const pct = this.bulwarkPct != null ? this.bulwarkPct : 100;
+      // MECHANISMS BREAKING: the clockwork fails piece-by-piece as the meter drains
+      // — a bolt shears loose at 55%, another at 35%, a third at 20% — so by the
+      // time the mainspring lets go he is already half-wrecked. (Skipped once the
+      // full spring-out break is running.)
+      if (this._boltBreakT == null) {
+        const want = pct <= 20 ? 3 : pct <= 35 ? 2 : pct <= 55 ? 1 : 0;
+        // opponent is rebuilt each attempt, so on the FIRST frame we SYNC the rig
+        // to the current meter — bolts already lost on prior attempts vanish
+        // silently (no re-pop). Only NEW shears (the meter dropping this attempt)
+        // fly off.
+        if (!this._boltSynced) {
+          for (let k = 0; k < want && k + 1 < this.boltPieces.length; k++) this.boltPieces[1 + k].visible = false;
+          this._popped = want;
+          this._boltSynced = true;
         }
-        if (this._boltBreakT <= 0) { this.scene.remove(this.boltRig); this.boltRig = null; }
-      } else if (this.boltSpring) {
-        // strain: the coil squashes down as immovability drains
-        const t = (this.bulwarkPct != null ? this.bulwarkPct : 100) / 100;
-        this.boltSpring.scale.y = 0.6 + t * 0.4;
+        while (this._popped < want && this._popped + 1 < this.boltPieces.length) {
+          const p = this.boltPieces[1 + this._popped]; // pop the next bolt/chain; keep the plate [0]
+          p.userData.vel = new THREE.Vector3((Math.random() - 0.5) * 4, 2.5 + Math.random() * 3, (Math.random() - 0.5) * 4);
+          p.userData.av = new THREE.Vector3((Math.random() - 0.5) * 11, (Math.random() - 0.5) * 11, (Math.random() - 0.5) * 11);
+          this._popped++;
+        }
+        if (this.boltSpring) this.boltSpring.scale.y = 0.55 + (pct / 100) * 0.45; // the mainspring strains flatter
+      } else {
+        this._boltBreakT -= dt;
       }
+      // fly any loosed piece — shared by the progressive pops and the full break
+      for (const p of this.boltPieces) {
+        if (!p.userData.vel) continue;
+        p.position.addScaledVector(p.userData.vel, dt);
+        p.userData.vel.y -= 11 * dt;
+        p.rotation.x += p.userData.av.x * dt;
+        p.rotation.y += p.userData.av.y * dt;
+        p.rotation.z += p.userData.av.z * dt;
+        if (p.position.y < -0.6) p.visible = false;
+      }
+      if (this._boltBreakT != null && this._boltBreakT <= 0) { this.scene.remove(this.boltRig); this.boltRig = null; }
     }
     if (this.launched) {
       this.rag.sync();
