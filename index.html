@@ -91,7 +91,20 @@ body.backon #attempts{transform:translateY(42px);}
   scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 #worldRow::-webkit-scrollbar{display:none;}
 .worldOpt{flex:0 0 auto;font-size:11px;padding:6px 11px;border-radius:14px;}
-.worldOpt.on{background:var(--red);color:#fff;}
+/* selected world = GREEN, so it reads as tied to START SLAPPING (it was RED,
+   which matched the campaign button and made worlds look like campaign settings) */
+.worldOpt.on{background:#2fae4b;color:#fff;}
+/* ---- title free-play CTA: PICK YOUR WORLD → big green START, then a divider
+        before the separate CAMPAIGN path ---- */
+.worldLabel{font-size:12px;letter-spacing:3px;color:var(--yellow);text-shadow:1px 1px 0 #000;margin-bottom:-4px;}
+#startBtn{font-size:24px;padding:15px 46px;background:#2fae4b;color:#fff;text-shadow:2px 2px 0 rgba(0,0,0,.45);
+  box-shadow:0 6px 0 #000;animation:startGlow 2s ease-in-out infinite;}
+#startBtn:active{transform:translateY(5px);box-shadow:0 1px 0 #000;}
+@keyframes startGlow{0%,100%{box-shadow:0 6px 0 #000;}50%{box-shadow:0 6px 0 #000,0 0 20px 3px rgba(60,200,90,.5);}}
+.startHint{font-size:11px;letter-spacing:2px;color:#7c85ad;margin-top:-6px;}
+.titleDivider{display:flex;align-items:center;gap:12px;width:min(86vw,380px);color:#6a7099;
+  font-size:12px;letter-spacing:3px;font-family:'Arial Black',Impact,sans-serif;margin:2px 0;}
+.titleDivider::before,.titleDivider::after{content:"";flex:1;height:2px;background:rgba(255,255,255,.15);}
 
 /* ---- ref bar: the judge's remarks / slapper quips — LOW, never over the intro ---- */
 #refBar{position:absolute;bottom:158px;left:0;right:0;margin:0 auto;width:fit-content;max-width:88vw;
@@ -424,6 +437,11 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
 .dlcSub{font-size:12px;color:#5a5f7d;margin:4px 0 14px;line-height:1.35;}
 #dlcCta{margin-bottom:14px;}
 #dlcCta button{background:var(--red);color:#fff;font-size:15px;width:100%;}
+/* the "redeem your code" link is a text link, not the big red buy button */
+.dlcRedeemLink{margin-top:9px;font-size:12px;color:#6a6f85;font-family:Arial,sans-serif;}
+#dlcCta .dlcRedeemLink button{background:none;border:none;box-shadow:none;color:var(--red);
+  font-family:Arial,sans-serif;font-weight:bold;font-size:12px;text-decoration:underline;
+  padding:0;width:auto;letter-spacing:0;cursor:pointer;display:inline;}
 .dlcOwned{background:#1f8a3b;color:#fff;font-weight:bold;font-size:13px;letter-spacing:1px;padding:10px;border-radius:8px;}
 .dlcSection{text-align:left;margin:16px 0 4px;}
 .dlcSection h4{font-family:'Arial Black',Impact,sans-serif;font-size:13px;letter-spacing:1px;color:#1b1d33;margin:0 0 8px;border-bottom:2px solid #e6dcb4;padding-bottom:4px;}
@@ -523,7 +541,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
       <div id="unlockName"></div>
       <div id="unlockDesc"></div>
       <div class="unlockPrice">❤️ SUPPORTER PACK — $<span id="unlockPriceVal">6.99</span><br>
-        <span style="font-size:11px;letter-spacing:.5px;color:#5a5f7d;">UNLOCKS ALL SIX LEGENDS &amp; KEEPS THE FAIR FREE FOR EVERYONE</span></div>
+        <span style="font-size:11px;letter-spacing:.5px;color:#5a5f7d;">UNLOCKS EVERY SLAPPER, WORLD &amp; CAMPAIGN — AND KEEPS THE FAIR FREE FOR EVERYONE</span></div>
       <button id="unlockBuy">❤️ SUPPORT SLAPMANIA — $6.99</button>
       <div class="unlockOr">— OR REDEEM / RECOVER A CODE —</div>
       <div class="unlockRedeem">
@@ -538,7 +556,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
     <div class="dlcCard">
       <button id="dlcClose" class="unlockX">✕</button>
       <div class="dlcTitle">✨ SUPPORTER PACK</div>
-      <div class="dlcSub">One pack unlocks every slapper, world &amp; legend below — and keeps the fair free for everyone.</div>
+      <div class="dlcSub">One pack unlocks every slapper, world &amp; campaign below — and keeps the fair free for everyone.</div>
       <div id="dlcCta"></div>
       <div id="dlcBody"></div>
     </div>
@@ -567,17 +585,21 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
       <span style="white-space:nowrap;"><span class="key">P</span>PALM</span>
     </div>
     <div class="tagline" style="font-size:12px;">FIRE 'EM IN THAT ORDER — TIMING IS EVERYTHING</div>
-    <div class="pressany blink">ENTER / TAP TO MOSEY ON UP</div>
-    <!-- campaign sits low: quick play is the front door, the tour is the destination
-         you graduate to — and down here it never crowds the how-to-play spine -->
-    <button id="tourBtn" class="hidden" style="font-size:15px;padding:10px 22px;background:var(--red);color:#fff;">🎪 CAMPAIGN MODE — THE COUNTY FAIR TOUR</button>
-    <div id="tourNudge" class="hidden" style="font-family:Arial,sans-serif;font-weight:bold;font-size:12px;color:var(--yellow);margin-top:-2px;text-shadow:1px 1px 0 #000;">🔰 NEW HERE? THE TOUR TEACHES YOU TO SLAP — ONE STEP AT A TIME ↑</div>
-    <button id="dlcBtn" style="font-size:13px;padding:8px 18px;background:var(--ink);color:var(--yellow);border:3px solid #000;">✨ SUPPORTER PACK — SLAPPERS · WORLDS · LEGENDS</button>
+    <!-- FREE PLAY is the front door: PICK YOUR WORLD, then the big green START.
+         Campaign is a clearly SEPARATE path below the divider (it pins its own
+         worlds, so the world picker belongs to free play, not the tour). -->
+    <div class="worldLabel">🌍 PICK YOUR WORLD</div>
     <div id="worldWrap">
       <button id="worldPrev" class="worldArrow" aria-label="More worlds">‹</button>
       <div id="worldRow"></div>
       <button id="worldNext" class="worldArrow" aria-label="More worlds">›</button>
     </div>
+    <button id="startBtn">▶ START SLAPPING</button>
+    <div class="startHint">…or press ENTER / tap anywhere</div>
+    <div id="storyDivider" class="titleDivider hidden"><span>OR TAKE ON THE STORY</span></div>
+    <button id="tourBtn" class="hidden" style="font-size:15px;padding:10px 22px;background:var(--red);color:#fff;">🎪 CAMPAIGN MODE — THE COUNTY FAIR TOUR</button>
+    <div id="tourNudge" class="hidden" style="font-family:Arial,sans-serif;font-weight:bold;font-size:12px;color:var(--yellow);margin-top:-2px;text-shadow:1px 1px 0 #000;">🔰 NEW HERE? THE TOUR TEACHES YOU TO SLAP — ONE STEP AT A TIME ↑</div>
+    <button id="dlcBtn" style="font-size:13px;padding:8px 18px;background:var(--ink);color:var(--yellow);border:3px solid #000;">✨ SUPPORTER PACK — SLAPPERS · WORLDS · CAMPAIGNS</button>
     <div id="creditBar">MADE BY VICTOR TAN<span class="sep">·</span>© 2026 ALL RIGHTS RESERVED<span class="sep">·</span><a href="https://www.youtube.com/@VictorTan" target="_blank" rel="noopener">▶ YOUTUBE</a><span class="sep">·</span><a href="https://buymeacoffee.com/victortanws" target="_blank" rel="noopener">☕ BUY ME A COFFEE</a></div>
   </div>
 

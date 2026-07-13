@@ -277,11 +277,26 @@ function openUnlockModal(char) {
   unlockTarget = char;
   um.name.textContent = char.name;
   um.desc.textContent = char.desc;
-  um.price.textContent = '6.99'; // one supporter pack, all six legends
+  um.price.textContent = '6.99'; // one supporter pack — every slapper, world & campaign
   um.msg.textContent = ''; um.code.value = '';
   um.modal.classList.remove('hidden');
 }
 function closeUnlockModal() { um.modal.classList.add('hidden'); unlockTarget = null; }
+// the ONE checkout path — shared by the modal's SUPPORT button AND the gallery's
+// UNLOCK EVERYTHING button, so that button links STRAIGHT to Stripe (no detour).
+async function startCheckout(setMsg) {
+  if (!shopEnabled()) { setMsg('Checkout opens soon — hang tight! 🛒'); return; }
+  setMsg('Opening checkout…');
+  try {
+    const r = await fetch(`${window.SLAPP_CONFIG.supabaseUrl}/functions/v1/create-checkout`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${window.SLAPP_CONFIG.supabaseAnonKey}`, apikey: window.SLAPP_CONFIG.supabaseAnonKey },
+    });
+    const d = await r.json();
+    if (d && d.url) { location.href = d.url; return; }  // off to Stripe's hosted page
+    setMsg('Checkout stumbled — try again in a spell.');
+  } catch { setMsg('Checkout stumbled — try again in a spell.'); }
+}
 // grant the Supporter Pack (from a verified purchase OR a redeemed code) and
 // remember the code so the buyer can re-unlock on any device without friction
 function unlockPack(code, how) {
@@ -289,7 +304,7 @@ function unlockPack(code, how) {
   if (code) localStorage.setItem('slapp_code', code);
   closeUnlockModal();
   try { refreshDlcBtn(); } catch {} // you're a supporter now — drop the "Supporter Pack" ad button
-  ui.challengeBar('🏆 SUPPORTER PACK UNLOCKED — ALL SIX LEGENDS ARE YOURS. THANK YOU!');
+  ui.challengeBar('🏆 SUPPORTER PACK UNLOCKED — EVERY SLAPPER, WORLD & CAMPAIGN IS YOURS. THANK YOU!');
   sfx.fanfare();
   track(how === 'redeem' ? 'pack_redeemed' : 'pack_purchased', {});
   if (state === 'SELECT_SLAPPER') openSlapperPick();
@@ -302,21 +317,7 @@ if (um.modal) {
   addEventListener('keydown', (e) => {
     if (e.code === 'Escape' && !um.modal.classList.contains('hidden')) { e.stopImmediatePropagation(); closeUnlockModal(); }
   }, true); // capture: beat the global Escape→title handler while the modal is up
-  um.buy.onclick = async () => {
-    if (!shopEnabled()) { um.msg.textContent = 'Checkout opens soon — hang tight! 🛒'; return; }
-    um.msg.textContent = 'Opening checkout…';
-    try {
-      const r = await fetch(`${window.SLAPP_CONFIG.supabaseUrl}/functions/v1/create-checkout`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${window.SLAPP_CONFIG.supabaseAnonKey}`, apikey: window.SLAPP_CONFIG.supabaseAnonKey },
-      });
-      const d = await r.json();
-      if (d && d.url) { location.href = d.url; return; }  // off to Stripe's hosted page
-      um.msg.textContent = 'Checkout stumbled — try again in a spell.';
-    } catch {
-      um.msg.textContent = 'Checkout stumbled — try again in a spell.';
-    }
-  };
+  um.buy.onclick = () => startCheckout((m) => { um.msg.textContent = m; });
   // ONE box, two jobs: type a CODE to redeem, or type your PURCHASE EMAIL to
   // recover a lost code. Both are server-validated (redeem-code / recover-code);
   // there is no client-side unlock — the anon key can't read the codes table.
@@ -664,7 +665,7 @@ function openTourMenu() {
     devAll: TOURDEV,
     onLocked: (tour) => openUnlockModal({
       name: tour.title.replace(/^\S+\s/, ''),
-      desc: `${tour.acts.length} acts of "${tour.blurb}" — this storyline, every legend and every world ride with the Supporter Pack.`,
+      desc: `${tour.acts.length} acts of "${tour.blurb}" — this storyline, every campaign and every world ride with the Supporter Pack.`,
     }),
   });
   track('tour_opened', { cleared: campaign.progress().length });
@@ -733,7 +734,7 @@ function buildWorldRow() {
     b.onclick = () => {
       sfx.ensure();
       if (locked) {
-        openUnlockModal({ name: w.label.replace(/^\S+\s/, ''), desc: 'This world — and every DLC world and legend — rides with the Supporter Pack.' });
+        openUnlockModal({ name: w.label.replace(/^\S+\s/, ''), desc: 'This world — and every DLC world and campaign — rides with the Supporter Pack.' });
         return;
       }
       applyWorld(w.key);
@@ -760,10 +761,15 @@ buildWorldRow();
 const savedWorld = localStorage.getItem('slapp_world') || 'day';
 const savedDef = WORLDS.find((w) => w.key === savedWorld);
 applyWorld(stage.hasWorld(savedWorld) && !(savedDef && savedDef.dlc && !owned('bruceslee')) ? savedWorld : 'day');
+// START SLAPPING — the explicit free-play button. Tap-anywhere / Enter still
+// work as a fallback (buttons are excluded from the tap-to-advance handler), so
+// this just gives the front door a real, obvious control instead of a hidden tap.
+document.getElementById('startBtn').onclick = () => { sfx.ensure(); advanceScreens(null); };
 if (campaign.enabled()) {
   const b = document.getElementById('tourBtn');
   b.classList.remove('hidden');
   b.onclick = () => { sfx.ensure(); openTourMenu(); };
+  document.getElementById('storyDivider').classList.remove('hidden'); // the "— or —" only when the tour exists
   // first-timers (never reached SLAPMASTER) get pointed at the Tour as the
   // on-ramp — Act I is already a metered lesson (head hit → short → medium).
   if (!localStorage.getItem('slapp_master')) document.getElementById('tourNudge').classList.remove('hidden');
@@ -781,8 +787,12 @@ function buildDlcGallery() {
   if (packOwned) {
     cta.innerHTML = '<div class="dlcOwned">✓ SUPPORTER — thank you! Everything below is yours.</div>';
   } else {
-    cta.innerHTML = '<button>❤️ UNLOCK EVERYTHING — ONE SUPPORTER PACK</button>';
-    cta.querySelector('button').onclick = () => openUnlockModal({ name: 'THE SUPPORTER PACK', desc: 'Every slapper, every world and every legend below — one pack, one price. And it keeps the fair free for everyone.' });
+    cta.innerHTML = '<button id="dlcBuy">❤️ UNLOCK EVERYTHING — $6.99</button>'
+      + '<div class="dlcRedeemLink">…already a supporter? <button id="dlcRedeemLink" type="button">redeem your code</button></div>';
+    // the big button goes STRAIGHT to Stripe (no detour modal). Code-havers get
+    // a small link into the modal, which carries the code box.
+    document.getElementById('dlcBuy').onclick = (e) => { const b = e.currentTarget; startCheckout((m) => { b.textContent = m; }); };
+    document.getElementById('dlcRedeemLink').onclick = () => openUnlockModal({ name: 'THE SUPPORTER PACK', desc: 'Every slapper, world & campaign — one pack, one price. Enter your code below, or support to unlock.' });
   }
   const mkItem = (icon, name, desc, isOwned, onLock) => {
     const el = document.createElement('div');
@@ -808,10 +818,10 @@ function buildDlcGallery() {
   body.appendChild(mkSection(`🌍 WORLDS · ${dlcWorlds.length}`, dlcWorlds.map((w) =>
     mkItem(leadEmoji(w.label) || '🌍', stripEmoji(w.label),
       'Its own theme, physics & local characters — atop the 15 fair regulars.',
-      owned(w.key), () => openUnlockModal({ name: stripEmoji(w.label), desc: 'This world — and every DLC world, slapper and legend — rides with the Supporter Pack.' })))));
+      owned(w.key), () => openUnlockModal({ name: stripEmoji(w.label), desc: 'This world — and every DLC world, slapper and campaign — rides with the Supporter Pack.' })))));
 
   const dlcTours = campaign.TOURS.filter((t) => t.dlc);
-  body.appendChild(mkSection(`📜 LEGENDS · ${dlcTours.length}`, dlcTours.map((t) =>
+  body.appendChild(mkSection(`📜 CAMPAIGNS · ${dlcTours.length}`, dlcTours.map((t) =>
     mkItem(leadEmoji(t.title) || '📜', stripEmoji(t.title), (t.blurb || '').slice(0, 80),
       owned(t.key), () => openUnlockModal({ name: stripEmoji(t.title), desc: (t.blurb || '').slice(0, 120) + ' — unlocks with the Supporter Pack.' })))));
 }
