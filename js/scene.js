@@ -195,11 +195,17 @@ export function createStage(canvas) {
   lane.receiveShadow = true;
   scene.add(lane);
 
-  // contest ring + chalk distance lines. Sits at y=0.06 — ABOVE any world floor
-  // decal (the therapy rug + vegas gold lane both live at 0.02) so the ring never
-  // z-fights the floor and STROBES as the camera moves (an epilepsy hazard).
+  // contest ring + chalk distance lines. These are floor DECALS: thin surfaces
+  // laid over whatever floor a world provides (grass/lane, or the therapy rug at
+  // y=0.02). Raising them alone does NOT stop the STROBE (an epilepsy hazard) —
+  // at the low, grazing faceoff/swing camera the depth-buffer precision collapses
+  // and coplanar surfaces z-fight regardless of a few cm of height. The robust
+  // fix is polygonOffset: a guaranteed depth-buffer bias that pulls the decal in
+  // front of the floor at EVERY angle/distance. depthWrite:false + renderOrder
+  // keep it from ever occluding the fighters standing in it.
+  const decalOffset = { polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 };
   const ring = new THREE.Mesh(new THREE.RingGeometry(1.25, 1.4, 48),
-    new THREE.MeshBasicMaterial({ color: 0xfff3d0, depthWrite: false }));
+    new THREE.MeshBasicMaterial({ color: 0xfff3d0, depthWrite: false, ...decalOffset }));
   ring.rotation.x = -Math.PI / 2;
   ring.position.set(0.5, 0.06, 0);
   ring.renderOrder = 2;
@@ -215,18 +221,20 @@ export function createStage(canvas) {
   const lineGeo = new THREE.PlaneGeometry(0.09, 5.2);
   for (let d = 0; d <= 100; d += 5) {
     const line = new THREE.Mesh(lineGeo,
-      new THREE.MeshBasicMaterial({ color: 0xfffbe8, transparent: true, opacity: d === 0 ? 0.95 : 0.55 }));
+      new THREE.MeshBasicMaterial({ color: 0xfffbe8, transparent: true, opacity: d === 0 ? 0.95 : 0.55, depthWrite: false, ...decalOffset }));
     line.rotation.x = -Math.PI / 2;
     line.position.set(START_X + d, 0.021, 0);
+    line.renderOrder = 2;
     scene.add(line);
     if (d > 0) {
       const label = new THREE.Mesh(
         new THREE.PlaneGeometry(1.5, 0.75),
-        new THREE.MeshBasicMaterial({ map: makeTextTexture(`${d}m`), transparent: true })
+        new THREE.MeshBasicMaterial({ map: makeTextTexture(`${d}m`), transparent: true, depthWrite: false, ...decalOffset })
       );
       label.rotation.x = -Math.PI / 2;
       label.rotation.z = -Math.PI / 2;
       label.position.set(START_X + d, 0.022, 2.1);
+      label.renderOrder = 2;
       scene.add(label);
     }
   }
@@ -3730,9 +3738,11 @@ export function createStage(canvas) {
     // ---- FLOOR: polished wood + a big red rug down the middle, cream border ----
     const rug = new THREE.Mesh(new THREE.PlaneGeometry(118, 15), carpet);
     rug.rotation.x = -Math.PI / 2; rug.position.set(48, 0.02, 0); therapyG.add(rug);
-    for (const zEdge of [-7.4, 7.4]) {            // cream rug trim
-      const trim = new THREE.Mesh(new THREE.PlaneGeometry(118, 0.5), cream);
-      trim.rotation.x = -Math.PI / 2; trim.position.set(48, 0.03, zEdge); therapyG.add(trim);
+    for (const zEdge of [-7.4, 7.4]) {            // cream rug trim (its own offset
+      // material — a floor decal over the rug, biased in front so it can't strobe)
+      const trim = new THREE.Mesh(new THREE.PlaneGeometry(118, 0.5),
+        new THREE.MeshToonMaterial({ color: 0xe8dfce, depthWrite: false, ...decalOffset }));
+      trim.rotation.x = -Math.PI / 2; trim.position.set(48, 0.03, zEdge); trim.renderOrder = 2; therapyG.add(trim);
     }
     // ---- WALLS: tall walnut panelling flanking the lane + a back wall ----
     const mkWall = (zc, len, xc) => {
