@@ -213,6 +213,13 @@ body.backon #attempts{transform:translateY(42px);}
   box-shadow:6px 6px 0 rgba(0,0,0,.55);font-family:Arial,sans-serif;min-width:320px;}
 .boardhead{font-family:'Arial Black',Impact,sans-serif;font-size:15px;letter-spacing:2px;color:var(--red);margin-bottom:6px;text-align:center;}
 .boardrow{display:flex;gap:12px;justify-content:space-between;font-weight:bold;font-size:13px;line-height:1.8;}
+.boardrow>b{white-space:nowrap;}   /* "1015 PTS" must never split across lines */
+.boardrow>span:last-child{text-align:right;min-width:0;}
+@media (max-width:560px){
+  /* phone: tighter rows, no mid-number wrapping — each entry stays ONE line */
+  .boardrow{gap:7px;font-size:11px;line-height:1.7;}
+  .boardrow>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+}
 
 /* ---- pick screens: transparent dock so the 3D showcase stays visible ---- */
 #pick{background:transparent;justify-content:flex-end;gap:10px;padding-bottom:18px;pointer-events:none;}
