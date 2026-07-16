@@ -82,7 +82,22 @@ export function createWorld() {
   fixed(new CANNON.Box(new CANNON.Vec3(17.5, 0.5, 0.15)), 2.5, 0.5, 2.9);
   fixed(new CANNON.Box(new CANNON.Vec3(17.5, 0.5, 0.15)), 2.5, 0.5, -2.9);
 
-  return { world, groundMat, fleshMat, setIce, setGround, setGravity };
+  // world-prop colliders that come and go WITH their world (the therapy cat) —
+  // unlike addSolids' permanent footprints, these must never linger as invisible
+  // air in worlds where the prop isn't standing. def: {x,z,ry,hx,hy,hz} or null.
+  const propBodies = {};
+  const setPropSolid = (key, def) => {
+    if (propBodies[key]) { world.removeBody(propBodies[key]); delete propBodies[key]; }
+    if (!def) return;
+    const b = new CANNON.Body({ type: CANNON.Body.STATIC, material: groundMat, collisionFilterGroup: GROUP_STATIC });
+    b.addShape(new CANNON.Box(new CANNON.Vec3(def.hx, def.hy, def.hz)));
+    b.position.set(def.x, def.hy, def.z);
+    if (def.ry) b.quaternion.setFromEuler(0, def.ry, 0);
+    world.addBody(b);
+    propBodies[key] = b;
+  };
+
+  return { world, groundMat, fleshMat, setIce, setGround, setGravity, setPropSolid };
 }
 
 // static colliders for the visible structures (footprints supplied by the

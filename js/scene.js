@@ -2070,11 +2070,16 @@ export function createStage(canvas) {
     angel.rotation.y = Math.PI; // they face each other
     devil.position.set(0, 0, -1.0);
     g.add(angel, devil);
-    // spawn well AHEAD of the flyer and big, so the chase camera flies THROUGH
-    // the duel instead of leaving it behind in a frame or two
-    g.position.set(x + 20, 5.4, -1.6);
-    g.scale.setScalar(1.9);
+    // PROMINENCE: spawn CLOSE ahead (+12, not +20 — a 45m flight used to die
+    // before ever reaching it), BIG (2.6), and just off the lane so the body
+    // never clips through them — the chase camera gets a real look as it passes,
+    // and if the flyer stops short they hang in the linger camera's frame.
+    // A pillar of light + sparkles announces the materialization.
+    g.position.set(x + 12, 5.0, -3.2);
+    g.scale.setScalar(2.6);
     scene.add(g);
+    spawnBeam(x + 12, -3.2);
+    spawnSparkles(x + 12, -3.2);
     fx.push({ mesh: g, t: 0, life: 7, type: 'duel', angel, devil, hits: 0 });
   }
 
@@ -3961,6 +3966,22 @@ export function createStage(canvas) {
       const finial = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.4, 5), iron);
       finial.position.set(12, 6, sgn * 3.4);
       hauntedG.add(finial);
+    }
+    // GHOST-LIT LANTERNS along both rails: the haunted crowd was near-invisible
+    // in the murk — a row of will-o-green flames keeps the ringside spectacle
+    // readable without breaking the gloom (glow material ignores the dim light)
+    for (const sgn of [-1, 1]) {
+      for (let lx = -4; lx <= 56; lx += 7.5) {
+        const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.055, 1.7, 5), iron);
+        pole.position.set(lx, 0.85, sgn * 3.35);
+        hauntedG.add(pole);
+        const cage = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.3, 0.26), iron);
+        cage.position.set(lx, 1.75, sgn * 3.35);
+        hauntedG.add(cage);
+        const flame = new THREE.Mesh(new THREE.SphereGeometry(0.09, 8, 8), glowMat(0x9fe8a8));
+        flame.position.set(lx, 1.75, sgn * 3.35);
+        hauntedG.add(flame);
+      }
     }
     const gateArch = new THREE.Mesh(new THREE.TorusGeometry(3.6, 0.1, 6, 14, Math.PI), iron);
     gateArch.rotation.y = Math.PI / 2;

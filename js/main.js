@@ -47,6 +47,7 @@ function setLook(look) {
 let state = 'TITLE';
 let tState = 0;
 let timeScale = 1;
+let hitstopT = 0; // freeze-frame countdown on a heavy contact (see onContact)
 let shotClock = 30; // a full, unhurried match clock — time to read the opponent, wait out a weave, set your feet
 let attempts = [];
 let slap = null;        // outcome of the current attempt {foul, part}
@@ -59,6 +60,7 @@ let swellT = 0;
 let barricadeHit = false;
 let gongRung = false; // dojo: the Great Gong rings once per attempt
 let lavaBurned = false; // lava: the flame-broil reaction fires once per attempt
+let popDone = false; // 10m: the crowd's first pop — a beginner's first taste of spectacle
 let mooDone = false;
 let duelDone = false;
 let masterDone = false;
@@ -456,6 +458,7 @@ function goToTitle() {
   slap = null;
   pendingCard = null;
   timeScale = 1;
+  hitstopT = 0;
   sfx.whoosh(0);
   ui.hideCards();
   ui.bubble(null);
@@ -713,6 +716,11 @@ function setWorldFull(key) {
   else if (key === 'blackgold') phys.setGround({ friction: 0.05, restitution: 0.28 }); // the spill: bodies HYDROPLANE down the slick
   else phys.setGround(null);                                                       // farm default
   phys.setGravity(key === 'heaven' ? -8.8 : null);                                 // floaty grace
+  // THE GIANT CAT is a body, not a hologram: in therapy a box collider stands on
+  // its exact spot (30,10, rotated with it), so a wide flyer bounces off the cat
+  // instead of clipping through 4 tons of analyst. Removed with the world —
+  // no invisible air where the cat isn't.
+  phys.setPropSolid('therapyCat', key === 'therapy' ? { x: 30, z: 10, ry: -0.78, hx: 3.4, hy: 2.3, hz: 2.4 } : null);
   if (player.halo) player.halo.visible = key === 'heaven';                         // the slapper becomes an angel in Heaven
 }
 function applyWorld(key) {
@@ -854,6 +862,7 @@ function startAttempt() {
   gongRung = false;
   lavaBurned = false;
   mooDone = false;
+  popDone = false;
   duelDone = false;
   masterDone = false;
   emperorDone = false;
@@ -865,6 +874,7 @@ function startAttempt() {
   if (arch && arch.throwIce) resetCatch(); // catch stages: wipe every stale cube/count up front so a REPLAY always starts clean (also re-run at FACEOFF→SWING)
   shotClock = arch.shotClock || 30; // 30s standard; time-limited bosses run a tighter 20s courtroom
   timeScale = 1;
+  hitstopT = 0;
   prevHandSeg = null; // no stale sweep across attempts
   opponent.runLine = attempts.length % 2; // skiRun v2: line A / line B, announced by her push-off side
   calledHigh = arch.calledShot ? attempts.length % 2 === 0 : null; // Dale calls HIGH, LOW, HIGH
@@ -1236,6 +1246,16 @@ function onContact(hit, fist) {
   else ui.smack('BODY BLOW!', true);
   ui.showMeters(false);
   ui.setClock(null);
+  // HIT-STOP: a real strike freezes the world for a beat before the slow-mo —
+  // scaled by power (a feeble graze stays snappy, a monster slap HANGS ~0.16s).
+  // The freeze is what makes the biggest launches feel heavy instead of slippery.
+  hitstopT = power >= 12 ? Math.min(0.16, 0.05 + power / 220) : 0;
+  if (power >= 18) {
+    // the big-hit dressing: echoing shockwaves off the cheek (real-time timers —
+    // they land inside the frozen/slow-mo window, which is the point)
+    setTimeout(() => stage.spawnShock(hit.point), 90);
+    if (power >= 24) setTimeout(() => stage.spawnShock(hit.point), 190);
+  }
   timeScale = 0.13;
   setState('IMPACT');
 }
@@ -1710,7 +1730,9 @@ function updateCamera(dt) {
   camera.position.copy(camPos);
   camera.lookAt(camLook);
   // FOV punch-in during the slow-mo impact
-  const targetFov = state === 'IMPACT' ? 44 : 55;
+  // FOV punch-in on impact — and a HARDER punch on a heavy hit (the zoom sells
+  // the hit-stop: freeze + lens lunge reads as force, not lag)
+  const targetFov = state === 'IMPACT' ? (contact && contact.power >= 18 ? 39 : 44) : 55;
   if (Math.abs(camera.fov - targetFov) > 0.05) {
     camera.fov += (targetFov - camera.fov) * (1 - Math.exp(-9 * dt));
     camera.updateProjectionMatrix();
@@ -2075,6 +2097,9 @@ function tick(now) {
       if (hit) onContact(hit, fist);
     } else prevHandSeg = null; // hand idle (or re-armed): never sweep across that gap
   } else if (state === 'IMPACT') {
+    // hit-stop: the world holds its breath (timeScale 0), then the slow-mo runs
+    if (hitstopT > 0) { hitstopT -= dt; timeScale = 0; }
+    else timeScale = 0.13;
     player.update(dts, keys);
     if (tState > 0.55) {
       timeScale = 1;
@@ -2127,6 +2152,19 @@ function tick(now) {
       stage.ringGong();
       stage.shake(0.35);
     }
+    // 10m: DOUBLE DIGITS — the beginner's first payoff. Mash lands ~2m and a
+    // careful first-timer ~10-20m, so this is the first "the crowd saw that"
+    // beat most new players can actually reach (everything else started at 20m).
+    if (!popDone && opponent.distance() > 10) {
+      popDone = true;
+      sfx.crowd(1);
+      stage.kidsCelebrate(2);
+      excite = Math.min(1, excite + 0.3);
+      // banner only when the flight is topping out here (the beginner's case) —
+      // a 40m rocket crosses this line at speed and gets the barricade banner
+      // half a second later; two bursts back-to-back is flicker, not fanfare
+      if (opponent.rag.maxSpeed() < 9) ui.slapBurst('DOUBLE DIGITS!', 'THE CROWD LOOKS UP FROM ITS CORN DOGS');
+    }
     if (!mooDone && opponent.distance() > 30) {
       mooDone = true;
       sfx.moo();
@@ -2138,7 +2176,9 @@ function tick(now) {
     if (!duelDone && opponent.distance() > 40) {
       duelDone = true;
       stage.slapDuel(pel.x);
-      ui.coach('THE HEAVENS DISPUTE YOUR SLAP.');
+      sfx.choir();
+      excite = Math.min(1, excite + 0.4);
+      ui.slapBurst('THE HEAVENS DISPUTE!', 'AN ANGEL AND A DEVIL — ARGUING OVER YOUR FORM');
       for (let i = 0; i < 6; i++) setTimeout(() => sfx.crack(0.22), 750 + i * 550);
     }
     // NOTE: SLAPMASTER and EMPEROR honors are awarded at showResult — the crowd
@@ -2236,7 +2276,7 @@ window.__slapp = {
   get catches() { return { caught: catchCount, missed: catchMiss, thrown: catchThrown, live: iceCubes.length }; },
   get chainState() { return chain; },
   get bestScore() { return bestPts(); },
-  get milestones() { return { barricadeHit, mooDone, duelDone, masterDone, emperorDone, countyDone, barricadeBroken: stage.isBarricadeBroken(), sun: stage.currentSunMood(), ascending: player.ascending }; },
+  get milestones() { return { popDone, barricadeHit, mooDone, duelDone, masterDone, emperorDone, countyDone, barricadeBroken: stage.isBarricadeBroken(), sun: stage.currentSunMood(), ascending: player.ascending }; },
   animals: () => stage.animals,
   // pause/resume the live loop (for freeze-frame screenshots)
   freeze(on) {
