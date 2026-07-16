@@ -272,6 +272,10 @@ export const ROSTER = [
     // THE HUMAN BOARD — a chop-only boss: arch.chop forces player.mode='chop', so
     // the whole swing becomes a downward edge-strike. A slap never even happens.
     key: 'cinderblock', name: 'MASTER TILE', tag: 'BOSS · THE HUMAN BOARD', boss: true, chop: true,
+    // boards don't break to sloppy chops: below 55% chain the strike bounces
+    // (chainGate ×0.12) — so the boss teaches the chop's 4-beat form instead of
+    // folding to a button-mash (which used to clear him — head contact was enough)
+    chainGate: 55, gateCry: 'THE BOARD HOLDS!', gateCrySub: 'RAISE FULL · DROP · SNAP · EDGE — 55% CHAIN TO CRACK HIM',
     w: 1.02, h: 1.05, mass: 1.1, noStache: true,
     skin: 0xd9b48a, shirt: 0xe8e4dc, pants: 0x2a2f38, brow: true,
     pickLine: 'A slap glances off. Bring the EDGE. Bring it DOWN.',

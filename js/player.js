@@ -849,7 +849,23 @@ export class Player {
   get wristOpen() { return THREE.MathUtils.clamp((0.9 - this.j.wrist.a) / 1.1, 0, 1); }
   get spineAngle() { return this.j.spine.a; }
   get spineVel() { return this.j.spine.v; }
-  get coilFrac() { return Math.min(1, Math.max(0, this.j.spine.a) / 2.35); }
+  // PHASE — the mode-aware "where is the strike in its arc" signal the chain
+  // grades read. Slap: the spine itself. Chop: shoulderPitch affine-mapped onto
+  // the spine's scale (measured: the edge crosses the crown at pitch≈0.70 ↔ the
+  // palm crosses the cheek at spine≈0.4; full raise 1.95 ↔ full coil 2.35, so
+  // scale = (2.35−0.4)/(1.95−0.70) = 1.56). With this, gradeA/gradeP/the green
+  // ring work UNCHANGED in chop mode — before it they read the locked spine and
+  // graded every chop 8% (mash = master; the ring never fired).
+  // angle scale 1.05 (not the raw 1.56 span-map): the chop drops at ~7.3 rad/s,
+  // so the PERFECT-P window width = 1.0/scale/7.3 ≈ 130ms — parity with the
+  // slap's ~140ms window instead of a needlessly frame-tight 90ms. Velocity
+  // keeps the full 1.56 so gradeA's whip thresholds line up with the drop.
+  get phaseAngle() { return this.mode === 'chop' ? 0.4 + (this.j.shoulderPitch.a - 0.70) * 1.05 : this.j.spine.a; }
+  get phaseVel() { return this.mode === 'chop' ? this.j.shoulderPitch.v * 1.56 : this.j.spine.v; }
+  get coilFrac() {
+    if (this.mode === 'chop') return Math.min(1, Math.max(0, this.j.shoulderPitch.a - 0.42) / (1.95 - 0.42));
+    return Math.min(1, Math.max(0, this.j.spine.a) / 2.35);
+  }
 
   update(dt, keys) {
     if (this.fallen) { if (this.rag) this.rag.sync(); return; }

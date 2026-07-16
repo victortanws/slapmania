@@ -794,6 +794,9 @@ function buildDlcGallery() {
     document.getElementById('dlcBuy').onclick = (e) => { const b = e.currentTarget; startCheckout((m) => { b.textContent = m; }); };
     document.getElementById('dlcRedeemLink').onclick = () => openUnlockModal({ name: 'THE SUPPORTER PACK', desc: 'Every slapper, world & campaign — one pack, one price. Enter your code below, or support to unlock.' });
   }
+  // truncate on a WORD boundary with an ellipsis — .slice() mid-word printed
+  // "The palm, however, sca" on the gallery cards
+  const trunc = (s, n) => { s = s || ''; if (s.length <= n) return s; const cut = s.slice(0, n); return cut.slice(0, Math.max(20, cut.lastIndexOf(' '))) + '…'; };
   const mkItem = (icon, name, desc, isOwned, onLock) => {
     const el = document.createElement('div');
     el.className = 'dlcItem ' + (isOwned ? 'owned' : 'locked');
@@ -812,7 +815,7 @@ function buildDlcGallery() {
 
   const dlcSlappers = SLAPPERS.filter((s) => s.locked);
   body.appendChild(mkSection(`🖐 SLAPPERS · ${dlcSlappers.length}`, dlcSlappers.map((s) =>
-    mkItem('🖐', stripEmoji(s.name), (s.desc || '').slice(0, 64), owned(s.key), () => openUnlockModal(s)))));
+    mkItem('🖐', stripEmoji(s.name), trunc(s.desc, 64), owned(s.key), () => openUnlockModal(s)))));
 
   const dlcWorlds = WORLDS.filter((w) => w.dlc);
   body.appendChild(mkSection(`🌍 WORLDS · ${dlcWorlds.length}`, dlcWorlds.map((w) =>
@@ -822,8 +825,8 @@ function buildDlcGallery() {
 
   const dlcTours = campaign.TOURS.filter((t) => t.dlc);
   body.appendChild(mkSection(`📜 CAMPAIGNS · ${dlcTours.length}`, dlcTours.map((t) =>
-    mkItem(leadEmoji(t.title) || '📜', stripEmoji(t.title), (t.blurb || '').slice(0, 80),
-      owned(t.key), () => openUnlockModal({ name: stripEmoji(t.title), desc: (t.blurb || '').slice(0, 120) + ' — unlocks with the Supporter Pack.' })))));
+    mkItem(leadEmoji(t.title) || '📜', stripEmoji(t.title), trunc(t.blurb, 80),
+      owned(t.key), () => openUnlockModal({ name: stripEmoji(t.title), desc: trunc(t.blurb, 120) + ' — unlocks with the Supporter Pack.' })))));
 }
 function openDlcGallery() { buildDlcGallery(); document.getElementById('dlcGallery').classList.remove('hidden'); }
 function closeDlcGallery() { document.getElementById('dlcGallery').classList.add('hidden'); }
@@ -1965,11 +1968,11 @@ function tick(now) {
       }
     }
     if (!prevKeys.a && keys.a && !chain.a) {
-      chain.a = gradeA(-player.spineVel);
+      chain.a = gradeA(-player.phaseVel);   // phase*: mode-aware (chop grades the DROP, slap the spine whip)
       ui.chainSet('arm', chain.a.label, chain.a.tier);
     }
     if (!prevKeys.p && keys.p && !chain.p) {
-      chain.p = gradeP(player.spineAngle, player.spineVel);
+      chain.p = gradeP(player.phaseAngle, player.phaseVel);
       ui.chainSet('snap', chain.p.label, chain.p.tier);
     }
 
@@ -1978,8 +1981,8 @@ function tick(now) {
     if (!chain.l) ui.chainSet('coil', `${coilPct}%`, 0);
 
     // --- cues + coaching: exactly one key pulses — the one the moment wants ---
-    const phase = player.spineAngle;
-    const snapCue = !chain.p && player.spineVel < -2 && phase < 1.3 && phase > -0.45;
+    const phase = player.phaseAngle;
+    const snapCue = !chain.p && player.phaseVel < -2 && phase < 1.3 && phase > -0.45;
     // ring: yellow = wait, green = GOOD window, bright flashing = PERFECT core
     const snapLvl = snapCue ? (phase <= 0.9 && phase > -0.1 ? 2 : 1) : 0;
     let wanted = null;
@@ -2041,7 +2044,11 @@ function tick(now) {
       // a fast fist lands as a discounted, disapproved punch (onContact fist
       // path). The ≥3 m/s gate keeps a parked fist from re-triggering while
       // it rests inside someone's face.
-      const fist = !player.pUnlocked;
+      // CHOP mode has no fist form — the hand is an EDGE either way. A P-less
+      // drop is a lazy chop (pg grades it NONE, 0.6×), not a secret punch that
+      // bypasses the chop's spike-down + grading entirely (which let a mash
+      // "punch" clear the chop boss).
+      const fist = !player.pUnlocked && player.mode !== 'chop';
       // rHand = the hand's TRUE reach past the wrist path (palm + fingers ≈
       // 0.14m; knuckles ≈ 0.10). It was 0.26 — a beach-ball hand that launched
       // volunteers from visibly short of the cheek. Contact happens where
@@ -2215,6 +2222,12 @@ window.__slapp = {
   // tour (campaign) test hooks
   get tour() { return { enabled: campaign.enabled(), active: campaign.active ? campaign.active.id : null, progress: campaign.progress() }; },
   tourReset: () => { campaign.reset(); return campaign.progress(); },
+  // test seam: jump straight into a match vs any ROSTER arch (incl. campaign-only
+  // bosses) — pairs with .drive() for scripted mechanic audits without menu-walking
+  _vs: (key) => {
+    const a = ROSTER.find((r) => r.key === key); if (!a) return 'no such opp';
+    chosenArch = a; startMatch(); return 'match vs ' + a.name;
+  },
   // DLC dev backdoor: unlock/relock without paying (Phase 2 replaces with real codes)
   unlock: (key) => { unlock(key); return [...unlocks]; },
   relock: (key) => { unlocks = key ? unlocks.filter((k) => k !== key) : []; localStorage.setItem('slapp_unlocks', JSON.stringify(unlocks)); return [...unlocks]; },

@@ -149,7 +149,7 @@ export const TOURS = [
           { id: 'b1c1', title: 'THE EMPTY HAND', desc: 'LAND a clean head slap on HAYSEED HANK — no want, no fear, no borrowed force', opp: 'hank', goal: { type: 'head' } },
           { id: 'b1c2', title: 'BECOME WATER', desc: 'Send SLIM PETE 23m — do not push the river; become it', opp: 'slim', goal: { type: 'dist', v: 23 } },
           { id: 'b1c3', title: '☗ BOSS: THE MOUNTAIN AT THE GATE', desc: 'Score 380 off BOULDER BOB — he does not move for the unready', opp: 'boulder', goal: { type: 'pts', v: 380 } },
-          { id: 'b1c4', title: '☗ THE STRIKE THAT COMES DOWN', desc: 'A slap glances off MASTER TILE. Land one clean KARATE CHOP: RAISE overhead [S], DROP your weight [L], SNAP the forearm [A], roll the EDGE [P].', opp: 'cinderblock', goal: { type: 'head' } },
+          { id: 'b1c4', title: '☗ THE STRIKE THAT COMES DOWN', desc: 'A slap glances off MASTER TILE — and a sloppy chop BOUNCES. Land a 55% chain KARATE CHOP: RAISE overhead [S], DROP your weight [L], SNAP the forearm [A], roll the EDGE [P].', opp: 'cinderblock', goal: { type: 'chain', v: 55 } },
         ],
       },
       {
