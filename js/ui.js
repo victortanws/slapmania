@@ -2,6 +2,7 @@ const $ = (id) => document.getElementById(id);
 const el = {
   attempts: $('attempts'), clock: $('clock'), best: $('best'),
   distance: $('distance'), banner: $('banner'), bubble: $('bubble'),
+  gradePop: $('gradePop'), flightChain: $('flightChain'),
   meters: $('meters'), leanneedle: $('leanneedle'), speed: $('speed'),
   title: $('title'), result: $('result'), match: $('match'),
   resDist: $('resDist'), resLine: $('resLine'), resNext: $('resNext'),
@@ -164,9 +165,31 @@ export function setClock(v) {
 }
 
 export function showDistance(d) {
-  if (d == null) { el.distance.classList.add('hidden'); return; }
+  if (d == null) { el.distance.classList.add('hidden'); el.flightChain.classList.add('hidden'); return; }
   el.distance.classList.remove('hidden');
   el.distance.textContent = `${d.toFixed(1)}m`;
+}
+
+// per-link grade pop: the word lands where the eye is (over the slapper) the
+// instant the key is judged. tier 4 = FULL CHAIN (every link PERFECT).
+let gradeTimer = null;
+export function gradePop(label, tier) {
+  const g = el.gradePop;
+  clearTimeout(gradeTimer);
+  g.textContent = label;
+  g.className = `t${tier}`;
+  void g.offsetWidth;             // restart the pop animation
+  g.classList.add('go');
+  gradeTimer = setTimeout(() => { g.className = ''; }, tier >= 4 ? 1050 : 700);
+}
+// the chain% badge riding under the flight ticker — skill made visible mid-air
+export function flightChain(pct) {
+  const f = el.flightChain;
+  if (pct == null) { f.classList.add('hidden'); return; }
+  f.classList.remove('hidden');
+  f.textContent = `CHAIN ${pct}%`;
+  f.classList.toggle('gold', pct >= 90);
+  f.classList.toggle('gray', pct < 55);
 }
 
 export function showMeters(on) {

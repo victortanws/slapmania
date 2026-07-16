@@ -99,6 +99,20 @@ function resetChain() {
   ui.chainReset();
 }
 
+// per-link instant feedback: the grade pops over the slapper + a tiered ping —
+// the input is judged the moment it lands, not at the result card. Off-perfect
+// L shows the signed ms (skill is learnable when the miss has a number).
+function popGrade(g, dtSec) {
+  if (!g) return;
+  let label = g.label;
+  if (dtSec != null && g.tier < 3) {
+    const ms = Math.round(dtSec * 1000);
+    label += ` ${ms > 0 ? '+' : ''}${ms}ms`;
+  }
+  ui.gradePop(label + (g.tier === 3 ? '!' : ''), g.tier);
+  sfx.grade(g.tier);
+}
+
 // hips: L is the trigger that FIRES the whip — the coil waits (and slowly
 // leaks) until you tap it. The grade is crispness: how fast after the release.
 function gradeL(dt) {
@@ -1214,7 +1228,8 @@ function onContact(hit, fist) {
   contact = { point: hit.point.clone(), power };
   ui.challengeBar(null); // clear the lane for the flight ticker — it returns next attempt
   stage.spawnShock(hit.point);
-  sfx.crack(Math.min(1, power / 22));
+  sfx.crack(Math.min(1, power / 22), ugly || fist ? 0.2 : chainPct / 100); // the SNAP is the chain quality, audible
+  ui.flightChain(ugly || fist ? null : chainPct); // the skill rides the flight ticker
   sfx.gasp();
   sfx.whoosh(0);
   stage.shake(Math.min(0.5, power / 40));
@@ -1979,23 +1994,31 @@ function tick(now) {
     if (prevKeys.s && !keys.s && chain.tRel === null) {
       chain.tRel = swingT;
       // an L that was rolled in just before the release gets judged now
-      if (chain.lPend !== undefined && !chain.l) setHips(gradeL(chain.lPend - chain.tRel));
+      if (chain.lPend !== undefined && !chain.l) { const dt = chain.lPend - chain.tRel; setHips(gradeL(dt)); popGrade(chain.l, dt); }
     }
     if (!prevKeys.l && keys.l && !chain.l && chain.lPend === undefined) {
       if (chain.tRel === null) {
         chain.lPend = swingT;
         ui.chainSet('hips', '...', 0);
       } else {
-        setHips(gradeL(swingT - chain.tRel));
+        const dt = swingT - chain.tRel;
+        setHips(gradeL(dt));
+        popGrade(chain.l, dt);
       }
     }
     if (!prevKeys.a && keys.a && !chain.a) {
       chain.a = gradeA(-player.phaseVel);   // phase*: mode-aware (chop grades the DROP, slap the spine whip)
       ui.chainSet('arm', chain.a.label, chain.a.tier);
+      popGrade(chain.a);
     }
     if (!prevKeys.p && keys.p && !chain.p) {
       chain.p = gradeP(player.phaseAngle, player.phaseVel);
       ui.chainSet('snap', chain.p.label, chain.p.tier);
+      // the God-run beat: every link PERFECT on a deep coil = FULL CHAIN
+      if (chain.p.tier === 3 && chain.l && chain.l.tier === 3 && chain.a && chain.a.tier === 3 && chain.coil >= 0.9) {
+        ui.gradePop('FULL CHAIN!', 4);
+        sfx.grade(4);
+      } else popGrade(chain.p);
     }
 
     // live coil readout until the hips lock it in (it leaks while you wait)

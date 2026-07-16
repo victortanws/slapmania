@@ -107,14 +107,17 @@ export class Sfx {
     src.stop(t + dur + 0.05);
   }
 
-  crack(power) {
+  // bright (0..1, default 0.5) = CHAIN QUALITY: a crisp chain SNAPS (hot, hissy
+  // highpass + higher thump), a sloppy one THUDS — the ear learns the difference
+  // between technique and luck faster than any meter teaches it
+  crack(power, bright = 0.5) {
     if (!this.ctx) return;
     const ctx = this.ctx, t = ctx.currentTime;
-    this.burst({ dur: 0.09, gain: 0.9 * power, filter: 'highpass', freq: 1200 });
-    this.burst({ dur: 0.16, gain: 0.7 * power, filter: 'lowpass', freq: 900 });
+    this.burst({ dur: 0.07 + 0.04 * (1 - bright), gain: (0.55 + 0.75 * bright) * power, filter: 'highpass', freq: 1000 + 1400 * bright });
+    this.burst({ dur: 0.16, gain: (0.85 - 0.3 * bright) * power, filter: 'lowpass', freq: 900 });
     const osc = ctx.createOscillator();
     osc.type = 'square';
-    osc.frequency.setValueAtTime(160, t);
+    osc.frequency.setValueAtTime(140 + 60 * bright, t);
     osc.frequency.exponentialRampToValueAtTime(55, t + 0.12);
     const g = ctx.createGain();
     g.gain.setValueAtTime(0.4 * power, t);
@@ -122,6 +125,26 @@ export class Sfx {
     osc.connect(g).connect(this.master);
     osc.start(t);
     osc.stop(t + 0.16);
+  }
+
+  // per-link grade ping — the instant a chain key is judged, the EAR gets the
+  // grade before the eye does. tier 3 = bright two-note sparkle, 2 = mid ping,
+  // 1 = dull blip, 4 = FULL CHAIN arpeggio (every link PERFECT)
+  grade(tier) {
+    if (!this.ctx) return;
+    const ctx = this.ctx, t = ctx.currentTime;
+    const ping = (freq, at, dur = 0.09, gain = 0.16, type = 'sine') => {
+      const o = ctx.createOscillator(); o.type = type; o.frequency.value = freq;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t + at);
+      g.gain.exponentialRampToValueAtTime(gain, t + at + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + at + dur);
+      o.connect(g).connect(this.master); o.start(t + at); o.stop(t + at + dur + 0.02);
+    };
+    if (tier >= 4) { ping(880, 0); ping(1175, 0.07); ping(1568, 0.14, 0.16, 0.2); }
+    else if (tier === 3) { ping(880, 0); ping(1320, 0.06, 0.12, 0.18); }
+    else if (tier === 2) ping(660, 0, 0.08, 0.12);
+    else ping(210, 0, 0.09, 0.1, 'triangle');
   }
 
   gasp() {
