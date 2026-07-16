@@ -142,7 +142,7 @@ body.backon #attempts{transform:translateY(42px);}
   70%{opacity:1;transform:translate(-50%,-58%) scale(1);}
   100%{opacity:0;transform:translate(-50%,-78%) scale(.94);}}
 /* the chain% rides UNDER the flight ticker — the viewer sees the SKILL, live */
-#flightChain{position:absolute;top:148px;left:0;right:0;text-align:center;pointer-events:none;
+#flightChain{position:absolute;top:156px;left:0;right:0;text-align:center;pointer-events:none;
   font-family:'Arial Black',Impact,sans-serif;font-size:17px;letter-spacing:2px;color:#eef2ff;
   text-shadow:2px 2px 0 #000;z-index:24;}
 #flightChain.gold{color:var(--yellow);text-shadow:0 0 12px rgba(255,210,63,.7),2px 2px 0 #000;}
@@ -278,6 +278,7 @@ body.cine #dlg{bottom:calc(11vh + 16px);}
   text-decoration:none;box-shadow:0 4px 0 #000;}
 .coffee:active{transform:translateY(3px);box-shadow:0 1px 0 #000;}
 /* ---- touch controls: left thumb coils and drives, right thumb whips and snaps ---- */
+#touchPad.dim{opacity:.3;transition:opacity .4s;}
 #touchPad{position:absolute;bottom:0;left:0;right:0;display:none;
   justify-content:space-between;align-items:flex-end;padding:0 12px 14px;pointer-events:none;}
 #touchPad.inplay{display:flex;}
@@ -363,7 +364,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
   .bigdist{font-size:60px;} .bigdist.foul{font-size:44px;}
   #banner .big{font-size:42px;} #banner .sub{font-size:14px;}
   #distance{font-size:40px;top:118px;} #clock{font-size:30px;min-width:80px;}
-  #flightChain{top:164px;font-size:13px;}
+  #flightChain{top:182px;font-size:13px;}
   #gradePop{font-size:26px;top:30%;} #gradePop.t4{font-size:34px;} #gradePop.t1{font-size:20px;}
   /* the goal banner is SCROLLABLE on a phone: long boss briefs (Tick-Tock Tom)
      used to clip at 2 lines with no way to read the rest. Now the full text is

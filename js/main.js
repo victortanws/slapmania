@@ -48,6 +48,16 @@ let state = 'TITLE';
 let tState = 0;
 let timeScale = 1;
 let hitstopT = 0; // freeze-frame countdown on a heavy contact (see onContact)
+// FIRST-SLAP TRAINING WHEELS: a brand-new player's first two LANDED slaps get a
+// friendly wind — floors under the hidden penalty levers (balance/flush/reach),
+// so "followed the coach, imperfect execution" flies ~20m instead of dribbling
+// 8m and reading as random. The floors lift the FLOOR only: a swing already
+// above them gains nothing, chain grading is untouched (the lesson IS the
+// timing), and mash still pays nothing — leaderboard-safe by construction.
+// Veterans (any saved board/master honor) never see it.
+let firstSlaps = +(localStorage.getItem('slapp_played') || 0);
+if (localStorage.getItem('slapp_board') || localStorage.getItem('slapp_master')) firstSlaps = 99;
+const trainingWheels = () => firstSlaps < 2 && !campaign.active;
 let shotClock = 30; // a full, unhurried match clock — time to read the opponent, wait out a weave, set your feet
 let attempts = [];
 let slap = null;        // outcome of the current attempt {foul, part}
@@ -223,6 +233,8 @@ if (isTouch) document.body.classList.add('touch');
 const PLAY_STATES = new Set(['FACEOFF', 'SWING', 'IMPACT', 'FLIGHT', 'FOULED']);
 function syncTouchPad() {
   touchPad.classList.toggle('inplay', isTouch && PLAY_STATES.has(state));
+  // mid-air the buttons do nothing — fade them so the flight owns the screen
+  touchPad.classList.toggle('dim', state === 'IMPACT' || state === 'FLIGHT');
 }
 // the mobile ESC: a touch-only back button (no keyboard to bail out with). Shown
 // in every non-title state except during a cutscene (the dialog has its own SKIP).
@@ -917,7 +929,11 @@ function startAttempt() {
   // slapper gets the word instead. Shown on the LOW ref bar so the volunteer's
   // name plate stays readable.
   if (campaign.active) ui.refBar(`🎺 JUDGE PENNYWHISTLE: “${REF_LINES[refLineIdx++ % REF_LINES.length]}”`);
-  else {
+  else if (trainingWheels()) {
+    // first-slap wheels are TOLD, not hidden (trust is the skill game's currency)
+    // — for the first two slaps this note outranks the slapper's quip
+    ui.refBar("🔰 FIRST SLAPS — the county's giving you a friendly wind. Your timing still decides.");
+  } else {
     const q = QUIPS[player.look?.key];
     if (q) ui.refBar(`${player.look.name}: “${q[attempts.length % q.length]}”`);
   }
@@ -957,6 +973,7 @@ function onContact(hit, fist) {
   // KARATE CHOP: a downward edge-strike — its hand velocity points DOWN, so it
   // must bypass the forward-velocity gate below (built for horizontal slaps).
   const chop = !fist && player.mode === 'chop';
+  const assisted = trainingWheels() && !fist && !chop; // first-slap friendly wind (floors only)
   if (velDir.x < 0.15 && !chop) {
     // ≥3.5 m/s (not the full 6): on the deepest matchups the wrap is where the
     // palm has slowed to 4-6 — the speed taper below prices that honestly
@@ -989,6 +1006,7 @@ function onContact(hit, fist) {
     const into = hit.normal ? hit.normal.clone().negate() : new THREE.Vector3().subVectors(hit.center, hit.point).normalize();
     const incidence = Math.max(0, velDir.dot(into));
     cq = 0.92 + 0.2 * (0.7 * vAlign + 0.3 * incidence); // gentler graze penalty (floor 0.92, same 1.12 flush ceiling)
+    if (assisted) cq = Math.max(cq, 1.0); // wheels: a graze reads as square while learning
   }
   // a punch has no sweet spot — the fist pays body-blow rate even on the head.
   // EXCEPT on a bodyBlow boss (THE CLOSED FIST school): there the forbidden FIST
@@ -1001,7 +1019,7 @@ function onContact(hit, fist) {
   // real slap physics: force comes up from the ground through a BRACED stance.
   // A teetering slapper can't drive the blow — the worse the visible lean at
   // contact, the softer the slap (up to −45% at the tipping point)
-  const balF = 1 - 0.45 * Math.min(1, Math.abs(player.lean) / 1.05) ** 2;
+  const balF = Math.max(assisted ? 0.9 : 0, 1 - 0.45 * Math.min(1, Math.abs(player.lean) / 1.05) ** 2);
   // P opens the palm for a FLUSH cheek slap — that's what earns the sweet spot
   // (1.35) and the contact-quality bonus. WITHOUT P the fist is still a solid
   // striking surface: it transmits the FULL kinetic chain (coil × lunge × arm),
@@ -1040,7 +1058,8 @@ function onContact(hit, fist) {
   // ONE-SIDED bell: full reward at/above 0.93 (a fully-extended connect is never
   // penalized — protects reach-saturated matchups like a short slapper reaching a
   // tall volunteer), penalty only BELOW 0.93 (the arm still folding). σ 0.13.
-  const extF = fist ? 1 : (armExt >= 0.93 ? 1 : THREE.MathUtils.clamp(0.75 + 0.25 * Math.exp(-(((armExt - 0.93) / 0.15) ** 2)), 0.75, 1));
+  let extF = fist ? 1 : (armExt >= 0.93 ? 1 : THREE.MathUtils.clamp(0.75 + 0.25 * Math.exp(-(((armExt - 0.93) / 0.15) ** 2)), 0.75, 1));
+  if (assisted) extF = Math.max(extF, 0.92); // wheels: under-reach forgiven while learning
   // extF is applied POST-CAP (below) so under-extension gates force even at the
   // cap — a light arm caps AT full extension (extF≈1, untouched) but a heavy arm
   // caps while still folding (extF<1), so it genuinely can't reach its ceiling on
@@ -1226,6 +1245,7 @@ function onContact(hit, fist) {
     },
   };
   contact = { point: hit.point.clone(), power };
+  if (assisted) { firstSlaps++; localStorage.setItem('slapp_played', firstSlaps); }
   ui.challengeBar(null); // clear the lane for the flight ticker — it returns next attempt
   stage.spawnShock(hit.point);
   sfx.crack(Math.min(1, power / 22), ugly || fist ? 0.2 : chainPct / 100); // the SNAP is the chain quality, audible

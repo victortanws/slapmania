@@ -302,6 +302,10 @@ export function foulBanner(type) {
 export function showTitle(on) { el.title.classList.toggle('hidden', !on); }
 
 export function showResult({ dist, pts, arch, part, foul, chain, line, n, next }) {
+  // the ceremony banner had its moment mid-air — it must never sit under the
+  // card colliding with the big distance (it did, on mobile especially)
+  clearTimeout(bannerTimer);
+  el.banner.classList.add('hidden');
   el.result.classList.remove('hidden');
   if (foul) {
     el.resDist.textContent = 'FOUL — 0 PTS';
