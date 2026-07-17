@@ -208,6 +208,43 @@ export const TOURS = [
     ],
   },
   {
+    // THE COMMUNITY'S MONUMENT: the worldwide boards run on Hank — players the
+    // county's never met post 90m+ Hank flights daily. This tour canonizes it.
+    key: 'farewell', title: '🛫 THE MAN WHO FLIES',
+    world: 'day',
+    slapper: 'charlie',
+    blurb: "Hayseed Hank — the most airborne man in county history — announces his retirement. One farewell circuit. Every stop, one last flight.",
+    acts: [
+      {
+        act: 'STOP I — THE ANNOUNCEMENT',
+        story: 'Hank called a press conference at the ring. Both local papers came, and one of them brought the good camera.',
+        challenges: [
+          { id: 'h1c1', title: 'THE PRESS CONFERENCE', desc: 'LAND a clean head slap on HAYSEED HANK — one for the cameras, like the old days', opp: 'hank', goal: { type: 'head' } },
+          { id: 'h1c2', title: 'THE FIRST GOODBYE', desc: 'Send HANK 25m — through the barricade one more time. They named a plank after him', opp: 'hank', goal: { type: 'dist', v: 25 } },
+          { id: 'h1c3', title: "THE COW'S BLESSING", desc: "Send HANK 32m — Bessie has mooed for him nine hundred times. She won't moo for less than thirty", opp: 'hank', goal: { type: 'dist', v: 32 } },
+        ],
+      },
+      {
+        act: 'STOP II — THE TESTIMONIALS',
+        story: 'Letters came in from overseas. Names like STEVE and DEEPJYOTI. Hank cannot read the postmarks, but he keeps every one.',
+        challenges: [
+          { id: 'h2c1', title: 'THE POINTS KING', desc: 'Score 420 off HANK — the number that made him famous. Weight class times distance. He IS the math', opp: 'hank', goal: { type: 'pts', v: 420 } },
+          { id: 'h2c2', title: 'THE DUEL', desc: "Send HANK 40m — the angel and the devil don't come out for less, and the heavens owe him an appearance", opp: 'hank', goal: { type: 'dist', v: 40 } },
+          { id: 'h2c3', title: 'THE CHAIN LETTER', desc: 'LAND a 75% chain on HANK — he can hear a sloppy chain from the catching end. No apologies', opp: 'hank', goal: { type: 'chain', v: 75 } },
+        ],
+      },
+      {
+        act: 'STOP III — ONE LAST FLIGHT',
+        story: 'The pond is ready. The chair is picked out. One circuit left, and the long one waits on the ice.',
+        challenges: [
+          { id: 'h3c1', title: 'THE HAY WALL', desc: "Send HANK 63m — clear the wall that's caught him more times than his own bed. SLAPMASTER distance", opp: 'hank', goal: { type: 'dist', v: 63 } },
+          { id: 'h3c2', title: 'THE COUNTY LINE', desc: 'Send HANK 81m — retirement papers only count if filed OUTSIDE the county. He checked', opp: 'hank', goal: { type: 'dist', v: 81 } },
+          { id: 'h3c3', title: '☗ THE LAST FLIGHT', desc: 'Send HANK 88m across the FROZEN LAKE — every meter of his career, one more time, all at once', opp: 'hank', world: 'ice', goal: { type: 'dist', v: 88 } },
+        ],
+      },
+    ],
+  },
+  {
     key: 'slaptherapy', title: '🛋️ SLAP THERAPY',
     dlc: true,
     world: 'therapy',
@@ -1030,6 +1067,58 @@ export const CUTSCENES = {
   ],
 
   // ===== SLAP THERAPY =====
+  farewell_prologue: [
+    { who: 'HAYSEED HANK', text: "Folks. After a long career of standing right here, I'm retiring. The cheek's still good — I just promised my pond I'd be around more.", shot: 'opp' },
+    { who: 'YOU', text: "Hank's caught more slaps than this county's caught weather. Letters come in from OVERSEAS. Fellas he's never met send him ninety meters of appreciation a day.", shot: 'player' },
+    { who: 'HAYSEED HANK', text: "Somebody's got to catch these slaps. The Lord gave me this cheek, and I have not wasted it.", shot: 'opp' },
+    { who: 'YOU', text: "One farewell circuit. Every stop, one last flight. Make 'em count.", shot: 'player' },
+  ],
+  h1c1: [
+    { who: 'HAYSEED HANK', text: "The papers want a picture. Cheek's my good side. Both sides are cheek.", shot: 'opp' },
+    { who: 'YOU', text: 'One for the cameras, Hank. Clean, on the head, like the old days.', shot: 'player' },
+    { who: 'HAYSEED HANK', text: 'Old days were Tuesday. Fire away.', shot: 'opp' },
+  ],
+  h1c2: [
+    { who: 'HAYSEED HANK', text: "I've been through that barricade so many times they named a plank after me.", shot: 'opp' },
+    { who: 'YOU', text: 'Twenty-five meters. Go say goodbye to the lumber.', shot: 'player' },
+    { who: 'HAYSEED HANK', text: "Goodbye, lumber. Tell your splinters I'm sorry.", shot: 'opp' },
+  ],
+  h1c3: [
+    { who: 'HAYSEED HANK', text: "Bessie moos when a flight passes thirty. She's mooed for me nine hundred times. I counted. She counted. We're close.", shot: 'opp' },
+    { who: 'YOU', text: 'One more moo, Hank. For the road.', shot: 'player' },
+  ],
+  h2c1: [
+    { who: 'YOU', text: 'They call you the points king. Four hundred twenty in one flight — the number that made you famous.', shot: 'player' },
+    { who: 'HAYSEED HANK', text: 'Weight class times distance, Charlie. I AM the math.', shot: 'opp' },
+  ],
+  h2c2: [
+    { who: 'HAYSEED HANK', text: "At forty meters, an angel and a devil show up and argue about the slap. Forty meters, Charlie. They don't come out for less.", shot: 'opp' },
+    { who: 'YOU', text: "Then let's give the heavens something to dispute.", shot: 'player' },
+  ],
+  h2c3: [
+    { who: 'HAYSEED HANK', text: "I can hear a chain from the catching end. A sloppy one sounds like an apology. Don't send me off with an apology.", shot: 'opp' },
+    { who: 'YOU', text: 'Seventy-five percent, crisp. For the connoisseur.', shot: 'player' },
+  ],
+  h3c1: [
+    { who: 'HAYSEED HANK', text: "That wall has caught me more times than my own bed. Today we clear it. Together. Well — me, mostly.", shot: 'opp' },
+    { who: 'YOU', text: "SLAPMASTER distance, Hank. You've earned the view from the top.", shot: 'player' },
+  ],
+  h3c2: [
+    { who: 'HAYSEED HANK', text: 'Retirement papers only count if they get filed OUTSIDE the county. County rule. I checked.', shot: 'opp' },
+    { who: 'YOU', text: 'Eighty-one meters to the border, sir. Your paperwork awaits.', shot: 'player' },
+  ],
+  h3c3: [
+    { who: 'HAYSEED HANK', text: 'The frozen lake. The long one. Every meter I ever flew, one more time, all at once.', shot: 'opp' },
+    { who: 'YOU', text: "The whole county's watching, Hank. And a few time zones that aren't the county.", shot: 'player' },
+    { who: 'HAYSEED HANK', text: "Then let's show 'em what a professional looks like from underneath.", shot: 'opp' },
+  ],
+  outro_h3c3: [
+    { who: 'HAYSEED HANK', text: '...still sliding. STILL SLIDING. What a career.', shot: 'wide' },
+    { who: 'YOU', text: 'The most airborne man in county history, folks. Give him his sky.', shot: 'player' },
+    { who: 'HAYSEED HANK', text: "I'll be at the pond. First fella to slap a fish past the reeds gets my chair.", shot: 'opp' },
+    { who: '🐄 BESSIE', text: '(one long moo. The official kind. Nine hundred and one.)', shot: 'wide' },
+  ],
+
   slaptherapy_prologue: [
     { who: 'YOU', text: 'Fifty years of analysis. Ten thousand dreams interpreted. Four hundred papers. And one finding that survived replication: the slap.', shot: 'player' },
     { who: 'YOU', text: 'The board revoked my license. The fair gave me a tent. Science continues.', shot: 'player' },
@@ -1408,6 +1497,11 @@ export const CUTSCENES = {
 // ('a' = Palm, 'f' = Fair, 'w' = Wonders, 'b' = Second Wind); rotated so
 // repeated failure stays fresh-ish.
 export const FAILS = {
+  h: [
+    [{ who: 'HAYSEED HANK', text: "That all you got? I've been slapped better by WEATHER.", shot: 'opp' },
+     { who: 'YOU', text: 'Again. He deserves the good one.', shot: 'player' }],
+    [{ who: 'HAYSEED HANK', text: "Don't you retire me on a slap like THAT. Again.", shot: 'opp' }],
+  ],
   x: [
     [{ who: '📋 THE COUNTY CLERK', text: "Still stuck, Miss Fran. And now it's smug about it.", shot: 'wide' },
      { who: 'YOU', text: "Gloves. Nothing's ever stuck twice on me.", shot: 'player' }],
@@ -1501,6 +1595,12 @@ export const TAKEDOWN_FAIL = [
 // victory beats — short, replayable, played after clearing a NON-final
 // challenge (outro_* scenes own the finales). Keyed by tour prefix; rotated.
 export const WINS = {
+  h: [
+    [{ who: 'HAYSEED HANK', text: 'Felt right. Log it.', shot: 'opp' },
+     { who: 'YOU', text: "Logged. The scrapbook's starting a second volume.", shot: 'player' }],
+    [{ who: 'HAYSEED HANK', text: "That one had my name on it. Most of 'em do. But that one especially.", shot: 'opp' },
+     { who: 'YOU', text: 'Next stop, Hank. The circuit waits for no cheek.', shot: 'player' }],
+  ],
   x: [
     [{ who: 'YOU', text: 'Unstuck. Next.', shot: 'player' },
      { who: '🧍 SOMEONE, FRESHLY UNSTUCK', text: "LEGS! Both of 'em! Which way's out — no, don't tell me. I'm done being told things.", shot: 'wide' }],
@@ -1573,7 +1673,7 @@ export const WINS = {
 // storyline next, with the Master Slee scrolls beneath it.
 // Olympic Bid leads (free), Wonders second, the Open Palm third (free) —
 // then the Fair, then the supporter storylines.
-const TOUR_ORDER = ['wonders', 'fair', 'palm', 'olympicbid', 'secondwind', 'blackgold', 'nightofslaps', 'slaptherapy', 'horseshoe', 'slopvalley', 'commedia'];
+const TOUR_ORDER = ['wonders', 'fair', 'farewell', 'palm', 'olympicbid', 'secondwind', 'blackgold', 'nightofslaps', 'slaptherapy', 'horseshoe', 'slopvalley', 'commedia'];
 // unknown keys sink to the bottom instead of floating to the top (indexOf −1)
 const tourRank = (k) => { const i = TOUR_ORDER.indexOf(k); return i < 0 ? TOUR_ORDER.length : i; };
 TOURS.sort((a, b) => tourRank(a.key) - tourRank(b.key));
