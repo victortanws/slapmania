@@ -70,7 +70,9 @@ function dailyPick() {
   for (const c of DAY_KEY) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; }
   const vols = PICKABLE.filter((v) => !v.dlc && !v.world);   // the free fair regulars
   const worlds = ['day', 'ice', 'lava', 'desert'];             // the FREE worlds only
-  return { vol: vols[h % vols.length], world: worlds[(h >>> 8) % worlds.length] };
+  // ~one day in four is SOUTHPAW: the whole county mirrors (render-only — the
+  // physics are byte-identical, so the board stays fair; what breaks is YOU)
+  return { vol: vols[h % vols.length], world: worlds[(h >>> 8) % worlds.length], mirror: ((h >>> 16) % 4) === 0 };
 }
 let dailyMode = false;
 let bestDist = +(localStorage.getItem('slapp_bestdist') || 0);  // the flag on the lane
@@ -539,6 +541,7 @@ function startMatch() {
 function goToTitle() {
   cancelGhost(); ghostTape = null; replayCam = false;
   dailyMode = false;
+  document.body.classList.remove('mirror');
   if (chosenArch && chosenArch.boss) chosenArch = null;   // bosses don't loiter on the porch
   stage.resetTarStains(); // no tar claims on the title screen
   // a tour may have pinned its own world (the dojo) — restore the player's pick
@@ -618,6 +621,7 @@ let refLineIdx = 0;
 // menu and every cutscene replays (nothing marked seen), so the whole story is
 // viewable end to end without clearing progress or owning the pack.
 const TOURDEV = new URLSearchParams(location.search).get('tourdev') === '1';
+if (new URLSearchParams(location.search).get('mirror') === '1') document.body.classList.add('mirror'); // QA lens for southpaw days
 // one-time migration: these scenes were rewritten (narrative overhaul) — clear
 // their seen-marks so existing players get the new versions
 if (!localStorage.getItem('slapp_mig1')) {
@@ -873,14 +877,15 @@ document.getElementById('startBtn').onclick = () => { sfx.ensure(); advanceScree
   const wDef = WORLDS.find((w) => w.key === d.world);
   const btn = document.getElementById('dailyBtn');
   const done = localStorage.getItem('slapp_daily') === DAY_KEY;
-  btn.textContent = `📅 TODAY'S VOLUNTEER — ${d.vol.name} · ${wDef ? wDef.label : d.world.toUpperCase()}${done ? ' ✓' : ''}`;
+  btn.textContent = `📅 TODAY'S VOLUNTEER — ${d.vol.name} · ${wDef ? wDef.label : d.world.toUpperCase()}${d.mirror ? ' · 🫲 SOUTHPAW' : ''}${done ? ' ✓' : ''}`;
   btn.onclick = () => {
     sfx.ensure();
     dailyMode = true;
+    if (d.mirror) document.body.classList.add('mirror');
     if (stage.hasWorld(d.world)) setWorldFull(d.world);
     chosenArch = d.vol;
     startMatch();
-    track('daily_started', { day: DAY_KEY, opp: d.vol.key, world: d.world });
+    track('daily_started', { day: DAY_KEY, opp: d.vol.key, world: d.world, mirror: !!d.mirror });
   };
 }
 if (campaign.enabled()) {
@@ -1020,7 +1025,9 @@ function startAttempt() {
   // slapper gets the word instead. Shown on the LOW ref bar so the volunteer's
   // name plate stays readable.
   if (campaign.active) ui.refBar(`🎺 JUDGE PENNYWHISTLE: “${REF_LINES[refLineIdx++ % REF_LINES.length]}”`);
-  else if (trainingWheels()) {
+  else if (document.body.classList.contains('mirror')) {
+    ui.refBar('🫲 SOUTHPAW DAY — the whole county is MIRRORED. The physics are honest; your muscle memory is on its own.');
+  } else if (trainingWheels()) {
     // first-slap wheels are TOLD, not hidden (trust is the skill game's currency)
     // — for the first two slaps this note outranks the slapper's quip
     ui.refBar("🔰 FIRST SLAPS — the county's giving you a friendly wind. Your timing still decides.");
@@ -1754,6 +1761,8 @@ function advanceScreens(code) {
       resolveTourOutcome(ch, clearedNow);
       return true;
     }
+    // a finished DAILY hands back to normal play: the mirror stays on daily turf
+    if (dailyMode) { dailyMode = false; document.body.classList.remove('mirror'); }
     openOppPick();
     return true;
   }

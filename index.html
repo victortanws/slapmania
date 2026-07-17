@@ -26,6 +26,9 @@
 html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
   font-family:'Arial Black','Arial Bold',Impact,'Helvetica Neue',sans-serif;user-select:none;}
 #c{position:fixed;inset:0;display:block;width:100%;height:100%;}
+/* SOUTHPAW (mirror) days: the 3D view flips at the COMPOSITOR — physics and
+   leaderboards untouched, HUD text unaffected, muscle memory on its own */
+body.mirror #c{transform:scaleX(-1);}
 #hud{position:fixed;inset:0;pointer-events:none;color:#fff;overflow:hidden;}
 .hidden{display:none !important;}
 
