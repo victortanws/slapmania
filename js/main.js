@@ -1838,9 +1838,21 @@ function updateCamera(dt) {
     p = V(0.4 + Math.sin(tState * 0.7) * 0.12, 1.95, 4.2);
     l = V(0.5, 1.35, 0);
   } else if (state === 'IMPACT') {
-    p = V(1.5, 1.7, 2.1);
-    l = contact ? contact.point : V(0.8, 1.5, 0);
-    snapRate = 8;
+    if (hitstopT > 0 && contact) {
+      // THE VICTIM'S FRAME: for the frozen beat of a heavy hit, the camera
+      // CUTS over the volunteer's shoulder — the palm filling the cheek, the
+      // slapper mid-lunge behind it, the wide eyes in the foreground. Time is
+      // stopped, so the cut costs the player nothing; when the stop releases,
+      // the pull-back to the side view plays as the reveal.
+      const hp = opponent.headPos();
+      p = V(hp.x + 0.55, hp.y + 0.42, hp.z + 0.95);  // behind-right-above: past the hat brim, not through the skull
+      l = contact.point;
+      snapRate = 60;                 // a CUT, not a glide
+    } else {
+      p = V(1.5, 1.7, 2.1);
+      l = contact ? contact.point : V(0.8, 1.5, 0);
+      snapRate = 8;
+    }
   } else if (state === 'FLIGHT') {
     // the camera STAYS with the flyer: rises with high arcs, slides with
     // sideways drift — you never lose sight of the person you just launched
