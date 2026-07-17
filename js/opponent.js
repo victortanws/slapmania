@@ -70,6 +70,27 @@ export const ROSTER = [
     taunts: ['You call that a hand? Sad!', 'I know slaps. I have the best slaps.', 'My cheek is a perfect 10. Ask anyone.'],
   },
   {
+    // LOCAL 415 (the volunteers' strike): management's replacement volunteer.
+    // Flimsy by design — never braced a slap in his life, pays featherweight.
+    key: 'scab_gary', name: 'SCAB GARY', tag: 'REPLACEMENT VOLUNTEER', boss: true,
+    w: 0.72, h: 0.97, mass: 0.5,
+    skin: 0xe8c49a, shirt: 0xff8a2a, pants: 0x5a5a66, hat: 'cap', hatCol: 0xf2c53d, noStache: true,
+    pickLine: 'Management says just stand here. Nobody said anything about a WIND-UP.',
+    taunts: ["I'm being paid DOUBLE for this. ...why is everyone smiling?", 'Is there a training video? There is usually a training video.'],
+  },
+  {
+    // LOCAL 415 finale: Don across the negotiating table. Anything below
+    // professional-grade form is DENIED (chainGate 70), and the offer expires
+    // (20s clock). Same tremendous cheek, now with fiduciary duties.
+    key: 'don_ceo', name: 'THE NEGOTIATOR', tag: 'BOSS · MANAGEMENT', boss: true,
+    w: 1.15, h: 1.03, mass: 1.3, shotClock: 20,
+    chainGate: 70, gateCry: 'DENIED!', gateCrySub: 'TREMENDOUS DENIAL — 70% CHAIN OR THE OFFER EXPIRES',
+    skin: 0xe8934a, shirt: 0x1f2a44, pants: 0x1a2438, noStache: true,
+    hair: 'swoop', hairCol: 0xf2c230, suit: true, tie: 0xc9302c,
+    pickLine: 'I have the best contracts. This one has a clause about your palm. Very unfavorable. For you.',
+    taunts: ['My final offer: less than before.', 'I have been slapped by professionals. YOU are an amateur. Sad!', 'The dental plan is a picture of teeth.'],
+  },
+  {
     key: 'influencer', name: 'THE INFLUENCER', tag: 'LIGHTWEIGHT',
     w: 0.82, h: 1.0, mass: 0.7, female: true, busty: true,
     skin: 0xf2cda2, shirt: 0xf2cda2, pants: 0x2f6fe0, skirt: 0x2f6fe0, bikini: true,

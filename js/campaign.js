@@ -276,6 +276,37 @@ export const TOURS = [
     ],
   },
   {
+    // LOCAL 415: the volunteers UNIONIZE. Management (guess who) hires a
+    // replacement volunteer; the professionals coach you through slapping the
+    // scab properly, then send you across the negotiating table. The joke
+    // engine: catching slaps is skilled labor and everyone suddenly knows it.
+    key: 'union', title: '✊ LOCAL 415 — THE VOLUNTEERS\' STRIKE',
+    dlc: true,
+    world: 'day',
+    slapper: 'earl',
+    blurb: 'The volunteers walk out — better landing zones, dental, respect. Management hires a scab. The union hires YOU.',
+    acts: [
+      {
+        act: 'ACT I — THE WALKOUT',
+        story: 'Pickets at the ring. Bertha is shop steward. The barricade wears a sign: ON STRIKE. The cows are sympathetic but legally distinct.',
+        challenges: [
+          { id: 'u1c1', title: 'THE PICKET LINE', desc: 'LAND a clean head slap on SCAB GARY — show management what a PROFESSIONAL catch looks like', opp: 'scab_gary', goal: { type: 'head' } },
+          { id: 'u1c2', title: 'WORKING CONDITIONS', desc: 'Send SCAB GARY 30m — he should experience the full duties of the position he is undercutting', opp: 'scab_gary', goal: { type: 'dist', v: 30 } },
+          { id: 'u1c3', title: 'THE DEMONSTRATION', desc: 'Score 400 off BIG BERTHA — the shop steward shows the county what skilled labor is WORTH', opp: 'bertha', goal: { type: 'pts', v: 400 } },
+        ],
+      },
+      {
+        act: 'ACT II — THE NEGOTIATION',
+        story: 'Management requested a meeting. Management IS the meeting. The union sends its best palm and one non-negotiable demand: dental.',
+        challenges: [
+          { id: 'u2c1', title: 'SOLIDARITY', desc: "LAND a 70% chain before HAYSEED HANK — out of retirement for the cause. Retirement's retirement; a picket line's a picket line", opp: 'hank', goal: { type: 'chain', v: 70 } },
+          { id: 'u2c2', title: 'THE ARBITRATION FLIGHT', desc: 'Send SLIM PETE 50m — the arbitration board accepts evidence in METERS', opp: 'slim', goal: { type: 'dist', v: 50 } },
+          { id: 'u2c3', title: '☗ BOSS: THE NEGOTIATOR', desc: 'Score 420 off THE NEGOTIATOR in twenty seconds a swing — below a 70% chain he DENIES the strike outright (×0.12). Get it in writing', opp: 'don_ceo', goal: { type: 'pts', v: 420 } },
+        ],
+      },
+    ],
+  },
+  {
     key: 'slaptherapy', title: '🛋️ SLAP THERAPY',
     dlc: true,
     world: 'therapy',
@@ -1190,6 +1221,45 @@ export const CUTSCENES = {
     { who: '🐈 THE CAT', text: '(the cat slow-blinks. To a cat, this means trust. The inquiry is closed. The clipboard is already gone.)', shot: 'cat' },
   ],
 
+  union_prologue: [
+    { who: 'BIG BERTHA', text: "That's far enough, sugar. This ring is ON STRIKE. Better landing zones. Hazard pay. DENTAL. We catch slaps with our FACES — you'd think dental was implied.", shot: 'opp' },
+    { who: 'YOU', text: "Big Earl McSlapp. The union sent for me. I don't cross picket lines — I ENFORCE them.", shot: 'player' },
+    { who: 'BIG BERTHA', text: "Management hired a replacement volunteer. Never braced a slap in his life. Bless his heart, and then slap it out of him.", shot: 'opp' },
+  ],
+  u1c1: [
+    { who: 'SCAB GARY', text: "Management says I just stand here. Double pay. Easiest job at the fair. ...why is everyone SMILING?", shot: 'opp' },
+    { who: 'YOU', text: 'Gary. Nothing personal. The union just needs management to see what a PROFESSIONAL catch looks like.', shot: 'player' },
+    { who: 'SCAB GARY', text: 'A professional WHAT now?', shot: 'opp' },
+  ],
+  u1c2: [
+    { who: 'SCAB GARY', text: "I looked up the job description. It says VOLUNTEER, LIGHT DUTIES. I'm starting to think it was abridged.", shot: 'opp' },
+    { who: 'YOU', text: "Thirty meters, Gary. Consider it the unabridged edition.", shot: 'player' },
+  ],
+  u1c3: [
+    { who: 'BIG BERTHA', text: "Now the county sees what it's been getting for FREE. Four hundred points of certified, load-bearing, small-batch catching. Watch close, management.", shot: 'opp' },
+    { who: 'YOU', text: "On the record, madam steward. This one's for the pension fund.", shot: 'player' },
+  ],
+  u2c1: [
+    { who: 'HAYSEED HANK', text: "Heard about the strike at the pond. Put my chair on hold. Retirement's retirement — but a picket line's a picket line.", shot: 'opp' },
+    { who: 'YOU', text: 'Seventy percent chain, Hank. The union only submits PROFESSIONAL evidence.', shot: 'player' },
+    { who: 'HAYSEED HANK', text: "Then make it crisp. I didn't come out of retirement for an apology.", shot: 'opp' },
+  ],
+  u2c2: [
+    { who: 'SLIM PETE', text: 'The arbitration board wants a demonstration flight. I volunteered. Old habits.', shot: 'opp' },
+    { who: 'YOU', text: 'Fifty meters, Pete. The board accepts evidence in METERS, and Bertha wants a wide margin.', shot: 'player' },
+  ],
+  u2c3: [
+    { who: 'THE NEGOTIATOR', text: 'I called this meeting to announce the meeting is cancelled. Also, my final offer: LESS than before. Tremendous offer. The best offer.', shot: 'opp' },
+    { who: 'YOU', text: 'The union counters: four hundred twenty points, twenty seconds a swing, professional grade only.', shot: 'player' },
+    { who: 'THE NEGOTIATOR', text: 'DENIED. ...what do you mean I have to be conscious to deny it?', shot: 'opp' },
+  ],
+  outro_u2c3: [
+    { who: 'BIG BERTHA', text: "He signed. Mid-air, but he signed. Landing zones, hazard pay, AND dental. REAL dental — we checked, it's not just a picture of teeth this time.", shot: 'opp' },
+    { who: 'YOU', text: 'The barricade gets rebuilt in union oak. The scab gets a pamphlet and an apprenticeship. Everybody wins.', shot: 'player' },
+    { who: 'SCAB GARY', text: "They're teaching me to BRACE. There's a technique! There was a technique THE WHOLE TIME!", shot: 'wide' },
+    { who: 'BIG BERTHA', text: "Local 415, sugar. We catch slaps with our faces — and now the county knows what that's worth.", shot: 'opp' },
+  ],
+
   slaptherapy_prologue: [
     { who: 'YOU', text: 'Fifty years of analysis. Ten thousand dreams interpreted. Four hundred papers. And one finding that survived replication: the slap.', shot: 'player' },
     { who: 'YOU', text: 'The board revoked my license. The fair gave me a tent. Science continues.', shot: 'player' },
@@ -1568,6 +1638,11 @@ export const CUTSCENES = {
 // ('a' = Palm, 'f' = Fair, 'w' = Wonders, 'b' = Second Wind); rotated so
 // repeated failure stays fresh-ish.
 export const FAILS = {
+  u: [
+    [{ who: 'BIG BERTHA', text: "Sugar, that slap wouldn't have passed the APPRENTICE exam. Again — the county is WATCHING.", shot: 'opp' },
+     { who: 'YOU', text: 'Again. For the pension fund.', shot: 'player' }],
+    [{ who: 'YOU', text: 'The union does not submit that as evidence. The union pretends that never happened. Again.', shot: 'player' }],
+  ],
   q: [
     [{ who: '🐈 THE CAT', text: '(the cat looks away. Not angrily. Worse: administratively.)', shot: 'cat' },
      { who: 'YOU', text: 'It looked AWAY. Do you understand what that does to a man? Again.', shot: 'player' }],
@@ -1671,6 +1746,12 @@ export const TAKEDOWN_FAIL = [
 // victory beats — short, replayable, played after clearing a NON-final
 // challenge (outro_* scenes own the finales). Keyed by tour prefix; rotated.
 export const WINS = {
+  u: [
+    [{ who: 'BIG BERTHA', text: 'THAT one goes in the newsletter.', shot: 'opp' },
+     { who: 'YOU', text: 'Front page, madam steward. Above the bake sale.', shot: 'player' }],
+    [{ who: 'YOU', text: 'The union thanks you for your professionalism.', shot: 'player' },
+     { who: '✊ THE PICKET LINE', text: '(the volunteers applaud with the measured cadence of people who know exactly how hard that was.)', shot: 'wide' }],
+  ],
   q: [
     [{ who: '🐈 THE CAT', text: '(a note is made. The pen does not move, and yet — a note is made.)', shot: 'cat' },
      { who: 'YOU', text: 'It noted. Did you see it note? NEXT SUBJECT.', shot: 'player' }],
@@ -1755,7 +1836,7 @@ export const WINS = {
 // storyline next, with the Master Slee scrolls beneath it.
 // Olympic Bid leads (free), Wonders second, the Open Palm third (free) —
 // then the Fair, then the supporter storylines.
-const TOUR_ORDER = ['wonders', 'fair', 'farewell', 'palm', 'olympicbid', 'secondwind', 'blackgold', 'nightofslaps', 'slaptherapy', 'catinquiry', 'horseshoe', 'slopvalley', 'commedia'];
+const TOUR_ORDER = ['wonders', 'fair', 'farewell', 'palm', 'olympicbid', 'secondwind', 'blackgold', 'nightofslaps', 'slaptherapy', 'catinquiry', 'union', 'horseshoe', 'slopvalley', 'commedia'];
 // unknown keys sink to the bottom instead of floating to the top (indexOf −1)
 const tourRank = (k) => { const i = TOUR_ORDER.indexOf(k); return i < 0 ? TOUR_ORDER.length : i; };
 TOURS.sort((a, b) => tourRank(a.key) - tourRank(b.key));
@@ -1834,12 +1915,26 @@ export function open(onStart, opts = {}) {
     if (portrait) head.classList.add('hasStar');
     wrap.appendChild(head);
     if (locked) {
-      // a DLC storyline: one sealed box, click anywhere → the supporter pitch
+      // a DLC storyline sells or it doesn't: the sealed box is a PLAYBILL —
+      // act titles, the starring cast, the trial count — not a bare padlock.
+      // (Act titles are spoiler-light by design; descs and stories stay sealed.)
       const box = document.createElement('div');
       box.className = 'tourAct';
       box.style.cursor = 'pointer';
+      let nCh = 0;
+      const actLine = tour.acts.map((a) => a.act.split('—')[1]?.trim() || a.act).join(' → ');
+      const cast = [];
+      tour.acts.forEach((act) => act.challenges.forEach((c) => {
+        nCh++;
+        const nm = opts.oppName && c.opp ? opts.oppName(c.opp) : null;
+        if (nm && !cast.includes(nm)) cast.push(nm);
+      }));
+      const castLine = cast.length ? `STARRING ${cast.slice(0, 3).join(' · ')}${cast.length > 3 ? ` +${cast.length - 3} MORE` : ''}` : '';
       box.innerHTML = `<h3>SUPPORTER STORYLINE 🔒</h3>
-        <div class="tourStory">${tour.acts.length} acts ride with the Supporter Pack. Tap to unlock.</div>`;
+        <div class="tourStory" style="color:#8a5fc0;">${actLine}</div>
+        ${castLine ? `<div class="tourStory" style="letter-spacing:1px;">${castLine}</div>` : ''}
+        <div class="tourStory">${tour.acts.length} acts · ${nCh} trials · new opponents & mechanics</div>
+        <div style="font-family:'Arial Black',Impact,sans-serif;font-size:12px;color:var(--red);letter-spacing:1px;margin-top:6px;">✨ TAP TO UNLOCK — ONE PACK, EVERY STORYLINE, FOREVER</div>`;
       box.onclick = () => opts.onLocked && opts.onLocked(tour);
       wrap.appendChild(box);
       tour.acts.forEach((act) => { total += act.challenges.length; });

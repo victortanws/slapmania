@@ -748,6 +748,7 @@ function openTourMenu() {
     portraits: tourPortraits,
     ownsDlc: owned('bruceslee'),
     devAll: TOURDEV,
+    oppName: (key) => { const a = ROSTER.find((r) => r.key === key); return a ? a.name : null; }, // the playbill's STARRING line
     onLocked: (tour) => openUnlockModal({
       name: tour.title.replace(/^\S+\s/, ''),
       desc: `${tour.acts.length} acts of "${tour.blurb}" — this storyline, every campaign and every world ride with the Supporter Pack.`,
