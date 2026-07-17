@@ -823,11 +823,13 @@ export class Opponent {
     // --- face (children of the head mesh, so they fly with him) ---
     const head = P.head.mesh;
     const hr = this.rHead / 0.17;
+    this.eyeMeshes = [];
     if (!arch.pumpkinHead && !arch.skullFace && !arch.robot) {
       for (const s of [-1, 1]) {
         const eye = new THREE.Mesh(new THREE.SphereGeometry(0.022, 6, 6), toonMat(0x111111));
         eye.position.set(-0.145 * hr, 0.035 * hr, s * 0.055 * hr);
         head.add(eye);
+        this.eyeMeshes.push(eye);
       }
     }
     if (arch.pumpkinHead) {
@@ -1888,6 +1890,10 @@ export class Opponent {
     this._hot = level;
     const col = level === 2 ? 0xc4ffd2 : level === 1 ? 0x54ff6e : 0xffd23f;
     this.target.children.forEach((m) => m.material.color.setHex(col));
+    // ANTICIPATION: when the snap window burns bright, the volunteer's eyes go
+    // WIDE — he can see the palm coming. Pure scale, zero render cost, and the
+    // pre-impact frame every clip freezes on suddenly has a face in it.
+    if (this.eyeMeshes) for (const e of this.eyeMeshes) e.scale.setScalar(level === 2 ? 1.9 : 1);
   }
 
   // The OFFERED CHEEK's outward normal. In head-local space the cheek faces the

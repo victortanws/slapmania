@@ -73,6 +73,8 @@ function dailyPick() {
   return { vol: vols[h % vols.length], world: worlds[(h >>> 8) % worlds.length] };
 }
 let dailyMode = false;
+let bestDist = +(localStorage.getItem('slapp_bestdist') || 0);  // the flag on the lane
+let skidDone = false; // one landing mark per attempt
 let shotClock = 30; // a full, unhurried match clock — time to read the opponent, wait out a weave, set your feet
 let attempts = [];
 let slap = null;        // outcome of the current attempt {foul, part}
@@ -1428,6 +1430,13 @@ function showResult() {
     localStorage.setItem('slapp_board', JSON.stringify(board));
     refreshBest();
   }
+  if (!isFoul && dist > bestDist && dist > 8) {
+    const first = bestDist === 0;
+    bestDist = dist;
+    localStorage.setItem('slapp_bestdist', String(Math.round(dist * 10) / 10));
+    stage.setBestMark(bestDist);
+    if (!first) ui.slapBurst('🚩 NEW PERSONAL BEST!', `THE FLAG MOVES TO ${dist.toFixed(1)}m`);
+  }
   let line = isFoul ? ui.FOUL_LINES[slap.foul]
     : (slap && slap.absorbed) ? absorbLine(arch)
     : (slap && slap.part === 'torso' ? ui.bodyLineFor(flew) : ui.commentaryFor(flew, opponent.wallSplat, !!arch.female));
@@ -2280,6 +2289,7 @@ function tick(now) {
     if (dustCool <= 0 && pel.y < 0.5 && opponent.rag.maxSpeed() > 3) {
       stage.spawnDust(pel, 1 + Math.min(1, opponent.rag.maxSpeed() / 12));
       dustCool = 0.3;
+      if (!skidDone) { skidDone = true; stage.spawnSkid(pel, opponent.rag.maxSpeed()); } // the crash leaves its mark
     }
     // --- distance milestones: shareable spectacle ---
     if (!barricadeHit && pel.x > stage.START_X + 20) {
@@ -2343,6 +2353,7 @@ function tick(now) {
     if (!duelDone && opponent.distance() > 40) {
       duelDone = true;
       stage.slapDuel(pel.x);
+      stage.spawnConfetti(pel);
       sfx.choir();
       excite = Math.min(1, excite + 0.4);
       ui.slapBurst('THE HEAVENS DISPUTE!', 'AN ANGEL AND A DEVIL — ARGUING OVER YOUR FORM');

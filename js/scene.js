@@ -2113,6 +2113,43 @@ export function createStage(canvas) {
 
   // celebration confetti: colored slips tossed up, fluttering down
   const confettiGeo = new THREE.BoxGeometry(0.06, 0.015, 0.09);
+  // --- THE BEST FLAG: your personal record, planted IN THE WORLD. Every flight
+  // is now a race against a physical thing on the lane — the strongest comeback
+  // hook a static mesh can buy. One pole, one cloth, one label; ~zero cost.
+  const bestMarkG = new THREE.Group();
+  {
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.05, 2.6, 6), toonMat(0x8a6844));
+    pole.position.y = 1.3; bestMarkG.add(pole);
+    const cloth = new THREE.Mesh(new THREE.PlaneGeometry(1.15, 0.55), new THREE.MeshBasicMaterial({ color: 0xffd23f, side: THREE.DoubleSide }));
+    cloth.position.set(0.6, 2.25, 0); bestMarkG.add(cloth);
+    const label = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.5),
+      new THREE.MeshBasicMaterial({ map: makeTextTexture('YOUR BEST', '#1b1d33'), transparent: true, side: THREE.DoubleSide }));
+    label.position.set(0.6, 2.25, 0.012); bestMarkG.add(label);
+    bestMarkG.visible = false;
+    bestMarkG.traverse((m) => { m.castShadow = true; });
+    scene.add(bestMarkG);
+  }
+  function setBestMark(x) {
+    if (x == null || x < 8) { bestMarkG.visible = false; return; }   // a 3m flag mocks nobody into returning
+    bestMarkG.visible = true;
+    bestMarkG.position.set(START_X + x, 0, -3.1);                    // rail side: in frame for the chase cam, off the body's path
+  }
+
+  // --- LANDING SKID: the crash leaves a MARK — flattened dirt stretched along
+  // the slide, fading over ~9s. Your feat has evidence now.
+  function spawnSkid(point, speed) {
+    const len = Math.min(4.5, 1 + speed * 0.22);
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(len, 0.55),
+      new THREE.MeshBasicMaterial({ color: 0x6a5a42, transparent: true, opacity: 0.55, depthWrite: false }));
+    m.rotation.x = -Math.PI / 2;
+    m.rotation.z = (Math.random() - 0.5) * 0.2;
+    m.position.set(point.x - len * 0.35, 0.045, point.z);
+    m.renderOrder = 1;
+    scene.add(m);
+    fx.push({ mesh: m, t: 0, life: 9, type: 'skid' });
+    spawnDust(point, 1.2);
+  }
+
   function spawnConfetti(point) {
     for (let i = 0; i < 26; i++) {
       const m = new THREE.Mesh(confettiGeo, new THREE.MeshBasicMaterial({
@@ -2224,7 +2261,9 @@ export function createStage(canvas) {
         fx.splice(i, 1);
         continue;
       }
-      if (f.type === 'shock') {
+      if (f.type === 'skid') {
+        f.mesh.material.opacity = 0.55 * (1 - k);
+      } else if (f.type === 'shock') {
         f.mesh.lookAt(cam.position);
         f.mesh.scale.setScalar(1 + k * 7);
         f.mesh.material.opacity = 0.95 * (1 - k);
@@ -5262,6 +5301,7 @@ export function createStage(canvas) {
     trackSun, spawnShock, spawnDust, updateFX, updateAmbient, setScoreboard, animals,
     breakBarricade, resetBarricade, isBarricadeBroken: () => barricade.broken,
     sunMood, currentSunMood: () => sunCurrent, cowMoo, kidsCelebrate, spawnConfetti, lavaBurst,
+    setBestMark, spawnSkid,
     summonSpirits, spawnBeam, spawnSparkles, slapDuel, scareBirds, solids, setWorldTheme, hasWorld,
     tarSplat, resetTarStains,
     // strike the dojo's Great Gong: a big wobble that decays in updateAmbient
