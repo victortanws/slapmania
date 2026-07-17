@@ -2040,7 +2040,7 @@ export function createStage(canvas) {
           fog: false, depthWrite: false, blending: THREE.AdditiveBlending,
         })
       );
-      m.position.set(nearX + 8 + i * 8, 7.5 + i * 2.5, -6 + i * 5);
+      m.position.set(nearX + 8 + i * 8, 7.5 + i * 2.5, -2 + i * 2);  // tight z: portrait crops the old -6..+4 spread
       scene.add(m);
       fx.push({ mesh: m, t: 0, life: 6.5, type: 'spirit', v: new THREE.Vector3(0.4, 0.9, 0) });
     }
@@ -2048,7 +2048,7 @@ export function createStage(canvas) {
 
   // --- 40m: a slap angel and a slap devil materialize and slap each other,
   // eternally and pettily, over the quality of your technique ---
-  function slapDuel(x) {
+  function slapDuel(x, z = -1.6) {
     const mk = (devil) => {
       const c = new THREE.Group();
       const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.15, 0.3, 4, 10), toonMat(devil ? 0xc23030 : 0xf2f0e8));
@@ -2096,16 +2096,16 @@ export function createStage(canvas) {
     angel.rotation.y = Math.PI; // they face each other
     devil.position.set(0, 0, -1.0);
     g.add(angel, devil);
-    // PROMINENCE: spawn CLOSE ahead (+12, not +20 — a 45m flight used to die
-    // before ever reaching it), BIG (2.6), and just off the lane so the body
-    // never clips through them — the chase camera gets a real look as it passes,
-    // and if the flyer stops short they hang in the linger camera's frame.
-    // A pillar of light + sparkles announces the materialization.
-    g.position.set(x + 12, 5.0, -3.2);
-    g.scale.setScalar(2.6);
+    // PROMINENCE, portrait-proofed: three.js FOV is VERTICAL, so a phone in
+    // portrait crops the SIDES hard — at z -3.2 the duel projected 83px OFF the
+    // left edge of a 375px screen (measured). It now hangs nearly over the lane
+    // (z -1.6, they are spirits; a flyer passing through them is a feature),
+    // closer (+10) and BIGGER on narrow screens. Beam + sparkles announce it.
+    g.position.set(x + 10, 5.0, z);
+    g.scale.setScalar(window.innerWidth < 560 ? 3.2 : 2.6);
     scene.add(g);
-    spawnBeam(x + 12, -3.2);
-    spawnSparkles(x + 12, -3.2);
+    spawnBeam(x + 10, z);
+    spawnSparkles(x + 10, z);
     fx.push({ mesh: g, t: 0, life: 7, type: 'duel', angel, devil, hits: 0 });
   }
 

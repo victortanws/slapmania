@@ -2473,7 +2473,10 @@ function tick(now) {
     // 40m: a slap angel and a slap devil materialize to dispute your technique
     if (!duelDone && opponent.distance() > 40) {
       duelDone = true;
-      stage.slapDuel(pel.x);
+      // anchor the duel to the FLYER's z + a nudge toward the camera side: the
+      // chase frustum centers on the flyer, so absolute-z spawns cropped off
+      // portrait screens (measured -83px off-edge at z -3.2)
+      stage.slapDuel(pel.x, pel.z + 1.2);
       stage.spawnConfetti(pel);
       sfx.choir();
       excite = Math.min(1, excite + 0.4);
