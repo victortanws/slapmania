@@ -275,7 +275,12 @@ export function smack(text = 'SLAPMANIA!', variant = null) {
   s.classList.remove('hidden', 'go');
   void s.offsetWidth; // restart the pop animation
   s.classList.add('go');
-  smackTimer = setTimeout(() => s.classList.add('hidden'), variant === 'gold' ? 2400 : 1300);
+  // THE BURST OWNS ITS BAND: while the starburst is up, the distance ticker,
+  // chain badge and coach line go dark (body.smackon) — on a phone they all
+  // share the same center-top pixels, and COUNTY LINE! over "93.6m" over
+  // "CHAIN 98%" was an unreadable pile of gold-on-gold
+  document.body.classList.add('smackon');
+  smackTimer = setTimeout(() => { s.classList.add('hidden'); document.body.classList.remove('smackon'); }, variant === 'gold' ? 2400 : 1300);
 }
 
 export function setMaster(level) {

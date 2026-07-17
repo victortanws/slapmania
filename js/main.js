@@ -1930,17 +1930,21 @@ function updateCamera(dt) {
     // the camera STAYS with the flyer: rises with high arcs, slides with
     // sideways drift — you never lose sight of the person you just launched
     const b = opponent.pelvisPos();
+    // deep-lane rise: past 70m the lane runs between farmhouses and the crash
+    // wall, and the chase cam was flying INSIDE the barn (a phone screenshot of
+    // COUNTY LINE! was a red wall). Climb gently with distance and sail over.
+    const far = Math.max(0, b.x - 70) * 0.09;
     if (replayCam) {
       // REPLAY, camera two: the leading reverse dolly — the drone flies AHEAD
       // and the body comes AT the lens, the fair blurring past behind it
-      p = V(b.x + 7.5, Math.max(2.1, b.y + 0.5), b.z - 3.2);
+      p = V(b.x + 7.5, Math.max(2.1, b.y + 0.5) + far, b.z - 3.2);
       l = V(b.x, Math.max(b.y, 0.8), b.z);
       snapRate = 7;
     } else {
       // trail straighter behind and look DOWNRANGE of the flyer: keeps the
       // ring's barn/conifers at the frame edge and drops the flyer into the
       // lower third with the open lane ahead — every launch "goes somewhere"
-      p = V(b.x - 6.5, Math.max(2.8, b.y + 1.4), b.z + 4.0);
+      p = V(b.x - 6.5, Math.max(2.8, b.y + 1.4) + far, b.z + 4.0);
       l = V(b.x + 3, Math.max(b.y, 0.7), b.z);
     }
   } else { // FOULED / RESULT / MATCH_END — linger where the action ended

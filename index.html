@@ -51,6 +51,11 @@ body.mirror #c{transform:scaleX(-1);}
 #backBtn:active{transform:translateY(1px);background:rgba(40,30,54,.9);}
 /* drop the attempts dots to a second row so they clear the back button (touch only) */
 body.backon #attempts{transform:translateY(42px);}
+/* while a starburst ceremony is up, everything sharing its band yields */
+body.smackon #distance, body.smackon #flightChain, body.smackon #coach{visibility:hidden;}
+/* BEST SCORE + the attempts row sit over open sky — on the pale worlds their
+   bare yellow went muddy. A quiet ink chip keeps them readable on anything. */
+#best, #attempts{background:rgba(10,12,26,.5);padding:5px 10px;border-radius:9px;}
 #masterTag{position:absolute;top:64px;right:24px;font-size:12px;letter-spacing:2px;color:#ffe9a0;
   text-shadow:2px 2px 0 #a8720f,3px 3px 0 #000;}
 
