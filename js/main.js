@@ -91,6 +91,43 @@ let prevHandSeg = null;   // last frame's palm segment — the contact test swee
 let tookTakedown = false; // Slopberg caught a slap mid-REACH this match — the fail beat knows
 let bulwarkPts = 0;       // Tick-Tock v2: cumulative points this MATCH — the IMMOVABILITY meter
 let calledHigh = null;    // Dale's called cheek half this attempt (true=HIGH), null = no call
+// ---------- GHOST REPLAYS: the swing IS the data ----------
+// The engine is deterministic and a swing is just key timings, so a complete
+// replay fits in ~40 URL characters. A challenge link can carry the rival's
+// actual swing (ctape=), and the recipient WATCHES it re-executed live by the
+// engine before their own attempts. No video, no server — the sim is the tape.
+let tapeRec = [];                                        // this attempt's [ms, code, down] (SWING-relative)
+const tapePrev = { s: false, l: false, a: false, p: false };
+let ghostTape = null;      // parsed rival tape queued for the next swing
+let ghostActive = false;   // the tape is swinging NOW — real S/L/A/P input muted
+let ghostQueue = [];       // remaining tape events, consumed frame-exactly in tick
+let ghostT = 0;            // ms of SWING elapsed for the tape pump
+const KEYCODE = { s: 'KeyS', l: 'KeyL', a: 'KeyA', p: 'KeyP' };
+// token stream: lowercase = keydown, UPPERCASE = keyup, DECIMAL ms after each.
+// (Decimal on purpose: base36 digits include a/s/l/p, and the greedy time
+// capture swallowed the next key token — half the tape vanished in parsing.)
+const encodeTape = (tape) => tape.map(([t, k, d]) => (d ? k : k.toUpperCase()) + Math.max(0, Math.round(t))).join('');
+function parseTape(str) {
+  if (!str) return null;
+  const out = []; const re = /([slapSLAP])([0-9]+)/g; let m;
+  while ((m = re.exec(str))) out.push([Math.min(60000, parseInt(m[2], 10)), KEYCODE[m[1].toLowerCase()], m[1] === m[1].toLowerCase()]);
+  out.sort((a, b) => a[0] - b[0]);
+  return out.length && out.length <= 48 ? out : null;
+}
+function cancelGhost() {
+  if (ghostActive) for (const k in tapePrev) keys[k] = false; // the tape lets go of the keys
+  ghostActive = false;
+  ghostQueue = []; ghostT = 0;
+}
+// Playback is FRAME-EXACT, not timer-based: the tape is pumped inside the SWING
+// tick (same clock the recorder used), so a replay reproduces the swing the way
+// drive() does — immune to setTimeout jitter, which cost whole grade tiers.
+function beginGhost(tape) {
+  ghostActive = true;
+  ghostQueue = tape.map((e) => [...e]);
+  ghostT = 0;
+  ui.slapBurst("📼 THE CHALLENGER'S TAPE", 'WATCH THE SWING YOU HAVE TO BEAT — THEN IT\'S YOURS');
+}
 function restoreBar() { ui.challengeBar(rivalBarText); }
 let pickIndex = 0;
 let pickHighlight = null;
@@ -472,6 +509,7 @@ function startMatch() {
 
 // Escape from anywhere: back to the front porch
 function goToTitle() {
+  cancelGhost(); ghostTape = null;
   if (chosenArch && chosenArch.boss) chosenArch = null;   // bosses don't loiter on the porch
   stage.resetTarStains(); // no tar claims on the title screen
   // a tour may have pinned its own world (the dojo) — restore the player's pick
@@ -902,6 +940,13 @@ function startAttempt() {
   timeScale = 1;
   hitstopT = 0;
   prevHandSeg = null; // no stale sweep across attempts
+  tapeRec = [];
+  for (const k in tapePrev) tapePrev[k] = !!keys[k];
+  // a challenge link with a tape: the FIRST swing belongs to the rival's ghost
+  if (challenge && challenge.tape && !challenge.tapePlayed && chosenArch && chosenArch.key === challenge.oppKey) {
+    challenge.tapePlayed = true;
+    ghostTape = challenge.tape;
+  }
   opponent.runLine = attempts.length % 2; // skiRun v2: line A / line B, announced by her push-off side
   calledHigh = arch.calledShot ? attempts.length % 2 === 0 : null; // Dale calls HIGH, LOW, HIGH
   opponent.calledHigh = calledHigh; // he PRESENTS the called half in his pocket
@@ -1319,7 +1364,24 @@ function showResult() {
   const isFoul = !!(slap && slap.foul);
   const dist = isFoul ? 0 : flew;
   const pts = Math.round(dist * arch.mass * 10);
-  attempts.push({ dist, pts, foul: isFoul ? slap.foul : null, part: slap ? slap.part : null, opp: arch.name });
+  if (ghostActive) {
+    // the rival's tape just landed — show ITS card, but the swing was never
+    // yours: no attempt consumed, no board write, no campaign judgment
+    cancelGhost();
+    ui.coach(null); ui.refBar(null); ui.showDistance(null);
+    sfx.crowd(dist > 20 ? 3 : 1);
+    pendingCard = {
+      dist, pts, arch, part: slap && !isFoul ? slap.part : null,
+      foul: isFoul ? slap.foul : null, chain: slap ? slap.chain : null,
+      line: `📼 THE CHALLENGER'S TAPE — that's the swing. ${challenge ? challenge.by : 'THE RIVAL'} sent ${pts} PTS. YOUR TURN.`,
+      n: 0, next: 'CLICK / ENTER → YOUR TURN',
+    };
+    cardDelay = 1.1;
+    ui.setAttempts(attempts, attempts.length, (opponent.arch && opponent.arch.attempts) || 3);
+    setState('RESULT');   // the caller relies on showResult flipping the state — without this it re-fires as a REAL attempt
+    return;
+  }
+  attempts.push({ dist, pts, foul: isFoul ? slap.foul : null, part: slap ? slap.part : null, opp: arch.name, tape: tapeRec.slice(0, 48) });
   track('slap_landed', {
     opp: arch.name, pts, dist: +dist.toFixed(1),
     foul: isFoul ? slap.foul : null,
@@ -1452,7 +1514,8 @@ function challengeUrl(bestAttempt) {
   if (!bestAttempt || bestAttempt.pts <= 0) return null;
   const oppKey = (ROSTER.find((r) => r.name === bestAttempt.opp) || {}).key || '';
   const by = (ui.getName() || 'A RIVAL').slice(0, 12);
-  return `https://slapmania.org/?cpts=${bestAttempt.pts}&copp=${oppKey}&csl=${player.look?.key || ''}&cby=${encodeURIComponent(by)}`;
+  const tape = bestAttempt.tape && bestAttempt.pts > 0 ? `&ctape=${encodeTape(bestAttempt.tape)}` : '';
+  return `https://slapmania.org/?cpts=${bestAttempt.pts}&copp=${oppKey}&csl=${player.look?.key || ''}&cby=${encodeURIComponent(by)}${tape}`;
 }
 
 // A campaign challenge is a BOSS TRIAL — best-of-3 and a VERDICT card (the pause, the
@@ -1669,6 +1732,7 @@ addEventListener('keydown', (e) => {
     return;
   }
   const k = KEYMAP[e.code];
+  if (k && ghostActive && !e.__ghost) return; // the tape has the floor — live fingers wait
   if (k) keys[k] = true;
   advanceScreens(e.code);
 });
@@ -1933,8 +1997,12 @@ function finishCatchStage() {
 
 function tick(now) {
   schedule();
-  const dt = Math.min(Math.max((now - last) / 1000, 0) || 0, 1 / 30);
+  let dt = Math.min(Math.max((now - last) / 1000, 0) || 0, 1 / 30);
   last = now;
+  // ghost playback runs on a LOCKED 60fps step, like drive(): real rAF dt
+  // wobbles (resizes, slow frames) shifted the P-press/contact race by a frame
+  // and the same tape landed 40m or 17m. One clock, one outcome, every replay.
+  if (ghostActive) dt = 1 / 60;
   // cutscene: the match clock freezes, the world stays alive (breathing, sway),
   // and the camera runs a close-up on whoever is speaking
   if (dlg.isActive()) {
@@ -1985,11 +2053,30 @@ function tick(now) {
       if (opponent.arch.bulwark) ui.bulwark(Math.max(0, Math.ceil(100 - bulwarkPts / (opponent.arch.bulwark.threshold / 100))), opponent.arch.bulwark.label, opponent.arch.bulwark.sprungCry);
       surgeFired = false; // reset Chuck's Second Wind telegraph for this attempt
       if (opponent.arch.throwIce) resetCatch(); // fresh row of ice to catch
+      if (ghostTape) { beginGhost(ghostTape); ghostTape = null; }
       setState('SWING');
     }
   } else if (state === 'SWING') {
+    // ghost pump: replay the rival's tape on the sim clock, key-for-key
+    if (ghostActive) {
+      ghostT += dts * 1000;
+      // one-frame lookahead: the original often pressed P and made contact in
+      // the SAME frame — replayed a frame late, contact wins the race and the
+      // palm never opens (40m became 9m). Early by ≤17ms is inside every grade
+      // window's tolerance; late by one frame can erase the palm entirely.
+      while (ghostQueue.length && ghostQueue[0][0] <= ghostT + 17) {
+        const [, code, down] = ghostQueue.shift();
+        const k = KEYMAP[code]; if (k) keys[k] = down;
+      }
+    }
     player.update(dts, keys);
     swingT += dts;
+    // tape recorder: log every S/L/A/P transition (engine-agnostic — sees keys[],
+    // so human play, touch buttons and drive() all record identically)
+    for (const k in tapePrev) if (keys[k] !== tapePrev[k]) {
+      tapePrev[k] = keys[k];
+      if (tapeRec.length < 48) tapeRec.push([Math.round(swingT * 1000), k, keys[k]]);
+    }
     sfx.whoosh(player.handSpeed);
     ui.setMeters(player.lean);
     // Chuck's Second Wind: the instant the 4-second quiet ends, the crowd chants
@@ -2380,7 +2467,9 @@ let challenge = null;
     if (oppArch && !oppArch.boss) chosenArch = oppArch;      // volunteer preselected (bosses stay tour-only)
     const sl = SLAPPERS.find((s) => s.key === q.get('csl'));
     if (sl && !(sl.locked && !owned(sl.key))) setLook(sl);   // slapper too, if playable
-    rivalBarText = `⚔️ ${challenge.by} CHALLENGES YOU — BEAT ${challenge.pts} PTS${oppArch ? ` VS ${oppArch.name}` : ''}`;
+    challenge.tape = parseTape(q.get('ctape'));
+    challenge.oppKey = oppArch && !oppArch.boss ? oppArch.key : null;
+    rivalBarText = `⚔️ ${challenge.by} CHALLENGES YOU — BEAT ${challenge.pts} PTS${oppArch ? ` VS ${oppArch.name}` : ''}${challenge.tape ? ' · 📼 TAPE INCLUDED' : ''}`;
     ui.challengeBar(rivalBarText);
     track('challenge_opened', { by: challenge.by, pts: challenge.pts, opp: oppArch ? oppArch.name : null });
   }
