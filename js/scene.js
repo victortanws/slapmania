@@ -5179,6 +5179,9 @@ export function createStage(canvas) {
   // biomeMat/biomeIM variants), a `crowd` wardrobe, pond/sun tints, what farm
   // dressing hides, and which barricade stands at 20m.
   const WORLD_THEMES = {
+    pitch: { fog: [0xdcecdc, 55, 175], skyTint: 0xeaf4ff, hemi: [0xe8f4e8, 0x3f7a3f, 1.0], sun: [0xfff6e0, 2.0], fill: 0.35, cloud: 0xf6faf6, maps: false, grass: 0x58a850, lane: 0x62b458, night: false, sunFace: true,
+      group: 'pitch', pond: 0x58a850,
+      hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true },
     day:   { fog: [0xdce9f2, 45, 160], skyTint: 0xffffff, hemi: [0xcfe2ff, 0x4f6b3a, 0.9], sun: [0xfff2d8, 1.9], fill: 0.35, cloud: 0xfff6ea, maps: true,  grass: 0xffffff, lane: 0xffffff, night: false, sunFace: true },
     haunted: { fog: [0x121a16, 34, 118], skyTint: 0x141f1a, hemi: [0x7a9c8a, 0x18221c, 0.55], sun: [0xbfe0c8, 0.75], fill: 0.12, cloud: 0x2a3a30, maps: true, grass: 0x55705f, lane: 0x6a7268, night: true, sunFace: false,
       group: 'haunted', biome: 'haunted', crowd: 'haunted', pond: 0x0e1418,
@@ -5240,7 +5243,66 @@ export function createStage(canvas) {
       group: 'cave', biome: 'lava', crowd: null, pond: 0x1a6a7a, hideCrowd: true,
       hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, hideFences: true, barricade: 'goldbars' },
   };
+  // ---- ⚽ THE PITCH: the World Cup came to the county. Nobody knows how. ----
+  const pitchG = new THREE.Group();
+  {
+    const white = toonMat(0xf4f4f0), steel = toonMat(0xd8dde2);
+    // two goals: one behind the ring (the keeper's), one far downrange (dream big)
+    const mkGoal = (x, facing) => {
+      const g = new THREE.Group();
+      for (const s2 of [-1, 1]) {
+        const post = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 2.6, 8), white);
+        post.position.set(0, 1.3, s2 * 3.6); g.add(post);
+        const stay = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 2.1, 6), steel);
+        stay.rotation.x = s2 * 0; stay.rotation.z = facing * 0.75;
+        stay.position.set(-facing * 0.8, 0.95, s2 * 3.6); g.add(stay);
+      }
+      const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 7.2, 8), white);
+      bar.rotation.x = Math.PI / 2; bar.position.set(0, 2.6, 0); g.add(bar);
+      g.position.x = x;
+      return g;
+    };
+    pitchG.add(mkGoal(-6, -1));
+    pitchG.add(mkGoal(64, 1));
+    // loose footballs everywhere — the groundskeeper has given up
+    const ballCv = document.createElement('canvas'); ballCv.width = 64; ballCv.height = 64;
+    const bg = ballCv.getContext('2d');
+    bg.fillStyle = '#f4f4f0'; bg.fillRect(0, 0, 64, 64);
+    bg.fillStyle = '#16161c';
+    for (const [px, py] of [[10, 12], [34, 6], [54, 20], [20, 36], [44, 44], [6, 52]]) { bg.beginPath(); bg.arc(px, py, 7, 0, Math.PI * 2); bg.fill(); }
+    const pitchBallMat = new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(ballCv), roughness: 0.55 });
+    for (const [bx, bz] of [[4, 5.5], [11, -6.2], [19, 6.8], [27, -5.4], [36, 6.1], [44, -6.8], [52, 5.2], [58, -5.8], [8, 8.4], [31, 8.2], [48, 8.8], [-3, -5]]) {
+      const b = new THREE.Mesh(new THREE.SphereGeometry(0.19, 10, 8), pitchBallMat);
+      b.position.set(bx, 0.19, bz);
+      b.rotation.set(Math.random() * 3, Math.random() * 3, 0);
+      b.castShadow = true;
+      pitchG.add(b);
+    }
+    // corner flags + touchline ad boards (the county's finest sponsors)
+    for (const [fx, fz] of [[-6, 7.5], [-6, -7.5], [64, 7.5], [64, -7.5]]) {
+      const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.5, 5), steel);
+      pole.position.set(fx, 0.75, fz); pitchG.add(pole);
+      const flag = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.34), new THREE.MeshBasicMaterial({ color: 0xffd23f, side: THREE.DoubleSide }));
+      flag.position.set(fx + 0.26, 1.32, fz); pitchG.add(flag);
+    }
+    const ads = ['SLAPMANIA AIR', 'GOLDEN SLAPS', 'BESSIE DAIRY', 'LOCAL 415'];
+    ads.forEach((txt, i) => {
+      const board = new THREE.Mesh(new THREE.BoxGeometry(7.5, 1.0, 0.18), toonMat(0xfffbe8));
+      const bx2 = 6 + i * 14, bz2 = i % 2 ? 9.6 : -9.6;
+      board.position.set(bx2, 0.5, bz2); pitchG.add(board);
+      const label = new THREE.Mesh(new THREE.PlaneGeometry(7.0, 0.7),
+        new THREE.MeshBasicMaterial({ map: makeTextTexture(txt, '#c9302c'), transparent: true }));
+      label.position.set(bx2, 0.52, bz2 + (bz2 > 0 ? -0.11 : 0.11));
+      if (bz2 > 0) label.rotation.y = Math.PI;
+      pitchG.add(label);
+    });
+    pitchG.traverse((m) => { m.castShadow = true; });
+    pitchG.visible = false;
+    scene.add(pitchG);
+  }
+
   const WORLD_GROUPS = {
+    pitch: pitchG,
     ice: winterG, desert: desertG, jungle: jungleG, dojo: dojoG,
     lava: lavaG, heaven: heavenG, hell: hellG, therapy: therapyG,
     haunted: hauntedG, techcampus: techG, vegas: vegasG,

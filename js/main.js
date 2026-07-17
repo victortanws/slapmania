@@ -807,6 +807,7 @@ const WORLDS = [
   { key: 'tarpit',  label: '🦴 TAR PITS', dlc: true },
   { key: 'blackgold', label: '🛢️ BLACK GOLD', dlc: true },
   { key: 'cave',    label: '💎 CAVE OF WONDERS', dlc: true },
+  { key: 'pitch',   label: '⚽ THE PITCH', dlc: true },
 ];
 // theme + that world's ONE physics quirk, together — used by the selector,
 // the tour world-pin, and the return-to-title restore, so visuals and physics
@@ -2035,20 +2036,47 @@ function makeCube() {
   m.visible = false; scene.add(m);
   return m;
 }
+// FOOTBALLS (arch.ballProj): same catch/parry physics, different projectile —
+// a white ball with black patches, for keepers who launch penalties at you
+let ballTex = null;
+function makeBall() {
+  if (!ballTex) {
+    const cv = document.createElement('canvas'); cv.width = 64; cv.height = 64;
+    const g = cv.getContext('2d');
+    g.fillStyle = '#f4f4f0'; g.fillRect(0, 0, 64, 64);
+    g.fillStyle = '#16161c';
+    for (const [px, py] of [[10, 12], [34, 6], [54, 20], [20, 36], [44, 44], [6, 52]]) {
+      g.beginPath(); g.arc(px, py, 7, 0, Math.PI * 2); g.fill();
+    }
+    ballTex = new THREE.CanvasTexture(cv);
+  }
+  const m = new THREE.Mesh(
+    new THREE.SphereGeometry(0.17, 12, 10),
+    new THREE.MeshStandardMaterial({ map: ballTex, roughness: 0.5, metalness: 0 }));
+  m.userData.ball = true;
+  m.visible = false; scene.add(m);
+  return m;
+}
+const ballPool = [];
+const poolBack = (m) => (m.userData.ball ? ballPool : cubePool).push(m);
 function resetCatch() {
-  for (const c of iceCubes) { c.mesh.visible = false; cubePool.push(c.mesh); }
-  for (const m of rowCubes) { m.visible = false; cubePool.push(m); }
+  for (const c of iceCubes) { c.mesh.visible = false; poolBack(c.mesh); }
+  for (const m of rowCubes) { m.visible = false; poolBack(m); }
   iceCubes.length = 0; rowCubes.length = 0; catchCount = 0; catchMiss = 0; catchThrown = 0;
   catchThrowT = CATCH_PERIOD - 0.55; // first cube arrives shortly after the swing opens
 }
 function throwCube() {
-  const mesh = cubePool.pop() || makeCube();
+  const ball = !!opponent.arch.ballProj;
+  const mesh = ball ? (ballPool.pop() || makeBall()) : (cubePool.pop() || makeCube());
   mesh.visible = true;
+  mesh.rotation.set(Math.random() * 3, Math.random() * 3, 0);
   // the projectile takes the thrower's colors: ice by default, or e.g. Yusuf's
   // DATES (arch.cubeColor + a warm glow). Pool meshes get retinted every spawn.
-  const cc = opponent.arch.cubeColor;
-  mesh.material.color.setHex(cc || 0xbfe9ff);
-  mesh.material.emissive.setHex(cc ? (opponent.arch.cubeGlow || 0x3a2412) : 0x5ab0e0);
+  if (!ball) {
+    const cc = opponent.arch.cubeColor;
+    mesh.material.color.setHex(cc || 0xbfe9ff);
+    mesh.material.emissive.setHex(cc ? (opponent.arch.cubeGlow || 0x3a2412) : 0x5ab0e0);
+  }
   const hc = opponent.headPos();
   // Carmine HURLS it: a big, high, SLOW lob from his raised hand that sails up and
   // arcs down into a CATCH ZONE out in front of the player, at the palm's reach.
@@ -2108,12 +2136,12 @@ function updateCatch(dt) {
         if (goal && goal.type === 'catch' && catchCount >= goal.v) { finishCatchStage(); return; }
       } else {
         // BATTED: you swung too hard — the cube rockets off, no catch
-        c.mesh.visible = false; cubePool.push(c.mesh); catchMiss++;
+        c.mesh.visible = false; poolBack(c.mesh); catchMiss++;
         ui.slapBurst('BATTED IT AWAY!', 'A CATCH IS A SOFT REACH — NOT A SLAP');
         sfx.crack(0.5); stage.spawnShock(p);
       }
     } else if (c.t > 1.32) { // fell back into the lake, uncaught
-      c.live = false; c.mesh.visible = false; cubePool.push(c.mesh);
+      c.live = false; c.mesh.visible = false; poolBack(c.mesh);
       catchMiss++;
     }
   }
@@ -2132,7 +2160,7 @@ function finishCatchStage() {
   const won = !!cleared;
   const bestAttempt = { dist: 0, pts: 0, foul: null, part: null, opp: arch.name };
   attempts.push(bestAttempt);
-  iceCubes.forEach((c) => { c.mesh.visible = false; cubePool.push(c.mesh); }); iceCubes.length = 0;
+  iceCubes.forEach((c) => { c.mesh.visible = false; poolBack(c.mesh); }); iceCubes.length = 0;
   meltRow(); // ...and the tidy row you built goes to nothing. The Exertion of Pointlessness.
   ui.hideCards();
   const line = won

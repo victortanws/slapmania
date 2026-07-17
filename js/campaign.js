@@ -337,6 +337,75 @@ export const TOURS = [
     ],
   },
   {
+    // THE SLAP CUP: the World Cup came to the county. Nobody knows how. The
+    // running joke: slapping is football, corrected — the man IS the ball.
+    key: 'slapcup', title: '⚽ THE SLAP CUP',
+    dlc: true,
+    world: 'pitch',
+    slapper: 'fran',
+    blurb: 'The World Cup came to the county — trophy, pitch, VAR, and a man who is somehow BOTH goats at once. Fran plays a different kind of football.',
+    acts: [
+      {
+        act: 'THE GROUP STAGE',
+        story: 'The pitch is painted, the corner flags are up, and loose footballs are everywhere. The groundskeeper has given up and joined the crowd.',
+        challenges: [
+          { id: 'g1c1', title: 'THE OPENING WHISTLE', desc: "LAND a clean head slap on TUMBLIN' TARSO — a tidy opener. VAR is watching, and VAR has opinions", opp: 'tarso', goal: { type: 'head' } },
+          { id: 'g1c2', title: 'THE DIVE', desc: "Send TARSO 55m — he makes every touch look like a rocket anyway. Give the man REAL material", opp: 'tarso', goal: { type: 'dist', v: 55 } },
+          { id: 'g1c3', title: 'THE PENALTY SHOOT-OUT', desc: 'IRON-GLOVES IGOR launches penalties AT YOU — PARRY 3 out of the air with the open palm [P]. The wall is you now', opp: 'igor', goal: { type: 'catch', v: 3 } },
+        ],
+      },
+      {
+        act: 'THE FINAL',
+        story: 'One match left. The stadium chant is just the word SLAP, which the county finds easy to remember.',
+        challenges: [
+          { id: 'g2c1', title: 'EXTRA TIME', desc: 'LAND a 70% chain before TARSO — VAR now reviews TECHNIQUE, and VAR has never approved of anything', opp: 'tarso', goal: { type: 'chain', v: 70 } },
+          { id: 'g2c2', title: 'ROUTE ONE', desc: 'Send BIG HOSS 15m — the target man. In football they aim AT him. We aim him AT things', opp: 'hoss', goal: { type: 'dist', v: 15 } },
+          { id: 'g2c3', title: '☗ BOSS: THE GOAT DERBY', desc: 'Score 300 off MESSY RONALDO — below a 65% chain BOTH of him no-sells it. Settle the greatest debate in sports', opp: 'messy', goal: { type: 'pts', v: 300 } },
+        ],
+      },
+    ],
+  },
+  {
+    // SLAPOVISION: the song contest, except the judges were always going to
+    // judge somebody — the county simply gave them something worth judging.
+    key: 'slapovision', title: '🎤 SLAPOVISION',
+    dlc: true,
+    world: 'vegas',
+    slapper: 'mei',
+    blurb: 'The song contest lands at the fair: sequins, key changes, and a jury of five in one trenchcoat. Douze points or nothing.',
+    acts: [
+      {
+        act: 'GRAND FINAL NIGHT',
+        story: 'The stage is lit, the fog machine is a rented bee smoker, and the semi-final favorite is mid-costume-change. He has been mid-costume-change for an hour.',
+        challenges: [
+          { id: 'e1c1', title: 'THE SEMI-FINAL', desc: 'LAND a clean head slap on GLITTERBEARD GUNNAR — he will perform THROUGH it. Time the sway; the show never stops', opp: 'gunnar', goal: { type: 'head' } },
+          { id: 'e1c2', title: 'THE KEY CHANGE', desc: 'LAND a 65% chain before MAESTRO FORTISSIMO — hit the modulation IN TUNE or he will simply refuse to acknowledge it', opp: 'maestro', goal: { type: 'chain', v: 65 } },
+          { id: 'e1c3', title: '☗ BOSS: THE JURY', desc: 'Score 330 off THE JURY — five jurors, one trenchcoat; below a 70% chain they award NUL POINTS (×0.12). Sing with the palm', opp: 'jury', goal: { type: 'pts', v: 330 } },
+        ],
+      },
+    ],
+  },
+  {
+    // SLAPAMANIA: SUPERSLAM — the wrestling mega-event comes home to the game
+    // that already had the name. Kayfabe is discussed. Kayfabe is violated.
+    key: 'superslam', title: '🤼 SLAPAMANIA: SUPERSLAM',
+    dlc: true,
+    world: 'day',
+    slapper: 'buck',
+    blurb: "The wrestling mega-event books the fair. The script says you lose. The county's palm has notes on the script.",
+    acts: [
+      {
+        act: 'THE CARD',
+        story: 'A ring announcer with a golden voice, a headliner in a mask, and a promoter who owns the word SLAP in eleven states. Tonight: the county disputes that.',
+        challenges: [
+          { id: 'm1c1', title: 'THE PROMO', desc: 'LAND a clean head slap on THE MASKED MARVEL — he WILL sell it. That is the job, and he is magnificent at it', opp: 'marvel', goal: { type: 'head' } },
+          { id: 'm1c2', title: 'THE SPOT, AS WRITTEN', desc: 'Send THE MASKED MARVEL 40m — the script literally says "the volunteer flies forty meters." Deliver it AS WRITTEN', opp: 'marvel', goal: { type: 'dist', v: 40 } },
+          { id: 'm1c3', title: '☗ BOSS: THE MAIN EVENT', desc: 'Score 350 off PROMOTER VINNIE SLAMHART in twenty seconds a swing — below a 65% chain, creative has NOTHING for you (×0.12)', opp: 'vinnie', goal: { type: 'pts', v: 350 } },
+        ],
+      },
+    ],
+  },
+  {
     key: 'slaptherapy', title: '🛋️ SLAP THERAPY',
     dlc: true,
     world: 'therapy',
@@ -1330,6 +1399,82 @@ export const CUTSCENES = {
     { who: 'YOU', text: "Aiyah, don't thank Auntie. Thank the palm. And eat your vegetables — Auntie knows where everyone lives. She checked.", shot: 'player' },
   ],
 
+  slapcup_prologue: [
+    { who: 'YOU', text: "The World Cup came to the county. Nobody knows how. The trophy's real, the pitch is painted, and there's a fella doing keepy-uppies on the halfway line who is somehow BOTH goats at once.", shot: 'player' },
+    { who: 'YOU', text: 'In football, you kick a ball into a net. In slapping, the man IS the ball and the county IS the net. It is a better sport. Even VAR agrees, and VAR agrees with NOTHING.', shot: 'player' },
+  ],
+  g1c1: [
+    { who: "TUMBLIN' TARSO", text: 'Careful! CAREFUL. Last week a butterfly clipped me and I missed two months. The butterfly got a red card.', shot: 'opp' },
+    { who: 'YOU', text: "A clean opener, Tarso. On the head, like a proper set piece. VAR is watching and I've never seen it approve of anything.", shot: 'player' },
+  ],
+  g1c2: [
+    { who: "TUMBLIN' TARSO", text: 'When I go down, I go down THEATRICALLY. Rehearsed. Two backflips, one scream, a long look at the referee.', shot: 'opp' },
+    { who: 'YOU', text: "Fifty-five meters, Tarso. For once, nobody will accuse you of exaggerating.", shot: 'player' },
+    { who: "TUMBLIN' TARSO", text: 'FINALLY. Real material.', shot: 'opp' },
+  ],
+  g1c3: [
+    { who: 'IRON-GLOVES IGOR', text: 'A shoot-out. But reversed. I launch. YOU keep. Three saves or the county loses on penalties, like everyone eventually does.', shot: 'opp' },
+    { who: 'YOU', text: "Open palm, quick hands. In football they call it a save. Here we call it Tuesday.", shot: 'player' },
+  ],
+  g2c1: [
+    { who: "TUMBLIN' TARSO", text: 'VAR has flagged your TECHNIQUE for review. It drew lines on your elbow. The lines were unflattering.', shot: 'opp' },
+    { who: 'YOU', text: 'Seventy percent, then. Clean enough that even the lines applaud.', shot: 'player' },
+  ],
+  g2c2: [
+    { who: 'BIG HOSS', text: "They said there's a sport where folks aim the ball AT the big man. Route one, they call it.", shot: 'opp' },
+    { who: 'YOU', text: "We play it a little different, Hoss. Here, the big man IS route one.", shot: 'player' },
+  ],
+  g2c3: [
+    { who: 'MESSY RONALDO', text: 'The LEFT cheek is the greatest cheek of all time. — Incorrect. The RIGHT. It has won more. — We share a FACE. — Debatable.', shot: 'opp' },
+    { who: 'YOU', text: "Gentlemen. Gentleman. There's one way to settle the greatest debate in sports, and it's the county's way.", shot: 'player' },
+    { who: 'MESSY RONALDO', text: 'She cannot reach GOAT level. — Agreed. — ...did we just AGREE? — Never speak of it.', shot: 'opp' },
+  ],
+  outro_g2c3: [
+    { who: 'MESSY RONALDO', text: '...both cheeks. She got BOTH. — Simultaneously. — The debate is settled. — Yes. We are EQUALLY slapped.', shot: 'opp' },
+    { who: 'YOU', text: 'The trophy stays at the fair. The pitch stays too — the cows have opinions about the grass. Good tournament, everybody.', shot: 'player' },
+  ],
+
+  slapovision_prologue: [
+    { who: 'YOU', text: "The song contest landed at the fair. Sequins in the hay, a fog machine that's clearly a bee smoker, and a jury of five wearing one trenchcoat. Slapovision is LIVE.", shot: 'player' },
+  ],
+  e1c1: [
+    { who: 'GLITTERBEARD GUNNAR', text: 'I have died on stage in eleven countries and been REBORN in twelve. Slap me — the show continues REGARDLESS.', shot: 'opp' },
+    { who: 'YOU', text: 'He performs through everything. Time the sway, land it clean, and try not to hum along. It costs points.', shot: 'player' },
+  ],
+  e1c2: [
+    { who: 'MAESTRO FORTISSIMO', text: 'The KEY CHANGE approaches. Land your little percussion IN TUNE, or I shall simply decline to hear it.', shot: 'opp' },
+    { who: 'YOU', text: 'Sixty-five percent, on the beat. Consider me the rhythm section.', shot: 'player' },
+  ],
+  e1c3: [
+    { who: 'THE JURY', text: 'Good evening. We are five jurors. The trenchcoat is one. Our scores are final, and our sleeves are complicated.', shot: 'opp' },
+    { who: 'YOU', text: 'Douze points or nothing, then. Watch closely — all ten of your eyes.', shot: 'player' },
+  ],
+  outro_e1c3: [
+    { who: 'THE JURY', text: '...the county awards itself... DOUZE POINTS. — That is not procedure. — The trenchcoat has spoken.', shot: 'opp' },
+    { who: 'YOU', text: 'Europe, thank you for the votes. The fair votes SLAP. Goodnight!', shot: 'player' },
+  ],
+
+  superslam_prologue: [
+    { who: 'YOU', text: "The wrestling mega-event booked OUR fair. Called it SUPERSLAM. The promoter says he owns the word SLAP in eleven states. The county's palm would like a word about that.", shot: 'player' },
+  ],
+  m1c1: [
+    { who: 'THE MASKED MARVEL', text: 'Slap me, brother, and I will SELL it to the cheap seats. I will sell it to seats that have not been BUILT.', shot: 'opp' },
+    { who: 'YOU', text: 'A clean one on the head, then. Give the man his masterpiece.', shot: 'player' },
+  ],
+  m1c2: [
+    { who: 'THE MASKED MARVEL', text: 'Page nine of the script: "the volunteer flies forty meters, the crowd gasps, a child drops his corn dog." I have REHEARSED the gasp.', shot: 'opp' },
+    { who: 'YOU', text: 'Forty meters, as written. The corn dog is on its own.', shot: 'player' },
+  ],
+  m1c3: [
+    { who: 'PROMOTER VINNIE SLAMHART', text: "Here's the finish, kid: you swing, you miss, I win, WrestleMania of Slaps, forty percent of the gate. Creative LOVES it.", shot: 'opp' },
+    { who: 'YOU', text: "Counter-offer: twenty seconds a swing, professional grade, and the county keeps its own name. Creative can watch.", shot: 'player' },
+    { who: 'PROMOTER VINNIE SLAMHART', text: 'THAT... is a MONEY finish. I hate it. Ring the bell.', shot: 'opp' },
+  ],
+  outro_m1c3: [
+    { who: 'THE MASKED MARVEL', text: 'The promoter is DOWN! And he sold it TERRIBLY. Amateur. The mask weeps for him.', shot: 'wide' },
+    { who: 'YOU', text: 'SLAPMANIA keeps its name, the Marvel keeps the mask, and the gate goes to the pension fund. Ring the bell twice — we did it clean.', shot: 'player' },
+  ],
+
   slaptherapy_prologue: [
     { who: 'YOU', text: 'Fifty years of analysis. Ten thousand dreams interpreted. Four hundred papers. And one finding that survived replication: the slap.', shot: 'player' },
     { who: 'YOU', text: 'The board revoked my license. The fair gave me a tent. Science continues.', shot: 'player' },
@@ -1708,6 +1853,18 @@ export const CUTSCENES = {
 // ('a' = Palm, 'f' = Fair, 'w' = Wonders, 'b' = Second Wind); rotated so
 // repeated failure stays fresh-ish.
 export const FAILS = {
+  g: [
+    [{ who: "TUMBLIN' TARSO", text: '(from the ground, uninjured) I have seen better contact in a HANDSHAKE. Again — and MEAN it.', shot: 'opp' }],
+    [{ who: 'YOU', text: 'VAR would disallow that out of pity. Again.', shot: 'player' }],
+  ],
+  e: [
+    [{ who: 'THE JURY', text: 'The county awards itself... nul points. — Harsh. — ACCURATE.', shot: 'opp' }],
+    [{ who: 'YOU', text: 'Off-key. Even the fog machine winced. Again, from the top.', shot: 'player' }],
+  ],
+  m: [
+    [{ who: 'PROMOTER VINNIE SLAMHART', text: "THAT'S your finish? Kid, I've seen better spots from the RING POSTS. Run it again.", shot: 'opp' }],
+    [{ who: 'YOU', text: 'The crowd chanted BORING. In unison. They rehearsed. Again.', shot: 'player' }],
+  ],
   k: [
     [{ who: 'YOU', text: "Aiyah! You call that MEDICINE? The cholesterol is LAUGHING. Again.", shot: 'player' }],
     [{ who: 'YOU', text: "Auntie has seen stronger slaps at a BUFFET. Again — the county's arteries are counting on you.", shot: 'player' }],
@@ -1820,6 +1977,19 @@ export const TAKEDOWN_FAIL = [
 // victory beats — short, replayable, played after clearing a NON-final
 // challenge (outro_* scenes own the finales). Keyed by tour prefix; rotated.
 export const WINS = {
+  g: [
+    [{ who: 'YOU', text: 'GOOOAL. Well. You know what I mean.', shot: 'player' },
+     { who: '📺 VAR', text: '(after a four-minute review, the slap stands. VAR looks disappointed about it.)', shot: 'wide' }],
+    [{ who: 'YOU', text: "That's football. The county's kind.", shot: 'player' }],
+  ],
+  e: [
+    [{ who: 'YOU', text: 'The televote is unanimous. The jury is furious. Perfect Slapovision.', shot: 'player' }],
+    [{ who: '🎤 THE HOST', text: '(reading a card) "...and that concludes the slapping portion, which was all of it."', shot: 'wide' }],
+  ],
+  m: [
+    [{ who: 'THE MASKED MARVEL', text: 'FIVE STARS. The newsletter will call it a classic. I am the newsletter.', shot: 'opp' }],
+    [{ who: 'YOU', text: 'Clean hit, clean sell, clean finish. Wrestling could learn from us.', shot: 'player' }],
+  ],
   k: [
     [{ who: 'YOU', text: 'Good. Cholesterol: EVICTED. Next patient.', shot: 'player' },
      { who: '🥗 A SALAD, UNTOUCHED', text: '(the salad watches from the concession stand. Its time is coming. It can feel it.)', shot: 'wide' }],
@@ -1915,7 +2085,7 @@ export const WINS = {
 // storyline next, with the Master Slee scrolls beneath it.
 // Olympic Bid leads (free), Wonders second, the Open Palm third (free) —
 // then the Fair, then the supporter storylines.
-const TOUR_ORDER = ['wonders', 'fair', 'farewell', 'palm', 'olympicbid', 'secondwind', 'blackgold', 'nightofslaps', 'slaptherapy', 'catinquiry', 'union', 'goldenslaps', 'horseshoe', 'slopvalley', 'commedia'];
+const TOUR_ORDER = ['wonders', 'fair', 'farewell', 'palm', 'olympicbid', 'secondwind', 'blackgold', 'nightofslaps', 'slaptherapy', 'catinquiry', 'union', 'goldenslaps', 'slapcup', 'slapovision', 'superslam', 'horseshoe', 'slopvalley', 'commedia'];
 // unknown keys sink to the bottom instead of floating to the top (indexOf −1)
 const tourRank = (k) => { const i = TOUR_ORDER.indexOf(k); return i < 0 ? TOUR_ORDER.length : i; };
 TOURS.sort((a, b) => tourRank(a.key) - tourRank(b.key));

@@ -103,6 +103,74 @@ export const ROSTER = [
     taunts: ['This location never closes. I AM the location.', 'Your cardiologist sends his regards. We have him too.'],
   },
   {
+    // THE SLAP CUP: the striker whose every touch is an audition for the Oscars.
+    key: 'tarso', name: "TUMBLIN' TARSO", tag: 'STRIKER · THE DIVER', boss: true,
+    w: 0.8, h: 1.0, mass: 0.45,
+    skin: 0xd9a066, hair: 'short', hairCol: 0x1a1512, noStache: true,
+    shirt: 0x2a9db4, stripes: 0xf4f4f0, pants: 0x16324a,
+    pickLine: 'Breathe near him and he files for a penalty. Slap him and he files for a MOVIE DEAL.',
+    taunts: ['I felt WIND. That is a foul somewhere.', 'My physio says I have never once exaggerated.', 'Card him! Card the AIR!'],
+  },
+  {
+    // THE SLAP CUP: the keeper. He launches PENALTIES at you — parry them.
+    key: 'igor', name: 'IRON-GLOVES IGOR', tag: 'BOSS · THE KEEPER', boss: true,
+    w: 1.2, h: 1.08, mass: 1.4, throwIce: true, ballProj: true,
+    skin: 0xe8c49a, hair: 'flat', hairCol: 0x8a6a2c, noStache: true, brow: true,
+    shirt: 0xf2c530, pants: 0x16161c, hat: 'cap', hatCol: 0x16161c,
+    pickLine: 'Nothing gets past Igor. Igor makes sure things get past YOU instead.',
+    taunts: ['I have kept a clean sheet since the HARVEST.', 'You parry like a man with library hands.'],
+  },
+  {
+    // THE SLAP CUP finale: both GOATs, one volunteer, permanent internal dispute.
+    // Only GOAT-level form even reaches the cheek (chainGate 65).
+    key: 'messy', name: 'MESSY RONALDO', tag: 'BOSS · THE GOAT × 2', boss: true,
+    w: 1.05, h: 1.04, mass: 1.1,
+    chainGate: 65, gateCry: 'NOT GOAT LEVEL!', gateCrySub: 'BOTH OF HIM AGREE: BELOW 65% CHAIN IS AMATEUR HOUR',
+    skin: 0xdfa06a, hair: 'short', hairCol: 0x14100e, noStache: true, brow: true,
+    shirt: 0xd42a3c, stripes: 0x2a5ad4, pants: 0xf4f4f0,
+    pickLine: 'Half of him is the greatest of all time. The other half disagrees. Loudly. Forever.',
+    taunts: ['The LEFT cheek is the GOAT cheek. — Incorrect. The RIGHT.', 'He has scored more than me. — I AM you. — Debatable.'],
+  },
+  {
+    // SLAPOVISION: the semi-final favorite. He performs THROUGH the slap.
+    key: 'gunnar', name: 'GLITTERBEARD GUNNAR', tag: 'CONTESTANT · SEMI-FINAL', boss: true,
+    w: 1.05, h: 1.05, mass: 1.0, sway: true,
+    skin: 0xe8c8a2, hair: 'flat', hairCol: 0xf2c530, beard: 0xf2c530, noStache: true,
+    shirt: 0xd442c8, pants: 0xf4f4f0,
+    pickLine: 'His key change has ended marriages. His beard has its own agent.',
+    taunts: ['This next note is for EUROPE.', 'My costume has more sequins than your chain has percent.'],
+  },
+  {
+    // SLAPOVISION finale: five jurors, one trenchcoat, zero mercy.
+    key: 'jury', name: 'THE JURY', tag: 'BOSS · FIVE IN A TRENCHCOAT', boss: true,
+    w: 1.45, h: 1.12, mass: 1.6,
+    chainGate: 70, gateCry: 'NUL POINTS!', gateCrySub: 'BELOW A 70% CHAIN, THE JURY AWARDS NOTHING',
+    skin: 0xc9a882, hair: 'bun', hairCol: 0x4a4458, glasses: true, noStache: true,
+    shirt: 0x3a3a46, pants: 0x2a2a33,
+    pickLine: 'Twelve points are theoretically available. Theoretically.',
+    taunts: ['The jury from the county next door awards you... nothing.', 'We have seen better technique at a BAKE SALE. The bake sale got eight points.'],
+  },
+  {
+    // SLAPAMANIA SUPERSLAM: the masked headliner. Sells EVERYTHING.
+    key: 'marvel', name: 'THE MASKED MARVEL', tag: 'HEADLINER · FACE', boss: true,
+    w: 1.15, h: 1.06, mass: 1.05,
+    skin: 0xd42a3c, bald: true, goggles: true, noStache: true,
+    shirt: 0xf2c530, pants: 0xd42a3c,
+    pickLine: 'The mask has never been removed. Underneath, sources say: a slightly smaller mask.',
+    taunts: ['I will SELL your slap like a mortgage.', 'The crowd chants my name. Both syllables.'],
+  },
+  {
+    // SUPERSLAM finale: the promoter. Twenty seconds a swing, and creative has
+    // nothing for anyone below professional grade.
+    key: 'vinnie', name: 'PROMOTER VINNIE SLAMHART', tag: 'BOSS · THE PROMOTER', boss: true,
+    w: 1.2, h: 1.05, mass: 1.25, shotClock: 20,
+    chainGate: 65, gateCry: 'CREATIVE HAS NOTHING FOR YOU!', gateCrySub: 'BELOW 65% CHAIN, YOU ARE OFF THE CARD',
+    skin: 0xdba57a, hair: 'swoop', hairCol: 0x8a8a92, noStache: true, brow: true,
+    shirt: 0x2a2a33, pants: 0x1a1a22, suit: true, tie: 0xd42a3c,
+    pickLine: 'Kid, I have made GODS out of men with worse palms. For forty percent.',
+    taunts: ['That spot? CUT. The slap stays, YOU are cut.', 'I own the word SLAP in eleven states.'],
+  },
+  {
     // LOCAL 415 (the volunteers' strike): management's replacement volunteer.
     // Flimsy by design — never braced a slap in his life, pays featherweight.
     key: 'scab_gary', name: 'SCAB GARY', tag: 'REPLACEMENT VOLUNTEER', boss: true,
