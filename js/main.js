@@ -161,9 +161,13 @@ let swingT = 0;
 let surgeFired = false; // CHUCK NORTH Second Wind: has the surge telegraph fired this attempt
 const prevKeys = { s: false, l: false, a: false, p: false };
 
+let whiffCued = false; // one WHIFF call-out per swing
+let lastTickSec = 99;  // shot-clock tick bookkeeping (final five seconds)
 function resetChain() {
   chain = { coil: 0, tRel: null, l: null, a: null, p: null };
   swingT = 0;
+  whiffCued = false;
+  lastTickSec = 99;
   ui.chainReset();
 }
 
@@ -877,7 +881,12 @@ document.getElementById('startBtn').onclick = () => { sfx.ensure(); advanceScree
   const wDef = WORLDS.find((w) => w.key === d.world);
   const btn = document.getElementById('dailyBtn');
   const done = localStorage.getItem('slapp_daily') === DAY_KEY;
-  btn.textContent = `📅 TODAY'S VOLUNTEER — ${d.vol.name} · ${wDef ? wDef.label : d.world.toUpperCase()}${d.mirror ? ' · 🫲 SOUTHPAW' : ''}${done ? ' ✓' : ''}`;
+  let flame = '';
+  try { const st = JSON.parse(localStorage.getItem('slapp_streak') || '{}');
+    const y = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+    if (st.n >= 2 && (st.last === DAY_KEY || st.last === y)) flame = ` · 🔥${st.n}`;
+  } catch {}
+  btn.textContent = `📅 TODAY'S VOLUNTEER — ${d.vol.name} · ${wDef ? wDef.label : d.world.toUpperCase()}${d.mirror ? ' · 🫲 SOUTHPAW' : ''}${flame}${done ? ' ✓' : ''}`;
   btn.onclick = () => {
     sfx.ensure();
     dailyMode = true;
@@ -1706,7 +1715,19 @@ function setupGlobalPanel(bestAttempt) {
       daily, dailyTitle: daily ? `📅 THE DAILY — ${bestAttempt.opp} · ${DAY_KEY}` : null,
     });
   });
-  if (dailyMode) localStorage.setItem('slapp_daily', DAY_KEY);
+  if (dailyMode) {
+    localStorage.setItem('slapp_daily', DAY_KEY);
+    // the STREAK: consecutive daily days played. The chip wears the flame.
+    try {
+      const st = JSON.parse(localStorage.getItem('slapp_streak') || '{}');
+      if (st.last !== DAY_KEY) {
+        const y = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+        const n = st.last === y ? (st.n || 0) + 1 : 1;
+        localStorage.setItem('slapp_streak', JSON.stringify({ last: DAY_KEY, n }));
+        if (n >= 2) ui.slapBurst(`🔥 ${n}-DAY STREAK!`, 'THE DAILY VOLUNTEER RESPECTS CONSISTENCY');
+      }
+    } catch {}
+  }
   refreshBoards().then(() => ui.netMsg(''))
     .catch(() => ui.netMsg("Couldn't reach the county office. Rankings unavailable."));
   ui.submitState(submitted ? 'POSTED ✓' : 'POST MY SCORE', submitted || bestAttempt.pts <= 0);
@@ -2219,6 +2240,10 @@ function tick(now) {
     // --- grade each chain link the instant it fires ---
     if (prevKeys.s && !keys.s && chain.tRel === null) {
       chain.tRel = swingT;
+      // the WIND verdict: S was the only link with no pop at input time — now
+      // the release itself reports how much spring you actually banked
+      const cp = Math.round(player.coilFrac * 100);
+      popGrade({ label: cp >= 90 ? `FULL WIND ${cp}%` : cp >= 60 ? `WOUND ${cp}%` : `SHALLOW ${cp}%`, tier: cp >= 90 ? 3 : cp >= 60 ? 2 : 1 });
       // an L that was rolled in just before the release gets judged now
       if (chain.lPend !== undefined && !chain.l) { const dt = chain.lPend - chain.tRel; setHips(gradeL(dt)); popGrade(chain.l, dt); }
     }
@@ -2247,6 +2272,15 @@ function tick(now) {
       } else popGrade(chain.p);
     }
 
+    // WHIFF: the chain fully spent, the palm found nothing. Before this the
+    // player got SILENCE — or worse, the stale "WAIT FOR THE RING" cue for a
+    // ring that was never coming — and a whiffed first swing read as a hang
+    // until the shot clock died. Now the miss is called, with the way back.
+    if (!whiffCued && chain.p && chain.tFire && swingT - chain.tFire > 1.15) {
+      whiffCued = true;
+      sfx.grade(1);
+      ui.slapBurst('WHIFF!', 'THE SWING IS SPENT — A FRESH [S] RE-ARMS THE WHOLE CHAIN');
+    }
     // live coil readout until the hips lock it in (it leaks while you wait)
     const coilPct = Math.round(player.coilFrac * 100);
     if (!chain.l) ui.chainSet('coil', `${coilPct}%`, 0);
@@ -2302,8 +2336,11 @@ function tick(now) {
       } else if (!chain.l) ui.coach('TAP [L] — LUNGE THE HIPS! (SWIVEL IS DRAINING)');
       else if (!chain.a) ui.coach('PRESS [A] — THROW THE ARM!');
       else if (!chain.p) ui.coach(snapCue ? '[P]!! PALM!!' : 'WAIT FOR THE GREEN RING... THEN [P]');
-      else ui.coach(null);
+      else ui.coach(whiffCued ? 'SWING SPENT — HOLD [S] TO WIND UP AGAIN' : null);
       shotClock -= dts;
+      // the last five seconds are AUDIBLE: a dry tick per second, pitch climbing
+      const sec = Math.ceil(shotClock);
+      if (sec <= 5 && sec >= 0 && sec < lastTickSec) { lastTickSec = sec; sfx.tick(5 - sec); }
       ui.setClock(opponent.arch.skiRun ? null : shotClock); // her run IS the clock
     }
     if (player.fallen) foul('footing');

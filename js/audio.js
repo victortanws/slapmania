@@ -147,6 +147,12 @@ export class Sfx {
     else ping(210, 0, 0.09, 0.1, 'triangle');
   }
 
+  // shot-clock tick: a dry woodblock, pitch climbing as the seconds die
+  tick(urgency = 0) {
+    if (!this.ctx) return;
+    this.burst({ dur: 0.035, gain: 0.22 + urgency * 0.1, filter: 'bandpass', freq: 1500 + urgency * 500, q: 9 });
+  }
+
   gasp() {
     this.burst({ dur: 0.4, gain: 0.14, filter: 'bandpass', freq: 520, q: 0.5 });
   }
