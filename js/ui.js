@@ -401,11 +401,15 @@ export function showMatch({ bestAttempt, line, board, shareUrl, tour }) {
     : '<div class="boardrow">No slaps on record.</div>');
   // a challenge link carries the score to beat — the share IS the head-to-head
   const url = shareUrl || document.querySelector('meta[property="og:url"]')?.content || location.href;
-  const txt = `I scored ${bestAttempt.pts} PTS slapping ${bestAttempt.opp} ${bestAttempt.dist.toFixed(1)}m across a farm in SLAPMANIA! Four keys — S·L·A·P. Can you beat it?`;
+  const hasTape = /[?&]ctape=/.test(url);
+  const txt = hasTape
+    ? `I slapped ${bestAttempt.opp} ${bestAttempt.dist.toFixed(1)}m in SLAPMANIA — and this link contains MY ACTUAL SWING. Watch the tape, then beat ${bestAttempt.pts} PTS.`
+    : `I scored ${bestAttempt.pts} PTS slapping ${bestAttempt.opp} ${bestAttempt.dist.toFixed(1)}m across a farm in SLAPMANIA! Four keys — S·L·A·P. Can you beat it?`;
   const trackShare = (net) => {
     try { window.posthog?.capture('share_clicked', { net, pts: bestAttempt.pts, dist: +bestAttempt.dist.toFixed(1), opp: bestAttempt.opp }); } catch {}
   };
-  el.shareBtn.textContent = navigator.share ? 'SHARE MY SLAP' : 'COPY BRAG TEXT';
+  el.shareBtn.textContent = hasTape ? (navigator.share ? '📼 SEND THE TAPE' : '📼 COPY THE TAPE LINK')
+    : (navigator.share ? 'SHARE MY SLAP' : 'COPY BRAG TEXT');
   el.shareBtn.onclick = async () => {
     trackShare(navigator.share ? 'native' : 'copy');
     // native share sheet where available (mobile: Facebook, Messages, WhatsApp…);
