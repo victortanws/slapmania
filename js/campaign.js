@@ -245,6 +245,37 @@ export const TOURS = [
     ],
   },
   {
+    // THE SILENT AUDITOR: the therapy cat opens an inquiry into the county's
+    // slapping. It summons subjects to the tent, sets standards it never
+    // explains, and blinks only when satisfied. Carl translates. Nobody slaps
+    // the cat. That is the one finding everyone agrees on.
+    key: 'catinquiry', title: "🐈 THE CAT'S INQUIRY",
+    dlc: true,
+    world: 'therapy',
+    slapper: 'carlgustav',
+    blurb: 'The cat has opened an inquiry into county slapping standards. Subjects will be summoned. Findings will be issued. The cat is not taking questions.',
+    acts: [
+      {
+        act: 'EXHIBIT A — FORM',
+        story: 'The cat produced a clipboard from somewhere. Nobody saw where. It has never needed one before, which is what makes it official.',
+        challenges: [
+          { id: 'q1c1', title: 'THE OPENING BLINK', desc: 'LAND a clean head slap on INKBLOT IAN — the inquiry requires a presentable first impression', opp: 'inkblot', goal: { type: 'head' } },
+          { id: 'q1c2', title: 'THE FLUSH FINDING', desc: 'LAND a flush strike on MULE-KICK MABEL and SEND her 22m — the cat measures contact quality by EAR', opp: 'mabel', goal: { type: 'headdist', v: 22 } },
+          { id: 'q1c3', title: 'THE STANDARD', desc: 'LAND a 65% chain before HAYSEED HANK — below the standard, the cat simply looks away', opp: 'hank', goal: { type: 'chain', v: 65 } },
+        ],
+      },
+      {
+        act: 'EXHIBIT B — MASTERY',
+        story: 'Phase two. The cat moved two inches closer to the ring. Carl says that, in audit terms, this is a summons.',
+        challenges: [
+          { id: 'q2c1', title: 'THE LONG STARE', desc: "Send SLIM PETE 45m — the cat does not blink for less, and it has not blinked since Tuesday", opp: 'slim', goal: { type: 'dist', v: 45 } },
+          { id: 'q2c2', title: 'THE SECOND OPINION', desc: 'Score 430 off BIG BERTHA — the cat bills nothing and expects everything', opp: 'bertha', goal: { type: 'pts', v: 430 } },
+          { id: 'q2c3', title: '☗ THE FINDINGS', desc: "LAND an 80% chain before TREMENDOUS DON — the cat's final standard. The report depends on it", opp: 'don', goal: { type: 'chain', v: 80 } },
+        ],
+      },
+    ],
+  },
+  {
     key: 'slaptherapy', title: '🛋️ SLAP THERAPY',
     dlc: true,
     world: 'therapy',
@@ -1119,6 +1150,46 @@ export const CUTSCENES = {
     { who: '🐄 BESSIE', text: '(one long moo. The official kind. Nine hundred and one.)', shot: 'wide' },
   ],
 
+  catinquiry_prologue: [
+    { who: 'YOU', text: 'The cat has opened an inquiry. Into what, you ask? Into slapping. Into the county. Into, I suspect, me.', shot: 'player' },
+    { who: '🐈 THE CAT', text: '(the cat sits at the edge of the ring with a clipboard. Nobody saw where the clipboard came from. This is what makes it official.)', shot: 'cat' },
+    { who: 'YOU', text: 'Fifty years of peer review, and my harshest reviewer bills in slow blinks. Very well. Summon the first subject.', shot: 'player' },
+  ],
+  q1c1: [
+    { who: 'INKBLOT IAN', text: "Doc, why am I here? I've been CURED. My aunt sees me now. Mostly.", shot: 'opp' },
+    { who: 'YOU', text: 'The inquiry requires a first impression, Ian. Clean. On the head. The cat is watching the FORM, not the patient.', shot: 'player' },
+    { who: '🐈 THE CAT', text: '(the cat readies its pen. It has no thumbs. The pen is ready anyway.)', shot: 'cat' },
+  ],
+  q1c2: [
+    { who: 'MULE-KICK MABEL', text: "An audit? Sugar, I've survived three husbands and one county fair. Audit away.", shot: 'opp' },
+    { who: 'YOU', text: 'The cat measures contact by EAR, Mabel. A flush strike rings true. A graze sounds like an excuse.', shot: 'player' },
+  ],
+  q1c3: [
+    { who: 'HAYSEED HANK', text: "Retirement lasted four days, doc. The cat sent a summons. You don't ignore a summons with WHISKERS.", shot: 'opp' },
+    { who: 'YOU', text: 'Sixty-five percent, minimum. Below the standard, the cat does not hiss, does not scratch. It simply... looks away.', shot: 'player' },
+    { who: 'HAYSEED HANK', text: "Don't you let that happen to me, Charlie's doctor friend. I've got a legacy.", shot: 'opp' },
+  ],
+  q2c1: [
+    { who: 'SLIM PETE', text: "The cat's been starin' at me since I walked in. Ain't blinked once.", shot: 'opp' },
+    { who: 'YOU', text: 'It has not blinked since Tuesday, Pete. Forty-five meters is the going rate for an eyelid.', shot: 'player' },
+    { who: '🐈 THE CAT', text: '(the cat stares. The stare has a waiting-room quality. Somewhere in it, a number: 45.)', shot: 'cat' },
+  ],
+  q2c2: [
+    { who: 'BIG BERTHA', text: 'The cat sent for ME? Sugar, I carried this county. What can a cat audit that I ain\'t already carried?', shot: 'opp' },
+    { who: 'YOU', text: 'The load, Bertha. One more flight, four hundred thirty points. The cat bills nothing and expects everything.', shot: 'player' },
+  ],
+  q2c3: [
+    { who: 'TREMENDOUS DON', text: 'An audit? I LOVE audits. I have been audited more than any man in history. Ask anyone. Tremendous audits.', shot: 'opp' },
+    { who: 'YOU', text: "The final standard, Don: an eighty percent chain. The cat's whole report rests on this one. No pressure. Enormous pressure.", shot: 'player' },
+    { who: '🐈 THE CAT', text: '(the cat sits up. Fully up. Witnesses would later describe the posture as "load-bearing.")', shot: 'cat' },
+  ],
+  outro_q2c3: [
+    { who: 'YOU', text: 'The findings. After two exhibits, nine subjects, and one clipboard of unknown origin — the cat has reached a verdict.', shot: 'player' },
+    { who: '🐈 THE CAT', text: '(the cat places one page on the ring. One page. One word.)', shot: 'cat' },
+    { who: 'YOU', text: '..."Adequate." Fifty years of practice. ADEQUATE. ...I have never been so honored in my life.', shot: 'player' },
+    { who: '🐈 THE CAT', text: '(the cat slow-blinks. To a cat, this means trust. The inquiry is closed. The clipboard is already gone.)', shot: 'cat' },
+  ],
+
   slaptherapy_prologue: [
     { who: 'YOU', text: 'Fifty years of analysis. Ten thousand dreams interpreted. Four hundred papers. And one finding that survived replication: the slap.', shot: 'player' },
     { who: 'YOU', text: 'The board revoked my license. The fair gave me a tent. Science continues.', shot: 'player' },
@@ -1497,6 +1568,11 @@ export const CUTSCENES = {
 // ('a' = Palm, 'f' = Fair, 'w' = Wonders, 'b' = Second Wind); rotated so
 // repeated failure stays fresh-ish.
 export const FAILS = {
+  q: [
+    [{ who: '🐈 THE CAT', text: '(the cat looks away. Not angrily. Worse: administratively.)', shot: 'cat' },
+     { who: 'YOU', text: 'It looked AWAY. Do you understand what that does to a man? Again.', shot: 'player' }],
+    [{ who: 'YOU', text: 'The cat has marked that one "seen." Not "reviewed." SEEN. Again — for both our sakes.', shot: 'player' }],
+  ],
   h: [
     [{ who: 'HAYSEED HANK', text: "That all you got? I've been slapped better by WEATHER.", shot: 'opp' },
      { who: 'YOU', text: 'Again. He deserves the good one.', shot: 'player' }],
@@ -1595,6 +1671,12 @@ export const TAKEDOWN_FAIL = [
 // victory beats — short, replayable, played after clearing a NON-final
 // challenge (outro_* scenes own the finales). Keyed by tour prefix; rotated.
 export const WINS = {
+  q: [
+    [{ who: '🐈 THE CAT', text: '(a note is made. The pen does not move, and yet — a note is made.)', shot: 'cat' },
+     { who: 'YOU', text: 'It noted. Did you see it note? NEXT SUBJECT.', shot: 'player' }],
+    [{ who: '🐈 THE CAT', text: "(the cat's tail performs one slow, approving sweep. In audit terms: a stamp.)", shot: 'cat' },
+     { who: 'YOU', text: 'Stamped. The inquiry proceeds.', shot: 'player' }],
+  ],
   h: [
     [{ who: 'HAYSEED HANK', text: 'Felt right. Log it.', shot: 'opp' },
      { who: 'YOU', text: "Logged. The scrapbook's starting a second volume.", shot: 'player' }],
@@ -1673,7 +1755,7 @@ export const WINS = {
 // storyline next, with the Master Slee scrolls beneath it.
 // Olympic Bid leads (free), Wonders second, the Open Palm third (free) —
 // then the Fair, then the supporter storylines.
-const TOUR_ORDER = ['wonders', 'fair', 'farewell', 'palm', 'olympicbid', 'secondwind', 'blackgold', 'nightofslaps', 'slaptherapy', 'horseshoe', 'slopvalley', 'commedia'];
+const TOUR_ORDER = ['wonders', 'fair', 'farewell', 'palm', 'olympicbid', 'secondwind', 'blackgold', 'nightofslaps', 'slaptherapy', 'catinquiry', 'horseshoe', 'slopvalley', 'commedia'];
 // unknown keys sink to the bottom instead of floating to the top (indexOf −1)
 const tourRank = (k) => { const i = TOUR_ORDER.indexOf(k); return i < 0 ? TOUR_ORDER.length : i; };
 TOURS.sort((a, b) => tourRank(a.key) - tourRank(b.key));

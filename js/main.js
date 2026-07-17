@@ -2057,7 +2057,9 @@ function tick(now) {
       else if (shot === 'spirit') { tgt.copy(stage.cinePoints.spirit()); off = new THREE.Vector3(1.4, 0.2, 1.0); }
       else if (shot === 'judge') { tgt.copy(stage.cinePoints.judge()); off = new THREE.Vector3(1.35, 0.3, 1.0); }
       else if (shot === 'bruce') { tgt.copy(stage.cinePoints.bruce()); off = new THREE.Vector3(-1.35, 0.25, 1.0); }
-      else if (shot === 'cat') { tgt.copy(stage.cinePoints.cat()); off = new THREE.Vector3(-3.4, 1.0, 3.4); }
+      // approach the cat from the LANE side (−z): it lounges a meter off the
+      // south wall, and a +z offset parks the camera inside the walnut panelling
+      else if (shot === 'cat') { tgt.copy(stage.cinePoints.cat()); off = new THREE.Vector3(-3.2, 0.8, -3.6); }
       // "NO!!!" — a hard, low push-in on the recoiling tent (dramatic angle)
       else if (shot === 'catno') { tgt.set(2.3, 1.35, -1.4); off = new THREE.Vector3(0.5, -0.15, 3.0); snap = 9; }
       // hold wide on the whole tent burying its face in its hands
