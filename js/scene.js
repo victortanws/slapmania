@@ -163,13 +163,30 @@ export function createStage(canvas) {
     clouds.push(c);
     scene.add(c);
   }
+  // the HORIZON BAND: low, wide, far clouds on the downrange arc — the five
+  // above drift high on the north side where the gameplay cameras rarely look;
+  // these sit just over the treeline in the frame every faceoff and flight uses
+  for (let i = 0; i < 7; i++) {
+    const c = new THREE.Group();
+    const w = 1.6 + Math.random() * 1.2;
+    for (let j = 0; j < 3; j++) {
+      const puff = new THREE.Mesh(new THREE.SphereGeometry((4 + Math.random() * 3) * w, 8, 8), cloudMat);
+      puff.scale.y = 0.32;
+      puff.position.set(j * 5.5 - 5.5, Math.random() * 1.2, Math.random() * 2);
+      c.add(puff);
+    }
+    const az = -0.85 + (i / 6) * 1.7;               // an arc spanning the downrange view cone
+    c.position.set(165 * Math.cos(az) + 30, 16 + Math.random() * 9, 165 * Math.sin(az));
+    scene.add(c);   // static: at 165m the drift is imperceptible, and the shared
+                    // recycle (x>130 → -70) would teleport the band out of frame
+  }
 
   // --- ground: striped grass field + packed-dirt slapping lane ---
   const grassCv = document.createElement('canvas');
   grassCv.width = 128; grassCv.height = 16;
   const gg = grassCv.getContext('2d');
-  gg.fillStyle = '#679a47'; gg.fillRect(0, 0, 128, 16);
-  gg.fillStyle = '#5f9040'; gg.fillRect(0, 0, 64, 16);
+  gg.fillStyle = '#5e8c40'; gg.fillRect(0, 0, 128, 16);
+  gg.fillStyle = '#567f39'; gg.fillRect(0, 0, 64, 16);
   const grassTex = new THREE.CanvasTexture(grassCv);
   grassTex.wrapS = grassTex.wrapT = THREE.RepeatWrapping;
   grassTex.repeat.set(20, 12);
