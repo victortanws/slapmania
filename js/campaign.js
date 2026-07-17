@@ -307,6 +307,36 @@ export const TOURS = [
     ],
   },
   {
+    // GOLDEN SLAPS: the county's health crusade, taken ODDLY LITERALLY —
+    // cholesterol leaves the body at speed, BMI stands for Body Meters
+    // Airborne, and Auntie has appointed herself the county cardiologist.
+    key: 'goldenslaps', title: '🍔 GOLDEN SLAPS',
+    dlc: true,
+    world: 'day',
+    slapper: 'auntie',
+    blurb: "The fast-food mascots have the county's arteries surrounded. Auntie prescribes the palm. Slap your way to good health — literally. LITERALLY.",
+    acts: [
+      {
+        act: 'COURSE I — THE INTERVENTION',
+        story: 'Auntie read one pamphlet about cardiovascular health and deputized herself. The pamphlet did not say to do any of this.',
+        challenges: [
+          { id: 'k1c1', title: 'WIPE THAT SMILE', desc: "LAND a clean head slap on GIGGLES THE BURGER CLOWN — the smile is painted on. Test that claim", opp: 'giggles', goal: { type: 'head' } },
+          { id: 'k1c2', title: 'MANDATORY CARDIO', desc: "Send BIG HOSS 15m — the county's most loyal value-meal customer. His cardio is now mandatory, and airborne", opp: 'hoss', goal: { type: 'dist', v: 15 } },
+          { id: 'k1c3', title: 'THE CO-PAY', desc: 'Score 340 off GIGGLES — Auntie bills the franchise directly. In points', opp: 'giggles', goal: { type: 'pts', v: 340 } },
+        ],
+      },
+      {
+        act: 'COURSE II — THE DEEP FRYER',
+        story: 'The franchise escalates: the founder himself arrives, breaded beyond negotiation. Auntie sharpens the prescription.',
+        challenges: [
+          { id: 'k2c1', title: 'ELEVEN HERBS, ZERO APPROVED', desc: 'LAND a 70% chain before MAJOR DRUMSTICK — below 60%, the breading absorbs the slap entirely', opp: 'drumstick', goal: { type: 'chain', v: 70 } },
+          { id: 'k2c2', title: 'FREE SAMPLES', desc: 'Send SLIM PETE 45m — the sample-size customer. A light snack flies FAR, which Auntie calls "portion control"', opp: 'slim', goal: { type: 'dist', v: 45 } },
+          { id: 'k2c3', title: '☗ BOSS: THE VALUE MEAL', desc: 'Score 360 off GIGGLES DELUXE in twenty seconds a swing — below a 65% chain the makeup absorbs everything. This location must close', opp: 'giggles_deluxe', goal: { type: 'pts', v: 380 } },
+        ],
+      },
+    ],
+  },
+  {
     key: 'slaptherapy', title: '🛋️ SLAP THERAPY',
     dlc: true,
     world: 'therapy',
@@ -1260,6 +1290,46 @@ export const CUTSCENES = {
     { who: 'BIG BERTHA', text: "Local 415, sugar. We catch slaps with our faces — and now the county knows what that's worth.", shot: 'opp' },
   ],
 
+  goldenslaps_prologue: [
+    { who: 'YOU', text: "Aiyah. Look at this county. Cholesterol up to HERE. Mascots on every corner smiling like rent is free. Auntie has read a pamphlet, and now Auntie is a cardiologist.", shot: 'player' },
+    { who: 'YOU', text: 'The science is simple: cholesterol is a COWARD. It leaves the body at speed. We are going to provide the speed.', shot: 'player' },
+    { who: 'YOU', text: "Sit down, county. Auntie's clinic is open. First patient: the CLOWN.", shot: 'player' },
+  ],
+  k1c1: [
+    { who: 'GIGGLES THE BURGER CLOWN', text: "Welcome to the family restaurant! Everything's a family here. The fries are cousins.", shot: 'opp' },
+    { who: 'YOU', text: "Aiyah, that SMILE. Painted on, they say. Auntie brought a hundred meters of paint remover.", shot: 'player' },
+    { who: 'GIGGLES THE BURGER CLOWN', text: 'The smile stays, lady. The smile ALWAYS stays.', shot: 'opp' },
+  ],
+  k1c2: [
+    { who: 'BIG HOSS', text: "Auntie, I just came for the two-for-one. I'm a LOYALTY member.", shot: 'opp' },
+    { who: 'YOU', text: "Fifteen meters, Hoss. Your loyalty card is full and so are your arteries. This is your cardio now. It is mandatory, and it is AIRBORNE.", shot: 'player' },
+    { who: 'BIG HOSS', text: 'Do I still get the points?', shot: 'opp' },
+  ],
+  k1c3: [
+    { who: 'YOU', text: 'Auntie does not work for free. The franchise gets a BILL: three hundred forty points, itemized. One line item. The line item is a slap.', shot: 'player' },
+    { who: 'GIGGLES THE BURGER CLOWN', text: "We'll comp you a toy with that.", shot: 'opp' },
+  ],
+  k2c1: [
+    { who: 'MAJOR DRUMSTICK', text: 'Ma\'am. Eleven herbs and spices. The recipe is a secret, and so is everything it does to a man.', shot: 'opp' },
+    { who: 'YOU', text: 'Aiyah, the BREADING. It absorbs amateur work. Auntie will bring PROFESSIONAL form — seventy percent, extra crisp.', shot: 'player' },
+    { who: 'MAJOR DRUMSTICK', text: 'The gravy forgives nothing, ma\'am. And neither do I.', shot: 'opp' },
+  ],
+  k2c2: [
+    { who: 'SLIM PETE', text: "I only ever get the sample size, Auntie. Surely I'm fine.", shot: 'opp' },
+    { who: 'YOU', text: "Forty-five meters, Pete. In Auntie's clinic this is called PORTION CONTROL: one portion of you, controlled, across the sky.", shot: 'player' },
+  ],
+  k2c3: [
+    { who: 'GIGGLES DELUXE', text: 'LIMITED TIME ONLY: me, but forever. This location never closes. I AM the location.', shot: 'opp' },
+    { who: 'YOU', text: 'Twenty seconds, sixty-five percent form, three hundred sixty points. Auntie is revoking your franchise, your smile, and your little toy.', shot: 'player' },
+    { who: 'GIGGLES DELUXE', text: 'Your cardiologist sends his regards. We have him too.', shot: 'opp' },
+    { who: 'YOU', text: 'Then Auntie will slap BOTH your locations. Hold still.', shot: 'player' },
+  ],
+  outro_k2c3: [
+    { who: 'YOU', text: 'The clinic is closed. The county is cured. BMI is down — Body Meters Airborne, the only measurement Auntie recognizes.', shot: 'player' },
+    { who: 'BIG HOSS', text: "Auntie put a salad in my loyalty app. I don't know HOW.", shot: 'wide' },
+    { who: 'YOU', text: "Aiyah, don't thank Auntie. Thank the palm. And eat your vegetables — Auntie knows where everyone lives. She checked.", shot: 'player' },
+  ],
+
   slaptherapy_prologue: [
     { who: 'YOU', text: 'Fifty years of analysis. Ten thousand dreams interpreted. Four hundred papers. And one finding that survived replication: the slap.', shot: 'player' },
     { who: 'YOU', text: 'The board revoked my license. The fair gave me a tent. Science continues.', shot: 'player' },
@@ -1638,6 +1708,10 @@ export const CUTSCENES = {
 // ('a' = Palm, 'f' = Fair, 'w' = Wonders, 'b' = Second Wind); rotated so
 // repeated failure stays fresh-ish.
 export const FAILS = {
+  k: [
+    [{ who: 'YOU', text: "Aiyah! You call that MEDICINE? The cholesterol is LAUGHING. Again.", shot: 'player' }],
+    [{ who: 'YOU', text: "Auntie has seen stronger slaps at a BUFFET. Again — the county's arteries are counting on you.", shot: 'player' }],
+  ],
   u: [
     [{ who: 'BIG BERTHA', text: "Sugar, that slap wouldn't have passed the APPRENTICE exam. Again — the county is WATCHING.", shot: 'opp' },
      { who: 'YOU', text: 'Again. For the pension fund.', shot: 'player' }],
@@ -1746,6 +1820,11 @@ export const TAKEDOWN_FAIL = [
 // victory beats — short, replayable, played after clearing a NON-final
 // challenge (outro_* scenes own the finales). Keyed by tour prefix; rotated.
 export const WINS = {
+  k: [
+    [{ who: 'YOU', text: 'Good. Cholesterol: EVICTED. Next patient.', shot: 'player' },
+     { who: '🥗 A SALAD, UNTOUCHED', text: '(the salad watches from the concession stand. Its time is coming. It can feel it.)', shot: 'wide' }],
+    [{ who: 'YOU', text: "Auntie marks the chart: CURED, with prejudice.", shot: 'player' }],
+  ],
   u: [
     [{ who: 'BIG BERTHA', text: 'THAT one goes in the newsletter.', shot: 'opp' },
      { who: 'YOU', text: 'Front page, madam steward. Above the bake sale.', shot: 'player' }],
@@ -1836,7 +1915,7 @@ export const WINS = {
 // storyline next, with the Master Slee scrolls beneath it.
 // Olympic Bid leads (free), Wonders second, the Open Palm third (free) —
 // then the Fair, then the supporter storylines.
-const TOUR_ORDER = ['wonders', 'fair', 'farewell', 'palm', 'olympicbid', 'secondwind', 'blackgold', 'nightofslaps', 'slaptherapy', 'catinquiry', 'union', 'horseshoe', 'slopvalley', 'commedia'];
+const TOUR_ORDER = ['wonders', 'fair', 'farewell', 'palm', 'olympicbid', 'secondwind', 'blackgold', 'nightofslaps', 'slaptherapy', 'catinquiry', 'union', 'goldenslaps', 'horseshoe', 'slopvalley', 'commedia'];
 // unknown keys sink to the bottom instead of floating to the top (indexOf −1)
 const tourRank = (k) => { const i = TOUR_ORDER.indexOf(k); return i < 0 ? TOUR_ORDER.length : i; };
 TOURS.sort((a, b) => tourRank(a.key) - tourRank(b.key));

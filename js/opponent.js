@@ -70,6 +70,39 @@ export const ROSTER = [
     taunts: ['You call that a hand? Sad!', 'I know slaps. I have the best slaps.', 'My cheek is a perfect 10. Ask anyone.'],
   },
   {
+    // GOLDEN SLAPS (the fast-food health crusade): the burger chain's mascot.
+    // An ORIGINAL parody clown — white greasepaint, red afro, mustard-yellow
+    // jumpsuit. The county's arteries have a face, and it is smiling.
+    key: 'giggles', name: 'GIGGLES THE BURGER CLOWN', tag: 'MASCOT', boss: true,
+    w: 1.05, h: 1.02, mass: 0.9,
+    skin: 0xf2ede6, hair: 'afro', hairCol: 0xd42a20, noStache: true,
+    shirt: 0xf2c530, pants: 0xc9302c,
+    pickLine: 'Smiles are free! Everything else is $9.99 plus your arteries.',
+    taunts: ['Would you like to SUPERSIZE that swing?', 'The smile is painted ON. Nothing can remove it. NOTHING.', 'Millions and millions slapped!'],
+  },
+  {
+    // GOLDEN SLAPS: the fried-poultry founder. Eleven herbs and spices, zero
+    // of them approved. Below 60% chain, the breading simply absorbs the slap.
+    key: 'drumstick', name: 'MAJOR DRUMSTICK', tag: 'ELEVEN SPICES', boss: true,
+    w: 1.12, h: 1.0, mass: 1.2,
+    chainGate: 60, gateCry: 'EXTRA CRISPY!', gateCrySub: 'THE BREADING ABSORBED IT — 60% CHAIN TO REACH THE MAJOR',
+    skin: 0xe8c8a2, hair: 'short', hairCol: 0xf0ede6, whiteBeard: true, glasses: true, noStache: true,
+    shirt: 0xf5f2ea, pants: 0xf5f2ea, suit: true, tie: 0x141414,
+    pickLine: 'The recipe is a secret. The cholesterol is not.',
+    taunts: ['Finger-slappin\' good, son.', 'I have breaded STRONGER men than you.', 'The gravy forgives nothing.'],
+  },
+  {
+    // GOLDEN SLAPS finale: the limited-time collab of your nightmares. The
+    // makeup no-sells amateur work and the offer expires in twenty seconds.
+    key: 'giggles_deluxe', name: 'GIGGLES DELUXE', tag: 'BOSS · THE VALUE MEAL', boss: true,
+    w: 1.05, h: 1.02, mass: 0.9, shotClock: 20,
+    chainGate: 65, gateCry: 'SUPER-SIZED SMIRK!', gateCrySub: 'BELOW 65% CHAIN, THE MAKEUP ABSORBS EVERYTHING',
+    skin: 0xf2ede6, hair: 'afro', hairCol: 0xd42a20, noStache: true,
+    shirt: 0xf2c530, pants: 0xc9302c, brow: true,
+    pickLine: 'LIMITED TIME ONLY: me, but forever.',
+    taunts: ['This location never closes. I AM the location.', 'Your cardiologist sends his regards. We have him too.'],
+  },
+  {
     // LOCAL 415 (the volunteers' strike): management's replacement volunteer.
     // Flimsy by design — never braced a slap in his life, pays featherweight.
     key: 'scab_gary', name: 'SCAB GARY', tag: 'REPLACEMENT VOLUNTEER', boss: true,
