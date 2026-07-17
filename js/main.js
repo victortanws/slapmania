@@ -94,6 +94,7 @@ let masterDone = false;
 let emperorDone = false;
 let countyDone = false;
 let pendingCard = null;  // result card held back until the landing has been seen
+let lastShownCard = null; // the card on screen — the replay button reads its tape
 let cardDelay = 0;
 let excite = 0;
 let chosenArch = null;
@@ -116,6 +117,7 @@ let calledHigh = null;    // Dale's called cheek half this attempt (true=HIGH), 
 let tapeRec = [];                                        // this attempt's [ms, code, down] (SWING-relative)
 const tapePrev = { s: false, l: false, a: false, p: false };
 let ghostTape = null;      // parsed rival tape queued for the next swing
+let replayCam = false;     // instant-replay run: cinematic camera profile
 let ghostActive = false;   // the tape is swinging NOW — real S/L/A/P input muted
 let ghostQueue = [];       // remaining tape events, consumed frame-exactly in tick
 let ghostT = 0;            // ms of SWING elapsed for the tape pump
@@ -308,6 +310,15 @@ function goBack() {
   if (state !== 'TITLE') goToTitle();
 }
 backBtn.addEventListener('click', goBack);
+ui.bindReplay(() => {
+  const card = lastShownCard;              // pendingCard is consumed at display time
+  if (!card || !card.tape || !card.replayable) return;
+  sfx.ensure();
+  track('replay_watched', { dist: card.dist ? +card.dist.toFixed(1) : null });
+  ghostTape = card.tape.map(([t, k, d]) => [t, KEYCODE[k] || k, d]);
+  replayCam = true;
+  startAttempt();   // fresh stance, ghost armed — the tape swings, the cinema cameras roll
+});
 for (const btn of touchPad.querySelectorAll('.tbtn')) {
   const code = btn.dataset.code;
   const down = (e) => { e.preventDefault(); btn.classList.add('held'); dispatchEvent(new KeyboardEvent('keydown', { code })); };
@@ -526,7 +537,7 @@ function startMatch() {
 
 // Escape from anywhere: back to the front porch
 function goToTitle() {
-  cancelGhost(); ghostTape = null;
+  cancelGhost(); ghostTape = null; replayCam = false;
   dailyMode = false;
   if (chosenArch && chosenArch.boss) chosenArch = null;   // bosses don't loiter on the porch
   stage.resetTarStains(); // no tar claims on the title screen
@@ -1402,14 +1413,18 @@ function showResult() {
   if (ghostActive) {
     // the rival's tape just landed — show ITS card, but the swing was never
     // yours: no attempt consumed, no board write, no campaign judgment
+    const wasReplay = replayCam;
+    replayCam = false;
     cancelGhost();
     ui.coach(null); ui.refBar(null); ui.showDistance(null);
     sfx.crowd(dist > 20 ? 3 : 1);
     pendingCard = {
       dist, pts, arch, part: slap && !isFoul ? slap.part : null,
       foul: isFoul ? slap.foul : null, chain: slap ? slap.chain : null,
-      line: `📼 THE CHALLENGER'S TAPE — that's the swing. ${challenge ? challenge.by : 'THE RIVAL'} sent ${pts} PTS. YOUR TURN.`,
-      n: 0, next: 'CLICK / ENTER → YOUR TURN',
+      line: wasReplay
+        ? `📼 INSTANT REPLAY — ${dist.toFixed(1)}m, one more time for the county.`
+        : `📼 THE CHALLENGER'S TAPE — that's the swing. ${challenge ? challenge.by : 'THE RIVAL'} sent ${pts} PTS. YOUR TURN.`,
+      n: 0, next: wasReplay ? 'CLICK / ENTER → CARRY ON' : 'CLICK / ENTER → YOUR TURN',
     };
     cardDelay = 1.1;
     ui.setAttempts(attempts, attempts.length, (opponent.arch && opponent.arch.attempts) || 3);
@@ -1503,6 +1518,9 @@ function showResult() {
   pendingCard = {
     dist, pts, arch, part: slap && !isFoul ? slap.part : null,
     foul: isFoul ? slap.foul : null, chain: slap ? slap.chain : null, line, n: attempts.length,
+    // a flight worth watching twice earns the REPLAY button (the tape is the film)
+    replayable: !isFoul && dist >= 30 && tapeRec.length >= 4,
+    tape: tapeRec.slice(0, 48),
     // a campaign STORY BEAT resolves on this card — one decisive strike, no
     // best-of-3 — so the footer must not promise an 'ATTEMPT 2 OF 3'
     next: campaign.active && !isBossTrial(campaign.active)
@@ -1835,8 +1853,16 @@ function updateCamera(dt) {
     l = V(0.85, 1.6, 0).lerp(V(0.5, 1.35, 0), e);
     snapRate = 14;
   } else if (state === 'SWING') {
-    p = V(0.4 + Math.sin(tState * 0.7) * 0.12, 1.95, 4.2);
-    l = V(0.5, 1.35, 0);
+    if (replayCam) {
+      // REPLAY, camera one: the hero angle — low, close, slightly behind the
+      // slapper, the whole wind-up towering against the sky
+      p = V(-1.3, 0.85, 2.3);
+      l = V(0.6, 1.5, 0);
+      snapRate = 10;
+    } else {
+      p = V(0.4 + Math.sin(tState * 0.7) * 0.12, 1.95, 4.2);
+      l = V(0.5, 1.35, 0);
+    }
   } else if (state === 'IMPACT') {
     if (hitstopT > 0 && contact) {
       // THE VICTIM'S FRAME: for the frozen beat of a heavy hit, the camera
@@ -1857,11 +1883,19 @@ function updateCamera(dt) {
     // the camera STAYS with the flyer: rises with high arcs, slides with
     // sideways drift — you never lose sight of the person you just launched
     const b = opponent.pelvisPos();
-    // trail straighter behind and look DOWNRANGE of the flyer: keeps the ring's
-    // barn/conifers at the frame edge and drops the flyer into the lower third
-    // with the open lane + horizon ahead — every launch reads as "going somewhere"
-    p = V(b.x - 6.5, Math.max(2.8, b.y + 1.4), b.z + 4.0);
-    l = V(b.x + 3, Math.max(b.y, 0.7), b.z);
+    if (replayCam) {
+      // REPLAY, camera two: the leading reverse dolly — the drone flies AHEAD
+      // and the body comes AT the lens, the fair blurring past behind it
+      p = V(b.x + 7.5, Math.max(2.1, b.y + 0.5), b.z - 3.2);
+      l = V(b.x, Math.max(b.y, 0.8), b.z);
+      snapRate = 7;
+    } else {
+      // trail straighter behind and look DOWNRANGE of the flyer: keeps the
+      // ring's barn/conifers at the frame edge and drops the flyer into the
+      // lower third with the open lane ahead — every launch "goes somewhere"
+      p = V(b.x - 6.5, Math.max(2.8, b.y + 1.4), b.z + 4.0);
+      l = V(b.x + 3, Math.max(b.y, 0.7), b.z);
+    }
   } else { // FOULED / RESULT / MATCH_END — linger where the action ended
     if (opponent.launched) {
       const b = opponent.pelvisPos();
@@ -2408,6 +2442,7 @@ function tick(now) {
 
   // the held-back result card lands once the moment has been witnessed
   if (state === 'RESULT' && pendingCard && tState >= cardDelay) {
+    lastShownCard = pendingCard;
     ui.showResult(pendingCard);
     pendingCard = null;
   }

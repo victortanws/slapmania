@@ -5,7 +5,7 @@ const el = {
   gradePop: $('gradePop'), flightChain: $('flightChain'),
   meters: $('meters'), leanneedle: $('leanneedle'), speed: $('speed'),
   title: $('title'), result: $('result'), match: $('match'),
-  resDist: $('resDist'), resLine: $('resLine'), resNext: $('resNext'),
+  resDist: $('resDist'), resLine: $('resLine'), resNext: $('resNext'), resReplay: $('resReplay'),
   matchDist: $('matchDist'), matchLine: $('matchLine'), shareBtn: $('shareBtn'),
   coach: $('coach'), keysbar: $('keysbar'),
   kS: $('k-s'), kL: $('k-l'), kA: $('k-a'), kP: $('k-p'),
@@ -301,7 +301,7 @@ export function foulBanner(type) {
 
 export function showTitle(on) { el.title.classList.toggle('hidden', !on); }
 
-export function showResult({ dist, pts, arch, part, foul, chain, line, n, next }) {
+export function showResult({ dist, pts, arch, part, foul, chain, line, n, next, replayable }) {
   // the ceremony banner had its moment mid-air — it must never sit under the
   // card colliding with the big distance (it did, on mobile especially)
   clearTimeout(bannerTimer);
@@ -350,6 +350,7 @@ export function showResult({ dist, pts, arch, part, foul, chain, line, n, next }
   }
   el.resLine.textContent = line;
   el.resNext.textContent = next || (n >= 3 ? 'CLICK / ENTER → FINAL VERDICT' : `CLICK / ENTER → ATTEMPT ${n + 1} OF 3`);
+  el.resReplay.classList.toggle('hidden', !replayable);
 }
 
 export function showMatch({ bestAttempt, line, board, shareUrl, tour }) {
@@ -534,3 +535,4 @@ export function submitState(label, disabled) {
 }
 
 export function bindSubmit(cb) { el.submitBtn.onclick = cb; }
+export function bindReplay(cb) { el.resReplay.onclick = cb; }
