@@ -76,6 +76,9 @@ function dailyPick() {
 }
 let dailyMode = false;
 let bestDist = +(localStorage.getItem('slapp_bestdist') || 0);  // the flag on the lane
+// per-VOLUNTEER bests: the roster is ten mastery ladders, each with its own rung
+let oppBests = {};
+try { oppBests = JSON.parse(localStorage.getItem('slapp_oppbests') || '{}'); } catch { oppBests = {}; }
 let skidDone = false; // one landing mark per attempt
 let shotClock = 30; // a full, unhurried match clock — time to read the opponent, wait out a weave, set your feet
 let attempts = [];
@@ -522,7 +525,7 @@ function openOppPick() {
     title: "NOW — WHO'S CATCHIN' IT TODAY?",
     blurb: 'Heavy folks barely budge, but oh, the points pay mighty fine. Three swings at whoever you pick.',
     confirmLabel: 'SLAP THIS VOLUNTEER!',
-    items: OPP_LIST.map((a) => ({ name: a.name, sub: `${a.tag} — SCORE ×${a.mass}`, desc: a.pickLine })),
+    items: OPP_LIST.map((a) => ({ name: a.name, sub: `${a.tag} — SCORE ×${a.mass}`, desc: a.pickLine, best: oppBests[a.key] ? `YOUR BEST ${oppBests[a.key].toFixed(1)}m` : null })),
     onHover: (i) => pickHighlight(i),
     onConfirm: () => pickConfirmFn(),
   });
@@ -1461,6 +1464,10 @@ function showResult() {
     board = mergeBoards(board, readBoard(), [{ pts, dist, opp: arch.name, when: Date.now() }]);
     localStorage.setItem('slapp_board', JSON.stringify(board));
     refreshBest();
+  }
+  if (!isFoul && dist > 3 && (!oppBests[arch.key] || dist > oppBests[arch.key])) {
+    oppBests[arch.key] = Math.round(dist * 10) / 10;
+    localStorage.setItem('slapp_oppbests', JSON.stringify(oppBests));
   }
   if (!isFoul && dist > bestDist && dist > 8) {
     const first = bestDist === 0;
