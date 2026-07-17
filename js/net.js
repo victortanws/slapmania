@@ -92,6 +92,21 @@ export async function fetchMatchup(slapper, opp, n = 5) {
   return r.json();
 }
 
+// THE DAILY VOLUNTEER: today's scores against today's seeded matchup — no new
+// columns, just "rows created since UTC midnight vs this volunteer". Every
+// daily play is also a normal weekly/all-time post; this is a VIEW, not a fork.
+export async function fetchDaily(oppName, n = 10) {
+  if (!configured()) return null;
+  const day = new Date().toISOString().slice(0, 10);
+  const q = `&opp=eq.${encodeURIComponent(String(oppName).slice(0, 20))}&created_at=gte.${day}T00:00:00Z`;
+  const r = await fetch(
+    `${cfg().supabaseUrl}/rest/v1/slapp_scores?select=name,pts,dist,opp&order=pts.desc&limit=${n}${q}`,
+    { headers: headers() }
+  );
+  if (!r.ok) return null;
+  return r.json();
+}
+
 // scores you've posted worldwide under a given name — used to reclaim entries
 // (e.g. a score a stale tab clobbered locally) back into the county board.
 export async function fetchByName(name, n = 20) {

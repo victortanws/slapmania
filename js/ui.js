@@ -500,7 +500,15 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 export function renderGlobal(rows, extra = {}) {
   const row = (b, i, tail) =>
     `<div class="boardrow"><span>#${i + 1}</span><b>${+b.pts} PTS</b><span>${(+b.dist).toFixed(1)}m${tail(b)}</span></div>`;
-  let html = `<div class="boardhead">${extra.week ? `WORLDWIDE — WEEK ${esc(extra.week)}` : 'WORLDWIDE RANKINGS'}</div>`;
+  let html = '';
+  if (extra.daily) {
+    html += `<div class="boardhead">${esc(extra.dailyTitle || 'THE DAILY')}</div>`
+      + (extra.daily.length
+        ? extra.daily.map((b, i) => row(b, i, (x) => ` — ${esc(x.name)}`)).join('')
+        : '<div class="boardrow">Nobody has slapped today\'s volunteer yet. Be first.</div>')
+      + '<div class="boardhead" style="margin-top:8px;"></div>';
+  }
+  html += `<div class="boardhead">${extra.week ? `WORLDWIDE — WEEK ${esc(extra.week)}` : 'WORLDWIDE RANKINGS'}</div>`;
   if (extra.champion) {
     html += `<div class="boardrow"><span>👑</span><b>${esc(extra.champion.name)}</b><span>reigning champ — ${+extra.champion.pts} PTS last week</span></div>`;
   }

@@ -58,6 +58,21 @@ let hitstopT = 0; // freeze-frame countdown on a heavy contact (see onContact)
 let firstSlaps = +(localStorage.getItem('slapp_played') || 0);
 if (localStorage.getItem('slapp_board') || localStorage.getItem('slapp_master')) firstSlaps = 99;
 const trainingWheels = () => firstSlaps < 2 && !campaign.active;
+
+// ---------- THE DAILY VOLUNTEER ----------
+// One seeded matchup per UTC day — same volunteer, same world, for everyone on
+// Earth. The shared context is the point: today's board is today's watercooler.
+// Plays are NORMAL scores (they post to the weekly board too); the daily board
+// is just a filtered view (rows since UTC midnight vs today's volunteer).
+const DAY_KEY = new Date().toISOString().slice(0, 10);
+function dailyPick() {
+  let h = 2166136261 >>> 0;                       // FNV-1a over the date string
+  for (const c of DAY_KEY) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; }
+  const vols = PICKABLE.filter((v) => !v.dlc && !v.world);   // the free fair regulars
+  const worlds = ['day', 'ice', 'lava', 'desert'];             // the FREE worlds only
+  return { vol: vols[h % vols.length], world: worlds[(h >>> 8) % worlds.length] };
+}
+let dailyMode = false;
 let shotClock = 30; // a full, unhurried match clock — time to read the opponent, wait out a weave, set your feet
 let attempts = [];
 let slap = null;        // outcome of the current attempt {foul, part}
@@ -510,6 +525,7 @@ function startMatch() {
 // Escape from anywhere: back to the front porch
 function goToTitle() {
   cancelGhost(); ghostTape = null;
+  dailyMode = false;
   if (chosenArch && chosenArch.boss) chosenArch = null;   // bosses don't loiter on the porch
   stage.resetTarStains(); // no tar claims on the title screen
   // a tour may have pinned its own world (the dojo) — restore the player's pick
@@ -837,6 +853,22 @@ applyWorld(stage.hasWorld(savedWorld) && !(savedDef && savedDef.dlc && !owned('b
 // work as a fallback (buttons are excluded from the tap-to-advance handler), so
 // this just gives the front door a real, obvious control instead of a hidden tap.
 document.getElementById('startBtn').onclick = () => { sfx.ensure(); advanceScreens(null); };
+// THE DAILY VOLUNTEER chip: seeded matchup, straight into the match (world pinned)
+{
+  const d = dailyPick();
+  const wDef = WORLDS.find((w) => w.key === d.world);
+  const btn = document.getElementById('dailyBtn');
+  const done = localStorage.getItem('slapp_daily') === DAY_KEY;
+  btn.textContent = `📅 TODAY'S VOLUNTEER — ${d.vol.name} · ${wDef ? wDef.label : d.world.toUpperCase()}${done ? ' ✓' : ''}`;
+  btn.onclick = () => {
+    sfx.ensure();
+    dailyMode = true;
+    if (stage.hasWorld(d.world)) setWorldFull(d.world);
+    chosenArch = d.vol;
+    startMatch();
+    track('daily_started', { day: DAY_KEY, opp: d.vol.key, world: d.world });
+  };
+}
 if (campaign.enabled()) {
   const b = document.getElementById('tourBtn');
   b.classList.remove('hidden');
@@ -1628,15 +1660,18 @@ function setupGlobalPanel(bestAttempt) {
     net.fetchMatchup(player.look?.name, bestAttempt.opp).catch(() => null),
     net.supportsSeasons().catch(() => false),
     net.fetchAllTime(5).catch(() => null),
-  ]).then(([rows, champion, matchup, seasonal, allTime]) => {
+    dailyMode ? net.fetchDaily(bestAttempt.opp).catch(() => null) : Promise.resolve(null),
+  ]).then(([rows, champion, matchup, seasonal, allTime, daily]) => {
     ui.renderGlobal(rows, {
       week: seasonal ? net.weekKey() : null,
       champion, matchup,
       matchTitle: matchup ? `${player.look?.name} vs ${bestAttempt.opp}` : null,
       // pre-migration the weekly board IS the all-time board — don't show it twice
       allTime: seasonal ? allTime : null,
+      daily, dailyTitle: daily ? `📅 THE DAILY — ${bestAttempt.opp} · ${DAY_KEY}` : null,
     });
   });
+  if (dailyMode) localStorage.setItem('slapp_daily', DAY_KEY);
   refreshBoards().then(() => ui.netMsg(''))
     .catch(() => ui.netMsg("Couldn't reach the county office. Rankings unavailable."));
   ui.submitState(submitted ? 'POSTED ✓' : 'POST MY SCORE', submitted || bestAttempt.pts <= 0);

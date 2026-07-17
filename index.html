@@ -102,6 +102,7 @@ body.backon #attempts{transform:translateY(42px);}
 #startBtn:active{transform:translateY(5px);box-shadow:0 1px 0 #000;}
 @keyframes startGlow{0%,100%{box-shadow:0 6px 0 #000;}50%{box-shadow:0 6px 0 #000,0 0 20px 3px rgba(60,200,90,.5);}}
 .startHint{font-size:11px;letter-spacing:2px;color:#7c85ad;margin-top:-6px;}
+#dailyBtn{font-size:13px;padding:9px 18px;background:#1d2140;color:#ffe9a0;border:3px solid #000;margin-top:-4px;}
 .titleDivider{display:flex;align-items:center;gap:12px;width:min(86vw,380px);color:#6a7099;
   font-size:12px;letter-spacing:3px;font-family:'Arial Black',Impact,sans-serif;margin:2px 0;}
 .titleDivider::before,.titleDivider::after{content:"";flex:1;height:2px;background:rgba(255,255,255,.15);}
@@ -629,6 +630,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
       <button id="worldNext" class="worldArrow" aria-label="More worlds">›</button>
     </div>
     <button id="startBtn">▶ START SLAPPING</button>
+    <button id="dailyBtn">📅 TODAY'S VOLUNTEER</button>
     <div class="startHint">…or press ENTER / tap anywhere</div>
     <div id="storyDivider" class="titleDivider hidden"><span>OR TAKE ON THE STORY</span></div>
     <button id="tourBtn" class="hidden" style="font-size:15px;padding:10px 22px;background:var(--red);color:#fff;">🎪 CAMPAIGN MODE — THE COUNTY FAIR TOUR</button>
