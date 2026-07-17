@@ -103,6 +103,56 @@ export const ROSTER = [
     taunts: ['This location never closes. I AM the location.', 'Your cardiologist sends his regards. We have him too.'],
   },
   {
+    // THE GRAND PRIZE EGG: forty years unbeaten in the produce tent. Nobody
+    // remembers who entered it. The judges finally demand a freshness test.
+    key: 'gp_egg', name: 'THE GRAND PRIZE EGG', tag: 'PRODUCE · 40 YEARS UNBEATEN', boss: true,
+    w: 1.35, h: 0.9, mass: 1.4, bald: true, noStache: true,
+    chainGate: 50, gateCry: 'THE SHELL HOLDS!', gateCrySub: 'FORTY YEARS OF BLUE RIBBONS — 50% CHAIN TO CRACK IT',
+    skin: 0xf2e6cc, shirt: 0xf2e6cc, pants: 0xe8d8b8,
+    pickLine: 'It has a blue ribbon, a display plinth, and a heartbeat nobody talks about.',
+    taunts: ['(a muffled, polite tapping from inside)', '(the ribbon flutters. there is no wind.)'],
+  },
+  {
+    // THE HATCHLING, warming up: it spits its kindling. Catch the coals.
+    key: 'reggie_warm', name: 'REGINALD (WARMING UP)', tag: 'HATCHLING · SPITS KINDLING', boss: true,
+    w: 1.5, h: 1.1, mass: 2.0, throwIce: true, cubeColor: 0xff6a20, cubeGlow: 0xdd3300,
+    skin: 0x3f8a4a, horns: true, wings: true, brow: true, noStache: true, bald: true,
+    shirt: 0x2f6a3a, pants: 0x27532e,
+    pickLine: 'One hour old. Already judging everyone. Spits coals when displeased, which is always.',
+    taunts: ['(spits a coal, disdainfully)', 'The egg was warmer than your form.'],
+  },
+  {
+    // SIR REGINALD THE UNIMPRESSED — the fair's dragon, full grown by teatime.
+    // He hoards FIRSTS: every blue ribbon in county history, and he will only
+    // leave when your slap is worth adding to the collection. THE SMOLDER: his
+    // PATIENCE meter re-tempers between slaps (bulwark.regen) — chip faster
+    // than it heals. Below 60% chain the scales disdain the attempt entirely.
+    key: 'reginald', name: 'SIR REGINALD THE UNIMPRESSED', tag: 'BOSS · THE DRAGON', boss: true,
+    w: 2.4, h: 1.3, mass: 3.6, attempts: 8,
+    chainGate: 60, gateCry: 'THE SCALES DISDAIN!', gateCrySub: 'BELOW 60% CHAIN, THE DRAGON DOES NOT COUNT IT AS TOUCHING',
+    bulwark: { threshold: 100, label: 'PATIENCE', regen: 6, sprungCry: 'HOARDED!', sprungSub: 'YOUR SLAP JOINS THE COLLECTION — AND THE DRAGON DEPARTS' },
+    skin: 0x3f8a4a, horns: true, wings: true, brow: true, noStache: true, bald: true,
+    shirt: 0x2f6a3a, pants: 0x27532e, cogY: 1.1,
+    pickLine: 'He hoards FIRSTS. Every blue ribbon in county history, and he is very still, and he is very large.',
+    taunts: ['I have judged nine hundred fairs. Continue.', 'The hoard has a vacancy. Impress me.'],
+    slapTiers: {
+      high: [ // PATIENCE > 60 — the connoisseur, unimpressed
+        { who: 'SIR REGINALD', text: 'Mm. I have been slapped by KNIGHTS. Their gauntlets sang. Yours mumbles.' },
+        { who: 'SIR REGINALD', text: 'That placed SIXTH. I do not hoard sixth.' },
+        { who: 'YOU', text: 'The beast absorbed it and filed a REVIEW. Very well. The congregation of the palm continues.' },
+      ],
+      mid: [ // 25–60 — the scales warm, the pride cracks
+        { who: 'SIR REGINALD', text: 'A scale just... loosened. It was a DECORATIVE scale. The load-bearing scales remain devout.' },
+        { who: 'SIR REGINALD', text: 'Interesting. Do that AGAIN — no. Forget I asked. Dragons do not ask.' },
+        { who: 'YOU', text: 'It is bargaining with itself. The smolder dims between blows — strike WHILE the iron doubts.' },
+      ],
+      low: [ // < 25 — impressed against his will
+        { who: 'SIR REGINALD', text: 'STOP. Wait. What is your RIBBON policy. Asking for the hoard.' },
+        { who: 'SIR REGINALD', text: 'Nine hundred fairs and ONE slap worth shelving. Do not tell the knights.' },
+      ],
+    },
+  },
+  {
     // THE SLAP CUP: the striker whose every touch is an audition for the Oscars.
     key: 'tarso', name: "TUMBLIN' TARSO", tag: 'STRIKER · THE DIVER', boss: true,
     w: 0.8, h: 1.0, mass: 0.45,

@@ -406,6 +406,35 @@ export const TOURS = [
     ],
   },
   {
+    // THE GRAND PRIZE EGG: forty years unbeaten in the produce tent, and the
+    // judges finally demand a freshness test. What hatches is a dragon that
+    // hoards FIRSTS — and the finale debuts THE SMOLDER: patience that heals
+    // between slaps. Chip faster than it mends, or bore a dragon forever.
+    key: 'grandprize', title: '🐉 THE GRAND PRIZE EGG',
+    dlc: true,
+    world: 'day',
+    slapper: 'reverend',
+    blurb: 'The produce tent\'s forty-year champion egg finally gets a freshness test. It hatches. It judges. It hoards every blue ribbon in county history.',
+    acts: [
+      {
+        act: 'ACT I — THE PRODUCE TENT',
+        story: 'Forty years, one egg, one ribbon, zero questions. This year a new judge asked the question. The question was: "should it be WARM?"',
+        challenges: [
+          { id: 'r1c1', title: 'THE FRESHNESS TEST', desc: 'CRACK THE GRAND PRIZE EGG: land a clean head slap — below a 50% chain THE SHELL HOLDS (×0.12). Knock politely, with force', opp: 'gp_egg', goal: { type: 'chain', v: 50 } },
+          { id: 'r1c2', title: 'EVACUATE THE JUDGES', desc: 'Send GRANDPA CLETUS 32m — the head judge refuses to leave the pie table. Remove him to safety. All 32 meters of safety', opp: 'cletus', goal: { type: 'dist', v: 32 } },
+        ],
+      },
+      {
+        act: 'ACT II — THE HOARD',
+        story: 'Full grown by teatime, the dragon moved into the Cave of Wonders with every blue ribbon in county history. He is not angry. He is DISAPPOINTED, at scale.',
+        challenges: [
+          { id: 'r2c1', title: 'THE KINDLING', desc: 'REGINALD spits his kindling AT YOU — CATCH 3 coals barehanded with the open palm [P]. Soft hands. They are only slightly on fire', opp: 'reggie_warm', world: 'cave', goal: { type: 'catch', v: 3 } },
+          { id: 'r2c2', title: '☗ BOSS: THE SMOLDER', desc: "DEPLETE SIR REGINALD'S PATIENCE (8 slaps): it RE-TEMPERS between blows and scales disdain anything under 60% chain — chip faster than he heals, and your slap joins the hoard", opp: 'reginald', world: 'cave', goal: { type: 'bulwark', v: 100 } },
+        ],
+      },
+    ],
+  },
+  {
     key: 'slaptherapy', title: '🛋️ SLAP THERAPY',
     dlc: true,
     world: 'therapy',
@@ -1475,6 +1504,35 @@ export const CUTSCENES = {
     { who: 'YOU', text: 'SLAPMANIA keeps its name, the Marvel keeps the mask, and the gate goes to the pension fund. Ring the bell twice — we did it clean.', shot: 'player' },
   ],
 
+  grandprize_prologue: [
+    { who: 'YOU', text: 'Brothers and sisters of the produce tent. For forty years, one egg has taken the blue ribbon. Never judged. Never candled. Never QUESTIONED. Today, the Reverend asks.', shot: 'player' },
+    { who: 'YOU', text: 'The new judge posed it plainly: should a forty-year-old egg be WARM? The tent went quiet. The ribbon fluttered. There was no wind.', shot: 'player' },
+  ],
+  r1c1: [
+    { who: 'THE GRAND PRIZE EGG', text: '(a muffled, polite tapping. From inside.)', shot: 'opp' },
+    { who: 'YOU', text: 'A freshness test, as scripture demands. One clean strike upon the crown — and mind the form. Forty years of blue ribbons does NOT crack for amateur work.', shot: 'player' },
+  ],
+  r1c2: [
+    { who: 'GRANDPA CLETUS', text: "I've judged pies at this table for fifty years and I ain't leavin' for a WARM EGG.", shot: 'opp' },
+    { who: 'YOU', text: 'Cletus. The egg has HORNS now. You are being evacuated — thirty-two meters, by the fastest route the Lord provides.', shot: 'player' },
+    { who: 'GRANDPA CLETUS', text: '...take the lemon meringue with your other hand.', shot: 'opp' },
+  ],
+  r2c1: [
+    { who: 'REGINALD (WARMING UP)', text: '(one hour old. Already disappointed in the county. Spits a coal, meaningfully.)', shot: 'opp' },
+    { who: 'YOU', text: 'It spits its kindling and it judges the catch. Soft hands, open palm. They are only SLIGHTLY on fire.', shot: 'player' },
+  ],
+  r2c2: [
+    { who: 'SIR REGINALD', text: 'Welcome to the hoard. Nine hundred fairs. Every FIRST ever awarded, shelved and alphabetized. I do not collect gold. Gold is COMMON.', shot: 'opp' },
+    { who: 'YOU', text: 'You have taken every ribbon in county history, sir. Including mine. The congregation wants them back.', shot: 'player' },
+    { who: 'SIR REGINALD', text: 'Then impress me. My patience RE-TEMPERS between blows — chip faster than I heal, little preacher, or bore me for all eternity. Many have. They are load-bearing now.', shot: 'opp' },
+    { who: 'YOU', text: 'Then hear the good word, lizard: REPENT — and be LAUNCHED.', shot: 'player' },
+  ],
+  outro_r2c2: [
+    { who: 'SIR REGINALD', text: '...shelved. Between a knight\'s gauntlet and a meteor strike. Congratulations. The hoard is COMPLETE, and therefore boring. I am leaving.', shot: 'opp' },
+    { who: 'YOU', text: 'The ribbons rain back on the county like autumn leaves. Cletus retrieves the lemon meringue. The egg\'s plinth stands empty — retired, undefeated, forty years and one slap.', shot: 'player' },
+    { who: 'SIR REGINALD', text: '(from very high up) I shall return when someone slaps something worth SECOND place. So: never.', shot: 'wide' },
+  ],
+
   slaptherapy_prologue: [
     { who: 'YOU', text: 'Fifty years of analysis. Ten thousand dreams interpreted. Four hundred papers. And one finding that survived replication: the slap.', shot: 'player' },
     { who: 'YOU', text: 'The board revoked my license. The fair gave me a tent. Science continues.', shot: 'player' },
@@ -1853,6 +1911,11 @@ export const CUTSCENES = {
 // ('a' = Palm, 'f' = Fair, 'w' = Wonders, 'b' = Second Wind); rotated so
 // repeated failure stays fresh-ish.
 export const FAILS = {
+  r: [
+    [{ who: 'SIR REGINALD', text: '(yawns. A scale that had loosened quietly re-fastens itself.)', shot: 'opp' },
+     { who: 'YOU', text: 'The beast MENDED while we faltered. Faster, brothers. Faith without follow-through is just stretching.', shot: 'player' }],
+    [{ who: 'YOU', text: 'The Lord forgives that slap. The dragon does not. Again.', shot: 'player' }],
+  ],
   g: [
     [{ who: "TUMBLIN' TARSO", text: '(from the ground, uninjured) I have seen better contact in a HANDSHAKE. Again — and MEAN it.', shot: 'opp' }],
     [{ who: 'YOU', text: 'VAR would disallow that out of pity. Again.', shot: 'player' }],
@@ -1977,6 +2040,11 @@ export const TAKEDOWN_FAIL = [
 // victory beats — short, replayable, played after clearing a NON-final
 // challenge (outro_* scenes own the finales). Keyed by tour prefix; rotated.
 export const WINS = {
+  r: [
+    [{ who: 'YOU', text: 'The congregation of the palm records another verse.', shot: 'player' },
+     { who: '🎀 A BLUE RIBBON', text: '(flutters down from somewhere. There is, as ever, no wind.)', shot: 'wide' }],
+    [{ who: 'YOU', text: 'Amen, and ONWARD.', shot: 'player' }],
+  ],
   g: [
     [{ who: 'YOU', text: 'GOOOAL. Well. You know what I mean.', shot: 'player' },
      { who: '📺 VAR', text: '(after a four-minute review, the slap stands. VAR looks disappointed about it.)', shot: 'wide' }],
@@ -2085,7 +2153,7 @@ export const WINS = {
 // storyline next, with the Master Slee scrolls beneath it.
 // Olympic Bid leads (free), Wonders second, the Open Palm third (free) —
 // then the Fair, then the supporter storylines.
-const TOUR_ORDER = ['wonders', 'fair', 'farewell', 'palm', 'olympicbid', 'secondwind', 'blackgold', 'nightofslaps', 'slaptherapy', 'catinquiry', 'union', 'goldenslaps', 'slapcup', 'slapovision', 'superslam', 'horseshoe', 'slopvalley', 'commedia'];
+const TOUR_ORDER = ['wonders', 'fair', 'farewell', 'palm', 'olympicbid', 'secondwind', 'blackgold', 'nightofslaps', 'slaptherapy', 'catinquiry', 'union', 'goldenslaps', 'slapcup', 'slapovision', 'superslam', 'grandprize', 'horseshoe', 'slopvalley', 'commedia'];
 // unknown keys sink to the bottom instead of floating to the top (indexOf −1)
 const tourRank = (k) => { const i = TOUR_ORDER.indexOf(k); return i < 0 ? TOUR_ORDER.length : i; };
 TOURS.sort((a, b) => tourRank(a.key) - tourRank(b.key));

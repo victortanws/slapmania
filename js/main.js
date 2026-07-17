@@ -1014,6 +1014,16 @@ function startAttempt() {
   opponent.runLine = attempts.length % 2; // skiRun v2: line A / line B, announced by her push-off side
   calledHigh = arch.calledShot ? attempts.length % 2 === 0 : null; // Dale calls HIGH, LOW, HIGH
   opponent.calledHigh = calledHigh; // he PRESENTS the called half in his pocket
+  // THE SMOLDER (novel bulwark variant): between attempts the meter RE-TEMPERS —
+  // arch.bulwark.regen points of accumulated damage grow back. Chip faster than
+  // it heals or tread water forever: sustained good slaps beat patient mediocre
+  // ones, which is the exact inverse of Tom's pure war of attrition.
+  if (arch.bulwark && arch.bulwark.regen && bulwarkPts > 0 && attempts.length) {
+    const before = Math.max(0, Math.ceil(100 - bulwarkPts / (arch.bulwark.threshold / 100)));
+    bulwarkPts = Math.max(0, bulwarkPts - arch.bulwark.regen);
+    const after = Math.max(0, Math.ceil(100 - bulwarkPts / (arch.bulwark.threshold / 100)));
+    if (after > before) ui.slapBurst('♨️ THE SCALES RE-TEMPER', `${arch.bulwark.label || 'THE METER'} HEALS TO ${after}% — CHIP FASTER THAN IT MENDS`);
+  }
   if (arch.bulwark) opponent.bulwarkPct = Math.max(0, Math.ceil(100 - bulwarkPts / (arch.bulwark.threshold / 100)));
   // THE TAR PIT: every volunteer stands shin-deep in the tar (bulwark bosses
   // already built theirs); last attempt's splat stains wash for the fresh take
