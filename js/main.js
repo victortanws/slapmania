@@ -1824,6 +1824,22 @@ addEventListener('pointerup', (e) => {
 });
 
 // ---------- camera director ----------
+// PER-WORLD CINEMATOGRAPHY: each world opens its faceoff with its own
+// establishing move — the dojo bows low, hell looks up from the pit, heaven
+// descends, therapy observes like a documentary. Every profile converges on
+// the IDENTICAL final frame, so the view you time the swing from never varies
+// by a pixel — ambience only ever spends the dead 2.4s.
+const FACEOFF_OPENERS = {
+  dojo:    [new THREE.Vector3(1.6, 0.55, 2.2), new THREE.Vector3(0.6, 1.2, 0)],   // the low bow
+  hell:    [new THREE.Vector3(1.8, 0.4, 1.6),  new THREE.Vector3(0.7, 1.9, 0)],   // up from the pit
+  heaven:  [new THREE.Vector3(1.2, 3.6, 2.6),  new THREE.Vector3(0.7, 1.4, 0)],   // the descent
+  therapy: [new THREE.Vector3(-1.2, 1.6, 2.8), new THREE.Vector3(0.5, 1.5, 0)],   // the documentary lateral
+  haunted: [new THREE.Vector3(3.4, 1.05, 0.6), new THREE.Vector3(0.8, 1.5, 0)],   // creeping in from the dark
+  ice:     [new THREE.Vector3(0.2, 2.7, 5.8),  new THREE.Vector3(0.5, 1.3, 0)],   // the wide cold establishing
+  lava:    [new THREE.Vector3(2.6, 0.5, 2.0),  new THREE.Vector3(0.7, 1.6, 0)],   // heat-line low
+  techcampus: [new THREE.Vector3(0.6, 2.4, 5.2), new THREE.Vector3(0.5, 1.5, 0)], // the keynote drone
+};
+const FACEOFF_DEFAULT = [new THREE.Vector3(2.4, 1.75, 1.2), new THREE.Vector3(0.85, 1.6, 0)];
 const camPos = new THREE.Vector3(0.5, 2.1, 4.6);
 const camLook = new THREE.Vector3(0.5, 1.3, 0);
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -1847,10 +1863,11 @@ function updateCamera(dt) {
     l = V(0.5, 1.4, 0);
     snapRate = 20;
   } else if (state === 'FACEOFF') {
+    const opener = FACEOFF_OPENERS[activeWorld] || FACEOFF_DEFAULT;
     const t = Math.min(tState / 2.3, 1);
     const e = t * t * (3 - 2 * t);
-    p = V(2.4, 1.75, 1.2).lerp(V(0.4, 1.95, 4.2), e);
-    l = V(0.85, 1.6, 0).lerp(V(0.5, 1.35, 0), e);
+    p = opener[0].clone().lerp(V(0.4, 1.95, 4.2), e);
+    l = opener[1].clone().lerp(V(0.5, 1.35, 0), e);
     snapRate = 14;
   } else if (state === 'SWING') {
     if (replayCam) {
