@@ -30,6 +30,11 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
    leaderboards untouched, HUD text unaffected, muscle memory on its own */
 body.mirror #c{transform:scaleX(-1);}
 #hud{position:fixed;inset:0;pointer-events:none;color:#fff;overflow:hidden;}
+/* the frame's quiet edge: a soft vignette between the 3D view and the HUD —
+   compositor-only, zero render cost, and every screenshot gains a border of
+   intent. Kept gentle so the pale worlds don't muddy. */
+#vignette{position:fixed;inset:0;pointer-events:none;z-index:1;
+  background:radial-gradient(ellipse 120% 90% at 50% 42%, transparent 62%, rgba(10,12,26,.30) 100%);}
 .hidden{display:none !important;}
 
 /* ---- top bar ---- */
@@ -504,6 +509,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
 </head>
 <body>
 <canvas id="c"></canvas>
+<div id="vignette"></div>
 <div id="hud">
   <div id="topbar">
     <div id="attempts"></div>

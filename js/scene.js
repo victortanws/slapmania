@@ -74,10 +74,13 @@ export function createStage(canvas) {
   skyCv.width = 2; skyCv.height = 256;
   const skyG = skyCv.getContext('2d');
   const grad = skyG.createLinearGradient(0, 0, 0, 256);
-  grad.addColorStop(0, '#3f8fd4');
-  grad.addColorStop(0.5, '#86c0ea');
-  grad.addColorStop(0.8, '#cfe6f4');
-  grad.addColorStop(1, '#f0ead8');
+  // color depth lives IN the visible band (v≈0.55-1.0), not at the zenith:
+  // rich blue overhead in-frame, glowing warm right at the treeline
+  grad.addColorStop(0, '#2e7cc4');
+  grad.addColorStop(0.45, '#4f9ada');
+  grad.addColorStop(0.68, '#8ec4ec');
+  grad.addColorStop(0.88, '#d8ecf6');
+  grad.addColorStop(1, '#f6ecd2');
   skyG.fillStyle = grad;
   skyG.fillRect(0, 0, 2, 256);
   const sky = new THREE.Mesh(
@@ -1225,9 +1228,15 @@ export function createStage(canvas) {
     g.font = '900 44px "Arial Black", Arial';
     g.fillStyle = '#ffd23f';
     g.fillText('SLAPMANIA FAIR', 256, 66);
-    g.font = '900 34px "Arial Black", Arial';
     g.fillStyle = '#fff6e0';
-    lines.forEach((ln, i) => g.fillText(ln, 256, 130 + i * 52));
+    lines.forEach((ln, i) => {
+      // shrink-to-fit: long lines ("58.0m vs TICK-TOCK TOM") were clipping off
+      // the board's edge — a real sign painter sizes the brush to the plank
+      let size = 34;
+      g.font = `900 ${size}px "Arial Black", Arial`;
+      while (size > 18 && g.measureText(ln).width > 452) { size -= 2; g.font = `900 ${size}px "Arial Black", Arial`; }
+      g.fillText(ln, 256, 130 + i * 52);
+    });
     sbTex.needsUpdate = true;
   }
   setScoreboard(['BEST: —', 'LAST: —']);
