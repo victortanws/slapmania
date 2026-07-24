@@ -981,6 +981,76 @@ export function createStage(canvas) {
     fairDecor.push(signG);
   }
 
+  // --- SLAP CITY: the town the volunteers keep landing in. Every landmark is
+  // civic infrastructure for a county whose entire economy is slapping.
+  // Deliberately parked OUTSIDE the flight corridor (|z| >= 17, the lane runs
+  // |z| < 15) and given NO solids, so it is pure skyline — the reward ladder and
+  // every tuned distance in the game stay exactly as measured.
+  {
+    const townG = new THREE.Group();
+    const sign = (text, col, w, h, x, y, z, faceNeg) => {
+      const t = new THREE.Mesh(new THREE.PlaneGeometry(w, h),
+        new THREE.MeshBasicMaterial({ map: makeTextTexture(text, col), transparent: true }));
+      t.position.set(x, y, z);
+      if (faceNeg) t.rotation.y = Math.PI;
+      townG.add(t);
+      return t;
+    };
+    // one storefront: body, roof band, and a sign that always faces the lane
+    const shop = (x, z, w, h, d, wall, band, text, col) => {
+      const faceNeg = z > 0;                       // buildings north of the lane turn round
+      const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), toonMat(wall));
+      b.position.set(x, h / 2, z);
+      townG.add(b);
+      const r = new THREE.Mesh(new THREE.BoxGeometry(w * 1.04, h * 0.14, d * 1.04), toonMat(band));
+      r.position.set(x, h + h * 0.06, z);
+      townG.add(r);
+      const face = z > 0 ? z - d / 2 - 0.06 : z + d / 2 + 0.06;
+      sign(text, col, w * 0.86, h * 0.3, x, h * 0.66, face, faceNeg);
+      return b;
+    };
+
+    shop(30, 25, 11, 4.2, 7, 0xd8d2c4, 0xb03a2c, 'SLAP MOTORS', '#b03a2c');
+    shop(42, 19.5, 6, 3.6, 5.5, 0x2e6b52, 0xf2ede1, 'SLAPBUCKS', '#f2ede1');
+    shop(48, -24, 20, 5.4, 9, 0xe4dccc, 0x3a5f8a, 'SLAP MALL', '#3a5f8a');
+    shop(58, 22.5, 12, 6.2, 8, 0xefe7d6, 0x8a6a42, 'FIRST BANK OF SLAP', '#6a5230');
+    shop(86, 20, 13, 4.0, 7, 0xdfe6ea, 0xc23a2c, 'MOTEL SLAP — VACANCY', '#c23a2c');
+    shop(101, -22, 15, 5.8, 9, 0xf2f4f6, 0x2f7fbf, 'SLAP GENERAL · CHEEK WING', '#2f7fbf');
+
+    // THE SLAP CAPITOL — the one silhouette worth flying toward
+    {
+      const x = 72, z = -27;
+      const base = new THREE.Mesh(new THREE.BoxGeometry(16, 7, 11), toonMat(0xf4f1e8));
+      base.position.set(x, 3.5, z); townG.add(base);
+      const steps = new THREE.Mesh(new THREE.BoxGeometry(18, 0.9, 13), toonMat(0xe6e2d6));
+      steps.position.set(x, 0.45, z); townG.add(steps);
+      for (let i = -3; i <= 3; i++) {           // portico columns
+        const c = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 6.2, 10), toonMat(0xfaf8f2));
+        c.position.set(x + i * 2.3, 3.9, z + 5.9); townG.add(c);
+      }
+      const drum = new THREE.Mesh(new THREE.CylinderGeometry(3.4, 3.8, 2.6, 16), toonMat(0xf4f1e8));
+      drum.position.set(x, 8.3, z); townG.add(drum);
+      const dome = new THREE.Mesh(new THREE.SphereGeometry(3.5, 18, 12, 0, Math.PI * 2, 0, Math.PI / 2), toonMat(0xc8b46a));
+      dome.position.set(x, 9.5, z); townG.add(dome);
+      const spire = new THREE.Mesh(new THREE.ConeGeometry(0.5, 2.2, 10), toonMat(0xc8b46a));
+      spire.position.set(x, 14.0, z); townG.add(spire);
+      sign('THE SLAP CAPITOL', '#8a6a2c', 12, 1.7, x, 7.6, z + 5.6, false);
+    }
+
+    // SLAP CITY LIMITS — the sign you clear on a genuinely long flight
+    {
+      const p = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.12, 4.2, 8), toonMat(0x8a6a42));
+      p.position.set(34, 2.1, -17.5); townG.add(p);
+      const b = new THREE.Mesh(new THREE.BoxGeometry(6.4, 1.5, 0.14), toonMat(0x2f5f3f));
+      b.position.set(34, 3.9, -17.5); townG.add(b);
+      sign('SLAP CITY LIMITS · POP. 1,204', '#eaf2e6', 6.0, 1.2, 34, 3.9, -17.4, false);
+    }
+
+    townG.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+    scene.add(townG);
+    fairDecor.push(townG);      // hides itself in the non-farm worlds like the rest of the fair
+  }
+
   // perimeter forest: the TRUE edge of the world, dressed as dense conifers
   // exactly where the physics catches — nobody ever hits an invisible wall.
   // The DESERT re-dresses the SAME line as saguaro + red rock (cactusBelt).
@@ -5405,5 +5475,7 @@ export function createStage(canvas) {
     isHauntedUp: () => hauntedG.visible,
     isDojoUp: () => dojoG.visible,
     setSpirit, setJudge, setBruce, setCatReact, setCatCine, cinePoints,
+    // live crowd positions — walking characters need to know people are solid
+    crowdSpots: spots,
   };
 }

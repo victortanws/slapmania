@@ -220,18 +220,28 @@ export class Player {
     this.armMass = 1 + 0.35 * (ARR - 1);     // effective impact mass of the hand
     this.armInertia = 1 + 0.5 * (ARR - 1);   // rotational inertia of the weapon arm
 
+    // Legs hang off a HIP PIVOT rather than sitting straight on the root, so a
+    // walk cycle can swing them (see walkPose). The slap sim never touches the
+    // legs — pose() leaves them alone — so this is purely for locomotion and
+    // costs a stationary slapper nothing.
+    this.hips = [];
     for (const s of [-1, 1]) {
+      const hip = new THREE.Group();
+      hip.position.set(0, 0.92, s * 0.14);
+      root.add(hip);
+      this.hips.push(hip);
+
       const leg = M(new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.75, 3, 8), T(L.pants)));
-      leg.position.set(0.02, 0.48, s * 0.14);
-      root.add(leg);
+      leg.position.set(0.02, 0.48 - 0.92, 0);
+      hip.add(leg);
       if (L.trackStripe) {  // the tracksuit's side stripe
         const stripe = M(new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.78, 0.03), T(L.trackStripe)));
-        stripe.position.set(0.02, 0.48, s * 0.205);
-        root.add(stripe);
+        stripe.position.set(0.02, 0.48 - 0.92, s * 0.065);
+        hip.add(stripe);
       }
       const foot = M(new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.09, 0.13), T(0x5a4632)));
-      foot.position.set(0.09, 0.05, s * 0.14);
-      root.add(foot);
+      foot.position.set(0.09, 0.05 - 0.92, 0);
+      hip.add(foot);
     }
     const pelvis = M(new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.2, 0.28), T(L.pants)));
     pelvis.position.y = 1.0;
@@ -999,6 +1009,28 @@ export class Player {
     this._tracked = true;
 
     if (Math.abs(this.lean) > 1.05) this.collapse(Math.sign(this.lean));
+  }
+
+  // Procedural walk for cinematics. `t` is seconds, `amt` 0..1 fades the whole
+  // cycle in and out so a character can ease to a standstill. Call it AFTER
+  // pose() — it deliberately overwrites the root roll and height, and the slap
+  // sim never reads either back.
+  walkPose(t, amt = 1) {
+    if (!this.hips) return;
+    const w = t * 8.2;                                   // stride rate
+    const sw = Math.sin(w) * 0.62 * amt;
+    this.hips[0].rotation.z = sw;
+    this.hips[1].rotation.z = -sw;
+    // two bobs per stride (one per footfall) plus a roll into each step
+    this.root.position.y = (Math.abs(Math.cos(w)) * 0.06 - 0.03) * amt;
+    this.root.rotation.z = Math.sin(w * 2) * 0.02 * amt;
+  }
+
+  // put the legs back under him after a walk
+  standPose() {
+    if (!this.hips) return;
+    this.hips[0].rotation.z = 0; this.hips[1].rotation.z = 0;
+    this.root.position.y = 0;
   }
 
   pose() {
