@@ -17,6 +17,7 @@ const el = {
   globalWrap: $('globalWrap'), gboard: $('gboard'),
   nameInput: $('nameInput'), submitBtn: $('submitBtn'), netMsg: $('netMsg'),
   challengeBar: $('challengeBar'), refBar: $('refBar'), flash: $('flash'),
+  camTag: $('camTag'),
 };
 
 // impact flash — a white pop at the contact frame that fades over the slow-mo,
@@ -60,6 +61,16 @@ export function challengeBar(text) {
   if (!text) { el.challengeBar.classList.add('hidden'); return; }
   el.challengeBar.textContent = text;
   el.challengeBar.classList.remove('hidden');
+}
+
+// Which SLAP CAM angle the instant replay is running — a camera-ID burn-in.
+// Owns the replay letterbox too, so the bars can never outlive the tag.
+export function camTag(text) {
+  if (!el.camTag) return;
+  document.body.classList.toggle('replaycam', !!text);
+  if (!text) { el.camTag.classList.add('hidden'); el.camTag.textContent = ''; return; }
+  el.camTag.textContent = text;
+  el.camTag.classList.remove('hidden');
 }
 
 // only 'footing', 'clock' and 'escape' are ever produced (see main.js foul()

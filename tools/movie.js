@@ -237,11 +237,6 @@ const orb = (thDeg, r, h, c) => {
   const a = (c || ACT());
   return V(a.x + Math.sin(thDeg * D) * r, h, a.z + Math.cos(thDeg * D) * r);
 };
-// tight two-shot that eases in over the shot
-const pushIn = (th0, r0, th1, r1, h, fov0, fov1, dutch = 0) => (t, u) => {
-  const k = easeOut(u);
-  place(orb(lerp(th0, th1, k), lerp(r0, r1, k), h).add(shake(t, 0.028)), ACT(), lerp(fov0, fov1, k), dutch);
-};
 // Trail the launched body. A rigid offset looks glued to the victim, so the rig
 // chases a damped point — the body leads the lens slightly, which reads as speed.
 // Keep the trail short (≈6m): the engine's own chase sits ~10m back and at that

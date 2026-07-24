@@ -442,3 +442,55 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   Retunes: o3c2 50m, t3c1 45m, v2c2 450, t2c2 50m. Portraits use
   `temp.headMesh.getWorldPosition` (the 1.52·h estimate framed shirts).
   8 tours in TOUR_ORDER; unknown keys sink (tourRank).
+
+## Trailer renderer + SLAP CAM (2026-07-25)
+
+- **`tools/movie.js` — offline cinematic renderer.** Not in the game bundle
+  (index.html never loads it); load from the console of a running game:
+  `const M = await import('/tools/movie.js'); await M.boot(); await M.runNext(3)`.
+  It drives the REAL engine through a new `__slapp.drive(events, seconds, onStep)`
+  seam — `onStep(simMs, i)` runs after every stepped frame with rendering still
+  suppressed, so the renderer places its own camera, renders, composites trailer
+  overlays (letterbox, name plates, captions, title cards, speed lines, flash)
+  onto a 2D canvas, and POSTs the JPEG to `tools/framesink.py` (a CORS sink on
+  :8998). Nothing is faked — every slap is the real kinetic chain on a real
+  ragdoll. `M.probe(specs)` renders candidate framings as stills for a contact
+  sheet; `M.resume(cursor, frameIdx)` re-shoots a tail without redoing good
+  footage (frames are named by index). 60fps sim → capture every 2nd frame for
+  30fps output; capturing EVERY frame inside a `slow:` window gives 2× slow-mo.
+- **`tools/score.js`** renders the whole music+SFX bed in an OfflineAudioContext
+  and POSTs a 16-bit WAV (same house rule as audio.js: zero asset files).
+  Dialogue is macOS `say` (voices cast per character, `[[pbas nn]]` for pitch —
+  MIRACLE MIRA's baritone is Ralph at pbas 22) and ffmpeg mixes it in.
+- **Camera facts learned the hard way (reuse these, don't re-derive):**
+  the ring's action centre is ~`(0.5, 1.5, 0)`; the engine's own faceoff frame is
+  `(0.4, 1.95, 4.2)` @ fov 55. **Front-on lenses below y≈1.2 shoot into the backs
+  of the rail crowd** — low angles must come in from the OPEN LANE SIDE (θ≈55–80°).
+  The slapper faces +x, so a lens at θ≈150° is what catches his FACE; anything
+  behind him films his hair. A camera parked exactly on `opponent.headPos()`
+  renders the INSIDE of the victim's skull (black frame) — offset ~0.30m toward
+  the slapper. `stage.cinePoints.cat` (and spirit/judge/bruce) are **getter
+  FUNCTIONS**; reading `.x` off one yields NaN and the whole frame goes black.
+  The therapy cat sits at ~(28.6, 4.7, 8.6) — frame it from inside the room
+  (≈(21, 2.7, 3.8)), not from outside, or you film the exterior wall.
+- **SLAP CAM (shipped gameplay feature).** The instant replay used to run one
+  fixed pair of angles, so nobody pressed the button twice. `SLAP_CAMS` in
+  main.js now holds five broadcast packages — HERO / CHEEK / WORM / RINGSIDE /
+  CRANE — each with its own SWING framing, FLIGHT framing and `shotFov` (a new
+  `shotFov` local overrides the state-driven 55/44/39 lens). `chooseSlapCam(card)`
+  picks to flatter the slap: `dist ≥ 70 → crane`, `chain ≥ 88 → cheek`,
+  `mass ≥ 1.8 && dist < 45 → worm`, else rotate so repeat presses always differ.
+  `ui.camTag(name)` burns in a `📷 CHEEK CAM` chip (top-left, top-anchored =
+  safe per the layout guardrails) AND owns `body.replaycam` (7vh letterbox +
+  keysbar/meters/coach hidden) so the bars can never outlive the tag.
+  **The replay button only appears at `dist ≥ 30`** (`replayable` in showResult),
+  so heavyweights that barely move have no replay at all — when testing, drive
+  ≥16s so a 90m flight actually lands and the card appears, or you will measure
+  a stale tag and think the director is broken.
+- **Volunteer added:** `dario` — DARIO SLAPMODE, RESPONSIBLE SCALING,
+  `world: 'techcampus'` (joins vance/mira/slopberg/marswell as a world local).
+- **Deliverables:** rendered trailers live in `media/` (gitignored — the repo is
+  the Pages source and 44MB binaries would ship to slapmania.org for nothing),
+  with the inbox copy under the global naming rule.
+- **Heads-up:** a nightly automation auto-commits AND pushes this repo, so
+  work-in-progress can reach production before you explicitly push.

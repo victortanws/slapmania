@@ -127,6 +127,13 @@ body.smackon #distance, body.smackon #flightChain, body.smackon #coach{visibilit
   text-align:center;z-index:30;}
 @media (max-width:560px){ #refBar{bottom:196px;font-size:11px;} }
 
+/* ---- SLAP CAM tag: which broadcast angle the instant replay is running.
+   Top-left and tiny, like a camera-ID burn-in; never overlaps the centre bars. */
+#camTag{position:absolute;top:84px;left:14px;background:rgba(10,12,26,.72);border-left:4px solid var(--red);
+  color:#fff;font-size:12px;letter-spacing:2px;padding:6px 12px;border-radius:4px;z-index:40;
+  text-shadow:2px 2px 0 #000;animation:throb 1.4s infinite alternate;}
+@media (max-width:560px){ #camTag{top:76px;font-size:10px;padding:5px 9px;} }
+
 /* ---- challenge banner: a rival's gauntlet, pinned under the topbar ---- */
 #challengeBar{position:absolute;top:84px;left:0;right:0;margin:0 auto;width:fit-content;max-width:92vw;
   background:#2a1140;border:3px solid var(--yellow);color:#fff;font-size:13px;letter-spacing:1px;
@@ -259,6 +266,12 @@ body.cine .card{display:none !important;} /* the CLEARED/FAILED verdict card mus
 /* ---- campaign dialogue (cutscenes): name plate + words in a good-looking box ---- */
 #dlg{position:absolute;left:0;right:0;bottom:26px;display:flex;justify-content:center;z-index:70;pointer-events:auto;}
 body.cine #dlg{bottom:calc(11vh + 16px);}
+
+/* ---- instant replay: a lighter cinema than a cutscene. Letterbox in, and the
+   PLAY hud stands down (you're watching, not slapping) — but the cam tag and the
+   distance counter stay, because that's the bit worth screenshotting. ---- */
+body.replaycam #cineTop,body.replaycam #cineBot{height:7vh;}
+body.replaycam #keysbar,body.replaycam #meters,body.replaycam #coach{display:none !important;}
 .dlgBox{background:#fffbe8;color:#1b1d33;border:5px solid #000;border-radius:14px;max-width:640px;width:92vw;
   padding:14px 20px 12px;box-shadow:8px 8px 0 rgba(0,0,0,.55);font-family:Arial,sans-serif;cursor:pointer;position:relative;}
 .dlgName{position:absolute;top:-16px;left:14px;background:var(--red);color:#fff;border:3px solid #000;border-radius:8px;
@@ -521,6 +534,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
   <button id="backBtn" aria-label="Back to menu">‹ BACK</button>
   <div id="masterTag" class="hidden">★ SLAPMASTER ★</div>
   <div id="challengeBar" class="hidden"></div>
+  <div id="camTag" class="hidden"></div>
   <div id="refBar" class="hidden"></div>
   <div id="distance" class="hidden"></div>
   <div id="flightChain" class="hidden"></div>

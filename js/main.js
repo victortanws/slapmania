@@ -326,6 +326,9 @@ ui.bindReplay(() => {
   track('replay_watched', { dist: card.dist ? +card.dist.toFixed(1) : null });
   ghostTape = card.tape.map(([t, k, d]) => [t, KEYCODE[k] || k, d]);
   replayCam = true;
+  const cam = chooseSlapCam(card);
+  ui.camTag(cam.name);
+  track('replay_angle', { angle: cam.key });
   startAttempt();   // fresh stance, ghost armed — the tape swings, the cinema cameras roll
 });
 for (const btn of touchPad.querySelectorAll('.tbtn')) {
@@ -546,7 +549,7 @@ function startMatch() {
 
 // Escape from anywhere: back to the front porch
 function goToTitle() {
-  cancelGhost(); ghostTape = null; replayCam = false;
+  cancelGhost(); ghostTape = null; replayCam = false; ui.camTag(null);
   dailyMode = false;
   document.body.classList.remove('mirror');
   if (chosenArch && chosenArch.boss) chosenArch = null;   // bosses don't loiter on the porch
@@ -1445,6 +1448,7 @@ function showResult() {
     // yours: no attempt consumed, no board write, no campaign judgment
     const wasReplay = replayCam;
     replayCam = false;
+    ui.camTag(null);
     cancelGhost();
     ui.coach(null); ui.refBar(null); ui.showDistance(null);
     sfx.crowd(dist > 20 ? 3 : 1);
@@ -1892,8 +1896,42 @@ const camPos = new THREE.Vector3(0.5, 2.1, 4.6);
 const camLook = new THREE.Vector3(0.5, 1.3, 0);
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 
+// --- SLAP CAM -------------------------------------------------------------
+// The instant replay used to run one fixed pair of angles, so every replay
+// looked identical and nobody pressed the button twice. It now cuts a different
+// broadcast package each time, chosen to flatter the slap that actually landed.
+// Framings were validated frame-by-frame with the offline trailer renderer
+// (tools/movie.js): the ring is dressed for a front-on lens at y≈1.95, so any
+// low angle has to come in from the OPEN LANE SIDE or it shoots straight into
+// the backs of the rail crowd.
+const SLAP_CAMS = [
+  { key: 'hero', name: '📷 HERO CAM' },
+  { key: 'cheek', name: '📷 CHEEK CAM' },
+  { key: 'worm', name: '📷 WORM CAM' },
+  { key: 'ringside', name: '📷 RINGSIDE' },
+  { key: 'crane', name: '📷 CRANE CAM' },
+];
+let replayAngle = 0;
+const _pHead = new THREE.Vector3();
+const playerHead = () => { player.headMesh.getWorldPosition(_pHead); return _pHead; };
+// pick the angle that best sells THIS slap, else rotate so repeats always differ
+function chooseSlapCam(card) {
+  const chain = card && card.chain ? card.chain.pct : 0;
+  const mass = card && card.arch ? card.arch.mass : 1;
+  const dist = card ? card.dist : 0;
+  let key;
+  if (dist >= 70) key = 'crane';                    // sell the sheer distance
+  else if (chain >= 88) key = 'cheek';              // sell the technique arriving
+  else if (mass >= 1.8 && dist < 45) key = 'worm';  // drama out of a small move
+  else key = SLAP_CAMS[(replayAngle + 1) % SLAP_CAMS.length].key;
+  const i = SLAP_CAMS.findIndex((c) => c.key === key);
+  replayAngle = i < 0 ? 0 : i;
+  return SLAP_CAMS[replayAngle];
+}
+
 function updateCamera(dt) {
-  let p = null, l = null, snapRate = 5;
+  let p = null, l = null, snapRate = 5, shotFov = 0;
+  const rcam = replayCam ? SLAP_CAMS[replayAngle].key : null;
   if (state === 'SELECT_SLAPPER') {
     p = V(1.75, 1.6, 1.75);
     l = V(0.05, 1.15, 0); // lower target so tall/hatted slappers clear the top bubble
@@ -1918,12 +1956,40 @@ function updateCamera(dt) {
     l = opener[1].clone().lerp(V(0.5, 1.35, 0), e);
     snapRate = 14;
   } else if (state === 'SWING') {
-    if (replayCam) {
-      // REPLAY, camera one: the hero angle — low, close, slightly behind the
-      // slapper, the whole wind-up towering against the sky
-      p = V(-1.3, 0.85, 2.3);
-      l = V(0.6, 1.5, 0);
-      snapRate = 10;
+    if (rcam) {
+      if (rcam === 'cheek') {
+        // the lens IS the volunteer's cheek — parked just outside the skull
+        // (dead centre and you render the inside of his own head), the slapper
+        // winding up straight down the barrel
+        const hp = opponent.headPos(), ph = playerHead();
+        const dx = ph.x - hp.x, dz = ph.z - hp.z;
+        const m = Math.hypot(dx, dz) || 1;
+        p = V(hp.x + (dx / m) * 0.32, hp.y + 0.04, hp.z + (dz / m) * 0.32);
+        l = V(ph.x, ph.y - 0.05, ph.z);
+        shotFov = 62; snapRate = 16;
+      } else if (rcam === 'worm') {
+        // ground level from the open lane side: the palm sweeps over the lens
+        p = V(2.9, 0.46, 1.7);
+        l = V(0.6, 1.45, 0);
+        shotFov = 44; snapRate = 9;
+      } else if (rcam === 'ringside') {
+        // tight broadcast two-shot, drifting round the pair
+        const a = 0.5 + tState * 0.16;
+        p = V(0.5 + Math.sin(a) * 2.45, 1.62, Math.cos(a) * 2.45);
+        l = V(0.5, 1.5, 0);
+        shotFov = 40; snapRate = 8;
+      } else if (rcam === 'crane') {
+        // descending three-quarter — the whole lane waiting behind them
+        const k = Math.min(tState / 1.6, 1);
+        p = V(2.6 - k * 0.8, 4.6 - k * 2.1, 3.6 - k * 0.6);
+        l = V(0.7, 1.45, 0);
+        shotFov = 48; snapRate = 7;
+      } else {
+        // HERO: low, close, slightly behind — the wind-up towering on the sky
+        p = V(-1.3, 0.85, 2.3);
+        l = V(0.6, 1.5, 0);
+        shotFov = 46; snapRate = 10;
+      }
     } else {
       p = V(0.4 + Math.sin(tState * 0.7) * 0.12, 1.95, 4.2);
       l = V(0.5, 1.35, 0);
@@ -1952,12 +2018,28 @@ function updateCamera(dt) {
     // wall, and the chase cam was flying INSIDE the barn (a phone screenshot of
     // COUNTY LINE! was a red wall). Climb gently with distance and sail over.
     const far = Math.max(0, b.x - 70) * 0.09;
-    if (replayCam) {
-      // REPLAY, camera two: the leading reverse dolly — the drone flies AHEAD
-      // and the body comes AT the lens, the fair blurring past behind it
+    if (rcam === 'cheek' || rcam === 'ringside') {
+      // stay close on the body: a short trail keeps him large in frame instead
+      // of shrinking to a speck the way a 10m chase does
+      p = V(b.x - 4.6, Math.max(1.9, b.y + 1.5) + far, b.z + 2.8);
+      l = V(b.x, Math.max(b.y, 0.7), b.z);
+      shotFov = 45; snapRate = 7;
+    } else if (rcam === 'worm') {
+      // rise off the deck with him — the ground falls away under the flight
+      p = V(b.x - 5.0, Math.max(0.9, b.y * 0.55) + far, b.z + 3.4);
+      l = V(b.x, Math.max(b.y, 0.7), b.z);
+      shotFov = 50; snapRate = 6;
+    } else if (rcam === 'crane') {
+      // high and wide: the whole county scrolling under a very small farmhand
+      p = V(b.x - 7.5, Math.max(6.5, b.y + 5.5) + far, b.z + 5.5);
+      l = V(b.x + 2, Math.max(b.y, 0.7), b.z);
+      shotFov = 54; snapRate = 6;
+    } else if (rcam === 'hero') {
+      // the leading reverse dolly — the drone flies AHEAD and the body comes
+      // AT the lens, the fair blurring past behind it
       p = V(b.x + 7.5, Math.max(2.1, b.y + 0.5) + far, b.z - 3.2);
       l = V(b.x, Math.max(b.y, 0.8), b.z);
-      snapRate = 7;
+      shotFov = 50; snapRate = 7;
     } else {
       // trail straighter behind and look DOWNRANGE of the flyer: keeps the
       // ring's barn/conifers at the frame edge and drops the flyer into the
@@ -1991,7 +2073,8 @@ function updateCamera(dt) {
   // FOV punch-in during the slow-mo impact
   // FOV punch-in on impact — and a HARDER punch on a heavy hit (the zoom sells
   // the hit-stop: freeze + lens lunge reads as force, not lag)
-  const targetFov = state === 'IMPACT' ? (contact && contact.power >= 18 ? 39 : 44) : 55;
+  // a replay angle owns its own lens; otherwise the impact punch-in applies
+  const targetFov = state === 'IMPACT' ? (contact && contact.power >= 18 ? 39 : 44) : (shotFov || 55);
   if (Math.abs(camera.fov - targetFov) > 0.05) {
     camera.fov += (targetFov - camera.fov) * (1 - Math.exp(-9 * dt));
     camera.updateProjectionMatrix();
