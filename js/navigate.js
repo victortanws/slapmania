@@ -6,39 +6,51 @@
 // Without one he strolls straight through the crowd and the barn, which reads
 // as "there is no world here" the moment anyone films it.
 //
-// Obstacles come from the world's OWN static solid list (stage.solids — the same
-// descriptors ragdoll.js turns into static cannon bodies) plus the live crowd
-// (stage.crowdSpots). So a walking character bumps into exactly the things a
-// flying body bounces off: one source of truth, no second hand-maintained map.
+// ---------------------------------------------------------------------------
+// HOST-AGNOSTIC BY DESIGN. This module knows nothing about SlapMania, three.js
+// or cannon-es. It is handed two plain-data feeds and returns plain data:
+//
+//   createNav({
+//     statics: () => [ {kind:'box', x, z, ry, hx, hz} | {kind:'cyl', x, z, r} ],
+//     actors:  () => [ {x, z, r?} ],        // anything that moves and blocks
+//     bounds:  { minX, maxX, minZ, maxZ },
+//     actorRadius: 0.3,
+//   })
+//
+// Any engine that can describe its world as boxes and circles on a plane can use
+// it as-is — see adaptStage() at the bottom for the SlapMania binding, which is
+// the only game-aware code in the file and is six lines long.
 //
 // Everything is 2D in XZ. Characters are discs; the world is discs and (rotated)
-// boxes. That's all a fairground needs, and it stays cheap enough to run per
-// frame for many actors as the world grows.
+// boxes. That is enough for a fairground, a dungeon floor or a town map, and it
+// stays cheap enough to run per frame for many actors.
 // ---------------------------------------------------------------------------
 
-const CROWD_R = 0.3;      // a person is about this wide at the shoulders
 const SKIN = 0.02;        // keeps a resolved character just off the surface
 
-export function createNav(stage, opts = {}) {
-  const bounds = opts.bounds || { minX: -21, maxX: 116, minZ: -36, maxZ: 36 };
+export function createNav(src = {}) {
+  const bounds = src.bounds || { minX: -1e5, maxX: 1e5, minZ: -1e5, maxZ: 1e5 };
+  const ACTOR_R = src.actorRadius === undefined ? 0.3 : src.actorRadius;
+  const getStatics = src.statics || (() => []);
+  const getActors = src.actors || (() => []);
   let statics = [];
 
-  // Flatten the world's solids once. Call again after setWorldTheme swaps a kit.
+  // Flatten the static world once. Call again whenever the host swaps its map.
   function rebuild() {
     statics = [];
-    for (const s of (stage.solids || [])) {
-      if (s.kind === 'cyl') statics.push({ t: 'c', x: s.x, z: s.z, r: s.r });
+    for (const s of getStatics()) {
+      if (s.kind === 'cyl' || s.t === 'c') statics.push({ t: 'c', x: s.x, z: s.z, r: s.r });
       else statics.push({ t: 'b', x: s.x, z: s.z, ry: s.ry || 0, hx: s.hx, hz: s.hz });
     }
   }
   rebuild();
 
-  // every blocker relevant this frame: static world + the people standing in it
+  // every blocker relevant this frame: static world + whatever is moving in it
   function obstacles(ignore) {
     const out = statics.slice();
-    for (const c of (stage.crowdSpots || [])) {
-      if (ignore && ignore(c)) continue;
-      out.push({ t: 'c', x: c.x, z: c.z, r: CROWD_R, crowd: true });
+    for (const a of getActors()) {
+      if (ignore && ignore(a)) continue;
+      out.push({ t: 'c', x: a.x, z: a.z, r: a.r === undefined ? ACTOR_R : a.r, actor: true });
     }
     return out;
   }
@@ -138,5 +150,15 @@ export function createNav(stage, opts = {}) {
     return { x: p.x, z: p.z, heading: base, arrived: false, blocked: true };
   }
 
-  return { rebuild, obstacles, resolve, moveAndSlide, steer, clear, bounds, CROWD_R };
+  return { rebuild, obstacles, resolve, moveAndSlide, steer, clear, bounds, actorRadius: ACTOR_R };
 }
+
+// The ONLY SlapMania-aware code here: bind the generic navigator to this game's
+// stage. Porting to another project means writing six lines like these, not
+// touching anything above.
+export const adaptStage = (stage, opts = {}) => createNav({
+  statics: () => stage.solids || [],
+  actors: () => stage.crowdSpots || [],
+  bounds: opts.bounds || { minX: -21, maxX: 116, minZ: -36, maxZ: 36 },
+  actorRadius: 0.3,
+});

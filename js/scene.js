@@ -5291,6 +5291,12 @@ export function createStage(canvas) {
     hell: { fog: [0x5a3a48, 95, 260], skyTint: 0x431722, hemi: [0xe08a6a, 0x8fa8bc, 1.05], sun: [0xffc0a0, 2.0], fill: 0.5, cloud: 0x5a2030, maps: false, grass: 0x9fb8c8, lane: 0xcdddE8, night: false, sunFace: false,
       group: 'hell', biome: 'hell', crowd: 'hell', pond: 0xff7a20,
       hideFarm: true, hideFair: true, hideBarn: true, hideCloths: true, hideFences: true, barricade: 'redtape' },
+    // THE SLAP HOUSE — a crisp, over-lit state occasion. Manicured lawn, pale
+    // gravel lane, no farm anywhere near it. The crowd stays: there is always
+    // a press pool.
+    slaphouse: { fog: [0xdfe8f2, 70, 230], skyTint: 0xbcd8f0, hemi: [0xf2f8ff, 0x9aa8b4, 1.05], sun: [0xfffdf6, 2.1], fill: 0.46, cloud: 0xf8fbff, maps: false, grass: 0x4f8f46, lane: 0xd8d2c0, night: false, sunFace: true,
+      group: 'slaphouse', biome: 'tech', crowd: 'tech', pond: 0x5fa8d8, sunTint: [0xf4f8ff, 0.85],
+      hideFarm: true, hideBarn: true, hideFair: true, hideCloths: true, hideFences: true, barricade: 'redtape' },
     vegas: { fog: [0x3a2450, 60, 210], skyTint: 0x241640, hemi: [0xffd9a0, 0x4a2f6a, 1.05], sun: [0xffcf9a, 1.7], fill: 0.42, cloud: 0x4a2f6a, maps: false, grass: 0x3a2450, lane: 0xcaa03a, night: true, sunFace: false,
       group: 'vegas', biome: 'vegas', crowd: 'vegas', pond: 0x2fd4ff, sunTint: [0xffe0b0, 0.8],
       hideFarm: true, hideBarn: true, hideFair: true, hideCloths: true, hideFences: true, barricade: 'chips' },
@@ -5371,7 +5377,98 @@ export function createStage(canvas) {
     scene.add(pitchG);
   }
 
+  // --- THE SLAP HOUSE: the executive residence of a nation whose entire
+  // constitution is one open palm. Neoclassical, aggressively symmetrical, and
+  // the lane runs straight down the middle of the North Lawn. Parody in the
+  // house style — invented institution, invented address. ---
+  const slapHouseG = new THREE.Group();
+  {
+    const stone = toonMat(0xf6f4ee), trim = toonMat(0xe4e0d4), roof = toonMat(0xd8d4c6);
+    const col = (x, y, z, h, r = 0.34) => {
+      const c = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 10), stone);
+      c.position.set(x, y, z); slapHouseG.add(c); return c;
+    };
+    const box = (x, y, z, w, h, d, m) => {
+      const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
+      b.position.set(x, y, z); slapHouseG.add(b); return b;
+    };
+    // the residence sits at the head of the lane, facing back down it
+    const HX = 78, HZ = 0;
+    box(HX, 4.0, HZ, 12, 8, 34, stone);                       // main block
+    box(HX, 8.4, HZ, 12.6, 0.9, 35, roof);                    // cornice
+    box(HX - 1.2, 3.2, HZ - 22, 9, 6.4, 12, stone);           // west wing
+    box(HX - 1.2, 3.2, HZ + 22, 9, 6.4, 12, stone);           // east wing
+    box(HX - 1.2, 6.6, HZ - 22, 9.4, 0.7, 12.6, roof);
+    box(HX - 1.2, 6.6, HZ + 22, 9.4, 0.7, 12.6, roof);
+    // the portico: six columns, pediment, and the round balcony
+    for (let i = -2.5; i <= 2.5; i++) col(HX - 6.6, 4.2, HZ + i * 2.4, 8.4);
+    box(HX - 6.6, 8.9, HZ, 1.6, 1.1, 14.5, trim);
+    const ped = new THREE.Mesh(new THREE.ConeGeometry(7.6, 2.2, 3), trim);
+    ped.rotation.z = Math.PI / 2; ped.rotation.y = Math.PI / 2;
+    ped.position.set(HX - 6.6, 10.1, HZ); slapHouseG.add(ped);
+    const bal = new THREE.Mesh(new THREE.CylinderGeometry(4.2, 4.2, 0.5, 20), trim);
+    bal.position.set(HX - 5.4, 5.0, HZ); slapHouseG.add(bal);
+    // windows: the façade needs rhythm or it reads as a fridge
+    for (let f = 0; f < 2; f++) {
+      for (let i = -6; i <= 6; i++) {
+        if (Math.abs(i) < 1) continue;
+        box(HX - 6.05, 2.6 + f * 3.1, HZ + i * 2.3, 0.12, 1.5, 0.9, toonMat(0x3d4a5c));
+      }
+    }
+    // the fountain on the lawn — the lane's centre line runs right past it
+    {
+      const fx = 58;
+      const basin = new THREE.Mesh(new THREE.CylinderGeometry(4.2, 4.4, 0.7, 20), stone);
+      basin.position.set(fx, 0.35, 0); slapHouseG.add(basin);
+      const water = new THREE.Mesh(new THREE.CylinderGeometry(3.8, 3.8, 0.12, 20), toonMat(0x5fa8d8));
+      water.position.set(fx, 0.72, 0); slapHouseG.add(water);
+      col(fx, 1.5, 0, 1.8, 0.34);
+      const tier = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 0.4, 0.35, 16), stone);
+      tier.position.set(fx, 2.5, 0); slapHouseG.add(tier);
+      const jet = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.05, 2.4, 8), toonMat(0x9fd4ee));
+      jet.position.set(fx, 3.8, 0); slapHouseG.add(jet);
+    }
+    // press podium + flags: the briefing happens whether or not anyone is briefed
+    {
+      const px = 40;
+      box(px, 0.62, -6.5, 0.9, 1.25, 0.7, toonMat(0x4a3a2a));
+      const seal = new THREE.Mesh(new THREE.CircleGeometry(0.34, 18), toonMat(0xc8a83a));
+      seal.position.set(px - 0.47, 0.78, -6.5); seal.rotation.y = -Math.PI / 2;
+      slapHouseG.add(seal);
+      for (const fz of [-9.5, -3.5]) {
+        col(px + 0.4, 2.4, fz, 4.8, 0.07);
+        const flag = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.95), toonMat(0x2b3f7a));
+        flag.position.set(px + 1.16, 4.2, fz); slapHouseG.add(flag);
+      }
+    }
+    // the motorcade, parked with the patience of people paid to wait
+    for (let i = 0; i < 5; i++) {
+      const cx = 20 + i * 4.6, cz = 15.5;
+      box(cx, 0.85, cz, 4.0, 1.1, 1.9, toonMat(0x14161c));
+      box(cx - 0.25, 1.72, cz, 2.3, 0.8, 1.8, toonMat(0x1c2028));
+      for (const s of [-1, 1]) for (const o of [-1.3, 1.3]) {
+        const w = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.24, 10), toonMat(0x101014));
+        w.rotation.x = Math.PI / 2; w.position.set(cx + o, 0.36, cz + s * 0.95); slapHouseG.add(w);
+      }
+    }
+    // the address, on a board by the gate
+    {
+      const b = new THREE.Mesh(new THREE.BoxGeometry(0.16, 1.4, 7.2), toonMat(0x24405c));
+      b.position.set(16, 2.4, -14); slapHouseG.add(b);
+      const t = new THREE.Mesh(new THREE.PlaneGeometry(6.8, 1.2),
+        new THREE.MeshBasicMaterial({ map: makeTextTexture('THE SLAP HOUSE · 1600 SLAPSYLVANIA AVE', '#f2f0e6'), transparent: true }));
+      t.position.set(15.9, 2.4, -14); t.rotation.y = -Math.PI / 2; slapHouseG.add(t);
+    }
+    // wrought-iron perimeter fence, because the public may watch but not enter
+    for (let z = -34; z <= 34; z += 1.6) col(12, 1.5, z, 3.0, 0.06);
+
+    slapHouseG.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+    slapHouseG.visible = false;
+    scene.add(slapHouseG);
+  }
+
   const WORLD_GROUPS = {
+    slaphouse: slapHouseG,
     pitch: pitchG,
     ice: winterG, desert: desertG, jungle: jungleG, dojo: dojoG,
     lava: lavaG, heaven: heavenG, hell: hellG, therapy: therapyG,
