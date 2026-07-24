@@ -319,6 +319,49 @@ function goBack() {
   if (state !== 'TITLE') goToTitle();
 }
 backBtn.addEventListener('click', goBack);
+
+// ---- FREE LOOK input: wheel/pinch to zoom, drag to swing round, 0 to recentre.
+// Deliberately on keys the S·L·A·P chain never uses, and drag is ignored on the
+// touch pad and the cards so it can't eat a slap or a button press. ----
+{
+  const cv = document.getElementById('c');
+  const overUI = (e) => !!(e.target && e.target.closest && e.target.closest('#touchPad,.card,#pick,button,input,a'));
+  addEventListener('wheel', (e) => {
+    if (overUI(e)) return;
+    e.preventDefault();
+    camZoom(e.deltaY > 0 ? 1.09 : 1 / 1.09);
+  }, { passive: false });
+
+  let drag = null;
+  const start = (x, y, id) => { drag = { x, y, id }; };
+  const move = (x, y) => {
+    if (!drag) return;
+    camOrbit((drag.x - x) * 0.006, (drag.y - y) * 0.004);
+    drag.x = x; drag.y = y;
+  };
+  const end = () => { drag = null; };
+  cv.addEventListener('pointerdown', (e) => { if (!overUI(e)) start(e.clientX, e.clientY, e.pointerId); });
+  addEventListener('pointermove', (e) => move(e.clientX, e.clientY));
+  addEventListener('pointerup', end);
+  addEventListener('pointercancel', end);
+
+  // two-finger pinch on touch, so mobile gets the same reach
+  let pinch = 0;
+  cv.addEventListener('touchmove', (e) => {
+    if (e.touches.length !== 2) { pinch = 0; return; }
+    const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+    if (pinch) camZoom(pinch / d);
+    pinch = d;
+    drag = null;                      // a pinch is never also an orbit
+  }, { passive: true });
+  cv.addEventListener('touchend', () => { pinch = 0; });
+
+  addEventListener('keydown', (e) => {
+    if (e.code === 'Minus' || e.code === 'NumpadSubtract') camZoom(1.12);
+    else if (e.code === 'Equal' || e.code === 'NumpadAdd') camZoom(1 / 1.12);
+    else if (e.code === 'Digit0' || e.code === 'Numpad0') camReset();
+  });
+}
 ui.bindReplay(() => {
   const card = lastShownCard;              // pendingCard is consumed at display time
   if (!card || !card.tape || !card.replayable) return;
@@ -327,6 +370,7 @@ ui.bindReplay(() => {
   ghostTape = card.tape.map(([t, k, d]) => [t, KEYCODE[k] || k, d]);
   replayCam = true;
   const cam = chooseSlapCam(card);
+  camReset();          // the replay gets to compose its own shot
   ui.camTag(cam.name);
   track('replay_angle', { angle: cam.key });
   startAttempt();   // fresh stance, ghost armed — the tape swings, the cinema cameras roll
@@ -1894,6 +1938,16 @@ const FACEOFF_OPENERS = {
 const FACEOFF_DEFAULT = [new THREE.Vector3(2.4, 1.75, 1.2), new THREE.Vector3(0.85, 1.6, 0)];
 const camPos = new THREE.Vector3(0.5, 2.1, 4.6);
 const camLook = new THREE.Vector3(0.5, 1.3, 0);
+const camOff = new THREE.Vector3();
+// player free-look: smoothed offsets layered over the director's framing.
+// `*T` are the targets the input writes; the live values chase them.
+const camUser = { dist: 1, distT: 1, yaw: 0, yawT: 0, pitch: 0, pitchT: 0 };
+const camReset = () => { camUser.distT = 1; camUser.yawT = 0; camUser.pitchT = 0; };
+function camZoom(mul) { camUser.distT = Math.max(0.42, Math.min(2.6, camUser.distT * mul)); }
+function camOrbit(dx, dy) {
+  camUser.yawT = Math.max(-2.4, Math.min(2.4, camUser.yawT + dx));
+  camUser.pitchT = Math.max(-0.75, Math.min(1.15, camUser.pitchT + dy));
+}
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 
 // --- SLAP CAM -------------------------------------------------------------
@@ -2068,7 +2122,27 @@ function updateCamera(dt) {
   const f = 1 - Math.exp(-snapRate * dt);
   camPos.lerp(p, f);
   camLook.lerp(l, f);
-  camera.position.copy(camPos);
+  // FREE LOOK: the player's orbit/zoom is applied ON TOP of whatever the
+  // director framed, never instead of it. The director keeps doing its job
+  // (tracking the flyer, cutting on impact) and the player just gets to lean in
+  // or swing around it — so no tuned framing is ever lost.
+  camUser.dist += (camUser.distT - camUser.dist) * (1 - Math.exp(-10 * dt));
+  camUser.yaw += (camUser.yawT - camUser.yaw) * (1 - Math.exp(-10 * dt));
+  camUser.pitch += (camUser.pitchT - camUser.pitch) * (1 - Math.exp(-10 * dt));
+  if (Math.abs(camUser.dist - 1) > 0.002 || Math.abs(camUser.yaw) > 0.002 || Math.abs(camUser.pitch) > 0.002) {
+    const off = camOff.copy(camPos).sub(camLook);
+    const r = off.length() * camUser.dist;
+    let theta = Math.atan2(off.x, off.z) + camUser.yaw;          // around Y
+    let phi = Math.acos(Math.max(-1, Math.min(1, off.y / (off.length() || 1)))) - camUser.pitch;
+    phi = Math.max(0.18, Math.min(Math.PI - 0.5, phi));          // never through the ground or the zenith
+    camera.position.set(
+      camLook.x + r * Math.sin(phi) * Math.sin(theta),
+      Math.max(0.25, camLook.y + r * Math.cos(phi)),
+      camLook.z + r * Math.sin(phi) * Math.cos(theta),
+    );
+  } else {
+    camera.position.copy(camPos);
+  }
   camera.lookAt(camLook);
   // FOV punch-in during the slow-mo impact
   // FOV punch-in on impact — and a HARDER punch on a heavy hit (the zoom sells
