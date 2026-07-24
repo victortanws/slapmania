@@ -451,7 +451,7 @@ const SHOTS = [
     cap: [2900, 8900], slow: [CONTACT - 140, CONTACT + 440],
     cam: (t) => {
       if (t < CONTACT + 170) { const k = easeOut((t - 2900) / 1180); place(orb(lerp(-30, -18, k), lerp(3.2, 2.3, k), 1.68).add(shake(t, 0.025)), ACT(), lerp(46, 38, k)); }
-      else { const b = headO(), k = easeOut((t - CONTACT) / 2600); place(V(b.x - 8, b.y + lerp(2, 4.5, k), b.z + 5.6), V(b.x, b.y, b.z), lerp(48, 56, k)); }
+      else chaseFly(44, 3.6, 1.2, 2.2);      // indoors: the room is tight, stay close
     },
     ov: (t, u) => {
       namePlate('DR. FREUDENSCHADE', 'BOSS · THE TALKING CURE', clamp01(u * 3.4));
@@ -471,19 +471,22 @@ const SHOTS = [
       if (st.summonSpirits) st.summonSpirits(10);
     },
     cam: (t, u) => {
-      const a = lerp(-40, 62, easeOut(u)) * D;
-      place(V(2 + Math.sin(a) * 12, lerp(2.6, 5.4, u), Math.cos(a) * 12).add(shake(t, 0.06)), V(3, 2.0, -1), 52);
+      const a = lerp(-38, 58, easeOut(u)) * D;
+      place(V(2 + Math.sin(a) * 8.4, lerp(2.2, 4.2, u), Math.cos(a) * 8.4).add(shake(t, 0.06)), V(2.5, 1.8, -0.5), 52);
     },
     ov: (t, u) => caption('SLAPMASTER! The whole county is on its feet!', clamp01(u * 2.4)),
   },
   {
     id: 's17_turn', opp: 'slim', world: 'day',
     cap: [200, 3200],
-    // creeping in from the volunteer's side of the ring — this is the lens the
-    // viewer is about to become
+    // over the volunteer's shoulder — this is the lens the viewer is about to become
     cam: (t, u) => {
-      const b = P().root.position, look = V(b.x, 1.4, 0), k = easeOut(u);
-      place(orb(lerp(148, 132, k), lerp(2.9, 2.1, k), 1.48, look).add(shake(t, 0.028)), look, lerp(42, 35, k));
+      const h = headO(), p = headP(), k = easeOut(u);
+      const d = V(p.x - h.x, 0, p.z - h.z).normalize();      // cheek → slapper
+      const perp = V(d.z, 0, -d.x);
+      const back = lerp(2.2, 1.5, k);
+      place(h.clone().addScaledVector(d, -back).addScaledVector(perp, 0.95).setY(1.51).add(shake(t, 0.025)),
+        V(p.x, 1.42, p.z), lerp(40, 36, k));
     },
     ov: (t, u) => caption('You have been watching a while, friend. Step on up.', clamp01(u * 2.4)),
   },
@@ -494,10 +497,13 @@ const SHOTS = [
     pre: () => { const c = stage().camera; c.near = 0.02; c.updateProjectionMatrix(); },
     cam: (t) => {
       const h = headO(), p = headP();
+      // Sit just OUTSIDE the cheek, not at its centre: parked on the head's origin
+      // the lens is inside the skull mesh and the frame fills with black backfaces.
+      const d = V(p.x - h.x, 0, p.z - h.z).normalize();
       // lock to where the cheek was — after contact the ragdoll tumbles, the lens does not
-      if (t < CONTACT - 30) window.__povAnchor = V(h.x, h.y, h.z);
+      if (t < CONTACT - 30) window.__povAnchor = h.clone().addScaledVector(d, 0.30);
       const a = window.__povAnchor || h;
-      place(V(a.x, a.y, a.z), V(p.x, p.y - 0.06, p.z), 62);
+      place(a, V(p.x, p.y - 0.06, p.z), 62);
     },
     ov: (t) => {
       if (t > CONTACT - 420) speedLines(clamp01((t - CONTACT + 420) / 420), 34);
@@ -562,6 +568,13 @@ export async function boot() {
   S().freeze(true);           // stop the live rAF loop; drive() owns the clock now
   frameNo = 0; cursor = 0; marks.length = 0; report.length = 0;
   return { shots: SHOTS.length, size: [W, H], fps: FPS };
+}
+
+// Re-shoot a tail without redoing good footage: frames are named by index, so
+// pointing the cursor and the counter at a shot boundary overwrites just that run.
+export function resume(cursorIdx, frameIdx) {
+  cursor = cursorIdx; frameNo = frameIdx;
+  return { cursor, frameNo };
 }
 
 export async function runNext(n = 1) {
