@@ -3,3 +3,6 @@
 
 # Local Claude Code permission settings
 .claude/settings.local.json
+
+# rendered trailers — canonical copies live here but stay out of the deployed site
+media/
