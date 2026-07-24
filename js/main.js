@@ -1958,15 +1958,15 @@ function updateCamera(dt) {
   } else if (state === 'SWING') {
     if (rcam) {
       if (rcam === 'cheek') {
-        // the lens IS the volunteer's cheek — parked just outside the skull
-        // (dead centre and you render the inside of his own head), the slapper
-        // winding up straight down the barrel
+        // The viewer stands in the volunteer's shoes. It CANNOT sit on the line
+        // between the two heads: they start ~0.78m apart and the slapper lunges
+        // in on the L, so any on-axis offset that clears the volunteer's skull
+        // ends up inside the slapper's shirt. Same cure as the IMPACT camera —
+        // sit behind-above-right of the cheek and look back down the barrel.
         const hp = opponent.headPos(), ph = playerHead();
-        const dx = ph.x - hp.x, dz = ph.z - hp.z;
-        const m = Math.hypot(dx, dz) || 1;
-        p = V(hp.x + (dx / m) * 0.32, hp.y + 0.04, hp.z + (dz / m) * 0.32);
-        l = V(ph.x, ph.y - 0.05, ph.z);
-        shotFov = 62; snapRate = 16;
+        p = V(hp.x + 0.62, hp.y + 0.34, hp.z + 0.86);
+        l = V(ph.x, ph.y - 0.02, ph.z);
+        shotFov = 52; snapRate = 14;
       } else if (rcam === 'worm') {
         // ground level from the open lane side: the palm sweeps over the lens
         p = V(2.9, 0.46, 1.7);
