@@ -763,6 +763,11 @@ export class Player {
     this.lungeAmt = 0;
     this.baseX = this.baseX0; // fresh attempt, physique stance — setStanceDepth re-steps at the whistle
     this.root.position.x = this.baseX;
+    // z and yaw matter now that characters can WALK (walkPose/navigate.js): a
+    // slapper left displaced sideways swings his palm clean past the cheek.
+    this.root.position.z = 0;
+    this.root.rotation.y = 0;
+    this.standPose();
     this.root.visible = true;
     this.pose();
   }
