@@ -2626,7 +2626,10 @@ window.__slapp = {
   },
   // deterministic replay: steps the sim synchronously at 60fps with a scripted
   // key timeline [[ms, code, isDown], ...] — immune to hidden-tab throttling
-  drive(events, seconds) {
+  // `onStep(simMs, frameIndex)` (optional) runs after every stepped frame with
+  // rendering still suppressed — that's the seam the offline movie renderer uses
+  // to place its own camera and grab the frame itself.
+  drive(events, seconds, onStep) {
     manual = true;
     skipRender = true;
     const pending = [...events].sort((a, b) => a[0] - b[0]);
@@ -2642,8 +2645,9 @@ window.__slapp = {
         const [, code, down] = pending.shift();
         dispatchEvent(new KeyboardEvent(down ? 'keydown' : 'keyup', { code }));
       }
-      if (i === frames - 1) skipRender = false;
+      if (i === frames - 1 && !onStep) skipRender = false;
       tick(t0 + sim);
+      if (onStep) onStep(sim, i);
       if (state === 'SWING') peak = Math.max(peak, player.handSpeed);
       if (state !== prevState) {
         if (state === 'IMPACT') contactSpeed = player.handSpeed;

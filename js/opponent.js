@@ -428,6 +428,22 @@ export const ROSTER = [
       'My rocket lands itself. My face, we are still A/B testing.',
     ],
   },
+  {
+    key: 'dario', name: 'DARIO SLAPMODE', tag: 'RESPONSIBLE SCALING', world: 'techcampus',
+    w: 0.9, h: 1.02, mass: 0.9, noStache: true,
+    // dark curls, soft blue button-down, the lanyard of a man who reads the badge
+    skin: 0xe8c49c, shirt: 0x6a7f9a, pants: 0x3a4250,
+    hair: 'frizz', hairCol: 0x2a1e16, lanyard: 0x9a6ad0,
+    pickLine: 'Published a forty-page card on this slap before agreeing to receive it. Section 4 is the cheek.',
+    taunts: [
+      'I want to be clear: the palm is more capable than the palm admits.',
+      'We tested this slap at three scales. The big one worried us.',
+      'I am genuinely unsure whether to flinch. Both cases are in the appendix.',
+      'If I dodge, we learn nothing. If I do not dodge, we learn a great deal.',
+      'The graph goes up. That is the good news and also the entire concern.',
+      'Please slap responsibly. There is no second cheek.',
+    ],
+  },
   // ---- BOSSES (boss: true): campaign-only — never listed in the public
   // volunteer pick; tour challenges summon them by key ----
   {
