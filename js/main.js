@@ -8,6 +8,7 @@ import * as ui from './ui.js';
 import * as net from './net.js';
 import * as campaign from './campaign.js';
 import * as dlg from './dialogue.js';
+import { createCamRig } from './camrig.js';
 
 // every slapper has a mouth on them too — a quip at the faceoff (public; the
 // judge takes this slot in campaign matches)
@@ -1936,18 +1937,18 @@ const FACEOFF_OPENERS = {
   techcampus: [new THREE.Vector3(0.6, 2.4, 5.2), new THREE.Vector3(0.5, 1.5, 0)], // the keynote drone
 };
 const FACEOFF_DEFAULT = [new THREE.Vector3(2.4, 1.75, 1.2), new THREE.Vector3(0.85, 1.6, 0)];
-const camPos = new THREE.Vector3(0.5, 2.1, 4.6);
-const camLook = new THREE.Vector3(0.5, 1.3, 0);
-const camOff = new THREE.Vector3();
-// player free-look: smoothed offsets layered over the director's framing.
-// `*T` are the targets the input writes; the live values chase them.
-const camUser = { dist: 1, distT: 1, yaw: 0, yawT: 0, pitch: 0, pitchT: 0 };
-const camReset = () => { camUser.distT = 1; camUser.yawT = 0; camUser.pitchT = 0; };
-function camZoom(mul) { camUser.distT = Math.max(0.42, Math.min(2.6, camUser.distT * mul)); }
-function camOrbit(dx, dy) {
-  camUser.yawT = Math.max(-2.4, Math.min(2.4, camUser.yawT + dx));
-  camUser.pitchT = Math.max(-0.75, Math.min(1.15, camUser.pitchT + dy));
-}
+// The rig owns smoothing, the player's free look, and the lens (js/camrig.js —
+// portable, knows nothing about this game). Everything below just decides WHAT
+// to frame; the rig decides how the camera gets there.
+const camRig = createCamRig(camera, {
+  pos: new THREE.Vector3(0.5, 2.1, 4.6),
+  look: new THREE.Vector3(0.5, 1.3, 0),
+  fov: 55,
+});
+const camLook = camRig.look;                 // stage.trackSun follows the look point
+const camReset = () => camRig.recenter();
+const camZoom = (mul) => camRig.zoom(mul);
+const camOrbit = (dx, dy) => camRig.orbit(dx, dy);
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 
 // --- SLAP CAM -------------------------------------------------------------
@@ -2119,40 +2120,12 @@ function updateCamera(dt) {
     l = V(0.3, 1.3 + py, 0);
     snapRate = 5;
   }
-  const f = 1 - Math.exp(-snapRate * dt);
-  camPos.lerp(p, f);
-  camLook.lerp(l, f);
-  // FREE LOOK: the player's orbit/zoom is applied ON TOP of whatever the
-  // director framed, never instead of it. The director keeps doing its job
-  // (tracking the flyer, cutting on impact) and the player just gets to lean in
-  // or swing around it — so no tuned framing is ever lost.
-  camUser.dist += (camUser.distT - camUser.dist) * (1 - Math.exp(-10 * dt));
-  camUser.yaw += (camUser.yawT - camUser.yaw) * (1 - Math.exp(-10 * dt));
-  camUser.pitch += (camUser.pitchT - camUser.pitch) * (1 - Math.exp(-10 * dt));
-  if (Math.abs(camUser.dist - 1) > 0.002 || Math.abs(camUser.yaw) > 0.002 || Math.abs(camUser.pitch) > 0.002) {
-    const off = camOff.copy(camPos).sub(camLook);
-    const r = off.length() * camUser.dist;
-    let theta = Math.atan2(off.x, off.z) + camUser.yaw;          // around Y
-    let phi = Math.acos(Math.max(-1, Math.min(1, off.y / (off.length() || 1)))) - camUser.pitch;
-    phi = Math.max(0.18, Math.min(Math.PI - 0.5, phi));          // never through the ground or the zenith
-    camera.position.set(
-      camLook.x + r * Math.sin(phi) * Math.sin(theta),
-      Math.max(0.25, camLook.y + r * Math.cos(phi)),
-      camLook.z + r * Math.sin(phi) * Math.cos(theta),
-    );
-  } else {
-    camera.position.copy(camPos);
-  }
-  camera.lookAt(camLook);
-  // FOV punch-in during the slow-mo impact
-  // FOV punch-in on impact — and a HARDER punch on a heavy hit (the zoom sells
-  // the hit-stop: freeze + lens lunge reads as force, not lag)
-  // a replay angle owns its own lens; otherwise the impact punch-in applies
-  const targetFov = state === 'IMPACT' ? (contact && contact.power >= 18 ? 39 : 44) : (shotFov || 55);
-  if (Math.abs(camera.fov - targetFov) > 0.05) {
-    camera.fov += (targetFov - camera.fov) * (1 - Math.exp(-9 * dt));
-    camera.updateProjectionMatrix();
-  }
+  // Hand the framing to the rig as a SHOT. The impact punch-in is just a lens
+  // on the shot; a replay angle that set its own shotFov keeps it.
+  camRig.apply(dt, {
+    pos: p, look: l, snap: snapRate,
+    fov: state === 'IMPACT' ? (contact && contact.power >= 18 ? 39 : 44) : (shotFov || 55),
+  });
 }
 
 // ---------- main loop ----------

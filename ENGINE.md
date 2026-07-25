@@ -17,6 +17,7 @@ port is "write a new adapter", not "edit the module".
 |---|---|---|---|
 | Spatial navigation | `js/navigate.js` | **Yes** | nothing |
 | Actor locomotion | `js/actor.js` | **Yes** | nothing |
+| Camera rig | `js/camrig.js` | **Yes** | three.js only |
 | Offline film renderer | `tools/cinema.js` | **Yes** | three.js only |
 | Soundtrack synthesis | `tools/score.js` | **Yes** | WebAudio only |
 | Frame sink | `tools/framesink.py` | **Yes** | nothing |
@@ -27,7 +28,7 @@ port is "write a new adapter", not "edit the module".
 
 ---
 
-## The three contracts
+## The four contracts
 
 ### 1. Navigation — `createNav(source)`
 
@@ -88,21 +89,50 @@ contact-sheet probes and a resumable shot driver. A storyboard is then just data
 plus camera functions — see `tools/movie.js` (trailer) and `tools/vlog.js`
 (walk-and-talk) sharing one renderer.
 
+### 4. Camera — `createCamRig(camera, opts)`
+
+```js
+rig.apply(dt, { pos, look, snap, fov, dutch })
+```
+
+Owns the three things every third-person camera needs and every game
+re-implements badly:
+
+* **smoothing** — chase the framing at a per-shot rate, so a cut is just a high
+  `snap` and a glide is a low one;
+* **free look** — the player's orbit/zoom applied *on top of* the framing rather
+  than instead of it, so a director keeps working while the player leans in;
+* **lens** — fov blended toward a target, making a punch-in a property of the
+  shot instead of a special case.
+
+A director is then any function that returns a shot. In this game `updateCamera`
+picks one per state (faceoff, swing, impact, flight, and the five SLAP CAM replay
+packages); `tools/cinema.js` uses the same vocabulary offline for trailers.
+
+**Refactor note:** this was extracted from a 200-line if/else inside `main.js`
+against a recorded golden trace. Camera position was compared before and after
+across a full attempt, three replay angles, and free-look. Max divergence was
+1.33 units — *smaller than the 1.428 noise floor measured by running the
+unmodified build against itself twice*, because the camera smoothly chases from
+wherever it already was and flight carries ±4% launch jitter. Free-look and
+recentre traces matched exactly.
+
 ---
 
 ## Porting checklist
 
 To take this stack to another project:
 
-1. Copy `js/navigate.js`, `js/actor.js`, `tools/cinema.js`, `tools/score.js`,
-   `tools/framesink.py`. **Do not edit them.**
+1. Copy `js/navigate.js`, `js/actor.js`, `js/camrig.js`, `tools/cinema.js`,
+   `tools/score.js`, `tools/framesink.py`. **Do not edit them.**
 2. Write a nav source: how does your world describe its collision? (boxes and
    circles on a plane — usually a few lines over an existing collider list)
 3. Write rig adapters for anything that walks.
-4. Write a cinema host: your renderer trio plus a `step()` that advances your
+4. Point your camera at `createCamRig` and return a shot per frame.
+5. Write a cinema host: your renderer trio plus a `step()` that advances your
    sim deterministically with rendering suppressed.
 
-That is the whole cost. Steps 2–4 are each under ten lines in this project.
+That is the whole cost. Steps 2–5 are each under ten lines in this project.
 
 ---
 
@@ -115,11 +145,8 @@ there is exactly one `player` and one `opponent`.
 
 The extractions that would matter, in order of value:
 
-1. **Camera rig.** `updateCamera()` is a 200-line if/else over game states.
-   `cinema.js` already proves the better shape: a shot is `{position fn, look fn,
-   lens, blend}`. Promoting that would let gameplay cameras, replays, cutscenes
-   and trailers speak one language — and it is the precondition for a roaming
-   third-person camera.
+1. ~~**Camera rig.**~~ **Done** — see `js/camrig.js` above. `main.js` still picks
+   *which* shot per state, but no longer owns smoothing, free look or the lens.
 2. **Context, not state.** HUD visibility is currently inferred from the match
    state machine, which is why walking around shows "STEP 1: HOLD [S]". Elements
    should declare which context they belong to (`match | roam | cine | replay`).
@@ -130,7 +157,7 @@ The extractions that would matter, in order of value:
 
 ## Direction
 
-The hub (walk the fairground between matches) needs 1 and 2, and already has its
-locomotion layer. The RPG direction needs 3 as well: at that point a different
-game is a different rules module over the same navigation, actors, camera and
-film stack.
+The hub (walk the fairground between matches) now needs only the context split;
+its locomotion and camera layers are in place. The RPG direction needs 3 as
+well: at that point a different game is a different rules module over the same
+navigation, actors, camera and film stack.
