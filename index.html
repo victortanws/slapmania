@@ -127,12 +127,30 @@ body.smackon #distance, body.smackon #flightChain, body.smackon #coach{visibilit
   text-align:center;z-index:30;}
 @media (max-width:560px){ #refBar{bottom:196px;font-size:11px;} }
 
-/* ---- SLAP CAM tag: which broadcast angle the instant replay is running.
-   Top-left and tiny, like a camera-ID burn-in; never overlaps the centre bars. */
-#camTag{position:absolute;top:84px;left:14px;background:rgba(10,12,26,.72);border-left:4px solid var(--red);
-  color:#fff;font-size:12px;letter-spacing:2px;padding:6px 12px;border-radius:4px;z-index:40;
-  text-shadow:2px 2px 0 #000;animation:throb 1.4s infinite alternate;}
-@media (max-width:560px){ #camTag{top:76px;font-size:10px;padding:5px 9px;} }
+/* ---- The camera chip. Two jobs, one slot: during an instant replay it burns in
+   which SLAP CAM angle is filming; during play it appears only if the player has
+   moved the camera, and says how to put it back (there is no [0] key on a phone).
+   In replay it sits INSIDE the letterbox — a broadcast burn-in belongs in the
+   black, and parking it there means it cannot collide with a centre-anchored
+   banner by construction. */
+/* NB: pulses on OPACITY, not scale. `throb` scales to 1.12, which grows the
+   element's box by 12% and made this chip collide with the attempts pips —
+   an animation that changes layout size cannot be reasoned about. */
+@keyframes campulse{from{opacity:.72}to{opacity:1}}
+#camTag{position:absolute;top:98px;left:14px;background:rgba(10,12,26,.78);border-left:4px solid var(--red);
+  color:#fff;font-size:12px;letter-spacing:2px;padding:6px 12px;border-radius:4px;z-index:66;
+  text-shadow:2px 2px 0 #000;animation:campulse 1.6s infinite alternate;pointer-events:auto;cursor:pointer;}
+body.replaycam #camTag{top:14px;}
+/* When the chip shows the recentre hint it takes a band, so everything stacked
+   under it steps down together — moving the banner alone just pushed the
+   collision onto the coach line (measured 748x13px at 1440). */
+body.camnudged #challengeBar{top:140px;}
+body.camnudged #coach{top:200px;}
+@media (max-width:560px){
+  #camTag{top:76px;font-size:10px;padding:5px 9px;letter-spacing:1px;}
+  body.replaycam #camTag{top:10px;}
+  body.camnudged #challengeBar{top:118px;}
+}
 
 /* ---- challenge banner: a rival's gauntlet, pinned under the topbar ---- */
 #challengeBar{position:absolute;top:84px;left:0;right:0;margin:0 auto;width:fit-content;max-width:92vw;
@@ -271,7 +289,10 @@ body.cine #dlg{bottom:calc(11vh + 16px);}
    PLAY hud stands down (you're watching, not slapping) — but the cam tag and the
    distance counter stay, because that's the bit worth screenshotting. ---- */
 body.replaycam #cineTop,body.replaycam #cineBot{height:7vh;}
-body.replaycam #keysbar,body.replaycam #meters,body.replaycam #coach{display:none !important;}
+/* the play HUD stands down, and so does anything that would otherwise peek out
+   from BEHIND the letterbox — half-clipped text reads as a bug, not as cinema */
+body.replaycam #keysbar,body.replaycam #meters,body.replaycam #coach,
+body.replaycam #topbar,body.replaycam #challengeBar{display:none !important;}
 .dlgBox{background:#fffbe8;color:#1b1d33;border:5px solid #000;border-radius:14px;max-width:640px;width:92vw;
   padding:14px 20px 12px;box-shadow:8px 8px 0 rgba(0,0,0,.55);font-family:Arial,sans-serif;cursor:pointer;position:relative;}
 .dlgName{position:absolute;top:-16px;left:14px;background:var(--red);color:#fff;border:3px solid #000;border-radius:8px;

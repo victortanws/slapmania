@@ -357,6 +357,10 @@ backBtn.addEventListener('click', goBack);
   }, { passive: true });
   cv.addEventListener('touchend', () => { pinch = 0; });
 
+  // a phone has no [0] key, so the way back must be touchable: tap the chip,
+  // or double-tap anywhere on the world
+  ui.bindCamTag(() => camReset());
+  cv.addEventListener('dblclick', (e) => { if (!overUI(e)) camReset(); });
   addEventListener('keydown', (e) => {
     if (e.code === 'Minus' || e.code === 'NumpadSubtract') camZoom(1.12);
     else if (e.code === 'Equal' || e.code === 'NumpadAdd') camZoom(1 / 1.12);
@@ -372,7 +376,7 @@ ui.bindReplay(() => {
   replayCam = true;
   const cam = chooseSlapCam(card);
   camReset();          // the replay gets to compose its own shot
-  ui.camTag(cam.name);
+  ui.camTag(cam.name, true);
   track('replay_angle', { angle: cam.key });
   startAttempt();   // fresh stance, ghost armed — the tape swings, the cinema cameras roll
 });
@@ -581,7 +585,10 @@ function openOppPick() {
 }
 
 function startMatch() {
+  // a fresh match never inherits replay chrome — the letterbox and camera chip
+  // are cleared by the result card in normal flow, but nothing guaranteed it
   tookTakedown = false;
+  cancelGhost(); ghostTape = null; replayCam = false; camNudged = false; ui.camTag(null);
   bulwarkPts = 0;
   absorbIdx = 0;   // fresh branching-dialogue sequence per match
   ui.bulwark(null);
@@ -1947,6 +1954,7 @@ const camRig = createCamRig(camera, {
 });
 const camLook = camRig.look;                 // stage.trackSun follows the look point
 const camReset = () => camRig.recenter();
+let camNudged = false;   // is the recentre affordance currently showing?
 const camZoom = (mul) => camRig.zoom(mul);
 const camOrbit = (dx, dy) => camRig.orbit(dx, dy);
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -2126,6 +2134,15 @@ function updateCamera(dt) {
     pos: p, look: l, snap: snapRate,
     fov: state === 'IMPACT' ? (contact && contact.power >= 18 ? 39 : 44) : (shotFov || 55),
   });
+  // Once the player has moved the camera, the chip becomes the way back. A
+  // replay owns the chip while it runs (and recentres on entry anyway).
+  if (!replayCam) {
+    const nudged = camRig.nudged;
+    if (nudged !== camNudged) {
+      camNudged = nudged;
+      ui.camTag(nudged ? '\u27F2 TAP TO RECENTRE' : null);
+    }
+  }
 }
 
 // ---------- main loop ----------

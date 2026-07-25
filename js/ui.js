@@ -63,15 +63,20 @@ export function challengeBar(text) {
   el.challengeBar.classList.remove('hidden');
 }
 
-// Which SLAP CAM angle the instant replay is running — a camera-ID burn-in.
-// Owns the replay letterbox too, so the bars can never outlive the tag.
-export function camTag(text) {
+// The camera chip. `cine` true = an instant replay is running: burn in the SLAP
+// CAM angle and raise the letterbox (it owns the bars, so they can never outlive
+// the chip). `cine` false = the player has moved the camera and the chip is the
+// way back — which is the only recentre affordance a phone has.
+export function camTag(text, cine = false) {
   if (!el.camTag) return;
-  document.body.classList.toggle('replaycam', !!text);
+  document.body.classList.toggle('replaycam', !!text && cine);
+  document.body.classList.toggle('camnudged', !!text && !cine);
   if (!text) { el.camTag.classList.add('hidden'); el.camTag.textContent = ''; return; }
   el.camTag.textContent = text;
   el.camTag.classList.remove('hidden');
 }
+// tapping the chip recentres — bound once by main.js
+export function bindCamTag(fn) { if (el.camTag) el.camTag.addEventListener('click', fn); }
 
 // only 'footing', 'clock' and 'escape' are ever produced (see main.js foul()
 // calls); the old 'punch'/'fingertips' fouls were removed with the dead onContact code
