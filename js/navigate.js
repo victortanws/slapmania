@@ -129,7 +129,7 @@ export function createNav(src = {}) {
   // into it: try straight ahead, then progressively wider whiskers either side.
   // Cheap, stateless, and enough for a fairground — a real navmesh only earns
   // its keep once there are corridors that can trap you.
-  const WHISKERS = [0, 0.45, -0.45, 0.9, -0.9, 1.4, -1.4, 2.0, -2.0];
+  const WHISKERS = [0, 0.45, 0.9, 1.4, 2.0, 2.6];
   function steer(pos, target, speed, dt, radius = 0.34, ignore) {
     const obs = obstacles(ignore);
     const dx = target.x - pos.x, dz = target.z - pos.z;
@@ -138,14 +138,31 @@ export function createNav(src = {}) {
     const base = Math.atan2(dz, dx);
     const step = Math.min(speed * dt, dist);
     const probe = Math.max(step, 0.8);            // look ahead further than one step
+    // Which way to peel off when something is in the way. Two movers meeting
+    // head-on must not mirror each other or they dance forever, so each carries
+    // a stable preferred side (see actor.js) — the same reason traffic picks a
+    // side of the road rather than negotiating every encounter.
+    const side = pos.side < 0 ? -1 : 1;
     for (const w of WHISKERS) {
-      const a = base + w;
-      const tx = pos.x + Math.cos(a) * probe, tz = pos.z + Math.sin(a) * probe;
-      if (!clear(pos.x, pos.z, tx, tz, radius, obs)) continue;
-      const p = resolve(pos.x + Math.cos(a) * step, pos.z + Math.sin(a) * step, radius, obs);
-      return { x: p.x, z: p.z, heading: a, arrived: false, blocked: false };
+      for (const s of (w === 0 ? [1] : [side, -side])) {
+        const a = base + w * s;
+        const tx = pos.x + Math.cos(a) * probe, tz = pos.z + Math.sin(a) * probe;
+        if (!clear(pos.x, pos.z, tx, tz, radius, obs)) continue;
+        const p = resolve(pos.x + Math.cos(a) * step, pos.z + Math.sin(a) * step, radius, obs);
+        return { x: p.x, z: p.z, heading: a, arrived: false, blocked: false };
+      }
     }
-    // fully boxed in: settle where we are and report it, so a caller can react
+    // Fully boxed in. FREEZING here deadlocks symmetric crossings — everyone
+    // stops and nobody yields. Instead slide along whichever tangent has room:
+    // a jammed crowd resolves by rotating, not by standing still.
+    for (const s of [side, -side]) {
+      const a = base + s * Math.PI / 2;
+      const half = step * 0.6;
+      const tx = pos.x + Math.cos(a) * half, tz = pos.z + Math.sin(a) * half;
+      if (!clear(pos.x, pos.z, tx, tz, radius, obs)) continue;
+      const p = resolve(tx, tz, radius, obs);
+      return { x: p.x, z: p.z, heading: base, arrived: false, blocked: true, sliding: true };
+    }
     const p = resolve(pos.x, pos.z, radius, obs);
     return { x: p.x, z: p.z, heading: base, arrived: false, blocked: true };
   }
