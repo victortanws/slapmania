@@ -494,3 +494,17 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   with the inbox copy under the global naming rule.
 - **Heads-up:** a nightly automation auto-commits AND pushes this repo, so
   work-in-progress can reach production before you explicitly push.
+- **Voice direction kit (2026-07-31, `tools/voice.py` + `tools/VOICE-DIRECTION.md`)**:
+  expressive VO replaces the ad-hoc `say` calls. Session JSON (who/text/perf/
+  timing) → markup compiler (`[rise]/[fall]/[emph]/[beat N]/[riff x]`, ALL-CAPS
+  auto-shout, perf presets incl. `build`/`call`/`drawl`) → `say` embedded
+  commands + Apple TUNE pitch-contour riffs (`ooo_rise`, `gooone`, `whoa`…) →
+  per-line AIFFs + marks-resolved timeline (`"at":"contact+0.15"`, `"after"`
+  chaining) + generated `vo-mix.sh` (sidechain-ducks the score bed; `pa`/
+  `stadium`/`slowmo` fx). Booth cast: HOWLIN' HOWIE (Alex, PB, panned L) +
+  BIG SLOW JIM (Fred, color, R); MIRA stays Ralph@pbas22. **Classic voices
+  only** — Siri voices ignore embedded commands; run `voice.py selftest` on the
+  Mac before trusting a voice. Demo: `tools/vo-booth-demo.json` (timed to the
+  promo.js CONTACT=4.083 swing). `--dry-run` compiles/timelines off-Mac.
+  Style + pacing rules (protect the crack ±150ms, call lands after the SFX,
+  riff crests AT contact) live in VOICE-DIRECTION.md.

@@ -1,0 +1,62 @@
+{
+  "_readme": "Two-man booth calling ONE slap, end to end — the reference performance for tools/voice.py. Marks match the standard scripted swing used by promo.js (S held from 2.6s, contact 4.083s). Render on the Mac: python3 tools/voice.py render tools/vo-booth-demo.json --mix ; set \"bed\" to a rendered score.wav to hear it ducked under music.",
+  "name": "booth-demo",
+  "bed": null,
+  "marks": { "swing": 2.6, "contact": 4.083 },
+  "lines": [
+    {
+      "id": "setup",
+      "who": "howie",
+      "at": 0.0,
+      "perf": "murmur",
+      "text": "Folks. [beat 200] Watch the feet."
+    },
+    {
+      "id": "windup",
+      "who": "howie",
+      "at": "swing-0.1",
+      "perf": "build",
+      "text": "Windin' up — [riff ooo_rise]"
+    },
+    {
+      "id": "call",
+      "who": "howie",
+      "at": "contact+0.25",
+      "perf": "call",
+      "overlap": true,
+      "text": "HE [emph]SLAPPED[/emph] HIM! [beat 200] HE SLAPPED HIM CLEAN!"
+    },
+    {
+      "id": "flight",
+      "who": "howie",
+      "after": "call",
+      "gap": 0.35,
+      "perf": "hype",
+      "text": "That volunteer is [rise]up, up, UP[/rise] — [riff gooone]"
+    },
+    {
+      "id": "color",
+      "who": "jim",
+      "after": "flight",
+      "gap": 0.5,
+      "perf": "drawl",
+      "text": "Forty years of fairs, Howie. [beat 400] Never seen a man volunteer that hard."
+    },
+    {
+      "id": "replay",
+      "who": "howie",
+      "after": "color",
+      "gap": 0.9,
+      "fx": "slowmo",
+      "perf": "deadpan",
+      "text": "Watch the hips. [beat 300] The hips knew [emph]first[/emph]."
+    },
+    {
+      "id": "pa",
+      "who": "announcer",
+      "after": "replay",
+      "gap": 0.6,
+      "text": "The county reminds you: volunteering is [emph]binding[/emph]."
+    }
+  ]
+}
