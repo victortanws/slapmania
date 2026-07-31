@@ -508,3 +508,24 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   promo.js CONTACT=4.083 swing). `--dry-run` compiles/timelines off-Mac.
   Style + pacing rules (protect the crack ±150ms, call lands after the SFX,
   riff crests AT contact) live in VOICE-DIRECTION.md.
+- **Headless render rig + "SLAPPING GROUNDS" trailer (2026-07-31)**:
+  `tools/headless.mjs` runs any storyboard without a human/Mac — Playwright
+  Chromium (SwiftShader WebGL2), serves the repo, serves the CDN import map
+  from a local vendor dir (npm i three@0.160.0 cannon-es@0.20.0 and point
+  `--vendor` at the two files), spawns framesink, drives boot/runNext, writes
+  `marks.json` (shot starts + storyboard `window.__cine` stamps) and renders
+  the score module. `tools/nature.js` = the nature-doc trailer (Attenborough-
+  STYLE original parody narrator — never the real man's name/voice): doc open →
+  montage (vegas/ice/hoss/don/keys) → Charlie vs SLIM PETE feature called by
+  the booth (economy/health absurdism), `tools/nature-score.js` = its bed
+  (pads+birdsong → hoedown → heartbeat → finale). **Charlie-vs-Slim swing:
+  A@3930 P@4040 → contact 4650 ms, 93.0 m** (Slim is narrower than Hank — the
+  promo 4083 number is wrong for him). `tools/vo-piper.py` renders voice.py
+  sessions with Piper voices on Linux (models from rhasspy/piper GH release;
+  HF is proxy-blocked, GH releases are not); `tools/assemble-trailer.sh` does
+  VO + mux. Camera notes: pond (40,24) is hemmed in by farmhouses + a
+  SLAPBUCKS — don't film it; vegas strip from (16,4.6,12)→(5,2,0) works;
+  winter money shot = reindeer+polar bear from (37,2.6,5)→(29,1,18); there is
+  NO 'night' theme anymore (16 worlds incl. vegas/haunted/cave/pitch —
+  CLAUDE.md's older world lists are stale). Probing recipe: freeze AFTER
+  drive() (drive re-arms the live loop) and screenshot the `#c` element.

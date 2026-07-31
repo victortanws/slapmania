@@ -119,6 +119,23 @@ accidental overlaps otherwise.
   `--only id1,id2` to re-take single lines without touching good ones
   (existing takes keep their true timing).
 
+## No Mac? The Piper fallback (`tools/vo-piper.py`)
+
+Containers and CI have no `say`. `vo-piper.py` renders the SAME session JSON
+with Piper neural voices (pip install piper-tts; models from the
+rhasspy/piper GitHub release v0.0.2): en-gb-alan (narrator), en-us-ryan
+(howie), en-us-danny (jim, pitched −3 st), en-us-kathleen (PA). Beats become
+real silence, perf presets map to speed/pitch/gain, and `ooo_rise` is built
+mechanically — one "Oh!" pitch-stepped +0/+3/+7 semitones. Word-level pitch
+ladders (`[rise]`) are dropped: piper reads flat. It trades melodic control
+for portability — final trailers deserve the Mac `say` pass; preview and
+in-container builds use this. Keep the stacked speed products (voice length ×
+perf multiplier) near 1.0–1.3 or lines crawl into each other — the printed
+timeline is the truth, read it after every change.
+
+`tools/assemble-trailer.sh <frames> <session> <voices> <out.mp4>` runs it and
+muxes the finished picture (frames + score + ducked VO) in one step.
+
 ## Gotchas
 
 - TUNE blocks silently depend on classic voices — `selftest` FIRST on any
