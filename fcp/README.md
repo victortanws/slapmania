@@ -135,6 +135,42 @@ the caption pipeline for repurposing long-form into Shorts.
 python3 -m fcpkit srt ep12.master.json --lang es -o ep12.es.srt
 ```
 
+## Selling the presets — packs, brand kits, Motion templates
+
+Three layers, from "ship today" to "premium tier":
+
+```bash
+# 1. A distributable pack (folder + zip): every preset as an importable
+#    .fcpxml with sample cues, 4 PIP corners, preview.html catalog (doubles
+#    as the sales page), README, LICENSE, manifest.json with sha256 hashes.
+python3 -m fcpkit pack -o dist --name SlapCaps --version 0.2.0 \
+    --brand examples/brandkit.victortan.json
+
+# 2. Brand kits re-skin every preset from one JSON (colors/fonts) — the same
+#    six looks become a "Podcast Pack", a "Fitness Pack", or a client's
+#    custom pack without touching code.
+
+# 3. Motion templates (.moti) — the premium tier. Author ONE master caption
+#    title in Motion, then stamp out a recolored variant per preset:
+python3 -m fcpkit motionize "~/Movies/Motion Templates/Titles/SlapCaps/SlapCaps Master" \
+    --brand examples/brandkit.victortan.json
+```
+
+`motionize` is deliberately conservative: Motion's OZML format is
+undocumented, so we never author it from scratch — we clone your master
+template folder and rewrite only the Red/Green/Blue/Opacity values inside
+recognized color parameter blocks (Face/Outline/Drop Shadow/Glow), leaving
+every other byte identical. If the master doesn't expose those parameters it
+fails loudly instead of guessing. The variants appear in FCP's Titles browser
+immediately; zipping the category folder is the sellable Motion tier
+(customers unzip into `~/Movies/Motion Templates/Titles/`).
+
+Licensing when you sell: everything fcpkit generates is your own content.
+Don't redistribute Apple's built-in .moti files, and only bundle fonts whose
+license allows it (OFL fonts like Montserrat are fine; system fonts are
+referenced, never bundled). `LICENSE.txt` in each pack is a starting-point
+personal-use license — review it before charging money.
+
 ## Presets (`fcpkit styles`)
 
 | Preset | Look |

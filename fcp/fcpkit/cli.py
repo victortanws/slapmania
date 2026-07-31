@@ -11,7 +11,8 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import capcut, fcpxml, translate as tr, validate as val, youtube as yt
+from . import capcut, fcpxml, motionize as mo, pack as pk, translate as tr, validate as val, youtube as yt
+from .brand import load_brand
 from .cues import Cue, Doc, parse_srt, select_cues, write_srt
 from .styles import PRESETS, get_style, with_overrides
 
@@ -153,6 +154,29 @@ def cmd_yt(a) -> None:
               "restyle + export it like any other")
 
 
+def cmd_pack(a) -> None:
+    brand = load_brand(a.brand) if a.brand else None
+    root = pk.build_pack(a.out, name=a.name, version=a.version, brand=brand,
+                         width=a.width, height=a.height, fps=a.fps,
+                         make_zip=not a.no_zip,
+                         effects=fcpxml.load_effects(a.effects))
+    n_files = sum(1 for p in root.rglob("*") if p.is_file())
+    print(f"built {root} ({n_files} files, all fcpxml validated)")
+    if not a.no_zip:
+        print(f"zip:   {root}.zip  <- this is the deliverable you sell")
+    print(f"open   {root / 'preview.html'} to see the catalog")
+
+
+def cmd_motionize(a) -> None:
+    brand = load_brand(a.brand) if a.brand else None
+    made = mo.motionize(a.master, out_parent=a.out, brand=brand,
+                        name_prefix=a.prefix)
+    for d in made:
+        print(f"  {d}")
+    print(f"{len(made)} Motion titles written — they show up in FCP's Titles "
+          "browser immediately (restart FCP if the category was new)")
+
+
 def cmd_learn(a) -> None:
     got = fcpxml.learn_effects(a.export, save_to=a.save)
     for key, eff in got.items():
@@ -262,6 +286,25 @@ def main(argv=None) -> None:
     p.add_argument("--master", help="also write the transcript as a caption master JSON")
     p.add_argument("--fps", type=float, default=29.97)
     p.set_defaults(fn=cmd_yt)
+
+    p = sub.add_parser("pack", help="build a distributable preset pack (folder + zip)")
+    p.add_argument("-o", "--out", default="dist")
+    p.add_argument("--name", default="SlapCaps")
+    p.add_argument("--version", default="0.1.0")
+    p.add_argument("--brand", help="brandkit.json to re-skin every preset")
+    p.add_argument("--width", type=int, default=1080)
+    p.add_argument("--height", type=int, default=1920)
+    p.add_argument("--fps", type=float, default=29.97)
+    p.add_argument("--no-zip", action="store_true")
+    p.add_argument("--effects", help="path to effects.local.json")
+    p.set_defaults(fn=cmd_pack)
+
+    p = sub.add_parser("motionize", help="clone a master Motion title into per-preset .moti variants")
+    p.add_argument("master", help="folder of the master template (contains the .moti)")
+    p.add_argument("-o", "--out", help="parent dir for the variants (default: next to master)")
+    p.add_argument("--brand", help="brandkit.json for the color set")
+    p.add_argument("--prefix", help="template name prefix (default from master name)")
+    p.set_defaults(fn=cmd_motionize)
 
     p = sub.add_parser("learn-effects", help="harvest exact effect uids from a real FCP export")
     p.add_argument("export", help="any .fcpxml exported from YOUR Final Cut")

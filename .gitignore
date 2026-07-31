@@ -12,3 +12,4 @@ __pycache__/
 fcp/**/yt-cache/
 fcp/yt-cache/
 effects.local.json
+fcp/dist/

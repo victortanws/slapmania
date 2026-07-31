@@ -501,7 +501,7 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   core) for Victor's video-editing workflow: captions/PIP/analysis emitted as
   **FCPXML 1.10** for File > Import > XML. Run from `fcp/` with
   `PYTHONPATH=$PWD python3 -m fcpkit …`; tests:
-  `python3 -m unittest discover tests` (24, all green).
+  `python3 -m unittest discover tests` (32, all green).
 - **Master JSON owns truth** (timings/text/style/emphasis/translations);
   everything else (styled titles, native multi-lang ITT caption lanes, SRT,
   karaoke) derives from it. Times are rational Fractions snapped to
@@ -511,5 +511,12 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   best-known defaults in `fcpxml.DEFAULT_EFFECTS`, overridden by
   `effects.local.json` (gitignored) via `fcpkit learn-effects <real FCP
   export>` — that's the calibration step, don't hardcode new uids.
+- **Sellable layers**: `fcpkit pack` builds a distributable zip (per-preset
+  fcpxml + PIP + preview.html catalog/sales page + manifest sha256s;
+  `fcp/dist/` gitignored); brand kits (`brand.py`, one JSON recolors/refonts
+  all presets) make niche/client packs; `fcpkit motionize` clones ONE
+  Motion-authored master .moti into per-preset variants by rewriting only
+  color channel values byte-preservingly (OZML is undocumented — never author
+  it from scratch, fail loudly if params missing).
 - `examples/output/*.fcpxml` are committed, regenerable demo exports; full
   guide in `fcp/README.md`.

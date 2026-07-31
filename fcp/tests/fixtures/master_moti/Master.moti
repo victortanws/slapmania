@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ozxmlscene>
+<ozml version="5.9">
+    <scene>
+        <sceneNode name="Caption Text" id="10011" factoryID="8">
+            <parameter name="Text" id="368" flags="4112">
+                <parameter name="Style" id="10082" flags="0">
+                    <parameter name="Face Color" id="300" flags="8589938704">
+                        <parameter name="Red" id="1" flags="16" default="1" value="1"/>
+                        <parameter name="Green" id="2" flags="16" default="1" value="1"/>
+                        <parameter name="Blue" id="3" flags="16" default="1" value="1"/>
+                        <parameter name="Opacity" id="4" flags="16" default="1" value="1"/>
+                    </parameter>
+                    <parameter name="Outline Color" id="301" flags="8589938704">
+                        <parameter name="Red" id="1" flags="16" default="0" value="0.2"/>
+                        <parameter name="Green" id="2" flags="16" default="0" value="0.2"/>
+                        <parameter name="Blue" id="3" flags="16" default="0" value="0.2"/>
+                    </parameter>
+                    <parameter name="Unrelated Size" id="302" flags="16" default="96" value="96"/>
+                </parameter>
+            </parameter>
+            <parameter name="Position" id="304" flags="0">
+                <parameter name="Red Herring" id="1" flags="16" value="0.5"/>
+            </parameter>
+        </sceneNode>
+    </scene>
+</ozml>
