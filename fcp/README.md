@@ -180,7 +180,15 @@ personal-use license — review it before charging money.
 | `karaoke` | Whole line visible, current word tints red as audio reaches it |
 | `clean` | Sentence-case subtitle, shadow only — long-form YouTube |
 | `lowerthird` | Small left-anchored label for names/places |
+| `submagic` | Follow-fill karaoke on a red box: spoken words gold, upcoming white — both colors yours to change |
+| `oneword` | One giant word at a time on a colored box — the CapCut one-word look |
 | `sticker` | Heavy outline, tilted 3°, pop-in — punchlines |
+
+Boxed presets emit a Shapes-generator clip behind each title (a real rounded
+colored box in FCP, sized to the text). Change the box with
+`--set box_color=#0A84FF --set box_roundness=0.5`, the two karaoke colors with
+`--set highlight_color=… --set upcoming_color=…`. PIP gets a border frame the
+same way: `fcpkit pip --frame-color '#FFFFFF' --frame-width 16`.
 
 Every field (`font`, `font_size`, `font_color`, `stroke_*`, `shadow_*`,
 `position`, `rotation`, `highlight_color`, `uppercase`, `pop_in`, `karaoke`)

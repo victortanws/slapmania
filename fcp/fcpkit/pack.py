@@ -143,10 +143,16 @@ def render_preview(name: str, version: str, presets: dict[str, Style],
         if s.uppercase:
             words = [w.upper() for w in words]
         hot = 2 if s.karaoke else -1  # karaoke: current word lit
+        if s.karaoke_display == "word":
+            words, hot = [words[2]], 0  # one-word style shows just the live word
         spans = []
         for i, w in enumerate(words):
-            emphasized = (i == hot) or (not s.karaoke and i == 2 and pname in ("tiktok", "sticker"))
-            color = _css_rgba(s.highlight_color) if emphasized else _css_rgba(s.font_color)
+            if s.karaoke and s.karaoke_mode == "fill":
+                lit = i <= hot
+                color = _css_rgba(s.highlight_color if lit else (s.upcoming_color or s.font_color))
+            else:
+                emphasized = (i == hot) or (not s.karaoke and i == 2 and pname in ("tiktok", "sticker"))
+                color = _css_rgba(s.highlight_color) if emphasized else _css_rgba(s.font_color)
             spans.append(f'<span style="color:{color}">{html.escape(w)}</span>')
         stroke = (f"-webkit-text-stroke:{max(1, round(s.stroke_width * 0.5))}px {_css_rgba(s.stroke_color)};"
                   f"paint-order:stroke fill;" if s.stroke_color and s.stroke_width else "")
@@ -159,14 +165,21 @@ def render_preview(name: str, version: str, presets: dict[str, Style],
                      if s.alignment == "left" else "justify-content:center;text-align:center;")
         hue = blob_hues[idx % len(blob_hues)]
         badges = "".join(f"<i>{b}</i>" for b in
-                         (["karaoke"] if s.karaoke else [])
+                         (["follow-fill"] if s.karaoke and s.karaoke_mode == "fill" else [])
+                         + (["one-word"] if s.karaoke_display == "word" else [])
+                         + (["karaoke"] if s.karaoke and s.karaoke_mode != "fill"
+                            and s.karaoke_display != "word" else [])
+                         + (["boxed"] if s.box_color else [])
                          + (["pop-in"] if s.pop_in else [])
                          + ([f"tilt {s.rotation:g}°"] if s.rotation else []))
+        box_css = (f"background:{_css_rgba(s.box_color)};border-radius:{round(s.box_roundness * 26)}px;"
+                   f"padding:{round(s.box_pad[1] * 0.3)}px {round(s.box_pad[0] * 0.3)}px;"
+                   if s.box_color else "")
         tc = f"00:00:{4 + idx:02d};{(7 * idx) % 30:02d}"
         cards.append(f"""
     <figure class="card">
       <div class="stage" style="--blob:{hue}">
-        <p class="cap" style="font-size:{size}px;{stroke}{shadow}transform:rotate({s.rotation}deg);bottom:{bottom_pct:.1f}%;{align_css}font-weight:900;">{' '.join(spans)}</p>
+        <p class="cap" style="font-size:{size}px;{stroke}{shadow}transform:rotate({s.rotation}deg);bottom:{bottom_pct:.1f}%;{align_css}font-weight:900;"><span class="boxwrap" style="{box_css}">{' '.join(spans)}</span></p>
       </div>
       <div class="scrub"><span class="head" style="left:{12 + idx * 13}%"></span></div>
       <figcaption>
@@ -214,6 +227,7 @@ def render_preview(name: str, version: str, presets: dict[str, Style],
       linear-gradient(180deg,#1d2330 0%,#12161f 55%,#0a0c11 100%); }}
   .cap {{ position:absolute; left:0; right:0; margin:0; display:flex; flex-wrap:wrap;
           gap:0 .38em; line-height:1.02; letter-spacing:.01em; }}
+  .boxwrap {{ display:inline-block; max-width:94%; word-spacing:.12em; }}
   .scrub {{ position:relative; height:5px; background:#0a0c11; border-top:1px solid var(--line); }}
   .scrub .head {{ position:absolute; top:-1px; width:2px; height:7px; background:var(--gold); }}
   figcaption {{ padding:11px 14px 14px; }}

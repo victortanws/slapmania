@@ -501,7 +501,7 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   core) for Victor's video-editing workflow: captions/PIP/analysis emitted as
   **FCPXML 1.10** for File > Import > XML. Run from `fcp/` with
   `PYTHONPATH=$PWD python3 -m fcpkit …`; tests:
-  `python3 -m unittest discover tests` (32, all green).
+  `python3 -m unittest discover tests` (36, all green).
 - **Master JSON owns truth** (timings/text/style/emphasis/translations);
   everything else (styled titles, native multi-lang ITT caption lanes, SRT,
   karaoke) derives from it. Times are rational Fractions snapped to
@@ -511,6 +511,11 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   best-known defaults in `fcpxml.DEFAULT_EFFECTS`, overridden by
   `effects.local.json` (gitignored) via `fcpkit learn-effects <real FCP
   export>` — that's the calibration step, don't hardcode new uids.
+- **Boxed looks (2026-07-31)**: `submagic` (two-color follow-fill karaoke on
+  a red box) and `oneword` (giant single-word CapCut look) presets; the box is
+  a Shapes-generator clip (lane 1) behind the title (lane 2), sized by
+  `est_text_width`; `fcpkit pip --frame-color` adds a rounded border card
+  behind the PIP the same way. Shapes uid needs `learn-effects` calibration.
 - **Sellable layers**: `fcpkit pack` builds a distributable zip (per-preset
   fcpxml + PIP + preview.html catalog/sales page + manifest sha256s;
   `fcp/dist/` gitignored); brand kits (`brand.py`, one JSON recolors/refonts

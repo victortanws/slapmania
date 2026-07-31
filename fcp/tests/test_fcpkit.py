@@ -154,6 +154,56 @@ class TestFcpxmlTitles(unittest.TestCase):
         self.assertIn("GOLPEÉ", s)  # uppercase preset applied to translation
 
 
+class TestBoxedAndFillStyles(unittest.TestCase):
+    def _render(self, doc):
+        b = fcpxml.build_titles(doc)
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "o.fcpxml"
+            b.write(p)
+            problems = val.validate(p)
+            root = ET.parse(p).getroot()
+        return problems, root
+
+    def test_submagic_fill_and_box(self):
+        doc = demo_doc(default_style="submagic")
+        doc.cues = doc.cues[:1]  # "I slapped a volunteer" -> 4 words
+        problems, root = self._render(doc)
+        self.assertEqual(problems, [])
+        boxes = [v for v in root.iter("video") if v.get("name") == "caption box"]
+        titles = list(root.iter("title"))
+        self.assertEqual(len(titles), 4)          # karaoke: one per word
+        self.assertEqual(len(boxes), 4)           # each with its own box behind
+        for t in titles:
+            self.assertEqual(t.get("lane"), "2")  # text rides above the box
+        for b in boxes:
+            self.assertEqual(b.get("lane"), "1")
+            names = [pm.get("name") for pm in b.findall("param")]
+            self.assertIn("Fill Color", names)
+            self.assertIn("Roundness", names)
+        # Fill mode on word 3 of 4: spoken run + upcoming run = 2 colors.
+        third = titles[2]
+        colors = [d.find("text-style").get("fontColor") for d in third.findall("text-style-def")]
+        self.assertEqual(len(colors), 2)
+        self.assertNotEqual(colors[0], colors[1])
+        # Word 4 (last): everything spoken -> a single run, one color.
+        self.assertEqual(len(titles[3].findall("text-style-def")), 1)
+
+    def test_oneword_shows_single_word(self):
+        doc = demo_doc(default_style="oneword")
+        doc.cues = doc.cues[:1]
+        problems, root = self._render(doc)
+        self.assertEqual(problems, [])
+        titles = list(root.iter("title"))
+        self.assertEqual(len(titles), 4)
+        shown = ["".join(r.text or "" for r in t.iter("text-style-ref")) for t in titles]
+        self.assertEqual(shown, ["I", "SLAPPED", "A", "VOLUNTEER"])
+
+    def test_est_width_monotonic(self):
+        s = get_style("submagic")
+        self.assertGreater(fcpxml.est_text_width("WIDER WORDS HERE", s),
+                           fcpxml.est_text_width("il.", s))
+
+
 class TestFcpxmlCaptions(unittest.TestCase):
     def test_multilang_lanes(self):
         doc = demo_doc()
@@ -188,6 +238,19 @@ class TestPip(unittest.TestCase):
         self.assertEqual(xf.get("scale"), "0.3 0.3")
         filters = [f.get("name") for f in pip[0].findall("filter-video")]
         self.assertEqual(filters, ["Shape Mask", "Drop Shadow"])
+
+    def test_pip_frame_layer(self):
+        b = fcpxml.build_pip(frame_color=(1, 1, 1, 1), frame_width=12)
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "pipf.fcpxml"
+            b.write(p)
+            self.assertEqual(val.validate(p), [])
+            root = ET.parse(p).getroot()
+        frame = [v for v in root.iter("video") if v.get("name") == "PIP frame"]
+        self.assertEqual(len(frame), 1)
+        self.assertEqual(frame[0].get("lane"), "1")
+        pip = [v for v in root.iter("video") if v.get("name", "").startswith("PIP (replace")]
+        self.assertEqual(pip[0].get("lane"), "2")  # pip sits on the frame card
 
     def test_pip_with_media(self):
         b = fcpxml.build_pip(media="/Users/victor/clips/face.mov")

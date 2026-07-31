@@ -1,0 +1,758 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE fcpxml>
+
+<fcpxml version="1.10">
+    <resources>
+        <format id="r1" name="FFVideoFormatRateUndefined" frameDuration="1001/30000s" width="1080" height="1920" colorSpace="1-1-1 (Rec. 709)" />
+        <effect id="r2" name="Text" uid=".../Titles.localized/Basic Text.localized/Text.localized/Text.moti" />
+        <effect id="r3" name="Shapes" uid=".../Generators.localized/Elements.localized/Shapes.localized/Shapes.motn" />
+    </resources>
+    <library>
+        <event name="fcpkit">
+            <project name="Demo — oneword">
+                <sequence format="r1" tcStart="0s" tcFormat="NDF" audioLayout="stereo" audioRate="48k" duration="47047/3750s">
+                    <spine>
+                        <gap name="Captions" offset="0s" start="0s" duration="47047/3750s">
+                            <video ref="r3" lane="1" offset="1001/2500s" duration="1001/10000s" name="caption box">
+                                <adjust-transform scale="0.173333 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="1001/2500s" duration="1001/10000s" name="I built a slapping game">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts1">I</text-style-ref>
+                                </text>
+                                <text-style-def id="ts1">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="1001/2000s" duration="13013/30000s" name="caption box">
+                                <adjust-transform scale="0.525926 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="1001/2000s" duration="13013/30000s" name="I built a slapping game">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts2">BUILT</text-style-ref>
+                                </text>
+                                <text-style-def id="ts2">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="7007/7500s" duration="1001/10000s" name="caption box">
+                                <adjust-transform scale="0.173333 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="7007/7500s" duration="1001/10000s" name="I built a slapping game">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts3">A</text-style-ref>
+                                </text>
+                                <text-style-def id="ts3">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="31031/30000s" duration="7007/10000s" name="caption box">
+                                <adjust-transform scale="0.79037 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="31031/30000s" duration="7007/10000s" name="I built a slapping game">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts4">SLAPPING</text-style-ref>
+                                </text>
+                                <text-style-def id="ts4">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="13013/7500s" duration="11011/30000s" name="caption box">
+                                <adjust-transform scale="0.463704 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="13013/7500s" duration="11011/30000s" name="I built a slapping game">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts5">GAME</text-style-ref>
+                                </text>
+                                <text-style-def id="ts5">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="21021/10000s" duration="7007/30000s" name="caption box">
+                                <adjust-transform scale="0.34963 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="21021/10000s" duration="7007/30000s" name="and it went completely viral">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts6">AND</text-style-ref>
+                                </text>
+                                <text-style-def id="ts6">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="7007/3000s" duration="1001/6000s" name="caption box">
+                                <adjust-transform scale="0.261481 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="7007/3000s" duration="1001/6000s" name="and it went completely viral">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts7">IT</text-style-ref>
+                                </text>
+                                <text-style-def id="ts7">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="1001/400s" duration="3003/10000s" name="caption box">
+                                <adjust-transform scale="0.463704 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="1001/400s" duration="3003/10000s" name="and it went completely viral">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts8">WENT</text-style-ref>
+                                </text>
+                                <text-style-def id="ts8">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="7007/2500s" duration="1001/1250s" name="caption box">
+                                <adjust-transform scale="0.992593 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="7007/2500s" duration="1001/1250s" name="and it went completely viral">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts9">COMPLETELY</text-style-ref>
+                                </text>
+                                <text-style-def id="ts9">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="9009/2500s" duration="1001/2500s" name="caption box">
+                                <adjust-transform scale="0.525926 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="9009/2500s" duration="1001/2500s" name="and it went completely viral">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts10">VIRAL</text-style-ref>
+                                </text>
+                                <text-style-def id="ts10">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="1001/250s" duration="1001/2000s" name="caption box">
+                                <adjust-transform scale="0.614074 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="1001/250s" duration="1001/2000s" name="ninety meters into a cornfield">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts11">NINETY</text-style-ref>
+                                </text>
+                                <text-style-def id="ts11">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="9009/2000s" duration="1001/2000s" name="caption box">
+                                <adjust-transform scale="0.64 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="9009/2000s" duration="1001/2000s" name="ninety meters into a cornfield">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts12">METERS</text-style-ref>
+                                </text>
+                                <text-style-def id="ts12">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="1001/200s" duration="1001/3000s" name="caption box">
+                                <adjust-transform scale="0.437778 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="1001/200s" duration="1001/3000s" name="ninety meters into a cornfield">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts13">INTO</text-style-ref>
+                                </text>
+                                <text-style-def id="ts13">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="2002/375s" duration="1001/10000s" name="caption box">
+                                <adjust-transform scale="0.173333 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="2002/375s" duration="1001/10000s" name="ninety meters into a cornfield">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts14">A</text-style-ref>
+                                </text>
+                                <text-style-def id="ts14">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="163163/30000s" duration="23023/30000s" name="caption box">
+                                <adjust-transform scale="0.878519 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="163163/30000s" duration="23023/30000s" name="ninety meters into a cornfield">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts15">CORNFIELD</text-style-ref>
+                                </text>
+                                <text-style-def id="ts15">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="13013/2000s" duration="1001/3000s" name="caption box">
+                                <adjust-transform scale="0.437778 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="13013/2000s" duration="1001/3000s" name="this is how the physics work">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts16">THIS</text-style-ref>
+                                </text>
+                                <text-style-def id="ts16">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="41041/6000s" duration="1001/6000s" name="caption box">
+                                <adjust-transform scale="0.261481 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="41041/6000s" duration="1001/6000s" name="this is how the physics work">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts17">IS</text-style-ref>
+                                </text>
+                                <text-style-def id="ts17">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="7007/1000s" duration="7007/30000s" name="caption box">
+                                <adjust-transform scale="0.375556 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="7007/1000s" duration="7007/30000s" name="this is how the physics work">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts18">HOW</text-style-ref>
+                                </text>
+                                <text-style-def id="ts18">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="217217/30000s" duration="1001/3750s" name="caption box">
+                                <adjust-transform scale="0.34963 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="217217/30000s" duration="1001/3750s" name="this is how the physics work">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts19">THE</text-style-ref>
+                                </text>
+                                <text-style-def id="ts19">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="3003/400s" duration="17017/30000s" name="caption box">
+                                <adjust-transform scale="0.702222 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="3003/400s" duration="17017/30000s" name="this is how the physics work">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts20">PHYSICS</text-style-ref>
+                                </text>
+                                <text-style-def id="ts20">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="121121/15000s" duration="1001/3000s" name="caption box">
+                                <adjust-transform scale="0.463704 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="121121/15000s" duration="1001/3000s" name="this is how the physics work">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts21">WORK</text-style-ref>
+                                </text>
+                                <text-style-def id="ts21">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="21021/2500s" duration="1001/3000s" name="caption box">
+                                <adjust-transform scale="0.437778 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="21021/2500s" duration="1001/3000s" name="four keys one kinetic chain">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts22">FOUR</text-style-ref>
+                                </text>
+                                <text-style-def id="ts22">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="131131/15000s" duration="1001/3000s" name="caption box">
+                                <adjust-transform scale="0.437778 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="131131/15000s" duration="1001/3000s" name="four keys one kinetic chain">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts23">KEYS</text-style-ref>
+                                </text>
+                                <text-style-def id="ts23">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="17017/1875s" duration="7007/30000s" name="caption box">
+                                <adjust-transform scale="0.34963 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="17017/1875s" duration="7007/30000s" name="four keys one kinetic chain">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts24">ONE</text-style-ref>
+                                </text>
+                                <text-style-def id="ts24">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="93093/10000s" duration="17017/30000s" name="caption box">
+                                <adjust-transform scale="0.702222 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="93093/10000s" duration="17017/30000s" name="four keys one kinetic chain">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts25">KINETIC</text-style-ref>
+                                </text>
+                                <text-style-def id="ts25">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="37037/3750s" duration="13013/30000s" name="caption box">
+                                <adjust-transform scale="0.525926 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="37037/3750s" duration="13013/30000s" name="four keys one kinetic chain">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts26">CHAIN</text-style-ref>
+                                </text>
+                                <text-style-def id="ts26">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="103103/10000s" duration="7007/30000s" name="caption box">
+                                <adjust-transform scale="0.34963 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="103103/10000s" duration="7007/30000s" name="and zero mercy for button mashers">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts27">AND</text-style-ref>
+                                </text>
+                                <text-style-def id="ts27">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="79079/7500s" duration="3003/10000s" name="caption box">
+                                <adjust-transform scale="0.437778 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="79079/7500s" duration="3003/10000s" name="and zero mercy for button mashers">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts28">ZERO</text-style-ref>
+                                </text>
+                                <text-style-def id="ts28">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="13013/1200s" duration="1001/2500s" name="caption box">
+                                <adjust-transform scale="0.551852 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="13013/1200s" duration="1001/2500s" name="and zero mercy for button mashers">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts29">MERCY</text-style-ref>
+                                </text>
+                                <text-style-def id="ts29">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="337337/30000s" duration="7007/30000s" name="caption box">
+                                <adjust-transform scale="0.34963 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="337337/30000s" duration="7007/30000s" name="and zero mercy for button mashers">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts30">FOR</text-style-ref>
+                                </text>
+                                <text-style-def id="ts30">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="43043/3750s" duration="7007/15000s" name="caption box">
+                                <adjust-transform scale="0.614074 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="43043/3750s" duration="7007/15000s" name="and zero mercy for button mashers">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts31">BUTTON</text-style-ref>
+                                </text>
+                                <text-style-def id="ts31">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                            <video ref="r3" lane="1" offset="179179/15000s" duration="17017/30000s" name="caption box">
+                                <adjust-transform scale="0.728148 0.117292" position="0 -430" />
+                                <param name="Fill Color" value="0.902 0.1294 0.0902" />
+                                <param name="Roundness" value="0.4" />
+                                <param name="Outline" value="0" />
+                            </video>
+                            <title ref="r2" lane="2" offset="179179/15000s" duration="17017/30000s" name="and zero mercy for button mashers">
+                                <adjust-transform position="0 -430">
+                                    <param name="scale">
+                                        <keyframeAnimation>
+                                            <keyframe time="0s" value="0.82 0.82" />
+                                            <keyframe time="1001/15000s" value="1.05 1.05" />
+                                            <keyframe time="1001/7500s" value="1.0 1.0" />
+                                        </keyframeAnimation>
+                                    </param>
+                                </adjust-transform>
+                                <text>
+                                    <text-style-ref ref="ts32">MASHERS</text-style-ref>
+                                </text>
+                                <text-style-def id="ts32">
+                                    <text-style font="Helvetica Neue" fontSize="140" fontFace="Bold" fontColor="1.0 1.0 1.0 1.0" alignment="center" lineSpacing="-8" shadowColor="0 0 0 0.5" shadowOffset="5 315" shadowBlurRadius="14" />
+                                </text-style-def>
+                            </title>
+                        </gap>
+                    </spine>
+                </sequence>
+            </project>
+        </event>
+    </library>
+</fcpxml>

@@ -36,9 +36,15 @@ class Style:
     kerning: float = 0.0
     position: tuple[float, float] = (0.0, -560.0)  # px from frame center at 1920-high ref
     rotation: float = 0.0           # degrees; + is counter-clockwise in FCP
-    highlight_color: RGBA = hex_rgba("#FFD400")     # emphasized-word color
+    highlight_color: RGBA = hex_rgba("#FFD400")     # emphasized/spoken-word color
+    upcoming_color: Optional[RGBA] = None           # fill-mode color for words not yet spoken
     pop_in: bool = False            # 4-frame scale pop on entry
     karaoke: bool = False           # emit word-by-word highlight titles
+    karaoke_mode: str = "word"      # "word" = only active word lit; "fill" = spoken words stay lit
+    karaoke_display: str = "line"   # "line" = full line visible; "word" = one word at a time
+    box_color: Optional[RGBA] = None  # filled box behind the text (Shapes generator layer)
+    box_roundness: float = 0.35     # corner roundness param passed to the Shapes generator
+    box_pad: tuple[float, float] = (34.0, 22.0)  # px padding (x, y) at 1920-high reference
 
     def scaled(self, height: int) -> "Style":
         """Scale reference-frame sizes/positions to the target frame height."""
@@ -49,6 +55,7 @@ class Style:
             position=(self.position[0] * f, self.position[1] * f),
             shadow_offset=(self.shadow_offset[0] * f, self.shadow_offset[1]),
             stroke_width=self.stroke_width * f if self.stroke_width else self.stroke_width,
+            box_pad=(self.box_pad[0] * f, self.box_pad[1] * f),
         )
 
 
@@ -92,6 +99,25 @@ _add(Style(
     position=(-380.0, -760.0),
 ))
 _add(Style(
+    name="submagic",
+    blurb="Colored follow-text on a filled box: spoken words one color, upcoming another.",
+    font_size=84, uppercase=False, stroke_color=None, stroke_width=0,
+    shadow_color=None, karaoke=True, karaoke_mode="fill",
+    font_color=hex_rgba("#FFD400"),          # fallback if fill colors unset
+    highlight_color=hex_rgba("#FFD400"),     # spoken / current words
+    upcoming_color=hex_rgba("#FFFFFF"),      # words still coming
+    box_color=hex_rgba("#E62117"), box_roundness=0.3,
+))
+_add(Style(
+    name="oneword",
+    blurb="One giant word at a time on a colored box — the CapCut one-word look.",
+    font_size=140, karaoke=True, karaoke_display="word", pop_in=True,
+    stroke_color=None, stroke_width=0, shadow_color=(0, 0, 0, 0.5), shadow_blur=14,
+    highlight_color=hex_rgba("#FFFFFF"),     # the active word IS the text
+    box_color=hex_rgba("#E62117"), box_roundness=0.4, box_pad=(46.0, 30.0),
+    position=(0.0, -430.0),
+))
+_add(Style(
     name="sticker",
     blurb="Heavy outline, tilted 3° like a slapped-on sticker. For punchlines.",
     font_size=112, stroke_width=7, rotation=-3.0, pop_in=True,
@@ -113,9 +139,9 @@ def with_overrides(style: Style, overrides: dict[str, str]) -> Style:
         if not hasattr(style, key):
             raise KeyError(f"style has no field {key!r}")
         cur = getattr(style, key)
-        if key in ("font_color", "stroke_color", "shadow_color", "highlight_color"):
+        if key.endswith("_color"):
             kwargs[key] = hex_rgba(val)
-        elif key in ("position", "shadow_offset"):
+        elif key in ("position", "shadow_offset", "box_pad"):
             x, y = val.split(",")
             kwargs[key] = (float(x), float(y))
         elif isinstance(cur, bool):

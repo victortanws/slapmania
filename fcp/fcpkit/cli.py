@@ -127,10 +127,14 @@ def cmd_translate(a) -> None:
 
 
 def cmd_pip(a) -> None:
+    from .styles import hex_rgba
     b = fcpxml.build_pip(width=a.width, height=a.height, fps=a.fps,
                          duration_s=a.duration, corner=a.corner, scale=a.scale,
                          rotation=a.rotation, roundness=a.roundness,
-                         media=a.media, effects=fcpxml.load_effects(a.effects))
+                         media=a.media,
+                         frame_color=hex_rgba(a.frame_color) if a.frame_color else None,
+                         frame_width=a.frame_width,
+                         effects=fcpxml.load_effects(a.effects))
     b.write(a.output)
     problems = val.validate(a.output)
     _report(a.output, problems,
@@ -270,6 +274,8 @@ def main(argv=None) -> None:
     p.add_argument("--rotation", type=float, default=-2.0)
     p.add_argument("--roundness", type=float, default=0.55)
     p.add_argument("--media", help="file path for the PIP layer (else a Placeholder)")
+    p.add_argument("--frame-color", help="hex color for a border frame card, e.g. #FFFFFF")
+    p.add_argument("--frame-width", type=float, default=14.0, help="frame border px")
     p.add_argument("--width", type=int, default=1080)
     p.add_argument("--height", type=int, default=1920)
     p.add_argument("--fps", type=float, default=29.97)

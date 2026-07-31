@@ -39,6 +39,10 @@ DEFAULT_EFFECTS: dict[str, dict[str, str]] = {
         "name": "Placeholder",
         "uid": ".../Generators.localized/Elements.localized/Placeholder.localized/Placeholder.motn",
     },
+    "shapes": {
+        "name": "Shapes",
+        "uid": ".../Generators.localized/Elements.localized/Shapes.localized/Shapes.motn",
+    },
 }
 
 LOCAL_EFFECTS_FILE = "effects.local.json"
@@ -157,6 +161,53 @@ class _Builder:
         Path(path).write_text(self.tostring(), encoding="utf-8")
 
 
+# Per-character width factors (× fontSize) for a bold sans — good enough to
+# size a background box; FCP's inspector fine-tunes from there.
+_NARROW = set("iljtf.,'!|:; ")
+_WIDE = set("mwMW@%")
+
+
+def est_text_width(text: str, style: Style) -> float:
+    w = 0.0
+    for ch in text:
+        if ch in _NARROW:
+            w += 0.32
+        elif ch in _WIDE:
+            w += 0.88
+        elif ch.isupper() or ch.isdigit():
+            w += 0.68
+        else:
+            w += 0.52
+    return w * style.font_size
+
+
+def _emit_box(b: "_Builder", gap: ET.Element, style: Style, text: str,
+              offset, duration) -> None:
+    """A Shapes-generator clip behind the title: the filled caption box.
+
+    Sized from the estimated text width + padding; scale is relative to the
+    frame (the generator renders frame-sized). Color/roundness ride as params —
+    if your FCP build renames them, one `learn-effects` pass + Paste Attributes
+    fixes the whole timeline.
+    """
+    w = est_text_width(text, style) + style.box_pad[0] * 2
+    h = style.font_size * 1.18 + style.box_pad[1] * 2
+    box = ET.SubElement(gap, "video", ref=b.effect_resource("shapes"), lane="1",
+                        offset=fmt_time(offset), duration=fmt_time(duration),
+                        name="caption box")
+    attrs = {"scale": f"{_num(w / b.width)} {_num(h / b.height)}"}
+    if style.position != (0.0, 0.0):
+        attrs["position"] = f"{_num(style.position[0])} {_num(style.position[1])}"
+    if style.rotation:
+        attrs["rotation"] = _num(style.rotation)
+    ET.SubElement(box, "adjust-transform", attrs)
+    if style.box_color:
+        ET.SubElement(box, "param", name="Fill Color",
+                      value=f"{round(style.box_color[0], 4)} {round(style.box_color[1], 4)} {round(style.box_color[2], 4)}")
+    ET.SubElement(box, "param", name="Roundness", value=_num(style.box_roundness))
+    ET.SubElement(box, "param", name="Outline", value="0")
+
+
 def _text_style_attrs(style: Style) -> dict[str, str]:
     attrs = {
         "font": style.font,
@@ -237,37 +288,57 @@ def _emit_title(b: _Builder, gap: ET.Element, title_ref: str, cue: Cue, style: S
     offset, end = tb.snap(t0), tb.snap(t1)
     if end <= offset:
         end = offset + tb.frame_duration
+
+    one_word = active_word is not None and style.karaoke_display == "word"
+    shown = cue.ensure_words()[active_word].text if one_word else cue.text
+    if style.uppercase:
+        shown = shown.upper()
+
+    if style.box_color:
+        _emit_box(b, gap, style, shown, offset, end - offset)
+    lane = "2" if style.box_color else "1"
+
     label = cue.text if len(cue.text) < 60 else cue.text[:57] + "..."
-    title = ET.SubElement(gap, "title", ref=title_ref, lane="1",
+    title = ET.SubElement(gap, "title", ref=title_ref, lane=lane,
                           offset=fmt_time(offset), duration=fmt_time(end - offset),
                           name=label)
     text_el = ET.SubElement(title, "text")
 
-    def styled_run(text: str, highlighted: bool) -> None:
+    def styled_run(text: str, color: Optional[tuple]) -> None:
         ts_id = b.next_ts_id()
         run = ET.SubElement(text_el, "text-style-ref", ref=ts_id)
         run.text = text.upper() if style.uppercase else text
         attrs = _text_style_attrs(style)
-        if highlighted:
-            attrs["fontColor"] = _rgba(style.highlight_color)
+        if color is not None:
+            attrs["fontColor"] = _rgba(color)
         tsd = ET.SubElement(title, "text-style-def", id=ts_id)
         ET.SubElement(tsd, "text-style", attrs)
 
-    words = cue.ensure_words() if (active_word is not None or any(w.emphasize for w in cue.words)) else None
-    if words is None:
-        styled_run(cue.text, highlighted=False)
+    if one_word:
+        styled_run(cue.ensure_words()[active_word].text, style.highlight_color)
     else:
-        # Group consecutive words with the same highlight state into runs.
-        runs: list[tuple[str, bool]] = []
-        for i, w in enumerate(words):
-            hot = (i == active_word) or w.emphasize
-            token = w.text + (" " if i < len(words) - 1 else "")
-            if runs and runs[-1][1] == hot:
-                runs[-1] = (runs[-1][0] + token, hot)
-            else:
-                runs.append((token, hot))
-        for text, hot in runs:
-            styled_run(text, hot)
+        words = cue.ensure_words() if (active_word is not None or any(w.emphasize for w in cue.words)) else None
+        if words is None:
+            styled_run(cue.text, None)
+        else:
+            # Per-word color: "fill" mode lights every word up to the active
+            # one (words still coming wear upcoming_color); "word" mode lights
+            # only the active word. Emphasis always wins. Neighboring words
+            # with the same color merge into one run.
+            runs: list[tuple[str, Optional[tuple]]] = []
+            for i, w in enumerate(words):
+                if style.karaoke_mode == "fill" and active_word is not None:
+                    hot = i <= active_word
+                else:
+                    hot = i == active_word
+                color = style.highlight_color if (hot or w.emphasize) else style.upcoming_color
+                token = w.text + (" " if i < len(words) - 1 else "")
+                if runs and runs[-1][1] == color:
+                    runs[-1] = (runs[-1][0] + token, color)
+                else:
+                    runs.append((token, color))
+            for text, color in runs:
+                styled_run(text, color)
 
     _add_transform(title, style, tb)
 
@@ -321,6 +392,7 @@ def build_pip(width: int = 1080, height: int = 1920, fps: float = 29.97,
               duration_s: float = 20.0, corner: str = "top-right",
               scale: float = 0.32, rotation: float = -2.0, roundness: float = 0.55,
               media: Optional[str] = None, project_name: str = "PIP Kit",
+              frame_color: Optional[tuple] = None, frame_width: float = 14.0,
               effects: Optional[dict[str, dict[str, str]]] = None) -> _Builder:
     """A ready-made picture-in-picture block: scaled + cornered + rounded
     corners (Shape Mask) + drop shadow, over a full-frame base layer.
@@ -338,16 +410,33 @@ def build_pip(width: int = 1080, height: int = 1920, fps: float = 29.97,
     base = ET.SubElement(b.spine, "video", ref=placeholder_ref, offset="0s", start="0s",
                          duration=fmt_time(total), name="Main (replace me)")
 
-    if media:
-        asset_ref = b.asset_resource(media, total, Path(media).stem)
-        pip = ET.SubElement(base, "asset-clip", ref=asset_ref, lane="1", offset="0s",
-                            duration=fmt_time(total), name="PIP")
-    else:
-        pip = ET.SubElement(base, "video", ref=placeholder_ref, lane="1", offset="0s",
-                            start="0s", duration=fmt_time(total), name="PIP (replace me)")
-
     fx, fy = PIP_CORNERS[corner]
     px, py = fx * width / 2, fy * height / 2
+
+    if frame_color:
+        # A rounded colored card just larger than the PIP = the border frame.
+        frame = ET.SubElement(base, "video", ref=b.effect_resource("shapes"), lane="1",
+                              offset="0s", start="0s", duration=fmt_time(total),
+                              name="PIP frame")
+        fw = (width * scale + 2 * frame_width) / width
+        fh = (height * scale + 2 * frame_width) / height
+        ET.SubElement(frame, "adjust-transform",
+                      position=f"{_num(px)} {_num(py)}",
+                      scale=f"{_num(fw)} {_num(fh)}",
+                      rotation=_num(rotation))
+        ET.SubElement(frame, "param", name="Fill Color",
+                      value=f"{round(frame_color[0], 4)} {round(frame_color[1], 4)} {round(frame_color[2], 4)}")
+        ET.SubElement(frame, "param", name="Roundness", value=_num(roundness))
+        ET.SubElement(frame, "param", name="Outline", value="0")
+
+    pip_lane = "2" if frame_color else "1"
+    if media:
+        asset_ref = b.asset_resource(media, total, Path(media).stem)
+        pip = ET.SubElement(base, "asset-clip", ref=asset_ref, lane=pip_lane, offset="0s",
+                            duration=fmt_time(total), name="PIP")
+    else:
+        pip = ET.SubElement(base, "video", ref=placeholder_ref, lane=pip_lane, offset="0s",
+                            start="0s", duration=fmt_time(total), name="PIP (replace me)")
     ET.SubElement(pip, "adjust-transform",
                   position=f"{_num(px)} {_num(py)}",
                   scale=f"{_num(scale)} {_num(scale)}",
