@@ -1,0 +1,25 @@
+{
+  "materials": {
+    "texts": [
+      { "id": "t1", "text": "hello from capcut" },
+      { "id": "t2", "content": "{\"text\": \"nested content blob\", \"styles\": []}" },
+      { "id": "t3", "text": "third caption" },
+      { "id": "t4", "text": "" }
+    ]
+  },
+  "tracks": [
+    {
+      "type": "video",
+      "segments": [ { "id": "v1", "material_id": "nope" } ]
+    },
+    {
+      "type": "text",
+      "segments": [
+        { "id": "s1", "material_id": "t1", "target_timerange": { "start": 500000, "duration": 1500000 } },
+        { "id": "s2", "material_id": "t2", "target_timerange": { "start": 2000000, "duration": 2100000 } },
+        { "id": "s3", "material_id": "t3", "target_timerange": { "start": 4500000, "duration": 1500000 } },
+        { "id": "s4", "material_id": "t4", "target_timerange": { "start": 6000000, "duration": 1000000 } }
+      ]
+    }
+  ]
+}

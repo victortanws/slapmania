@@ -6,3 +6,9 @@
 
 # rendered trailers — canonical copies live here but stay out of the deployed site
 media/
+
+# fcpkit (fcp/) — machine-local artifacts
+__pycache__/
+fcp/**/yt-cache/
+fcp/yt-cache/
+effects.local.json

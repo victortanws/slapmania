@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE fcpxml>
+
+<fcpxml version="1.10">
+    <resources>
+        <format id="r1" name="FFVideoFormatRateUndefined" frameDuration="1001/30000s" width="1080" height="1920" colorSpace="1-1-1 (Rec. 709)" />
+    </resources>
+    <library>
+        <event name="fcpkit">
+            <project name="FCP Captions">
+                <sequence format="r1" tcStart="0s" tcFormat="NDF" audioLayout="stereo" audioRate="48k" duration="47047/3750s">
+                    <spine>
+                        <gap name="Captions" offset="0s" start="0s" duration="47047/3750s">
+                            <caption role="iTT?captionFormat=ITT.en" offset="1001/2500s" duration="17017/10000s" name="I built a slapping game">
+                                <text placement="bottom">
+                                    <text-style-ref ref="ts1">I built a slapping game</text-style-ref>
+                                </text>
+                                <text-style-def id="ts1">
+                                    <text-style font=".AppleSystemUIFont" fontSize="13" fontColor="1 1 1 1" backgroundColor="0 0 0 1" />
+                                </text-style-def>
+                            </caption>
+                            <caption role="iTT?captionFormat=ITT.en" offset="21021/10000s" duration="19019/10000s" name="and it went completely viral">
+                                <text placement="bottom">
+                                    <text-style-ref ref="ts2">and it went completely viral</text-style-ref>
+                                </text>
+                                <text-style-def id="ts2">
+                                    <text-style font=".AppleSystemUIFont" fontSize="13" fontColor="1 1 1 1" backgroundColor="0 0 0 1" />
+                                </text-style-def>
+                            </caption>
+                            <caption role="iTT?captionFormat=ITT.en" offset="1001/250s" duration="11011/5000s" name="ninety meters into a cornfield">
+                                <text placement="bottom">
+                                    <text-style-ref ref="ts3">ninety meters into a cornfield</text-style-ref>
+                                </text>
+                                <text-style-def id="ts3">
+                                    <text-style font=".AppleSystemUIFont" fontSize="13" fontColor="1 1 1 1" backgroundColor="0 0 0 1" />
+                                </text-style-def>
+                            </caption>
+                            <caption role="iTT?captionFormat=ITT.en" offset="13013/2000s" duration="19019/10000s" name="this is how the physics work">
+                                <text placement="bottom">
+                                    <text-style-ref ref="ts4">this is how the physics work</text-style-ref>
+                                </text>
+                                <text-style-def id="ts4">
+                                    <text-style font=".AppleSystemUIFont" fontSize="13" fontColor="1 1 1 1" backgroundColor="0 0 0 1" />
+                                </text-style-def>
+                            </caption>
+                            <caption role="iTT?captionFormat=ITT.en" offset="21021/2500s" duration="19019/10000s" name="four keys one kinetic chain">
+                                <text placement="bottom">
+                                    <text-style-ref ref="ts5">four keys one kinetic chain</text-style-ref>
+                                </text>
+                                <text-style-def id="ts5">
+                                    <text-style font=".AppleSystemUIFont" fontSize="13" fontColor="1 1 1 1" backgroundColor="0 0 0 1" />
+                                </text-style-def>
+                            </caption>
+                            <caption role="iTT?captionFormat=ITT.en" offset="103103/10000s" duration="11011/5000s" name="and zero mercy for button mashers">
+                                <text placement="bottom">
+                                    <text-style-ref ref="ts6">and zero mercy for button mashers</text-style-ref>
+                                </text>
+                                <text-style-def id="ts6">
+                                    <text-style font=".AppleSystemUIFont" fontSize="13" fontColor="1 1 1 1" backgroundColor="0 0 0 1" />
+                                </text-style-def>
+                            </caption>
+                            <caption role="iTT?captionFormat=ITT.es" offset="1001/2500s" duration="17017/10000s" name="Construí un juego de bofetadas">
+                                <text placement="bottom">
+                                    <text-style-ref ref="ts7">Construí un juego de bofetadas</text-style-ref>
+                                </text>
+                                <text-style-def id="ts7">
+                                    <text-style font=".AppleSystemUIFont" fontSize="13" fontColor="1 1 1 1" backgroundColor="0 0 0 1" />
+                                </text-style-def>
+                            </caption>
+                            <caption role="iTT?captionFormat=ITT.es" offset="21021/10000s" duration="19019/10000s" name="y se volvió completamente viral">
+                                <text placement="bottom">
+                                    <text-style-ref ref="ts8">y se volvió completamente viral</text-style-ref>
+                                </text>
+                                <text-style-def id="ts8">
+                                    <text-style font=".AppleSystemUIFont" fontSize="13" fontColor="1 1 1 1" backgroundColor="0 0 0 1" />
+                                </text-style-def>
+                            </caption>
+                            <caption role="iTT?captionFormat=ITT.es" offset="1001/250s" duration="11011/5000s" name="noventa metros hasta un maizal">
+                                <text placement="bottom">
+                                    <text-style-ref ref="ts9">noventa metros hasta un maizal</text-style-ref>
+                                </text>
+                                <text-style-def id="ts9">
+                                    <text-style font=".AppleSystemUIFont" fontSize="13" fontColor="1 1 1 1" backgroundColor="0 0 0 1" />
+                                </text-style-def>
+                            </caption>
+                            <caption role="iTT?captionFormat=ITT.es" offset="13013/2000s" duration="19019/10000s" name="así funciona la física">
+                                <text placement="bottom">
+                                    <text-style-ref ref="ts10">así funciona la física</text-style-ref>
+                                </text>
+                                <text-style-def id="ts10">
+                                    <text-style font=".AppleSystemUIFont" fontSize="13" fontColor="1 1 1 1" backgroundColor="0 0 0 1" />
+                                </text-style-def>
+                            </caption>
+                            <caption role="iTT?captionFormat=ITT.es" offset="21021/2500s" duration="19019/10000s" name="cuatro teclas una cadena cinética">
+                                <text placement="bottom">
+                                    <text-style-ref ref="ts11">cuatro teclas una cadena cinética</text-style-ref>
+                                </text>
+                                <text-style-def id="ts11">
+                                    <text-style font=".AppleSystemUIFont" fontSize="13" fontColor="1 1 1 1" backgroundColor="0 0 0 1" />
+                                </text-style-def>
+                            </caption>
+                            <caption role="iTT?captionFormat=ITT.es" offset="103103/10000s" duration="11011/5000s" name="y cero piedad para los aporreadores">
+                                <text placement="bottom">
+                                    <text-style-ref ref="ts12">y cero piedad para los aporreadores</text-style-ref>
+                                </text>
+                                <text-style-def id="ts12">
+                                    <text-style font=".AppleSystemUIFont" fontSize="13" fontColor="1 1 1 1" backgroundColor="0 0 0 1" />
+                                </text-style-def>
+                            </caption>
+                        </gap>
+                    </spine>
+                </sequence>
+            </project>
+        </event>
+    </library>
+</fcpxml>

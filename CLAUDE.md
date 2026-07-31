@@ -494,3 +494,22 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   with the inbox copy under the global naming rule.
 - **Heads-up:** a nightly automation auto-commits AND pushes this repo, so
   work-in-progress can reach production before you explicitly push.
+
+## fcpkit — Final Cut Pro workflow toolkit (2026-07-31, `fcp/`)
+
+- **Not game code.** `fcp/` is a standalone Python 3.9+ package (stdlib-only
+  core) for Victor's video-editing workflow: captions/PIP/analysis emitted as
+  **FCPXML 1.10** for File > Import > XML. Run from `fcp/` with
+  `PYTHONPATH=$PWD python3 -m fcpkit …`; tests:
+  `python3 -m unittest discover tests` (24, all green).
+- **Master JSON owns truth** (timings/text/style/emphasis/translations);
+  everything else (styled titles, native multi-lang ITT caption lanes, SRT,
+  karaoke) derives from it. Times are rational Fractions snapped to
+  frameDuration — never floats — and every export self-validates (dangling
+  refs, frame alignment) before reporting success.
+- **Effect uids** (Basic Title/Shape Mask/Drop Shadow/Placeholder) ship as
+  best-known defaults in `fcpxml.DEFAULT_EFFECTS`, overridden by
+  `effects.local.json` (gitignored) via `fcpkit learn-effects <real FCP
+  export>` — that's the calibration step, don't hardcode new uids.
+- `examples/output/*.fcpxml` are committed, regenerable demo exports; full
+  guide in `fcp/README.md`.

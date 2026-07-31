@@ -1,0 +1,92 @@
+{
+  "fps": 29.97,
+  "width": 1080,
+  "height": 1920,
+  "lang": "en",
+  "default_style": "tiktok",
+  "cues": [
+    {
+      "start": 0.4,
+      "end": 2.1,
+      "text": "I built a slapping game",
+      "style": null,
+      "words": []
+    },
+    {
+      "start": 2.1,
+      "end": 4.0,
+      "text": "and it went completely viral",
+      "style": null,
+      "words": []
+    },
+    {
+      "start": 4.0,
+      "end": 6.2,
+      "text": "ninety meters into a cornfield",
+      "style": null,
+      "words": [
+        {
+          "text": "ninety",
+          "start": 4.0,
+          "end": 4.507692307692308,
+          "emphasize": true
+        },
+        {
+          "text": "meters",
+          "start": 4.507692307692308,
+          "end": 5.015384615384615,
+          "emphasize": false
+        },
+        {
+          "text": "into",
+          "start": 5.015384615384615,
+          "end": 5.3538461538461535,
+          "emphasize": false
+        },
+        {
+          "text": "a",
+          "start": 5.3538461538461535,
+          "end": 5.438461538461538,
+          "emphasize": false
+        },
+        {
+          "text": "cornfield",
+          "start": 5.438461538461538,
+          "end": 6.2,
+          "emphasize": true
+        }
+      ]
+    },
+    {
+      "start": 6.5,
+      "end": 8.4,
+      "text": "this is how the physics work",
+      "style": null,
+      "words": []
+    },
+    {
+      "start": 8.4,
+      "end": 10.3,
+      "text": "four keys one kinetic chain",
+      "style": "hormozi",
+      "words": []
+    },
+    {
+      "start": 10.3,
+      "end": 12.5,
+      "text": "and zero mercy for button mashers",
+      "style": "hormozi",
+      "words": []
+    }
+  ],
+  "translations": {
+    "es": [
+      "Construí un juego de bofetadas",
+      "y se volvió completamente viral",
+      "noventa metros hasta un maizal",
+      "así funciona la física",
+      "cuatro teclas una cadena cinética",
+      "y cero piedad para los aporreadores"
+    ]
+  }
+}

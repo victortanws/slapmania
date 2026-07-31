@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE fcpxml>
+
+<fcpxml version="1.10">
+    <resources>
+        <format id="r1" name="FFVideoFormatRateUndefined" frameDuration="1001/30000s" width="1080" height="1920" colorSpace="1-1-1 (Rec. 709)" />
+        <effect id="r2" name="Placeholder" uid=".../Generators.localized/Elements.localized/Placeholder.localized/Placeholder.motn" />
+        <effect id="r3" name="Shape Mask" uid="FFSuperEllipseMask" />
+        <effect id="r4" name="Drop Shadow" uid=".../Effects.localized/Basics.localized/Drop Shadow.localized/Drop Shadow.moef" />
+    </resources>
+    <library>
+        <event name="fcpkit">
+            <project name="PIP Kit">
+                <sequence format="r1" tcStart="0s" tcFormat="NDF" audioLayout="stereo" audioRate="48k" duration="599599/30000s">
+                    <spine>
+                        <video ref="r2" offset="0s" start="0s" duration="599599/30000s" name="Main (replace me)">
+                            <video ref="r2" lane="1" offset="0s" start="0s" duration="599599/30000s" name="PIP (replace me)">
+                                <adjust-transform position="313.2 556.8" scale="0.32 0.32" rotation="-2" />
+                                <filter-video ref="r3" name="Shape Mask">
+                                    <param name="Radius" value="507.6 902.4" />
+                                    <param name="Curvature" value="0.6" />
+                                    <param name="Feather" value="0" />
+                                </filter-video>
+                                <filter-video ref="r4" name="Drop Shadow">
+                                    <param name="Opacity" value="0.55" />
+                                    <param name="Blur" value="14" />
+                                    <param name="Distance" value="18" />
+                                </filter-video>
+                            </video>
+                        </video>
+                    </spine>
+                </sequence>
+            </project>
+        </event>
+    </library>
+</fcpxml>
