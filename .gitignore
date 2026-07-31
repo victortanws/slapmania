@@ -6,3 +6,4 @@
 
 # rendered trailers — canonical copies live here but stay out of the deployed site
 media/
+__pycache__/
