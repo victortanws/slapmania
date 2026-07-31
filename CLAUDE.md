@@ -529,3 +529,18 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   NO 'night' theme anymore (16 worlds incl. vegas/haunted/cave/pitch —
   CLAUDE.md's older world lists are stale). Probing recipe: freeze AFTER
   drive() (drive re-arms the live loop) and screenshot the `#c` element.
+- **EPISODE ENGINE (2026-07-31, `tools/episode.js`)**: declarative screenplay
+  JSON → finished film — the "ask for a cute video" seam. Scenes/beats with
+  who/say/walk/cam; cameras AUTO-FRAME from live actor positions (presets:
+  wide/two/close:<who>/ots:<who>/follow/broll:<name> — 'two' uses the proven
+  ring diagonal mx+2.2,1.6,mz+2.9; close = ¾ portrait 25° off-axis 1.35m;
+  BROLL dict holds probe-verified framings). Beat length = dialogue estimate
+  (words×0.44s) or walk time (straight-line ×1.45+1.0 — nav steering is slow);
+  a mark is stamped per beat and the engine EXPORTS a ready VO session
+  (window.__cine.voSession → marks.json) so one JSON drives picture AND voice.
+  Render: `headless.mjs --module /tools/episode.js --boot-arg /tools/<ep>.json
+  --score /tools/episode-score.js` (music-box bed), extract voSession from
+  marks.json, vo-piper (charlie=ryan −0.5st, slim=danny +2.5st), mux. Demo:
+  `tools/episode-quiet-day.json` (45s, 3 scenes, 11 beats, zero hand-written
+  camera code). Gotcha: episodes must hide the cheek aim ring every tick
+  (`opponent().setTargetVisible(false)`) or it photobombs close-ups.

@@ -1,0 +1,51 @@
+{
+  "_readme": "Demo episode for tools/episode.js — a gentle, no-slap short. One JSON file is the whole show: blocking, dialogue, cameras, and the VO session all compile from it. Render: node tools/headless.mjs --module /tools/episode.js --boot-arg /tools/episode-quiet-day.json --score /tools/episode-score.js …",
+  "name": "quiet-day",
+  "world": "day",
+  "opp": "slim",
+  "slapper": "charlie",
+  "castVoices": {},
+  "scenes": [
+    {
+      "id": "e01_morning",
+      "title": { "text": "A QUIET DAY", "sub": "AT THE SLAPPING GROUNDS" },
+      "beats": [
+        { "id": "q_open", "cam": "broll:aerial", "who": "narrator",
+          "say": "The fair, on its day off." },
+        { "id": "q_ring", "cam": "broll:ring", "who": "narrator",
+          "say": "No contest today. No flying. Just the county, breathing." }
+      ]
+    },
+    {
+      "id": "e02_stroll",
+      "start": { "x": -7, "z": 2.4, "heading": -0.2 },
+      "beats": [
+        { "id": "q_walk", "cam": "follow", "who": "narrator",
+          "walk": [ { "x": -1.7, "z": 0.5 } ],
+          "say": "Charlie has nowhere to be. He goes there slowly." },
+        { "id": "q_hello", "cam": "two", "who": "charlie",
+          "say": "Mornin', Pete." },
+        { "id": "q_pete1", "cam": "close:opp", "who": "slim",
+          "say": "Mornin', Charlie. Beautiful day for not gettin' slapped." },
+        { "id": "q_charlie1", "cam": "close:charlie", "who": "charlie",
+          "say": "Every day's beautiful for somethin'." },
+        { "id": "q_pete2", "cam": "ots:opp", "who": "slim",
+          "say": "You reckon the corn grew a little?" },
+        { "id": "q_charlie2", "cam": "ots:charlie", "who": "charlie", "hold": 3.2,
+          "say": "It grew exactly enough." },
+        { "id": "q_corn", "cam": "broll:corn", "who": "narrator",
+          "say": "It had, in fact, grown exactly enough." }
+      ]
+    },
+    {
+      "id": "e03_evening",
+      "world": "haunted",
+      "beats": [
+        { "id": "q_wide", "cam": "wide", "who": "narrator", "hold": 3.0,
+          "say": "They stood a while. Nobody kept score." },
+        { "id": "q_moon", "cam": "broll:moon", "who": "narrator", "hold": 4.0,
+          "say": "And that... was enough too." }
+      ]
+    }
+  ]
+}

@@ -81,10 +81,10 @@ console.log('game booted; webgl:', await page.evaluate(() => {
   return gl.getParameter(gl.VERSION);
 }));
 
-const bootInfo = await page.evaluate(async (mod) => {
-  window.__mod = await import(mod);
-  return await window.__mod.boot();
-}, MODULE);
+const bootInfo = await page.evaluate(async (m) => {
+  window.__mod = await import(m.mod);
+  return await window.__mod.boot(m.arg || undefined);
+}, { mod: MODULE, arg: arg('boot-arg', '') });
 console.log('storyboard boot:', JSON.stringify(bootInfo));
 
 // splice-reshoot: jump to shot N / frame F; downstream frames on disk stay

@@ -35,6 +35,9 @@ PIPER_CAST = {
     'howie':     {'model': 'en-us-ryan-high',   'length': 0.90, 'pitch':  1.0, 'pan': -0.35, 'sil': 0.15},
     'jim':       {'model': 'en-us-danny-low',   'length': 1.02, 'pitch': -3.0, 'pan': 0.35, 'sil': 0.22},
     'announcer': {'model': 'en-us-kathleen-low', 'length': 1.0, 'pitch': 0.0, 'pan': 0.0,  'sil': 0.2},
+    # episode characters (tools/episode.js)
+    'charlie':   {'model': 'en-us-ryan-high',   'length': 1.05, 'pitch': -0.5, 'pan': -0.3, 'sil': 0.2},
+    'slim':      {'model': 'en-us-danny-low',   'length': 1.05, 'pitch':  2.5, 'pan': 0.3,  'sil': 0.2},
 }
 # perf presets → speed multiplier (MULTIPLIES the voice's own — keep the product
 # near 1.0-1.3 or lines crawl and start overlapping their own speaker), pitch
