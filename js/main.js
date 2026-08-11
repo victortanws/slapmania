@@ -863,6 +863,10 @@ const WORLDS = [
   { key: 'blackgold', label: '🛢️ BLACK GOLD', dlc: true },
   { key: 'cave',    label: '💎 CAVE OF WONDERS', dlc: true },
   { key: 'pitch',   label: '⚽ THE PITCH', dlc: true },
+  // the executive branch
+  { key: 'slaphouse', label: '🏛️ THE SLAP HOUSE', dlc: true },
+  { key: 'maraslapo', label: '🌴 MAR-A-SLAPO', dlc: true },
+  { key: 'slaptower', label: '🏙️ SLAP TOWER', dlc: true },
 ];
 // theme + that world's ONE physics quirk, together — used by the selector,
 // the tour world-pin, and the return-to-title restore, so visuals and physics

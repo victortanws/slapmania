@@ -5190,6 +5190,8 @@ export function createStage(canvas) {
     vegas:  [0xff2f8e, 0x2fd4ff, 0xffd23f, 0x141018, 0x8a2fff, 0xf4f0e2], // showgirl neon + tux blacks
     tarpit: [0x8a6a3a, 0x6a4e34, 0x9c7a4a, 0x5c5a42, 0xa8894e, 0x74543a], // 70s corduroy vs the dusk
     bazaar: [0x2a8a8a, 0xc94a3a, 0xd4881f, 0x8a4aa8, 0xf2e6cc, 0x2a6a4a], // souk jewel tones
+    resort: [0xf4f0e6, 0xf2c6d0, 0x8ec9d8, 0xe8d9a8, 0xffffff, 0xd8a8c0], // linen, pastels, poolside white
+    suits:  [0x1f2028, 0x2a2a33, 0x141018, 0x3a3038, 0x2a2a2a, 0x4a3a2a], // black tie, or close enough
   };
   let crowdOrig = null;
   function setCrowdPalette(key) {
@@ -5297,6 +5299,14 @@ export function createStage(canvas) {
     slaphouse: { fog: [0xdfe8f2, 70, 230], skyTint: 0xbcd8f0, hemi: [0xf2f8ff, 0x9aa8b4, 1.05], sun: [0xfffdf6, 2.1], fill: 0.46, cloud: 0xf8fbff, maps: false, grass: 0x4f8f46, lane: 0xd8d2c0, night: false, sunFace: true,
       group: 'slaphouse', biome: 'tech', crowd: 'tech', pond: 0x5fa8d8, sunTint: [0xf4f8ff, 0.85],
       hideFarm: true, hideBarn: true, hideFair: true, hideCloths: true, hideFences: true, barricade: 'redtape' },
+    // MAR-A-SLAPO — permanent late afternoon in a place with no weather.
+    maraslapo: { fog: [0xf0dcb4, 105, 275], skyTint: 0x7fc6e8, hemi: [0xfff2da, 0xc9a878, 0.98], sun: [0xfff0d0, 2.0], fill: 0.42, cloud: 0xfff6e8, maps: false, grass: 0x6aa848, lane: 0xe2cfa8, night: false, sunFace: true,
+      group: 'maraslapo', biome: 'desert', crowd: 'resort', pond: 0x2fb4d8, sunTint: [0xffe9c0, 1],
+      hideFarm: true, hideBarn: true, hideFair: true, hideCloths: true, hideFences: true, barricade: 'barrels' },
+    // SLAP TOWER — an atrium that never sees daylight, lit entirely by brass.
+    slaptower: { fog: [0x3a2c3a, 80, 300], skyTint: 0x241c2a, hemi: [0xf6e0ae, 0x3a3040, 1.05], sun: [0xffe6ad, 1.9], fill: 0.46, cloud: 0x2a2430, maps: false, grass: 0x241f24, lane: 0x2f2830, night: true, sunFace: false,
+      group: 'slaptower', biome: 'vegas', crowd: 'suits', pond: 0x2fa8c8, sunTint: [0xffe0a8, 0.85],
+      hideFarm: true, hideBarn: true, hideFair: true, hideCloths: true, hideFences: true, barricade: 'chips' },
     vegas: { fog: [0x3a2450, 60, 210], skyTint: 0x241640, hemi: [0xffd9a0, 0x4a2f6a, 1.05], sun: [0xffcf9a, 1.7], fill: 0.42, cloud: 0x4a2f6a, maps: false, grass: 0x3a2450, lane: 0xcaa03a, night: true, sunFace: false,
       group: 'vegas', biome: 'vegas', crowd: 'vegas', pond: 0x2fd4ff, sunTint: [0xffe0b0, 0.8],
       hideFarm: true, hideBarn: true, hideFair: true, hideCloths: true, hideFences: true, barricade: 'chips' },
@@ -5467,8 +5477,147 @@ export function createStage(canvas) {
     scene.add(slapHouseG);
   }
 
+  // --- MAR-A-SLAPO: the winter residence. Terracotta, palm, chlorine and gold.
+  // A club where the membership fee is your cheek. ---
+  const maraSlapoG = new THREE.Group();
+  {
+    const stucco = toonMat(0xf6ecd8), tile = toonMat(0xc4562f), gold = toonMat(0xd4af37);
+    const add = (m, x, y, z) => { m.position.set(x, y, z); maraSlapoG.add(m); return m; };
+    const palm = (g, x, z, h = 7, lean = 0) => {
+      const tr = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.28, h, 8), toonMat(0x8a6f4a));
+      tr.position.set(x, h / 2, z); tr.rotation.z = lean; g.add(tr);
+      for (let f = 0; f < 7; f++) {
+        const frond = new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.09, 0.75), toonMat(f % 2 ? 0x3f7a3a : 0x4f8f45));
+        const a = (f / 7) * Math.PI * 2;
+        frond.position.set(x + Math.cos(a) * 1.35 + lean * h * 0.5, h - 0.15 - (f % 3) * 0.18, z + Math.sin(a) * 1.35);
+        frond.rotation.set(0, -a, -0.32); g.add(frond);
+      }
+      const nuts = new THREE.Mesh(new THREE.SphereGeometry(0.22, 7, 6), toonMat(0x7a5a3a));
+      nuts.position.set(x + lean * h * 0.5, h - 0.5, z); g.add(nuts);
+    };
+    // the belt: a wall of palms instead of conifers
+    maraSlapoG.add(mkBelt((g, x, z, i) => palm(g, x, z, 6.5 + (i * 5 % 4), ((i % 3) - 1) * 0.05)));
+    maraSlapoG.children[0].visible = true;   // mkBelt hides its group; each kit re-enables its own
+
+    // The clubhouse. Parked OFF the flight corridor (|z| >= 17) like SLAP CITY:
+    // it carries no collider, so anything sitting in the lane would have bodies
+    // sail straight through it.
+    const club = new THREE.Group(); club.position.z = -23; maraSlapoG.add(club);
+    const addB = (m, x, y, z) => { m.position.set(x, y, z); club.add(m); return m; };
+    const HX = 74;
+    addB(new THREE.Mesh(new THREE.BoxGeometry(11, 7, 30), stucco), HX, 3.5, 0);
+    addB(new THREE.Mesh(new THREE.BoxGeometry(12.4, 1.0, 31.5), tile), HX, 7.4, 0);
+    for (let i = -5; i <= 5; i++) {                        // arcade
+      addB(new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 5.2, 10), stucco), HX - 5.9, 2.6, i * 2.6);
+      const arch = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.2, 6, 12, Math.PI), stucco);
+      arch.position.set(HX - 5.9, 5.2, i * 2.6); arch.rotation.y = Math.PI / 2; club.add(arch);
+    }
+    // the gilded ballroom doors, flanked by gold urns
+    addB(new THREE.Mesh(new THREE.BoxGeometry(0.3, 4.2, 3.4), gold), HX - 6.3, 2.1, 0);
+    for (const s of [-2.8, 2.8]) addB(new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.32, 1.5, 12), gold), HX - 6.6, 0.75, s);
+    // roof cupola, because of course
+    addB(new THREE.Mesh(new THREE.CylinderGeometry(1.9, 2.1, 1.5, 14), stucco), HX, 8.6, 0);
+    addB(new THREE.Mesh(new THREE.SphereGeometry(2.0, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2), gold), HX, 9.3, 0);
+
+    // the pool: loungers, parasols, and water nobody is in
+    {
+      const px = 46, pz = -21;
+      add(new THREE.Mesh(new THREE.BoxGeometry(16, 0.5, 9), toonMat(0xf2ead6)), px, 0.25, pz);
+      add(new THREE.Mesh(new THREE.BoxGeometry(14, 0.3, 7), toonMat(0x2fb4d8)), px, 0.55, pz);
+      for (let i = -2; i <= 2; i++) {
+        const l = add(new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.18, 0.8), toonMat(0xf4f0e6)), px + i * 3.1, 0.55, pz + 6.0);
+        l.rotation.z = -0.16;
+        const um = add(new THREE.Mesh(new THREE.ConeGeometry(1.5, 0.9, 10), toonMat(i % 2 ? 0xe4574c : 0xf2f0e8)), px + i * 3.1, 2.5, pz + 6.9);
+        add(new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 2.4, 6), toonMat(0xb8a88a)), px + i * 3.1, 1.2, pz + 6.9);
+      }
+    }
+    // scattered palms along the lane, and the sign at the gate
+    [[18, 13], [30, -13], [42, 14], [58, -14], [64, 13], [92, -12], [100, 12]].forEach(([x, z], i) => palm(maraSlapoG, x, z, 7 + (i % 3), 0));
+    {
+      const b = new THREE.Mesh(new THREE.BoxGeometry(0.18, 1.6, 8.0), stucco);
+      b.position.set(14, 2.6, -13); maraSlapoG.add(b);
+      const t = new THREE.Mesh(new THREE.PlaneGeometry(7.6, 1.4),
+        new THREE.MeshBasicMaterial({ map: makeTextTexture('MAR-A-SLAPO · MEMBERS & VOLUNTEERS', '#c4562f'), transparent: true }));
+      t.position.set(13.9, 2.6, -13); t.rotation.y = -Math.PI / 2; maraSlapoG.add(t);
+    }
+    maraSlapoG.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+    maraSlapoG.visible = false;
+    scene.add(maraSlapoG);
+  }
+
+  // --- SLAP TOWER: brass, black marble and a gold escalator. The lane runs
+  // down the middle of the atrium and out into the street canyon. ---
+  const slapTowerG = new THREE.Group();
+  {
+    const brass = toonMat(0xd8b24a), marble = toonMat(0x1d1a1c), pale = toonMat(0xe8e2d0);
+    const add = (m, x, y, z) => { m.position.set(x, y, z); slapTowerG.add(m); return m; };
+    // the belt: a canyon of black-and-gold towers, taller than the campus ones
+    slapTowerG.add(mkBelt((g, x, z, i) => {
+      const h = 22 + (i * 11 % 6) * 6;
+      const w = 3.6 + (i % 3) * 0.7;
+      const t = new THREE.Mesh(new THREE.BoxGeometry(w, h, w), i % 3 === 0 ? brass : marble);
+      t.position.set(x, h / 2, z); g.add(t);
+      const sign = Math.sign(x) || -1;
+      for (let ry = 1; ry < Math.floor(h / 2.4); ry++) {          // gold window bands
+        const band = new THREE.Mesh(new THREE.BoxGeometry(w * 0.92, 0.9, 0.06), glowMat(0xf0cf7a));
+        band.material.transparent = true; band.material.opacity = 0.7;
+        band.position.set(x - (w / 2 + 0.04) * sign, ry * 2.4, z);
+        band.rotation.y = Math.PI / 2; g.add(band);
+      }
+      const crown = new THREE.Mesh(new THREE.BoxGeometry(w * 0.7, 1.4, w * 0.7), brass);
+      crown.position.set(x, h + 0.7, z); g.add(crown);
+    }));
+    slapTowerG.children[0].visible = true;   // ditto — without this the canyon never shows
+
+    // The atrium. Same rule as the clubhouse — it has no collider, so it sits
+    // beside the lane and frames it rather than blocking it.
+    const atrium = new THREE.Group(); atrium.position.z = -24; slapTowerG.add(atrium);
+    const addA = (m, x, y, z) => { m.position.set(x, y, z); atrium.add(m); return m; };
+    addA(new THREE.Mesh(new THREE.BoxGeometry(26, 0.12, 22), toonMat(0x2a2528)), 62, 0.06, 0);
+    for (let i = -4; i <= 4; i++) for (const s of [-9.5, 9.5]) {
+      addA(new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 9, 10), brass), 62 + i * 3.0, 4.5, s);
+    }
+    addA(new THREE.Mesh(new THREE.BoxGeometry(27, 0.8, 23), marble), 62, 9.4, 0);
+    {
+      const esc = addA(new THREE.Mesh(new THREE.BoxGeometry(9.5, 0.4, 3.0), brass), 68, 4.4, 0);
+      esc.rotation.z = -0.52;
+      for (let i = 0; i < 12; i++) {                                // steps
+        addA(new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.22, 2.8), toonMat(0xf0d98a)), 64.2 + i * 0.68, 2.35 + i * 0.42, 0);
+      }
+      for (const s of [-1.6, 1.6]) {
+        const rail = addA(new THREE.Mesh(new THREE.BoxGeometry(9.5, 0.16, 0.16), toonMat(0x3a3236)), 68, 5.0, s);
+        rail.rotation.z = -0.52;
+      }
+    }
+    // brass fountain on the atrium floor
+    addA(new THREE.Mesh(new THREE.CylinderGeometry(2.6, 2.8, 0.6, 18), brass), 54, 0.3, 0);
+    addA(new THREE.Mesh(new THREE.CylinderGeometry(2.3, 2.3, 0.12, 18), toonMat(0x2fa8c8)), 54, 0.62, 0);
+    addA(new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.3, 2.2, 10), brass), 54, 1.5, 0);
+    // the lobby name, in letters a foot high
+    {
+      const b = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2.0, 10), marble);
+      b.position.set(20, 4.2, 0); slapTowerG.add(b);
+      const t = new THREE.Mesh(new THREE.PlaneGeometry(9.4, 1.8),
+        new THREE.MeshBasicMaterial({ map: makeTextTexture('SLAP TOWER', '#e8c866'), transparent: true }));
+      t.position.set(19.85, 4.2, 0); t.rotation.y = -Math.PI / 2; slapTowerG.add(t);
+    }
+    // velvet rope down the lane, because there is always a queue
+    for (let i = 0; i < 10; i++) {
+      const x = 26 + i * 3.4;
+      for (const s of [-6.5, 6.5]) {
+        add(new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.11, 1.0, 8), brass), x, 0.5, s);
+        add(new THREE.Mesh(new THREE.SphereGeometry(0.13, 8, 6), brass), x, 1.04, s);
+      }
+    }
+    slapTowerG.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+    slapTowerG.visible = false;
+    scene.add(slapTowerG);
+  }
+
   const WORLD_GROUPS = {
     slaphouse: slapHouseG,
+    maraslapo: maraSlapoG,
+    slaptower: slapTowerG,
     pitch: pitchG,
     ice: winterG, desert: desertG, jungle: jungleG, dojo: dojoG,
     lava: lavaG, heaven: heavenG, hell: hellG, therapy: therapyG,
@@ -5477,7 +5626,7 @@ export function createStage(canvas) {
   };
   // every non-farm world re-dresses the perimeter, so pine hides whenever any
   // kit with its own belt is up (each belt lives inside its kit group)
-  const BELT_WORLDS = new Set(['desert', 'jungle', 'dojo', 'lava', 'heaven', 'hell', 'therapy', 'haunted', 'techcampus', 'vegas', 'tarpit', 'blackgold', 'cave']);
+  const BELT_WORLDS = new Set(['desert', 'jungle', 'dojo', 'lava', 'heaven', 'hell', 'therapy', 'haunted', 'techcampus', 'vegas', 'tarpit', 'blackgold', 'cave', 'maraslapo', 'slaptower']);
   const WORLD_FX = {                                 // per-world extras beyond the kit
     ice: (on) => {
       snowPts.visible = on;

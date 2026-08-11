@@ -494,3 +494,38 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   with the inbox copy under the global naming rule.
 - **Heads-up:** a nightly automation auto-commits AND pushes this repo, so
   work-in-progress can reach production before you explicitly push.
+
+## The executive branch — three presidential worlds (2026-07-25)
+
+- **THE SLAP HOUSE** (`slaphouse`), **MAR-A-SLAPO** (`maraslapo`), **SLAP TOWER**
+  (`slaptower`) — all DLC chips in the `WORLDS` list. Invented institutions and
+  invented addresses, same parody rule as TREMENDOUS DON (who is the ideal
+  opponent in all three: "My cheek pays NO taxes.").
+  - SLAP HOUSE: portico + six columns + pediment + balcony, two wings, lawn
+    fountain, press podium with flags, parked motorcade, 1600 SLAPSYLVANIA AVE.
+  - MAR-A-SLAPO: stucco range with a terracotta roof and an arcade of arches,
+    gilded ballroom doors, cupola, pool with striped parasols and loungers, and
+    a **palm belt** on the perimeter. Crowd palette `resort` (linen + pastels).
+  - SLAP TOWER: a black-and-gold **street canyon** belt, brass colonnade atrium,
+    the gold escalator, brass fountain, velvet rope down the lane. Crowd palette
+    `suits`. Night world.
+- **BELT GOTCHA — this cost a debugging round.** `mkBelt()` builds the perimeter
+  group, sets `g.visible = false` and adds it to the scene; the kit then
+  re-parents it with `kitG.add(mkBelt(...))`. Because three.js visibility is
+  hierarchical, **the kit must switch its own belt back on**:
+  `kitG.children[0].visible = true;` — every existing kit does this
+  (`techG.children[0].visible = true`, etc.). Miss it and the belt is silently
+  invisible: `WORLD_GROUPS` only toggles the TOP-level group. Symptom is a world
+  with no horizon; the meshes exist and report as present, just never render.
+- **Decorative props must stay OUT of the flight corridor** (`|z| >= 17`). World
+  kits carry no colliders, so anything sitting in the lane has bodies sail
+  through it. Both signature buildings are wrapped in a sub-group offset to
+  `z ≈ -23` for exactly this reason. Verified: corridor occupancy is 35
+  (maraslapo) and 8 (slaptower) against the base farm's own 94, and a Slim
+  flight measures 92.1 / 92.1 / 92.9m across maraslapo / slaptower / day.
+- **Fog tuning matters more than it looks.** SLAP TOWER first shipped with fog
+  `0x14121a` — a near-black haze against a black sky, which made 864 perimeter
+  tower meshes completely invisible even though they were lit and unoccluded.
+  A city night glows: the haze needs warmth (`0x3a2c3a`) for silhouettes to
+  read. MAR-A-SLAPO had the opposite problem — fog starting at 70 bleached the
+  terracotta, fixed by pushing `near` out to 105.
