@@ -12,19 +12,35 @@ import { createCamRig } from './camrig.js';
 
 // every slapper has a mouth on them too — a quip at the faceoff (public; the
 // judge takes this slot in campaign matches)
+// Every pool used to hold exactly two lines, so the second match of a session
+// already repeated the first. Five per slapper keeps a whole evening fresh;
+// the voices are the established ones, just given more to say.
 const QUIPS = {
-  charlie: ['Tremendous hair. Tremendous palm.', "Local legends don't rest."],
-  fran: ['Wound tight and READY.', 'The hay baler taught me everything I know.'],
-  buck: ["Forty years of swattin'. One cheek.", 'Steady now. Steady.'],
-  roy: ['Eight seconds is seven too many.', 'Yeehaw is a state of mind.'],
-  victor: ['I built this fair. I can un-build HIM.', 'I drew up these fairgrounds. Hold still.'],
-  mei: ['Your future: airborne.', 'The palm sees all. The palm approves.'],
-  dynamite: ['I ate ALL my vegetables.', 'Five and three-quarters of pure FURY.'],
-  bruceslee: ['WATAAA!', 'The palm has no form. The cheek has no chance.'],
-  chucknorth: ['I counted to infinity this morning. Twice.', 'The beard approves this matchup.'],
-  earl: ['Shirts are for quitters.', 'EARL. SMASH.'],
-  reverend: ['REPENT — and be launched.', 'The collar stays ON for this.'],
-  auntie: ['Aiyah. Hold my curlers.', 'You call THAT a cheek? Sit down.'],
+  charlie: ['Tremendous hair. Tremendous palm.', "Local legends don't rest.",
+    'Five foot four of pure leverage.', 'I walked the property this morning. Good soil.',
+    "My ma says I'm the strongest. My ma is correct."],
+  fran: ['Wound tight and READY.', 'The hay baler taught me everything I know.',
+    'Pigtails are aerodynamic. Look it up.', 'I once slapped a scarecrow back to work.'],
+  buck: ["Forty years of swattin'. One cheek.", 'Steady now. Steady.',
+    'The deer on this shirt has seen me train. He tells NOBODY.', 'Slow is smooth. Smooth is airborne.'],
+  roy: ['Eight seconds is seven too many.', 'Yeehaw is a state of mind.',
+    'I have dismounted ANGRIER things than you.', 'The buckle is for FIRST place. This is the buckle.'],
+  victor: ['I built this fair. I can un-build HIM.', 'I drew up these fairgrounds. Hold still.',
+    'Per the blueprints: you land in the corn.', 'I measured this lane myself. You will be needing ALL of it.'],
+  mei: ['Your future: airborne.', 'The palm sees all. The palm approves.',
+    'The earrings stay on. They have never once fallen off mid-slap. Grace.',
+    'I read your fortune. It says: sky.'],
+  dynamite: ['I ate ALL my vegetables.', 'Five and three-quarters of pure FURY.',
+    'My arm grew three sizes. The doctors have STOPPED calling it a phase.'],
+  bruceslee: ['WATAAA!', 'The palm has no form. The cheek has no chance.',
+    'Be water. He will be weather.'],
+  chucknorth: ['I counted to infinity this morning. Twice.', 'The beard approves this matchup.',
+    'I don\'t warm up. The AIR warms up around me.'],
+  earl: ['Shirts are for quitters.', 'EARL. SMASH.', 'EARL. WAIT. ...OKAY NOW EARL SMASH.'],
+  reverend: ['REPENT — and be launched.', 'The collar stays ON for this.',
+    'Today\'s reading is from the Book of Distance.'],
+  auntie: ['Aiyah. Hold my curlers.', 'You call THAT a cheek? Sit down.',
+    'I raised six children and NONE of them stood this close to me.'],
 };
 
 const stage = createStage(document.getElementById('c'));
@@ -1946,6 +1962,10 @@ const FACEOFF_OPENERS = {
   ice:     [new THREE.Vector3(0.2, 2.7, 5.8),  new THREE.Vector3(0.5, 1.3, 0)],   // the wide cold establishing
   lava:    [new THREE.Vector3(2.6, 0.5, 2.0),  new THREE.Vector3(0.7, 1.6, 0)],   // heat-line low
   techcampus: [new THREE.Vector3(0.6, 2.4, 5.2), new THREE.Vector3(0.5, 1.5, 0)], // the keynote drone
+  slaphouse: [new THREE.Vector3(0.5, 2.6, 6.2), new THREE.Vector3(0.5, 1.5, 0)],  // the state portrait — dead frontal, slightly above
+  maraslapo: [new THREE.Vector3(3.0, 0.85, 3.0), new THREE.Vector3(0.6, 1.5, 0)], // poolside low and warm, like a society photographer
+  slaptower: [new THREE.Vector3(1.5, 4.2, 3.2), new THREE.Vector3(0.6, 1.35, 0)], // down the escalator with the money
+  pitch: [new THREE.Vector3(0.4, 4.6, 6.0), new THREE.Vector3(0.5, 1.3, 0)],      // the broadcast blimp
 };
 const FACEOFF_DEFAULT = [new THREE.Vector3(2.4, 1.75, 1.2), new THREE.Vector3(0.85, 1.6, 0)];
 // The rig owns smoothing, the player's free look, and the lens (js/camrig.js —

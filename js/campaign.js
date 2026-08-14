@@ -688,12 +688,96 @@ export const TOURS = [
       },
     ],
   },
+  {
+    key: 'executive', title: '🦅 HAIL TO THE CHEEK',
+    dlc: true,
+    world: 'slaphouse',
+    slapper: 'charlie',
+    blurb: 'A letter on eagle letterhead declares the county\'s slap records FAKE DISTANCE, pending federal audit. Charlie packs one (1) palm and goes to Washington.',
+    acts: [
+      {
+        act: 'ACT I — THE SLAP HOUSE',
+        story: 'The audit convenes at 1600 Slapsylvania Avenue. The press pool wants a statement, the subcommittee wants a hearing, and the Executive wants the numbers. Charlie brought the numbers.',
+        challenges: [
+          { id: 'p1c1', title: 'THE PRESS POOL', desc: 'LAND a clean head slap on THE INFLUENCER — one question at a time, and that was the question', opp: 'influencer', goal: { type: 'head' } },
+          { id: 'p1c2', title: 'THE SUBCOMMITTEE', desc: 'SCORE 380 off THE JURY — all five of them, one coat, one hearing, one gavel of a slap', opp: 'jury', goal: { type: 'pts', v: 380 } },
+          { id: 'p1c3', title: '☗ THE EXECUTIVE ORDER', desc: 'Send TREMENDOUS DON 24m across the North Lawn — he signed an order making your records his. Repossess them', opp: 'don', goal: { type: 'dist', v: 24 } },
+        ],
+      },
+      {
+        act: 'ACT II — MAR-A-SLAPO',
+        story: 'The audit continues poolside, where all serious government happens. The club has standards: collared shirts, sixty percent form minimum, and NOBODY slaps the water.',
+        challenges: [
+          { id: 'p2c1', title: 'THE HOUSE BAND', desc: 'LAND a 60% chain before MAESTRO FORTISSIMO — the club booked him for brunch; play something in the key of airborne', opp: 'maestro', world: 'maraslapo', goal: { type: 'chain', v: 60 } },
+          { id: 'p2c2', title: 'THE MEMBERSHIP DRIVE', desc: 'SCORE 330 off PROMOTER VINNIE SLAMHART — membership starts at one million; pay in distance', opp: 'vinnie', world: 'maraslapo', goal: { type: 'pts', v: 330 } },
+          { id: 'p2c3', title: '☗ THE ART OF THE SLAP', desc: 'SCORE 350 off THE NEGOTIATOR — 20 seconds, 70% form or the offer expires. Poolside clause: he keeps YOUR records if you miss', opp: 'don_ceo', world: 'maraslapo', goal: { type: 'pts', v: 350 } },
+        ],
+      },
+      {
+        act: 'ACT III — SLAP TOWER',
+        story: 'The tower. The gold. The man. The elevator is out of order and the escalator only goes down — the last eighty floors are by palm.',
+        challenges: [
+          { id: 'p3c1', title: 'THE DOORMAN', desc: 'SCORE 270 off BIG HOSS — the tower is closed and Hoss IS the door. Tonnage pays: he barely moves, the meter barely matters', opp: 'hoss', world: 'slaptower', goal: { type: 'pts', v: 270 } },
+          { id: 'p3c2', title: 'THE ANONYMOUS DONOR', desc: 'Send THE MASKED MARVEL 36m down the atrium — the board sent a man whose name is on his mask', opp: 'marvel', world: 'slaptower', goal: { type: 'dist', v: 36 } },
+          { id: 'p3c3', title: '☗☗ HAIL TO THE CHEEK', desc: 'SCORE 330 off COMMANDER-IN-CHEEK — 12 seconds on the clock and anything under 60% chain is VETOED (×0.12). The most patriotic slap in county history', opp: 'commander', world: 'slaptower', goal: { type: 'pts', v: 330 } },
+        ],
+      },
+    ],
+  },
 ];
 
 // ---- cutscenes: { who, text, shot } — shots: player | opp | spirit | judge | wide.
 // 'YOU' becomes the slapper's name. palm_prologue plays once when the tour menu
 // first opens; outro_* scenes play after clearing their boss. ENTER advances.
 export const CUTSCENES = {
+  p1c1: [
+    { who: 'THE INFLUENCER', text: "Mr. Charlie! Bess, County Live. The SLAP HOUSE says your records are FAKE. Any comment for my nine followers? They are VERY upset.", shot: 'opp' },
+    { who: 'YOU', text: 'One comment, Bess. Watch the cheek. That\'s the comment.', shot: 'player' },
+  ],
+  p1c2: [
+    { who: 'THE JURY', text: 'The subcommittee will come to order. All five of us. In this coat.', shot: 'opp' },
+    { who: 'YOU', text: "Point of order: am I slapping you as one body or five?", shot: 'player' },
+    { who: 'THE JURY', text: '...the coat stays on. The coat is load-bearing.', shot: 'opp' },
+  ],
+  p1c3: [
+    { who: 'TREMENDOUS DON', text: 'I looked at your numbers, Charlie. Beautiful numbers. Tremendous. So I signed an order making them MINE.', shot: 'opp' },
+    { who: 'YOU', text: "You can't sign away a man's distance, Don.", shot: 'player' },
+    { who: 'TREMENDOUS DON', text: 'I have a pen from the gift shop. I can sign ANYTHING.', shot: 'opp' },
+  ],
+  p2c1: [
+    { who: 'MAESTRO FORTISSIMO', text: '(tuning) The club booked me for brunch. They pay in exposure and shrimp.', shot: 'opp' },
+    { who: 'YOU', text: 'Play something in the key of airborne, Maestro.', shot: 'player' },
+  ],
+  p2c2: [
+    { who: 'PROMOTER VINNIE SLAMHART', text: 'Charlie baby! Membership starts at one million and the pool is CLOSED for auditing. Sign here.', shot: 'opp' },
+    { who: 'YOU', text: 'Vinnie. The pool is RIGHT there.', shot: 'player' },
+    { who: 'PROMOTER VINNIE SLAMHART', text: 'The WATER is a member, sweetheart. You are not.', shot: 'opp' },
+  ],
+  p2c3: [
+    { who: 'THE NEGOTIATOR', text: 'New deal. Your records stay real — and in exchange, I own them. Twenty seconds, seventy percent form, or the offer expires.', shot: 'opp' },
+    { who: 'YOU', text: "That's not a deal, that's a stickup with a fountain pen.", shot: 'player' },
+    { who: 'THE NEGOTIATOR', text: 'The pen is TREMENDOUS, though.', shot: 'opp' },
+  ],
+  p3c1: [
+    { who: 'BIG HOSS', text: "Evenin', Charlie. Tower's closed. I'm the door now.", shot: 'opp' },
+    { who: 'YOU', text: 'Hoss? They got YOU doing this?', shot: 'player' },
+    { who: 'BIG HOSS', text: "Pay's good. I stand here. Sometimes I lean. Mostly it's standing.", shot: 'opp' },
+  ],
+  p3c2: [
+    { who: 'THE MASKED MARVEL', text: 'The board sent me. You will never know WHICH board member I am.', shot: 'opp' },
+    { who: 'YOU', text: 'Marvel. Your name is on the mask.', shot: 'player' },
+    { who: 'THE MASKED MARVEL', text: '...the board regrets the merchandising deal.', shot: 'opp' },
+  ],
+  p3c3: [
+    { who: 'COMMANDER-IN-CHEEK', text: "Charlie! Great slapper. TERRIBLE numbers. New ruling: every cheek in this county is federal property now. Including mine. ESPECIALLY mine.", shot: 'opp' },
+    { who: 'YOU', text: "Then this is about to be the most patriotic act in county history.", shot: 'player' },
+    { who: 'COMMANDER-IN-CHEEK', text: 'Twelve seconds, sixty percent, or it is VETOED. History is watching, Charlie. History has GREAT ratings.', shot: 'opp' },
+  ],
+  outro_p3c3: [
+    { who: 'COMMANDER-IN-CHEEK', text: '(from the hay, dictating) ...and the record shall show the county\'s numbers are REAL. Tremendously real. I verified them PERSONALLY, just now, with my face.', shot: 'opp' },
+    { who: 'YOU', text: 'The audit is closed. The fair is open. Same as it ever was — five foot four, and every meter true.', shot: 'player' },
+    { who: '📜 THE AUDIT', text: '(the folder closes itself. Somewhere, an eagle files a flight plan home.)', shot: 'wide' },
+  ],
   // ---- 🧲 HORSESHOE HOLLOW ----
   horseshoe_prologue: [
     { who: '📋 THE COUNTY CLERK', text: 'Miss Fran. County business. The road out of town bends so hard both ends MEET. At the bottom: a hollow. In the hollow: the tar.', shot: 'wide' },
@@ -1911,6 +1995,11 @@ export const CUTSCENES = {
 // ('a' = Palm, 'f' = Fair, 'w' = Wonders, 'b' = Second Wind); rotated so
 // repeated failure stays fresh-ish.
 export const FAILS = {
+  p: [
+    [{ who: '📜 THE AUDIT', text: '(a red stamp descends: INCONCLUSIVE. The folder thickens.)', shot: 'wide' },
+     { who: 'YOU', text: 'The numbers are real. The SWING was the forgery. Again.', shot: 'player' }],
+    [{ who: 'YOU', text: 'Denied? DENIED? Appeal filed — with my other hand.', shot: 'player' }],
+  ],
   r: [
     [{ who: 'SIR REGINALD', text: '(yawns. A scale that had loosened quietly re-fastens itself.)', shot: 'opp' },
      { who: 'YOU', text: 'The beast MENDED while we faltered. Faster, brothers. Faith without follow-through is just stretching.', shot: 'player' }],
@@ -2040,6 +2129,11 @@ export const TAKEDOWN_FAIL = [
 // victory beats — short, replayable, played after clearing a NON-final
 // challenge (outro_* scenes own the finales). Keyed by tour prefix; rotated.
 export const WINS = {
+  p: [
+    [{ who: 'YOU', text: 'The record stands. The county stands. My arm — also standing.', shot: 'player' },
+     { who: '📜 THE AUDIT', text: '(one page quietly removes itself from the folder. Nobody stamps anything.)', shot: 'wide' }],
+    [{ who: 'YOU', text: 'File THAT under verified.', shot: 'player' }],
+  ],
   r: [
     [{ who: 'YOU', text: 'The congregation of the palm records another verse.', shot: 'player' },
      { who: '🎀 A BLUE RIBBON', text: '(flutters down from somewhere. There is, as ever, no wind.)', shot: 'wide' }],
@@ -2153,7 +2247,7 @@ export const WINS = {
 // storyline next, with the Master Slee scrolls beneath it.
 // Olympic Bid leads (free), Wonders second, the Open Palm third (free) —
 // then the Fair, then the supporter storylines.
-const TOUR_ORDER = ['wonders', 'fair', 'farewell', 'palm', 'olympicbid', 'secondwind', 'blackgold', 'nightofslaps', 'slaptherapy', 'catinquiry', 'union', 'goldenslaps', 'slapcup', 'slapovision', 'superslam', 'grandprize', 'horseshoe', 'slopvalley', 'commedia'];
+const TOUR_ORDER = ['wonders', 'fair', 'farewell', 'palm', 'olympicbid', 'secondwind', 'blackgold', 'nightofslaps', 'slaptherapy', 'catinquiry', 'union', 'goldenslaps', 'slapcup', 'slapovision', 'superslam', 'grandprize', 'horseshoe', 'slopvalley', 'commedia', 'executive'];
 // unknown keys sink to the bottom instead of floating to the top (indexOf −1)
 const tourRank = (k) => { const i = TOUR_ORDER.indexOf(k); return i < 0 ? TOUR_ORDER.length : i; };
 TOURS.sort((a, b) => tourRank(a.key) - tourRank(b.key));

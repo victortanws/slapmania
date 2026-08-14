@@ -233,6 +233,24 @@ export const ROSTER = [
     // LOCAL 415 finale: Don across the negotiating table. Anything below
     // professional-grade form is DENIED (chainGate 70), and the offer expires
     // (20s clock). Same tremendous cheek, now with fiduciary duties.
+    // The final form of the executive branch (HAIL TO THE CHEEK finale). Same
+    // parody rule as don: invented office, invented man. Composable flags only —
+    // shotClock + chainGate are both long-proven (pennywhistle runs the pair).
+    key: 'commander', name: 'COMMANDER-IN-CHEEK', tag: 'BOSS · THE FINAL AUTHORITY', boss: true,
+    w: 1.2, h: 1.05, mass: 1.4, noStache: true, shotClock: 12,
+    chainGate: 60, gateCry: 'VETOED!', gateCrySub: 'EXECUTIVE PRIVILEGE — 60% CHAIN OR THE SLAP IS OVERRULED',
+    skin: 0xe8934a, shirt: 0x1f2a44, pants: 0x1a2438,
+    hair: 'swoop', hairCol: 0xf2c230, suit: true, tie: 0xd4af37,   // the gold tie of office
+    pickLine: 'Slapped by history itself. History filed a complaint.',
+    taunts: [
+      'This cheek is a matter of national security.',
+      'I could stand on this lane and get slapped and not lose a single fan. Watch.',
+      'The polls say your palm is FAILING. Everybody says it.',
+      'I have a mandate. The mandate is: NO.',
+      'Twelve seconds. I have signed entire trade deals in less.',
+    ],
+  },
+  {
     key: 'don_ceo', name: 'THE NEGOTIATOR', tag: 'BOSS · MANAGEMENT', boss: true,
     w: 1.15, h: 1.03, mass: 1.3, shotClock: 20,
     chainGate: 70, gateCry: 'DENIED!', gateCrySub: 'TREMENDOUS DENIAL — 70% CHAIN OR THE OFFER EXPIRES',
@@ -947,6 +965,10 @@ export const WORLD_ROSTERS = {
   heaven:  { allow: ['hal', 'cletus', 'mabel', 'susie'] },                // the gentle
   hell:    { allow: ['larry', 'don', 'ravinray', 'maestro'] },            // reserved parking
   techcampus: { allow: ['vance', 'mira', 'slopberg', 'marswell', 'influencer', 'don', 'susie', 'slim'] }, // whoever badges in
+  // the executive branch: DON headlines all three residences
+  slaphouse: { allow: ['don', 'influencer', 'susie', 'hank', 'slim'] },       // the press pool, the fact-checker, two tourists
+  maraslapo: { allow: ['don', 'influencer', 'maestro', 'bertha', 'horton'] }, // members, the house band, and a man in tails
+  slaptower: { allow: ['don', 'hoss', 'horton', 'influencer'] },              // the doorman is load-bearing
 };
 
 function segSphere(p0, p1, c, r) {

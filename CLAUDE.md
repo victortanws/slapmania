@@ -529,3 +529,27 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   A city night glows: the haze needs warmth (`0x3a2c3a`) for silhouettes to
   read. MAR-A-SLAPO had the opposite problem — fog starting at 70 bleached the
   terracotta, fixed by pushing `near` out to 105.
+
+## HAIL TO THE CHEEK + the polish pass (2026-07-25, late)
+
+- **🦅 HAIL TO THE CHEEK** (`executive`, dlc, prefix `p`, slapper charlie): the
+  SLAP HOUSE declares the county's records FAKE DISTANCE; Charlie defends them
+  through all three executive worlds. Act I slaphouse (influencer press pool →
+  jury subcommittee → don's executive order), Act II maraslapo (maestro → vinnie
+  → don_ceo poolside renegotiation), Act III slaptower (hoss the doorman →
+  marvel the anonymous donor → **COMMANDER-IN-CHEEK**, new boss `commander`:
+  don look + gold tie, shotClock 12 + chainGate 60 'VETOED!'). Goals RETUNED TO
+  MEASURED values (standard swing: don 28.5m, vinnie 363, don_ceo 378, hoss 306,
+  commander 361 → goals 24/330/350/270/330; placeholders had FOUR challenges
+  above the competent ceiling). Veto verified: lazy chain 25.8m → 1.2m. Mash
+  scores 0 on all nine. 25 cutscene beats + outro_p3c3 + WINS.p/FAILS.p.
+- **QUIPS deepened** (main.js): every slapper pool was exactly 2 lines — the
+  second faceoff of a session already repeated. Now 3–5 per slapper, same
+  voices. Taunt pools were already deep via MORE_TAUNTS — an early `~2 lines`
+  measurement was a sed artifact; verify before writing more dialogue.
+- **Executive worlds finished to kit convention**: FACEOFF_OPENERS (state
+  portrait / poolside low / escalator descent + pitch's broadcast blimp),
+  WORLD_ROSTERS allow-lists (don headlines all three), and ambient animation —
+  slaphouse flags flutter + fountain jet pulses, maraslapo parasols sway,
+  **the slaptower escalator RUNS** (steps ride a parametric slot `userData.k`,
+  wrap at 12 — deterministic, film-safe).

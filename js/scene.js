@@ -1714,6 +1714,30 @@ export function createStage(canvas) {
   }
 
   function updateAmbient(dt, time) {
+    // --- the executive branch breathes (kit convention: 1-3 ambient moves) ---
+    if (slapHouseG.visible) {
+      for (let i = 0; i < shFlags.length; i++) {
+        shFlags[i].rotation.y = Math.sin(time * 2.1 + i * 1.7) * 0.22;
+        shFlags[i].rotation.z = Math.sin(time * 3.3 + i) * 0.05;
+      }
+      if (shJet) shJet.scale.y = 1 + Math.sin(time * 3.2) * 0.1;
+    }
+    if (maraSlapoG.visible) {
+      for (let i = 0; i < msParasols.length; i++) {
+        msParasols[i].rotation.z = Math.sin(time * 0.8 + i * 1.3) * 0.055;
+        msParasols[i].rotation.x = Math.cos(time * 0.6 + i) * 0.04;
+      }
+    }
+    if (slapTowerG.visible) {
+      // the escalator RUNS: each step rides a parametric slot up the incline
+      // and wraps — deterministic, so replays and films always match
+      for (const stp of stSteps) {
+        const k = (stp.userData.k + time * 1.4) % 12;
+        stp.position.x = 64.2 + k * 0.68;
+        stp.position.y = 2.35 + k * 0.42;
+      }
+      if (stJet) stJet.scale.y = 1 + Math.sin(time * 3.0) * 0.12;
+    }
     fan.rotation.z += dt * 1.4;
     if (desertG.visible) {
       for (const tw of tumbleweeds) {
@@ -5391,6 +5415,10 @@ export function createStage(canvas) {
   // constitution is one open palm. Neoclassical, aggressively symmetrical, and
   // the lane runs straight down the middle of the North Lawn. Parody in the
   // house style — invented institution, invented address. ---
+  // ambient refs for the executive worlds (animated in updateAmbient):
+  // flags flutter, parasols sway, the golden escalator actually runs
+  const shFlags = [], msParasols = [], stSteps = [];
+  let shJet = null, stJet = null;
   const slapHouseG = new THREE.Group();
   {
     const stone = toonMat(0xf6f4ee), trim = toonMat(0xe4e0d4), roof = toonMat(0xd8d4c6);
@@ -5437,6 +5465,7 @@ export function createStage(canvas) {
       tier.position.set(fx, 2.5, 0); slapHouseG.add(tier);
       const jet = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.05, 2.4, 8), toonMat(0x9fd4ee));
       jet.position.set(fx, 3.8, 0); slapHouseG.add(jet);
+      shJet = jet;
     }
     // press podium + flags: the briefing happens whether or not anyone is briefed
     {
@@ -5449,6 +5478,7 @@ export function createStage(canvas) {
         col(px + 0.4, 2.4, fz, 4.8, 0.07);
         const flag = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.95), toonMat(0x2b3f7a));
         flag.position.set(px + 1.16, 4.2, fz); slapHouseG.add(flag);
+        shFlags.push(flag);
       }
     }
     // the motorcade, parked with the patience of people paid to wait
@@ -5528,6 +5558,7 @@ export function createStage(canvas) {
         const l = add(new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.18, 0.8), toonMat(0xf4f0e6)), px + i * 3.1, 0.55, pz + 6.0);
         l.rotation.z = -0.16;
         const um = add(new THREE.Mesh(new THREE.ConeGeometry(1.5, 0.9, 10), toonMat(i % 2 ? 0xe4574c : 0xf2f0e8)), px + i * 3.1, 2.5, pz + 6.9);
+        msParasols.push(um);
         add(new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 2.4, 6), toonMat(0xb8a88a)), px + i * 3.1, 1.2, pz + 6.9);
       }
     }
@@ -5582,7 +5613,9 @@ export function createStage(canvas) {
       const esc = addA(new THREE.Mesh(new THREE.BoxGeometry(9.5, 0.4, 3.0), brass), 68, 4.4, 0);
       esc.rotation.z = -0.52;
       for (let i = 0; i < 12; i++) {                                // steps
-        addA(new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.22, 2.8), toonMat(0xf0d98a)), 64.2 + i * 0.68, 2.35 + i * 0.42, 0);
+        const stp = addA(new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.22, 2.8), toonMat(0xf0d98a)), 64.2 + i * 0.68, 2.35 + i * 0.42, 0);
+        stp.userData.k = i;                        // parametric slot on the incline
+        stSteps.push(stp);
       }
       for (const s of [-1.6, 1.6]) {
         const rail = addA(new THREE.Mesh(new THREE.BoxGeometry(9.5, 0.16, 0.16), toonMat(0x3a3236)), 68, 5.0, s);
@@ -5592,7 +5625,7 @@ export function createStage(canvas) {
     // brass fountain on the atrium floor
     addA(new THREE.Mesh(new THREE.CylinderGeometry(2.6, 2.8, 0.6, 18), brass), 54, 0.3, 0);
     addA(new THREE.Mesh(new THREE.CylinderGeometry(2.3, 2.3, 0.12, 18), toonMat(0x2fa8c8)), 54, 0.62, 0);
-    addA(new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.3, 2.2, 10), brass), 54, 1.5, 0);
+    stJet = addA(new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.3, 2.2, 10), brass), 54, 1.5, 0);
     // the lobby name, in letters a foot high
     {
       const b = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2.0, 10), marble);
