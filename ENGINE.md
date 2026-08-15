@@ -147,17 +147,28 @@ The extractions that would matter, in order of value:
 
 1. ~~**Camera rig.**~~ **Done** — see `js/camrig.js` above. `main.js` still picks
    *which* shot per state, but no longer owns smoothing, free look or the lens.
-2. **Context, not state.** HUD visibility is currently inferred from the match
-   state machine, which is why walking around shows "STEP 1: HOLD [S]". Elements
-   should declare which context they belong to (`match | roam | cine | replay`).
-   `body.cine` and `body.replaycam` are crude versions of this already.
+2. ~~**Context, not state.**~~ **Done** — every overlay belongs to a context
+   (`menu | match | roam | cine | replay`), published as one `ctx-*` class on
+   `<body>` from the single `setState` choke point. The rule that made it safe to
+   land on a shipped game: **contexts subtract, never add** — a context may hide
+   what the game would otherwise show, never force something visible, so every
+   existing show/hide path stays authoritative and this is a guarantee on top.
+   `body.cine`/`body.replaycam` are now *derived* from the context rather than
+   set independently, which is what stops them stacking. Verified against a
+   golden trace of all 38 overlay elements across 7 states: zero regressions.
+   `window.__slappCtx.set('roam')` is the seam a hub or the film tools claim.
 3. **Rules as a module.** Power, grading and the reward ladder are pure functions
    of the chain state and would move out cleanly. That is the seam that makes
    this "an engine plus a game" rather than one program.
 
 ## Direction
 
-The hub (walk the fairground between matches) now needs only the context split;
-its locomotion and camera layers are in place. The RPG direction needs 3 as
-well: at that point a different game is a different rules module over the same
-navigation, actors, camera and film stack.
+The hub (walk the fairground between matches) now has all three of its layers:
+locomotion (`actor.js` + `navigate.js`), camera (`camrig.js`) and presentation
+(the context split). What remains is a hub *mode* — a state that sets
+`ctx-roam`, drives the player as an actor, and offers matches from the world
+instead of a menu.
+
+The RPG direction needs 3 as well: at that point a different game is a
+different rules module over the same navigation, actors, camera and film
+stack.

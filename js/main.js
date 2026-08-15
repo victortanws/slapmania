@@ -103,6 +103,7 @@ let slap = null;        // outcome of the current attempt {foul, part}
 let contact = null;     // impact info {point, power}
 let settleT = 0;
 let dustCool = 0;
+let scatterCool = 0, crowdParted = false;   // reactive-crowd rate limiter
 let tarSplatted = false; // one tar splat per attempt, on first touchdown
 let clapT = 0;
 let swellT = 0;
@@ -663,6 +664,7 @@ function goToTitle() {
   document.body.classList.remove('mirror');
   if (chosenArch && chosenArch.boss) chosenArch = null;   // bosses don't loiter on the porch
   stage.resetTarStains(); // no tar claims on the title screen
+  stage.clearBodies();    // and the lane is swept for the next contest
   // a tour may have pinned its own world (the dojo) — restore the player's pick
   const homeWorld = localStorage.getItem('slapp_world') || 'day';
   if (stage.hasWorld(homeWorld)) setWorldFull(homeWorld);
@@ -1101,6 +1103,7 @@ function startAttempt() {
   settleT = 0;
   dustCool = 0;
   barricadeHit = false;
+  crowdParted = false; scatterCool = 0;   // the crowd re-forms for each attempt
   gongRung = false;
   lavaBurned = false;
   mooDone = false;
@@ -1551,6 +1554,17 @@ function showResult() {
   timeScale = 1;
   const arch = opponent.arch;
   const flew = opponent.launched ? opponent.distance() : 0;
+  // LEAVE HIM WHERE HE LANDED. Volunteers used to vanish with the card, so the
+  // lane looked untouched no matter how many people you had launched down it.
+  // Scenery + nav blocker only — never a physics collider, or every tuned
+  // distance in the game would quietly change (see scene.js leaveBody).
+  if (opponent.launched && flew > 6 && !ghostActive) {
+    const p = opponent.pelvisPos();
+    stage.leaveBody(p.x, p.z, {
+      shirt: arch.shirt, skin: arch.skin, pants: arch.pants,
+      ry: p.z * 0.14,   // splayed roughly along the drift he picked up in the air
+    });
+  }
   const isFoul = !!(slap && slap.foul);
   const dist = isFoul ? 0 : flew;
   const pts = Math.round(dist * arch.mass * 10);
@@ -2659,6 +2673,18 @@ function tick(now) {
       stage.spawnDust(pel, 1 + Math.min(1, opponent.rag.maxSpeed() / 12));
       dustCool = 0.3;
       if (!skidDone) { skidDone = true; stage.spawnSkid(pel, opponent.rag.maxSpeed()); } // the crash leaves its mark
+    }
+    // THE CROWD GETS OUT OF THE WAY. A body used to pass through a row of
+    // spectators who never reacted; they now dive clear of a near miss and of
+    // wherever it comes down. Rate-limited so one flight is a handful of
+    // events, not a per-frame shove.
+    if (scatterCool > 0) scatterCool -= dt;
+    if (scatterCool <= 0 && !opponent.rag.asleep) {
+      const spd = opponent.rag.maxSpeed();
+      if (pel.y < 2.2 && spd > 4) {
+        const n = stage.scatterCrowd(pel.x, pel.z, pel.y < 0.6 ? 5.0 : 3.6, Math.min(1, spd / 14));
+        if (n) { scatterCool = 0.25; if (!crowdParted && n >= 3) { crowdParted = true; sfx.crowd(2); } }
+      }
     }
     // --- distance milestones: shareable spectacle ---
     if (!barricadeHit && pel.x > stage.START_X + 20) {

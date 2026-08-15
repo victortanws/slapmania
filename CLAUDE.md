@@ -553,3 +553,43 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   slaphouse flags flutter + fountain jet pulses, maraslapo parasols sway,
   **the slaptower escalator RUNS** (steps ride a parametric slot `userData.k`,
   wrap at 12 — deterministic, film-safe).
+
+## Context split, reactive crowd, persistence (2026-07-25, later)
+
+- **UI CONTEXTS** (main.js `syncContext`): every overlay belongs to one of
+  `menu | match | roam | cine | replay`, published as a single `ctx-*` class on
+  `<body>` from the `setState` choke point. `uiContext() = ctxForced ||
+  STATE_CONTEXT[state]`; `setContext(name|null)` forces/releases.
+  **THE RULE: contexts SUBTRACT, NEVER ADD.** A context may hide what the game
+  would otherwise show; it never forces anything visible. That is what let this
+  land on a shipped game with zero regressions — every existing show/hide path
+  stays authoritative for its own element. `body.cine` and `body.replaycam` are
+  now DERIVED in syncContext, not set independently (they used to stack — a
+  replay ran as `replaycam smackon`, and ui.camTag owned the letterbox from
+  another file). `window.__slappCtx.get/set` is the roam seam for the film tools.
+  Boot calls `syncContext()` directly because `state` is initialised at module
+  load and `goBack()` skips `goToTitle()` when already on the title.
+  - **Real defect this found:** an instant replay runs a real attempt underneath,
+    so `startAttempt()` walks it through FACEOFF and re-raises the volunteer's
+    NAME PLATE + TAUNT BUBBLE + REF LINE over the letterboxed cinematic —
+    measured visible for the first 2.4s of every replay. Now structurally
+    impossible via `body.ctx-replay`.
+  - Validate HUD refactors with a **golden trace**: capture the visibility of
+    every absolutely/fixed-positioned element across TITLE/FACEOFF/SWING/IMPACT/
+    FLIGHT/RESULT/REPLAY before and after, and diff. Make the check
+    ancestor-aware (a child of a hidden parent is not visible). `#flash` is an
+    opacity-transition overlay and will show spurious diffs from run ordering.
+- **REACTIVE CROWD** (`stage.scatterCrowd(x, z, radius, strength)`): spectators
+  dive clear of a body passing low/landing near the rail, then walk home to
+  `spot.hx/hz`. Deliberately NOT routed through actor.js — the crowd is an
+  InstancedMesh whose `spot.x/z` `updateCrowd` already reads live every frame, so
+  shoving the spot is both cheapest and most direct, and navigate.js consumes the
+  same spots as blockers so a scattered spectator is a moved obstacle for free.
+  Wired in the FLIGHT tick, rate-limited (0.25s), reset per attempt.
+- **PERSISTENCE** (`stage.leaveBody / clearBodies / restingBodies`): launched
+  volunteers stay where they landed, in the arch's own shirt/skin/pants colours.
+  **Scenery + nav blocker ONLY — never a cannon collider**, or every tuned
+  distance in the game would silently change. Capped at 7 (oldest recycled),
+  swept by `goToTitle`. `restingBodies` is `{x,z,r}` so it drops straight into
+  `createNav({actors})`. Verified: 4 attempts → 4 bodies, 10 → capped at 7,
+  walkers keep 1.03m clearance, distances 43.9/41.1/40.9/40.6 (unchanged).

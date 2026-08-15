@@ -1337,9 +1337,10 @@ export function createStage(canvas) {
       for (let x = -6; x < 54; x += 2.0) {
         const fem = Math.random() < 0.45;
         const kid = Math.random() < 0.15;
+        const sx = x + Math.random() * 0.7, sz = s * (row + Math.random() * 0.4);
         spots.push({
-          x: x + Math.random() * 0.7,
-          z: s * (row + Math.random() * 0.4),
+          x: sx, z: sz,
+          hx: sx, hz: sz,   // HOME: a scattered spectator walks back to this spot
           phase: Math.random() * Math.PI * 2,
           h: kid ? 0.5 + Math.random() * 0.1 : 0.85 + Math.random() * 0.3,
           hat: !kid && Math.random() < (fem ? 0.3 : 0.6),
@@ -1532,7 +1533,100 @@ export function createStage(canvas) {
   function kidsCelebrate(sec) { kidCelebT = Math.max(kidCelebT, sec); }
 
   const dummy = new THREE.Object3D();
+  // --- PERSISTENCE: the ones who already flew -----------------------------
+  // Volunteers used to vanish the moment the card came up, so the lane read as
+  // brand new on every attempt and a 90m flight left no trace. They now stay
+  // where they landed.
+  //
+  // Deliberately scenery + NAVIGATION blocker, never a physics collider: adding
+  // cannon bodies here would change where later flights bounce and silently
+  // retune every distance in the game. Walkers path around them (they are fed
+  // to navigate.js through stage.restingBodies); ragdolls fly straight over.
+  const restG = new THREE.Group();
+  scene.add(restG);
+  const restPool = [], restingBodies = [];
+  const REST_MAX = 7;                       // the lane gets a history, not a landfill
+  function leaveBody(x, z, look = {}) {
+    let b = restPool.pop();
+    if (!b) {
+      b = new THREE.Group();
+      const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.2, 0.5, 3, 8), toonMat(0xffffff));
+      torso.rotation.z = Math.PI / 2; torso.position.set(0, 0.2, 0); b.add(torso); b.userData.torso = torso;
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 10), toonMat(0xffffff));
+      head.position.set(0.5, 0.17, 0); b.add(head); b.userData.head = head;
+      for (const sgn of [-1, 1]) {
+        const leg = new THREE.Mesh(new THREE.CapsuleGeometry(0.085, 0.42, 3, 6), toonMat(0xffffff));
+        leg.rotation.z = Math.PI / 2; leg.rotation.y = sgn * 0.22;
+        leg.position.set(-0.55, 0.11, sgn * 0.12); b.add(leg);
+        (b.userData.legs || (b.userData.legs = [])).push(leg);
+      }
+      b.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+      restG.add(b);
+    }
+    b.userData.torso.material.color.setHex(look.shirt === undefined ? 0xd8d2c4 : look.shirt);
+    b.userData.head.material.color.setHex(look.skin === undefined ? 0xe8c19a : look.skin);
+    for (const leg of b.userData.legs) leg.material.color.setHex(look.pants === undefined ? 0x4a6fa5 : look.pants);
+    b.position.set(x, 0, z);
+    b.rotation.y = look.ry === undefined ? 0 : look.ry;
+    b.visible = true;
+    const rec = { x, z, r: 0.5, mesh: b };
+    restingBodies.push(rec);
+    while (restingBodies.length > REST_MAX) {        // oldest gets up and goes home
+      const old = restingBodies.shift();
+      old.mesh.visible = false; restPool.push(old.mesh);
+    }
+    return rec;
+  }
+  function clearBodies() {
+    for (const rec of restingBodies) { rec.mesh.visible = false; restPool.push(rec.mesh); }
+    restingBodies.length = 0;
+  }
+
+  // --- REACTIVE CROWD ---------------------------------------------------
+  // A body landing in the rail used to pass THROUGH a row of people who never
+  // acknowledged it. Spectators now dive clear and wander back.
+  //
+  // This deliberately does NOT go through actor.js/navigate.js: the crowd is an
+  // InstancedMesh of ~60 people whose x/z updateCrowd already reads live every
+  // frame, so shoving the spot is both the cheapest and the most direct way to
+  // move them. navigate.js already consumes these same spots as blockers
+  // (stage.crowdSpots), so a scattered spectator is a moved obstacle for free —
+  // the walking cast steers around the gap without being told.
+  let scatterT = 0;
+  function scatterCrowd(x, z, radius = 4.5, strength = 1) {
+    let moved = 0;
+    for (const sp of spots) {
+      const dx = sp.x - x, dz = sp.z - z;
+      const d = Math.hypot(dx, dz);
+      if (d > radius) continue;
+      const push = (1 - d / radius) * (1.4 + 1.8 * strength);
+      const m = d || 0.001;
+      sp.x += (dx / m) * push;
+      sp.z += (dz / m) * push + (sp.z >= 0 ? 0.5 : -0.5) * push * 0.4;  // and back off the rail
+      sp.startle = Math.min(1.6, (sp.startle || 0) + 0.9 + strength * 0.5);
+      moved++;
+    }
+    if (moved) scatterT = 2.5;
+    return moved;
+  }
+  // drift everyone home; startled people scramble, then amble
+  function settleCrowd(dt) {
+    if (scatterT <= 0) return;
+    scatterT -= dt;
+    for (const sp of spots) {
+      if (sp.startle > 0) sp.startle = Math.max(0, sp.startle - dt);
+      const dx = sp.hx - sp.x, dz = sp.hz - sp.z;
+      const d = Math.hypot(dx, dz);
+      if (d < 0.02) { sp.x = sp.hx; sp.z = sp.hz; continue; }
+      const speed = (sp.startle > 0 ? 0.7 : 1.9) * dt;   // freeze, then hurry back
+      const k = Math.min(1, speed / d);
+      sp.x += dx * k; sp.z += dz * k;
+      if (scatterT > 0) scatterT = Math.max(scatterT, 0.05);   // hold the ticker while anyone is out of place
+    }
+  }
+
   function updateCrowd(time, excite) {
+    settleCrowd(1 / 60);
     // ring girl never stops; the judge surveys his domain
     const rgSpeed = 5 + excite * 4;
     ringGirl.g.position.y = Math.abs(Math.sin(time * (3.5 + excite * 3))) * (0.04 + excite * 0.09);
@@ -5755,6 +5849,8 @@ export function createStage(canvas) {
     isDojoUp: () => dojoG.visible,
     setSpirit, setJudge, setBruce, setCatReact, setCatCine, cinePoints,
     // live crowd positions — walking characters need to know people are solid
-    crowdSpots: spots,
+    crowdSpots: spots, scatterCrowd,
+    // the ones who already flew: {x,z,r} — drops straight into createNav({actors})
+    leaveBody, clearBodies, restingBodies,
   };
 }
