@@ -1533,6 +1533,76 @@ export function createStage(canvas) {
   function kidsCelebrate(sec) { kidCelebT = Math.max(kidCelebT, sec); }
 
   const dummy = new THREE.Object3D();
+  // --- HUB STANDEES ------------------------------------------------------
+  // Volunteers waiting at their stations while you walk the fairground.
+  //
+  // Deliberately NOT Opponent instances: every Opponent builds a cannon ragdoll
+  // at START_X (opponent.js createRagdoll), so six of them would be six rigs
+  // stacked on the ring and six bodies in the physics world. A hub needs a
+  // recognisable silhouette, not a simulated skeleton — so this is a posed
+  // figure carrying the arch's own colours and its two most identifying flags
+  // (hat, hair), plus a name board so you can read the lane from a distance.
+  // Zero physics: nothing here can perturb a tuned distance.
+  function makeStandee(arch, x, z, ry = 0) {
+    const g = new THREE.Group();
+    const w = arch.w || 1, h = arch.h || 1;
+    const skin = toonMat(arch.skin === undefined ? 0xe8c19a : arch.skin);
+    const shirt = toonMat(arch.shirt === undefined ? 0xd8d2c4 : arch.shirt);
+    const pants = toonMat(arch.pants === undefined ? 0x4a6fa5 : arch.pants);
+    const add = (m, px, py, pz) => { m.position.set(px, py, pz); g.add(m); return m; };
+    for (const sgn of [-1, 1]) {
+      add(new THREE.Mesh(new THREE.CapsuleGeometry(0.1 * w, 0.62 * h, 3, 7), pants), 0, 0.42 * h, sgn * 0.14 * w);
+      add(new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.08, 0.13), toonMat(0x5a4632)), 0.06, 0.05, sgn * 0.14 * w);
+    }
+    add(new THREE.Mesh(new THREE.CapsuleGeometry(0.24 * w, 0.5 * h, 4, 9), shirt), 0, 1.05 * h, 0);
+    for (const sgn of [-1, 1]) {
+      const arm = add(new THREE.Mesh(new THREE.CapsuleGeometry(0.075 * w, 0.42 * h, 3, 6), shirt), 0, 1.02 * h, sgn * 0.31 * w);
+      arm.rotation.x = sgn * 0.12;
+    }
+    const head = add(new THREE.Mesh(new THREE.SphereGeometry(0.17 * (w + h) / 2, 12, 12), skin), 0, 1.5 * h, 0);
+    for (const sgn of [-1, 1]) {
+      add(new THREE.Mesh(new THREE.SphereGeometry(0.022, 6, 6), toonMat(0x18140f)), 0.145 * w, 1.53 * h, sgn * 0.055 * w);
+    }
+    if (arch.hair) {   // the identifying silhouette, not the full rig
+      const hc = toonMat(arch.hairCol === undefined ? 0x2a1e16 : arch.hairCol);
+      if (arch.hair === 'long' || arch.hair === 'pony') {
+        add(new THREE.Mesh(new THREE.BoxGeometry(0.2 * w, 0.42 * h, 0.3 * w), hc), -0.06 * w, 1.42 * h, 0);
+      } else if (arch.hair === 'afro' || arch.hair === 'frizz') {
+        add(new THREE.Mesh(new THREE.SphereGeometry(0.24 * w, 10, 9), hc), -0.02 * w, 1.57 * h, 0);
+      } else {
+        add(new THREE.Mesh(new THREE.SphereGeometry(0.185 * w, 10, 8, 0, Math.PI * 2, 0, Math.PI / 2), hc), 0, 1.53 * h, 0);
+      }
+    }
+    if (arch.hat) {
+      const hm = toonMat(arch.hatCol === undefined ? 0xd9bb7a : arch.hatCol);
+      add(new THREE.Mesh(new THREE.CylinderGeometry(0.34 * w, 0.34 * w, 0.03, 14), hm), 0, 1.68 * h, 0);
+      add(new THREE.Mesh(new THREE.CylinderGeometry(0.17 * w, 0.19 * w, 0.16, 12), hm), 0, 1.76 * h, 0);
+    }
+    // The name board. Parented to the SCENE, not to the figure: a billboard that
+    // is a child of a rotating group cannot be aimed by copying the camera's
+    // WORLD quaternion into its LOCAL one — the parent's rotation is still
+    // applied on top, which skews it. Station positions never move, so the plate
+    // just sits at a world point and turns to face the lens.
+    const plate = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.32),
+      new THREE.MeshBasicMaterial({ map: makeTextTexture(arch.name, '#f7f0dc'), transparent: true, depthWrite: false }));
+    plate.position.set(x, 2.05 * h + 0.25, z);
+    plate.userData.billboard = true;
+    plate.renderOrder = 2;
+    scene.add(plate);
+    g.position.set(x, 0, z);
+    g.rotation.y = ry;
+    g.traverse((o) => { if (o.isMesh && !o.userData.billboard) { o.castShadow = true; o.receiveShadow = true; } });
+    scene.add(g);
+    return {
+      group: g, plate,
+      dispose() {
+        scene.remove(g); scene.remove(plate);
+        g.traverse((o) => { if (o.isMesh) o.geometry.dispose(); });
+        plate.geometry.dispose();
+      },
+    };
+  }
+
   // --- PERSISTENCE: the ones who already flew -----------------------------
   // Volunteers used to vanish the moment the card came up, so the lane read as
   // brand new on every attempt and a 90m flight left no trace. They now stay
@@ -5852,5 +5922,6 @@ export function createStage(canvas) {
     crowdSpots: spots, scatterCrowd,
     // the ones who already flew: {x,z,r} — drops straight into createNav({actors})
     leaveBody, clearBodies, restingBodies,
+    makeStandee,
   };
 }

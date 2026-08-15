@@ -163,11 +163,13 @@ The extractions that would matter, in order of value:
 
 ## Direction
 
-The hub (walk the fairground between matches) now has all three of its layers:
-locomotion (`actor.js` + `navigate.js`), camera (`camrig.js`) and presentation
-(the context split). What remains is a hub *mode* — a state that sets
-`ctx-roam`, drives the player as an actor, and offers matches from the world
-instead of a menu.
+~~The hub~~ **The hub is built** — `js/hub.js`, a `ROAM` state that claims
+`ctx-roam`, drives the player through `createActor(playerRig(...))` over
+`createNav`, composes its own third-person shot for `camrig`, and hands a
+volunteer to `startMatch()` when you walk up and press [E]. Finishing that match
+returns you to the fairground rather than a menu. It is ~180 lines and owns
+almost no mechanism: everything game-specific is injected through a host object
+(`makeFigure`, `onChallenge`, `onPrompt`), so the file stays close to portable.
 
 The RPG direction needs 3 as well: at that point a different game is a
 different rules module over the same navigation, actors, camera and film

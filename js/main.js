@@ -9,6 +9,7 @@ import * as net from './net.js';
 import * as campaign from './campaign.js';
 import * as dlg from './dialogue.js';
 import { createCamRig } from './camrig.js';
+import { createHub } from './hub.js';
 
 // every slapper has a mouth on them too — a quip at the faceoff (public; the
 // judge takes this slot in campaign matches)
@@ -323,6 +324,7 @@ const STATE_CONTEXT = {
   TITLE: 'menu', SELECT_SLAPPER: 'menu', SELECT_OPP: 'menu', TOUR: 'menu',
   FACEOFF: 'match', SWING: 'match', IMPACT: 'match', FLIGHT: 'match',
   FOULED: 'match', RESULT: 'match', MATCH_END: 'match',
+  ROAM: 'roam',
 };
 const CONTEXTS = ['menu', 'match', 'roam', 'cine', 'replay'];
 let ctxForced = null;             // cine / replay / roam outrank the state map
@@ -339,6 +341,50 @@ function setContext(c) {
   syncContext(); syncBackBtn();
 }
 window.__slappCtx = { get: uiContext, set: setContext };   // roam hook for the film tools
+
+// ---------- THE HUB: walk the fairground, pick your fight ----------
+// The payoff for the portable layers — locomotion, camera and the context split
+// wired into a mode. Volunteers wait at stations; walk up to one and challenge.
+let hub = null;
+let hubReturn = false;         // did this match start FROM the hub? then go back to it
+const hubKeys = { f: 0, b: 0, l: 0, r: 0 };
+function ensureHub() {
+  if (hub) return hub;
+  hub = createHub({
+    stage, player, camera,
+    makeFigure: (arch, x, z, ry) => stage.makeStandee(arch, x, z, ry),
+    onChallenge: (arch) => enterMatchFromHub(arch),
+    onPrompt: (arch) => ui.hubPrompt(arch
+      ? `${arch.name} · ${arch.tag} — ${isTouch ? 'TAP TO CHALLENGE' : 'PRESS [E] TO CHALLENGE'}`
+      : null),
+  });
+  return hub;
+}
+function enterHub() {
+  sfx.ensure();
+  ensureHub();
+  opponent.remove();                    // no active volunteer while roaming
+  ui.hideCards();
+  ui.intro(null); ui.bubble(null); ui.coach(null); ui.showDistance(null);
+  camReset();
+  const n = hub.enter(oppListNow());
+  setState('ROAM');                     // ctx-roam strips the match furniture
+  track('hub_entered', { stations: n });
+  return n;
+}
+function leaveHub() {
+  if (hub) hub.exit();
+  hubKeys.f = hubKeys.b = hubKeys.l = hubKeys.r = 0;
+  ui.hubPrompt(null);
+}
+function enterMatchFromHub(arch) {
+  if (!arch) return;
+  leaveHub();
+  hubReturn = true;
+  chosenArch = arch;
+  startMatch();
+}
+
 
 function setState(s) { state = s; tState = 0; syncContext(); syncTouchPad(); syncBackBtn(); }
 // `state` is initialised directly at module load, and goBack() skips goToTitle
@@ -374,6 +420,7 @@ function goBack() {
   if (dlg.isActive()) { dlg.stop(); return; }
   if (!document.getElementById('dlcGallery').classList.contains('hidden')) { closeDlcGallery(); return; }
   if (state === 'MATCH_END' && campaign.active) { campaign.clearActive(); openTourMenu(); return; }
+  if (state === 'ROAM') { leaveHub(); hubReturn = false; goToTitle(); return; }
   if (state !== 'TITLE') goToTitle();
 }
 backBtn.addEventListener('click', goBack);
@@ -418,6 +465,41 @@ backBtn.addEventListener('click', goBack);
   // or double-tap anywhere on the world
   ui.bindCamTag(() => camReset());
   cv.addEventListener('dblclick', (e) => { if (!overUI(e)) camReset(); });
+  // ---- HUB movement. Bound only while state==='ROAM', so KeyS/KeyA keep
+  // meaning SWIVEL/ARM everywhere else — the chain reads them per-state.
+  addEventListener('keydown', (e) => {
+    if (state !== 'ROAM') return;
+    if (e.code === 'KeyW' || e.code === 'ArrowUp') hubKeys.f = 1;
+    else if (e.code === 'KeyS' || e.code === 'ArrowDown') hubKeys.b = 1;
+    else if (e.code === 'KeyA' || e.code === 'ArrowLeft') hubKeys.l = 1;
+    else if (e.code === 'KeyD' || e.code === 'ArrowRight') hubKeys.r = 1;
+    else if (e.code === 'KeyE' || e.code === 'Enter' || e.code === 'Space') {
+      const a = hub && hub.challenge();
+      if (a) enterMatchFromHub(a);
+    } else return;
+    e.preventDefault();
+  });
+  addEventListener('keyup', (e) => {
+    if (e.code === 'KeyW' || e.code === 'ArrowUp') hubKeys.f = 0;
+    else if (e.code === 'KeyS' || e.code === 'ArrowDown') hubKeys.b = 0;
+    else if (e.code === 'KeyA' || e.code === 'ArrowLeft') hubKeys.l = 0;
+    else if (e.code === 'KeyD' || e.code === 'ArrowRight') hubKeys.r = 0;
+  });
+  // tap the ground to walk there (the only workable scheme once the touch pad
+  // is hidden), or tap a volunteer you are already standing next to
+  cv.addEventListener('click', (e) => {
+    if (state !== 'ROAM' || !hub || overUI(e)) return;
+    if (drag) return;                       // a camera orbit is not a move order
+    const a = hub.challenge();
+    if (a) { enterMatchFromHub(a); return; }
+    const r = cv.getBoundingClientRect();
+    const ndc = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    const ray = new THREE.Raycaster();
+    ray.setFromCamera(ndc, camera);
+    const hit = new THREE.Vector3();
+    if (ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), hit)) hub.goTo(hit.x, hit.z);
+  });
+
   addEventListener('keydown', (e) => {
     if (e.code === 'Minus' || e.code === 'NumpadSubtract') camZoom(1.12);
     else if (e.code === 'Equal' || e.code === 'NumpadAdd') camZoom(1 / 1.12);
@@ -663,6 +745,7 @@ function goToTitle() {
   dailyMode = false;
   document.body.classList.remove('mirror');
   if (chosenArch && chosenArch.boss) chosenArch = null;   // bosses don't loiter on the porch
+  leaveHub(); hubReturn = false;
   stage.resetTarStains(); // no tar claims on the title screen
   stage.clearBodies();    // and the lane is swept for the next contest
   // a tour may have pinned its own world (the dojo) — restore the player's pick
@@ -995,6 +1078,7 @@ applyWorld(stage.hasWorld(savedWorld) && !(savedDef && savedDef.dlc && !owned('b
 // work as a fallback (buttons are excluded from the tap-to-advance handler), so
 // this just gives the front door a real, obvious control instead of a hidden tap.
 document.getElementById('startBtn').onclick = () => { sfx.ensure(); advanceScreens(null); };
+document.getElementById('roamBtn').onclick = () => { enterHub(); };
 // THE DAILY VOLUNTEER chip: seeded matchup, straight into the match (world pinned)
 {
   const d = dailyPick();
@@ -1931,6 +2015,9 @@ function advanceScreens(code) {
     }
     // a finished DAILY hands back to normal play: the mirror stays on daily turf
     if (dailyMode) { dailyMode = false; document.body.classList.remove('mirror'); }
+    // THE HUB LOOP: a match you walked up to hands you back to the fairground,
+    // not to a menu — that is the whole point of having a place to stand.
+    if (hubReturn) { hubReturn = false; enterHub(); return true; }
     openOppPick();
     return true;
   }
@@ -2072,6 +2159,12 @@ function chooseSlapCam(card) {
 function updateCamera(dt) {
   let p = null, l = null, snapRate = 5, shotFov = 0;
   const rcam = replayCam ? SLAP_CAMS[replayAngle].key : null;
+  if (state === 'ROAM' && hub && hub.active) {     // the hub composes its own trail
+    const sh = hub.shot(dt);
+    camRig.apply(dt, { pos: V(sh.pos.x, sh.pos.y, sh.pos.z), look: V(sh.look.x, sh.look.y, sh.look.z), snap: sh.snap, fov: sh.fov });
+    stage.trackSun(camLook.x);
+    return;
+  }
   if (state === 'SELECT_SLAPPER') {
     p = V(1.75, 1.6, 1.75);
     l = V(0.05, 1.15, 0); // lower target so tall/hatted slappers clear the top bubble
@@ -2664,6 +2757,18 @@ function tick(now) {
       timeScale = 1;
       setState('FLIGHT');
     }
+  } else if (state === 'ROAM') {
+    // the hub runs no match logic at all: no shot clock, no chain, no opponent.
+    // Just a person walking around a world that keeps breathing.
+    if (hub) {
+      const f = hubKeys.f - hubKeys.b, r = hubKeys.r - hubKeys.l;
+      if (f || r) {
+        // screen-relative: forward is where the camera is looking
+        const yaw = Math.atan2(camera.position.x - camLook.x, camera.position.z - camLook.z);
+        hub.drive(-Math.sin(yaw) * f + Math.cos(yaw) * r, -Math.cos(yaw) * f - Math.sin(yaw) * r, dt);
+      }
+      hub.update(dt);
+    }
   } else if (state === 'FLIGHT') {
     player.update(dts, keys);
     ui.showDistance(opponent.distance());
@@ -2850,6 +2955,8 @@ window.__slapp = {
   relock: (key) => { unlocks = key ? unlocks.filter((k) => k !== key) : []; localStorage.setItem('slapp_unlocks', JSON.stringify(unlocks)); return [...unlocks]; },
   get unlocks() { return [...unlocks]; },
   dist: () => opponent.distance(),
+  hub: () => hub,           // test seam: drive the fairground walker without a mouse
+  enterHub: () => enterHub(),
   get catches() { return { caught: catchCount, missed: catchMiss, thrown: catchThrown, live: iceCubes.length }; },
   get chainState() { return chain; },
   get bestScore() { return bestPts(); },
@@ -2858,7 +2965,7 @@ window.__slapp = {
   // pause/resume the live loop (for freeze-frame screenshots)
   freeze(on) {
     manual = !!on;
-    if (!on) { last = performance.now(); schedule(); }
+    if (!on) { skipRender = false; last = performance.now(); schedule(); }
   },
   // deterministic replay: steps the sim synchronously at 60fps with a scripted
   // key timeline [[ms, code, isDown], ...] — immune to hidden-tab throttling
@@ -2881,7 +2988,7 @@ window.__slapp = {
         const [, code, down] = pending.shift();
         dispatchEvent(new KeyboardEvent(down ? 'keydown' : 'keyup', { code }));
       }
-      if (i === frames - 1 && !onStep) skipRender = false;
+      if (i === frames - 1 && !onStep) skipRender = false;   // last frame paints for screenshots
       tick(t0 + sim);
       if (onStep) onStep(sim, i);
       if (state === 'SWING') peak = Math.max(peak, player.handSpeed);
@@ -2892,6 +2999,11 @@ window.__slapp = {
       }
     }
     manual = false;
+    // ALWAYS hand rendering back. When an onStep callback is supplied the loop
+    // above never clears skipRender (the callback is expected to draw), so
+    // without this the game stays dark forever after any instrumented run —
+    // which silently broke every freeze-frame screenshot taken this way.
+    skipRender = false;
     return { log, peak: +peak.toFixed(1), contactSpeed: +contactSpeed.toFixed(1),
       state, attempts: attempts.map(a => ({ dist: +a.dist.toFixed(2), foul: a.foul })),
       dist: +opponent.distance().toFixed(2), fallen: player.fallen, lean: +player.lean.toFixed(2) };

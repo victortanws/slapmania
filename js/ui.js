@@ -76,6 +76,15 @@ export function camTag(text, cine = false) {
   el.camTag.textContent = text;
   el.camTag.classList.remove('hidden');
 }
+// the hub's "walk up to someone" prompt — its own element, see index.html
+export function hubPrompt(text) {
+  const e = document.getElementById('hubPrompt');
+  if (!e) return;
+  if (!text) { e.classList.add('hidden'); e.textContent = ''; return; }
+  e.textContent = text;
+  e.classList.remove('hidden');
+}
+
 // tapping the chip recentres — bound once by main.js
 export function bindCamTag(fn) { if (el.camTag) el.camTag.addEventListener('click', fn); }
 

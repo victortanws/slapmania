@@ -1024,6 +1024,21 @@ export class Player {
     if (!this.hips) return;
     const w = t * 8.2;                                   // stride rate
     const sw = Math.sin(w) * 0.62 * amt;
+    // Arms hang and counter-swing. Setting the joints is not enough — the arm
+    // meshes are only rebuilt by pose(), so without this call he walks the
+    // fairground with the slap arm still cocked from the last faceoff.
+    // pose() may nudge root.x (the lunge); the actor's rig.place() runs after
+    // walk() and puts him back, so the ordering is safe.
+    // pose() LERPS armLift toward (aUnlocked ? strikeLift : _armed ? 0.42 : -1.15),
+    // so assigning armLift here is pointless — it is overwritten on the same
+    // call. Disarming is what makes the arm hang: -1.15 is "down at his side".
+    // shoulderG.rotation.y is j.shoulder.a + 0.35, so -0.35 is straight down.
+    this._armed = false; this.aUnlocked = false; this.pUnlocked = false;
+    this.j.shoulder.a = -0.35 + Math.sin(w + Math.PI) * 0.22 * amt;
+    this.j.elbow.a = 0.28; this.j.wrist.a = 0.5;
+    this.j.spine.a = 0; this.j.shoulderPitch.a = this.j.shoulderPitch.rest;
+    this.pose();
+    // legs + bob are applied AFTER pose(), which does not own either
     this.hips[0].rotation.z = sw;
     this.hips[1].rotation.z = -sw;
     // two bobs per stride (one per footfall) plus a roll into each step
@@ -1035,6 +1050,21 @@ export class Player {
   standPose() {
     if (!this.hips) return;
     this.hips[0].rotation.z = 0; this.hips[1].rotation.z = 0;
+    this.root.position.y = 0;
+  }
+
+  // Standing still OUTSIDE a match (the hub). Separate from standPose because
+  // reset() calls standPose on every attempt — putting the disarm in there
+  // un-armed the player immediately after reset armed him, and every slap in
+  // the game dropped from ~41m to ~9m by landing on the torso instead of the
+  // cheek. Anything reset() touches must stay match-safe.
+  idlePose() {
+    if (!this.hips) return;
+    this._armed = false; this.aUnlocked = false; this.pUnlocked = false;
+    this.j.shoulder.a = -0.35; this.j.elbow.a = 0.28; this.j.wrist.a = 0.5;
+    this.j.spine.a = 0; this.j.shoulderPitch.a = this.j.shoulderPitch.rest;
+    this.pose();
+    this.hips[0].rotation.z = 0; this.hips[1].rotation.z = 0;   // pose() does not own the legs
     this.root.position.y = 0;
   }
 

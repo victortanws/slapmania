@@ -115,7 +115,8 @@ export function createCast(list = []) {
 export const playerRig = (p) => ({
   place: (x, z, h) => { p.root.position.x = x; p.root.position.z = z; p.root.rotation.y = -h; },
   walk: (t, amt) => p.walkPose(t, amt),
-  stand: () => p.standPose(),
+  // idlePose relaxes the slap arm too; standPose is reset-safe and legs-only
+  stand: () => (p.idlePose ? p.idlePose() : p.standPose()),
 });
 
 // Any bare three.js Object3D — a prop, an extra, a vehicle.

@@ -593,3 +593,50 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   swept by `goToTitle`. `restingBodies` is `{x,z,r}` so it drops straight into
   `createNav({actors})`. Verified: 4 attempts → 4 bodies, 10 → capped at 7,
   walkers keep 1.03m clearance, distances 43.9/41.1/40.9/40.6 (unchanged).
+
+## THE HUB (2026-07-25, later still)
+
+- **`js/hub.js` + the `ROAM` state**: walk the fairground, six volunteers wait at
+  stations, walk up and press **[E]** (or tap them) to challenge. Finishing that
+  match returns you to the hub, not the menu. Title button `#roamBtn`
+  (🚶 WALK THE FAIRGROUND); ESC leaves. Test seams: `__slapp.enterHub()`,
+  `__slapp.hub()` (`.goTo/.pos/.challenge/.count`).
+- Movement is BOTH: WASD/arrows (screen-relative, gated on `state === 'ROAM'` so
+  KeyS/KeyA keep meaning SWIVEL/ARM everywhere else) and click/tap-to-route via
+  `actor.goTo` — the latter is the only scheme that works once the touch pad is
+  hidden.
+- **STATIONS are verified walkable**, not guessed: x≈9–37 off the centre line.
+  A first pass put hoss at x=58 and he measured **unreachable**; the full six-stop
+  circuit now walks in 15.2s.
+- **Standees are NOT Opponent instances.** Every Opponent builds a cannon ragdoll
+  at START_X, so six would stack six rigs on the ring and need a `placeAt()` plus
+  a fix to `animateShowcase` (which hardcodes START_X for the beckoning arm).
+  `stage.makeStandee(arch,x,z,ry)` is a physics-free posed figure carrying the
+  arch's colours + hat/hair. NB a scouting pass measured that real Opponents
+  would NOT perturb physics (ragdoll bodies are `collisionFilterGroup 2 / mask 1`,
+  static-only) — so the reason to prefer standees is ~20 draw calls each vs ~6,
+  not contamination.
+- **Name boards are parented to the SCENE, not the figure.** A billboard that is
+  a child of a rotating group cannot be aimed by copying the camera's WORLD
+  quaternion into its LOCAL one — the parent rotation is still applied on top.
+- **The hub camera carries its own damped yaw.** Built straight off
+  `me.heading`, a sharp turn (which tap-to-walk produces constantly) whips the
+  camera a quarter circle through the character — measured 5m out of position.
+- **`#hubPrompt` is its own element.** Reusing `#refBar` failed silently because
+  `ctx-roam` correctly hides refBar (it is faceoff furniture) — the text was set
+  and invisible. When a context hides something you want, add an element; do not
+  weaken the context.
+
+### Two regressions worth never repeating
+- **`Player.reset()` calls `standPose()`.** Putting the walking arm-relax
+  (disarm + joint rewrite) into `standPose` therefore un-armed the player on
+  every attempt, immediately after reset armed him: EVERY slap in the game fell
+  from ~41m to ~9m by landing on the torso instead of the cheek, with hand speed
+  unchanged (9.2 m/s). Walking idle now lives in a separate `idlePose()`.
+  **Anything `reset()` touches must stay match-safe.** Also: `grep -v player.js`
+  is how the caller stayed hidden — do not exclude the file you are editing.
+- **`drive(events, seconds, onStep)` leaked `skipRender`.** The loop only clears
+  it on the last frame `if (!onStep)`, so any instrumented run left the game
+  permanently un-rendered — which is why freeze-frame screenshots kept needing a
+  manual `setInterval` render. `drive` now always restores it, and `freeze(false)`
+  clears it too.

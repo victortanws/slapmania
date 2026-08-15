@@ -116,6 +116,7 @@ body.smackon #distance, body.smackon #flightChain, body.smackon #coach{visibilit
 @keyframes startGlow{0%,100%{box-shadow:0 6px 0 #000;}50%{box-shadow:0 6px 0 #000,0 0 20px 3px rgba(60,200,90,.5);}}
 .startHint{font-size:11px;letter-spacing:2px;color:#7c85ad;margin-top:-6px;}
 #dailyBtn{font-size:13px;padding:9px 18px;background:#1d2140;color:#ffe9a0;border:3px solid #000;margin-top:-4px;}
+#roamBtn{font-size:13px;padding:9px 18px;background:#1d2140;color:#9fe6b0;border:3px solid #000;margin-top:-4px;}
 .titleDivider{display:flex;align-items:center;gap:12px;width:min(86vw,380px);color:#6a7099;
   font-size:12px;letter-spacing:3px;font-family:'Arial Black',Impact,sans-serif;margin:2px 0;}
 .titleDivider::before,.titleDivider::after{content:"";flex:1;height:2px;background:rgba(255,255,255,.15);}
@@ -133,6 +134,16 @@ body.smackon #distance, body.smackon #flightChain, body.smackon #coach{visibilit
    In replay it sits INSIDE the letterbox — a broadcast burn-in belongs in the
    black, and parking it there means it cannot collide with a centre-anchored
    banner by construction. */
+/* ---- the hub's interact prompt. It gets its OWN element rather than borrowing
+   #refBar: roam correctly hides refBar (it is faceoff furniture), so reusing it
+   meant the text was set and invisible. Bottom-centre is free in roam precisely
+   because the context has stood the meters and key bar down. ---- */
+#hubPrompt{position:absolute;bottom:92px;left:0;right:0;margin:0 auto;width:fit-content;max-width:88vw;
+  background:rgba(10,12,26,.82);border:3px solid var(--yellow);color:#fff;font-size:15px;letter-spacing:1px;
+  padding:10px 20px;border-radius:10px;z-index:42;text-align:center;text-shadow:2px 2px 0 #000;
+  box-shadow:4px 4px 0 rgba(0,0,0,.45);}
+@media (max-width:560px){ #hubPrompt{bottom:120px;font-size:12px;padding:8px 14px;} }
+
 /* NB: pulses on OPACITY, not scale. `throb` scales to 1.12, which grows the
    element's box by 12% and made this chip collide with the attempts pips —
    an animation that changes layout size cannot be reasoned about. */
@@ -593,6 +604,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
   <div id="masterTag" class="hidden">★ SLAPMASTER ★</div>
   <div id="challengeBar" class="hidden"></div>
   <div id="camTag" class="hidden"></div>
+  <div id="hubPrompt" class="hidden"></div>
   <div id="refBar" class="hidden"></div>
   <div id="distance" class="hidden"></div>
   <div id="flightChain" class="hidden"></div>
@@ -719,6 +731,7 @@ button:active{transform:translateY(4px);box-shadow:0 1px 0 #000;}
     </div>
     <button id="startBtn">▶ START SLAPPING</button>
     <button id="dailyBtn">📅 TODAY'S VOLUNTEER</button>
+    <button id="roamBtn">🚶 WALK THE FAIRGROUND</button>
     <div class="startHint">…or press ENTER / tap anywhere</div>
     <div id="storyDivider" class="titleDivider hidden"><span>OR TAKE ON THE STORY</span></div>
     <button id="tourBtn" class="hidden" style="font-size:15px;padding:10px 22px;background:var(--red);color:#fff;">🎪 CAMPAIGN MODE — THE COUNTY FAIR TOUR</button>
