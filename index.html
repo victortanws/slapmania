@@ -272,6 +272,43 @@ body.camnudged #coach{top:200px;}
   justify-content:flex-start;padding:6px 4px 10px;scrollbar-width:thin;pointer-events:auto;}
 #pickRow .choice{flex:0 0 auto;width:116px;}
 
+/* ================= UI CONTEXTS =================
+   Exactly one ctx-* class is live on <body> at a time (main.js syncContext).
+   Contexts SUBTRACT ONLY — they hide things the game would otherwise show and
+   never force anything visible, so every existing show/hide path stays
+   authoritative for its own element and this is a guarantee on top.
+
+   ROAM is the one that fixes a real bug: walking the world outside a match used
+   to show "STEP 1: HOLD [S] — SWIVEL THE SPINE", the balance meter and the key
+   bar, because visibility was inferred from the match state machine. Nothing
+   about slapping belongs on screen when nobody is slapping. */
+body.ctx-roam #keysbar, body.ctx-roam #meters, body.ctx-roam #coach,
+body.ctx-roam #bubble, body.ctx-roam #intro, body.ctx-roam #refBar,
+body.ctx-roam #distance, body.ctx-roam #flightChain, body.ctx-roam #clock,
+body.ctx-roam #bulwarkChip, body.ctx-roam #smack, body.ctx-roam .card,
+body.ctx-roam #topbar, body.ctx-roam #masterTag, body.ctx-roam #challengeBar,
+body.ctx-roam #banner, body.ctx-roam #gradePop, body.ctx-roam #touchPad{display:none !important;}
+
+/* REPLAY: an instant replay runs a real attempt under the hood, so startAttempt()
+   walks it through FACEOFF and re-raises the volunteer's name plate, taunt bubble
+   and ref line — measured visible for the first 2.4s of every replay, on top of
+   the letterboxed cinematic. The context is what makes that structurally
+   impossible rather than something each element has to remember. */
+body.ctx-replay #intro, body.ctx-replay #bubble, body.ctx-replay #refBar,
+body.ctx-replay #touchPad, body.ctx-replay #bulwarkChip,
+body.ctx-replay #gradePop, body.ctx-replay #masterTag{display:none !important;}
+
+/* CINE: today these are off only incidentally (whatever the state machine last
+   did). Under a context it is guaranteed. */
+body.ctx-cine #keysbar, body.ctx-cine #meters, body.ctx-cine #touchPad,
+body.ctx-cine #distance, body.ctx-cine #flightChain, body.ctx-cine #smack,
+body.ctx-cine #banner, body.ctx-cine #gradePop, body.ctx-cine #camTag,
+body.ctx-cine #clock{display:none !important;}
+/* menus never wear match furniture either (belt and braces — the state machine
+   already hides these, but a context makes it structural rather than incidental) */
+body.ctx-menu #keysbar, body.ctx-menu #meters, body.ctx-menu #coach,
+body.ctx-menu #refBar, body.ctx-menu #flightChain, body.ctx-menu #bulwarkChip{display:none !important;}
+
 /* ---- cinema mode: letterbox bars + a clean frame (HUD hidden) ---- */
 #cineTop,#cineBot{position:fixed;left:0;right:0;height:0;background:#000;z-index:65;
   transition:height .45s cubic-bezier(.2,.8,.3,1);pointer-events:none;}

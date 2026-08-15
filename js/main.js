@@ -303,7 +303,47 @@ ui.setAttempts(attempts, 0);
 ui.initName();
 ui.setMaster(localStorage.getItem('slapp_emperor') ? 2 : localStorage.getItem('slapp_master') ? 1 : 0);
 
-function setState(s) { state = s; tState = 0; syncTouchPad(); syncBackBtn(); }
+// ---------- UI CONTEXT ----------
+// HUD visibility used to be inferred from the match state machine, which is why
+// walking the world outside a match still showed "STEP 1: HOLD [S] — SWIVEL THE
+// SPINE". Every overlay now belongs to a CONTEXT and exactly one context is live
+// at a time, published as a single `ctx-*` class on <body>.
+//
+// The rule that keeps this safe on a shipped game: **contexts SUBTRACT, never
+// add.** A context may hide something the game would otherwise show; it never
+// forces anything visible. So every existing show/hide path stays authoritative
+// for its own element and this is a guarantee layered on top, not a second
+// competing source of truth.
+//
+// `cine` and `replaycam` were the crude hand-rolled versions of this. They are
+// now DERIVED from the context rather than set independently, which is what
+// stops them stacking — a replay used to run with `replaycam smackon` both live.
+const STATE_CONTEXT = {
+  TITLE: 'menu', SELECT_SLAPPER: 'menu', SELECT_OPP: 'menu', TOUR: 'menu',
+  FACEOFF: 'match', SWING: 'match', IMPACT: 'match', FLIGHT: 'match',
+  FOULED: 'match', RESULT: 'match', MATCH_END: 'match',
+};
+const CONTEXTS = ['menu', 'match', 'roam', 'cine', 'replay'];
+let ctxForced = null;             // cine / replay / roam outrank the state map
+const uiContext = () => ctxForced || STATE_CONTEXT[state] || 'menu';
+function syncContext() {
+  const c = uiContext();
+  for (const k of CONTEXTS) document.body.classList.toggle('ctx-' + k, k === c);
+  document.body.classList.toggle('cine', c === 'cine');        // legacy aliases,
+  document.body.classList.toggle('replaycam', c === 'replay'); // now derived
+}
+// pass a context name to force it, or null/'auto' to fall back to the state map
+function setContext(c) {
+  ctxForced = (c && c !== 'auto') ? c : null;
+  syncContext(); syncBackBtn();
+}
+window.__slappCtx = { get: uiContext, set: setContext };   // roam hook for the film tools
+
+function setState(s) { state = s; tState = 0; syncContext(); syncTouchPad(); syncBackBtn(); }
+// `state` is initialised directly at module load, and goBack() skips goToTitle
+// when already on the title — so without this a freshly loaded page would sit in
+// no context at all until the first state change.
+syncContext();
 
 // ---------- touch controls: thumbs are welcome at this fair ----------
 // Left thumb coils and drives (S/L), right thumb whips and snaps (A/P).
@@ -392,6 +432,7 @@ ui.bindReplay(() => {
   replayCam = true;
   const cam = chooseSlapCam(card);
   camReset();          // the replay gets to compose its own shot
+  setContext('replay');
   ui.camTag(cam.name, true);
   track('replay_angle', { angle: cam.key });
   startAttempt();   // fresh stance, ghost armed — the tape swings, the cinema cameras roll
@@ -617,7 +658,7 @@ function startMatch() {
 
 // Escape from anywhere: back to the front porch
 function goToTitle() {
-  cancelGhost(); ghostTape = null; replayCam = false; ui.camTag(null);
+  cancelGhost(); ghostTape = null; replayCam = false; ui.camTag(null); setContext(null);
   dailyMode = false;
   document.body.classList.remove('mirror');
   if (chosenArch && chosenArch.boss) chosenArch = null;   // bosses don't loiter on the porch
@@ -656,8 +697,7 @@ function goToTitle() {
 // Master Slee's ghost materializes for his lines, the Judge stands ringside
 function playScene(lines, after, opts = {}) {
   const cast = lines.map((l) => l.who).join(' ');
-  document.body.classList.add('cine');
-  syncBackBtn();   // the cutscene has its own SKIP — hide the porch button
+  setContext('cine');   // owns the letterbox + hides the porch button (SKIP is in the dialog)
   if (opts.sad) {
     // the walk of shame: shoulders forward, head hung — held while frozen
     player.j.spine.a = -0.4; player.j.spine.v = 0;
@@ -668,8 +708,7 @@ function playScene(lines, after, opts = {}) {
   if (cast.includes('BRUCE SLEE')) stage.setBruce(true);   // the partner stands in frame
   if (cast.includes('PENNYWHISTLE') || campaign.active) stage.setJudge(true);
   dlg.play(lines, () => {
-    document.body.classList.remove('cine');
-    syncBackBtn();
+    setContext(null);   // back to whatever the state map says
     stage.setSpirit(false);
     stage.setBruce(false);
     stage.setJudge(false);
@@ -1520,7 +1559,7 @@ function showResult() {
     // yours: no attempt consumed, no board write, no campaign judgment
     const wasReplay = replayCam;
     replayCam = false;
-    ui.camTag(null);
+    ui.camTag(null); setContext(null);
     cancelGhost();
     ui.coach(null); ui.refBar(null); ui.showDistance(null);
     sfx.crowd(dist > 20 ? 3 : 1);

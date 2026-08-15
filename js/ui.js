@@ -69,7 +69,8 @@ export function challengeBar(text) {
 // way back — which is the only recentre affordance a phone has.
 export function camTag(text, cine = false) {
   if (!el.camTag) return;
-  document.body.classList.toggle('replaycam', !!text && cine);
+  // the replay letterbox is the CONTEXT's job now (main.js setContext('replay'));
+  // this only owns the chip and the layout nudge it causes
   document.body.classList.toggle('camnudged', !!text && !cine);
   if (!text) { el.camTag.classList.add('hidden'); el.camTag.textContent = ''; return; }
   el.camTag.textContent = text;
