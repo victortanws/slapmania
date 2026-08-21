@@ -4,11 +4,32 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SlapCaps Designer — FCP preset control surface</title>
 <style>
+  /* Interface themes: the working surface restyles; the preview stages stay a
+     dark viewport in every theme, because captions are judged against video. */
   :root {
     color-scheme: dark;
     --ink:#0b0d12; --panel:#141823; --panel2:#101420; --line:#242b3b;
     --text:#e9ecf4; --muted:#8b93a8; --gold:#ffd400; --ok:#34c759;
+    --on-accent:#131313;
     --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  :root[data-theme="midnight"] {
+    --ink:#05070c; --panel:#0b101c; --panel2:#080c15; --line:#1a2233;
+    --text:#dfe7f5; --muted:#7d8aa5; --gold:#5ac8fa; --ok:#30d158; --on-accent:#04121c;
+  }
+  :root[data-theme="studio"] {
+    --ink:#141110; --panel:#1e1917; --panel2:#181412; --line:#33291f;
+    --text:#f2e9df; --muted:#a99a89; --gold:#ff9f0a; --ok:#65c466; --on-accent:#221503;
+  }
+  :root[data-theme="paper"] {
+    color-scheme: light;
+    --ink:#f2f0ec; --panel:#faf9f7; --panel2:#f5f3ef; --line:#d8d3c9;
+    --text:#22201c; --muted:#6f6a60; --gold:#4a5fc4; --ok:#2c8a43; --on-accent:#f4f6ff;
+  }
+  :root[data-theme="meadow"] {
+    color-scheme: light;
+    --ink:#eef2ec; --panel:#f8faf6; --panel2:#f2f5ef; --line:#cfd8cb;
+    --text:#1e241d; --muted:#68715f; --gold:#2f7d4f; --ok:#2f7d4f; --on-accent:#f0fff5;
   }
   * { box-sizing:border-box; }
   body { margin:0; background:var(--ink); color:var(--text);
@@ -18,10 +39,14 @@
   header h1 { margin:0; font-size:17px; font-weight:800; letter-spacing:.01em; }
   header h1 span { color:var(--gold); }
   header p { margin:0; color:var(--muted); font-size:12.5px; }
-  .tabs { margin-left:auto; display:flex; gap:6px; }
+  .themes { margin-left:auto; display:flex; gap:7px; align-items:center; }
+  .themes button { width:20px; height:20px; border-radius:50%; cursor:pointer; padding:0;
+    border:2px solid var(--line); background:var(--sw, #333); }
+  .themes button.on { border-color:var(--text); }
+  .tabs { display:flex; gap:6px; }
   .tabs button { font:600 12px var(--mono); letter-spacing:.08em; color:var(--muted);
     background:var(--panel); border:1px solid var(--line); border-radius:7px; padding:8px 14px; cursor:pointer; }
-  .tabs button.on { color:var(--ink); background:var(--gold); border-color:var(--gold); }
+  .tabs button.on { color:var(--on-accent); background:var(--gold); border-color:var(--gold); }
   main { display:grid; grid-template-columns:minmax(300px,420px) 1fr; gap:0; min-height:calc(100vh - 62px); }
   @media (max-width:900px){ main { grid-template-columns:1fr; } }
 
@@ -43,7 +68,7 @@
   .scrubrow input[type=range] { flex:1; accent-color:var(--gold); }
   .scrubrow button { background:var(--panel); color:var(--text); border:1px solid var(--line);
     border-radius:6px; font-size:12px; padding:5px 10px; cursor:pointer; }
-  .stagenote { font:500 11px var(--mono); color:#5b6377; text-align:center; max-width:300px; }
+  .stagenote { font:500 11px var(--mono); color:var(--muted); text-align:center; max-width:300px; }
 
   /* controls column */
   .controls { padding:18px 22px 40px; max-width:760px; }
@@ -65,10 +90,10 @@
   .actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
   .actions button { font:600 12.5px -apple-system,sans-serif; padding:10px 14px; border-radius:8px;
     border:1px solid var(--line); background:var(--panel); color:var(--text); cursor:pointer; }
-  .actions button.primary { background:var(--gold); border-color:var(--gold); color:#131313; }
+  .actions button.primary { background:var(--gold); border-color:var(--gold); color:var(--on-accent); }
   .actions button:hover { border-color:#3a4763; }
   #toast { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:var(--ok);
-    color:#08210f; font-weight:700; font-size:13px; padding:9px 16px; border-radius:8px; opacity:0;
+    color:var(--on-accent); font-weight:700; font-size:13px; padding:9px 16px; border-radius:8px; opacity:0;
     transition:opacity .2s; pointer-events:none; }
   .hint { color:var(--muted); font-size:12px; margin:10px 0 0; line-height:1.55; }
   .hint code { font:500 11px var(--mono); color:var(--text); }
@@ -77,6 +102,7 @@
 <header>
   <h1>SlapCaps <span>Designer</span></h1>
   <p>Design a caption or PIP look → export the FCP file + the fcpkit preset. No install, works offline.</p>
+  <div class="themes" id="themes" title="interface theme"></div>
   <div class="tabs">
     <button id="tabCap" class="on">CAPTION</button>
     <button id="tabPip">PIP</button>
@@ -90,7 +116,7 @@
     <div class="scrubrow" id="capScrub">
       <button id="playBtn" title="cycle words">▶</button>
       <input type="range" id="wordPos" min="0" max="3" value="1" step="1">
-      <span style="font:500 11px var(--mono);color:#5b6377" id="wordLbl">word 2/4</span>
+      <span style="font:500 11px var(--mono);color:var(--muted)" id="wordLbl">word 2/4</span>
     </div>
     <div class="stagenote" id="stageNote"></div>
   </div>
@@ -251,7 +277,32 @@ function buildPanel(defs, state, host){
 }
 function applyBase(name){
   Object.assign(cap, structuredClone(CAP_BASES[name]));
-  buildPanel(CAP_CONTROLS, cap, document.getElementById("capPanel"));
+  const THEMES = [
+  ["graphite", "#141823,#ffd400"], ["midnight", "#0b101c,#5ac8fa"],
+  ["studio", "#1e1917,#ff9f0a"], ["paper", "#faf9f7,#4a5fc4"], ["meadow", "#f8faf6,#2f7d4f"],
+];
+function setTheme(name){
+  if (name === "graphite") delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = name;
+  try { localStorage.setItem("slapcaps_designer_theme", name); } catch {}
+  document.querySelectorAll("#themes button").forEach(b => b.classList.toggle("on", b.dataset.t === name));
+}
+(function initThemes(){
+  const host = document.getElementById("themes");
+  for (const [name, sw] of THEMES){
+    const [bg, dot] = sw.split(",");
+    const b = document.createElement("button");
+    b.dataset.t = name; b.title = name;
+    b.style.background = `radial-gradient(circle at 35% 35%, ${dot} 0 40%, ${bg} 44%)`;
+    b.onclick = () => setTheme(name);
+    host.appendChild(b);
+  }
+  let saved = "graphite";
+  try { saved = localStorage.getItem("slapcaps_designer_theme") || "graphite"; } catch {}
+  setTheme(THEMES.some(([n]) => n === saved) ? saved : "graphite");
+})();
+
+buildPanel(CAP_CONTROLS, cap, document.getElementById("capPanel"));
 }
 
 /* ============================== preview ================================== */
@@ -560,6 +611,31 @@ document.getElementById("playBtn").onclick = function(){
     s.value = (+s.value + 1) % (+s.max + 1); update();
   }, 450);
 };
+
+const THEMES = [
+  ["graphite", "#141823,#ffd400"], ["midnight", "#0b101c,#5ac8fa"],
+  ["studio", "#1e1917,#ff9f0a"], ["paper", "#faf9f7,#4a5fc4"], ["meadow", "#f8faf6,#2f7d4f"],
+];
+function setTheme(name){
+  if (name === "graphite") delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = name;
+  try { localStorage.setItem("slapcaps_designer_theme", name); } catch {}
+  document.querySelectorAll("#themes button").forEach(b => b.classList.toggle("on", b.dataset.t === name));
+}
+(function initThemes(){
+  const host = document.getElementById("themes");
+  for (const [name, sw] of THEMES){
+    const [bg, dot] = sw.split(",");
+    const b = document.createElement("button");
+    b.dataset.t = name; b.title = name;
+    b.style.background = `radial-gradient(circle at 35% 35%, ${dot} 0 40%, ${bg} 44%)`;
+    b.onclick = () => setTheme(name);
+    host.appendChild(b);
+  }
+  let saved = "graphite";
+  try { saved = localStorage.getItem("slapcaps_designer_theme") || "graphite"; } catch {}
+  setTheme(THEMES.some(([n]) => n === saved) ? saved : "graphite");
+})();
 
 buildPanel(CAP_CONTROLS, cap, document.getElementById("capPanel"));
 buildPanel(PIP_CONTROLS, pip, document.getElementById("pipPanel"));
