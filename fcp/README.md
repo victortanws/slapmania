@@ -150,8 +150,8 @@ including word-timing playback. Then:
   `pack --brand …` etc). The CLI auto-loads it and says so.
 
 The designer's JS exporter mirrors the python emitter (same rational-time
-rules); its output passes `fcpkit validate` — that's tested in CI via a real
-headless Chromium run.
+rules); its output passes `fcpkit validate` — verified by driving the page in a
+real headless Chromium and running the validator on what it exported.
 
 ## Selling the presets — packs, brand kits, Motion templates
 
