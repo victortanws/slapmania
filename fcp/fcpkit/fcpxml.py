@@ -393,6 +393,7 @@ def build_pip(width: int = 1080, height: int = 1920, fps: float = 29.97,
               scale: float = 0.32, rotation: float = -2.0, roundness: float = 0.55,
               media: Optional[str] = None, project_name: str = "PIP Kit",
               frame_color: Optional[tuple] = None, frame_width: float = 14.0,
+              shape: str = "rounded",
               effects: Optional[dict[str, dict[str, str]]] = None) -> _Builder:
     """A ready-made picture-in-picture block: scaled + cornered + rounded
     corners (Shape Mask) + drop shadow, over a full-frame base layer.
@@ -413,20 +414,27 @@ def build_pip(width: int = 1080, height: int = 1920, fps: float = 29.97,
     fx, fy = PIP_CORNERS[corner]
     px, py = fx * width / 2, fy * height / 2
 
+    # Circle PIP = center-crop the source to a square, then Shape Mask at full
+    # curvature. Displayed size follows the square, so the frame card matches.
+    circle = shape == "circle"
+    side = min(width, height)
+    disp_w = (side if circle else width) * scale
+    disp_h = (side if circle else height) * scale
+    curvature = 1.0 if circle else (0.0 if shape == "rect" else roundness)
+
     if frame_color:
         # A rounded colored card just larger than the PIP = the border frame.
         frame = ET.SubElement(base, "video", ref=b.effect_resource("shapes"), lane="1",
                               offset="0s", start="0s", duration=fmt_time(total),
                               name="PIP frame")
-        fw = (width * scale + 2 * frame_width) / width
-        fh = (height * scale + 2 * frame_width) / height
         ET.SubElement(frame, "adjust-transform",
                       position=f"{_num(px)} {_num(py)}",
-                      scale=f"{_num(fw)} {_num(fh)}",
+                      scale=f"{_num((disp_w + 2 * frame_width) / width)} "
+                            f"{_num((disp_h + 2 * frame_width) / height)}",
                       rotation=_num(rotation))
         ET.SubElement(frame, "param", name="Fill Color",
                       value=f"{round(frame_color[0], 4)} {round(frame_color[1], 4)} {round(frame_color[2], 4)}")
-        ET.SubElement(frame, "param", name="Roundness", value=_num(roundness))
+        ET.SubElement(frame, "param", name="Roundness", value=_num(1.0 if circle else roundness))
         ET.SubElement(frame, "param", name="Outline", value="0")
 
     pip_lane = "2" if frame_color else "1"
@@ -437,6 +445,13 @@ def build_pip(width: int = 1080, height: int = 1920, fps: float = 29.97,
     else:
         pip = ET.SubElement(base, "video", ref=placeholder_ref, lane=pip_lane, offset="0s",
                             start="0s", duration=fmt_time(total), name="PIP (replace me)")
+    if circle:
+        # Center-crop to a square before masking so the circle isn't an oval.
+        cx = max(0.0, (width - side) / 2)
+        cy = max(0.0, (height - side) / 2)
+        crop = ET.SubElement(pip, "adjust-crop", mode="trim")
+        ET.SubElement(crop, "trim-rect", left=_num(cx), right=_num(cx),
+                      top=_num(cy), bottom=_num(cy))
     ET.SubElement(pip, "adjust-transform",
                   position=f"{_num(px)} {_num(py)}",
                   scale=f"{_num(scale)} {_num(scale)}",
@@ -444,9 +459,13 @@ def build_pip(width: int = 1080, height: int = 1920, fps: float = 29.97,
 
     mask = ET.SubElement(pip, "filter-video", ref=b.effect_resource("shape_mask"),
                          name=b.effects["shape_mask"]["name"])
-    ET.SubElement(mask, "param", name="Radius",
-                  value=f"{_num(width * 0.47)} {_num(height * 0.47)}")
-    ET.SubElement(mask, "param", name="Curvature", value=_num(roundness))
+    if circle:
+        r = side * 0.49
+        ET.SubElement(mask, "param", name="Radius", value=f"{_num(r)} {_num(r)}")
+    else:
+        ET.SubElement(mask, "param", name="Radius",
+                      value=f"{_num(width * 0.47)} {_num(height * 0.47)}")
+    ET.SubElement(mask, "param", name="Curvature", value=_num(curvature))
     ET.SubElement(mask, "param", name="Feather", value="0")
 
     shadow = ET.SubElement(pip, "filter-video", ref=b.effect_resource("drop_shadow"),

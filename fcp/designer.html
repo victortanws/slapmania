@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SlapCaps Designer — FCP preset control surface</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --ink:#0b0d12; --panel:#141823; --panel2:#101420; --line:#242b3b;
+    --text:#e9ecf4; --muted:#8b93a8; --gold:#ffd400; --ok:#34c759;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--ink); color:var(--text);
+         font:14px/1.5 -apple-system,"Helvetica Neue",Helvetica,Arial,sans-serif; }
+  header { display:flex; align-items:center; gap:18px; padding:16px 22px;
+           border-bottom:1px solid var(--line); flex-wrap:wrap; }
+  header h1 { margin:0; font-size:17px; font-weight:800; letter-spacing:.01em; }
+  header h1 span { color:var(--gold); }
+  header p { margin:0; color:var(--muted); font-size:12.5px; }
+  .tabs { margin-left:auto; display:flex; gap:6px; }
+  .tabs button { font:600 12px var(--mono); letter-spacing:.08em; color:var(--muted);
+    background:var(--panel); border:1px solid var(--line); border-radius:7px; padding:8px 14px; cursor:pointer; }
+  .tabs button.on { color:var(--ink); background:var(--gold); border-color:var(--gold); }
+  main { display:grid; grid-template-columns:minmax(300px,420px) 1fr; gap:0; min-height:calc(100vh - 62px); }
+  @media (max-width:900px){ main { grid-template-columns:1fr; } }
+
+  /* stage column */
+  .stagecol { padding:22px; border-right:1px solid var(--line); display:flex;
+              flex-direction:column; align-items:center; gap:14px;
+              position:sticky; top:0; align-self:start; }
+  .frame { position:relative; overflow:hidden; border-radius:12px; border:1px solid var(--line);
+    background: radial-gradient(60% 42% at 50% 30%, hsl(28 45% 26% / .55), transparent 70%),
+                radial-gradient(120% 70% at 50% 110%, #05060a 20%, transparent 70%),
+                linear-gradient(180deg,#1d2330 0%,#12161f 55%,#0a0c11 100%); }
+  #capFrame { width:300px; aspect-ratio:9/16; }
+  #pipFrame { width:300px; aspect-ratio:9/16; }
+  #pipFrame.wide { width:400px; aspect-ratio:16/9; }
+  .capline { position:absolute; left:4%; right:4%; margin:0; display:flex; justify-content:center; }
+  .capbox { display:inline-block; max-width:96%; text-align:center; font-weight:900; line-height:1.05; }
+  #pipBox { position:absolute; background:radial-gradient(80% 60% at 50% 35%, hsl(28 55% 38%), hsl(24 45% 20%)); }
+  .scrubrow { width:300px; display:flex; align-items:center; gap:10px; }
+  .scrubrow input[type=range] { flex:1; accent-color:var(--gold); }
+  .scrubrow button { background:var(--panel); color:var(--text); border:1px solid var(--line);
+    border-radius:6px; font-size:12px; padding:5px 10px; cursor:pointer; }
+  .stagenote { font:500 11px var(--mono); color:#5b6377; text-align:center; max-width:300px; }
+
+  /* controls column */
+  .controls { padding:18px 22px 40px; max-width:760px; }
+  fieldset { border:1px solid var(--line); border-radius:10px; margin:0 0 14px; padding:12px 14px 14px;
+             background:var(--panel2); }
+  legend { font:600 11px var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--gold);
+           padding:0 6px; }
+  .row { display:grid; grid-template-columns:130px 1fr 52px; gap:10px; align-items:center; margin:7px 0; }
+  .row label { color:var(--muted); font-size:12.5px; }
+  .row output { font:500 11.5px var(--mono); color:var(--text); text-align:right; }
+  .row input[type=range] { width:100%; accent-color:var(--gold); }
+  .row input[type=color] { width:44px; height:26px; border:1px solid var(--line); border-radius:5px;
+    background:none; padding:1px; cursor:pointer; }
+  .row select, .row input[type=text] { background:var(--panel); color:var(--text);
+    border:1px solid var(--line); border-radius:6px; padding:6px 8px; font-size:13px; width:100%; }
+  .row input[type=checkbox] { width:16px; height:16px; accent-color:var(--gold); }
+  .inline { display:flex; gap:14px; flex-wrap:wrap; }
+  .inline .row { grid-template-columns:auto auto; gap:8px; margin:4px 0; }
+  .actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+  .actions button { font:600 12.5px -apple-system,sans-serif; padding:10px 14px; border-radius:8px;
+    border:1px solid var(--line); background:var(--panel); color:var(--text); cursor:pointer; }
+  .actions button.primary { background:var(--gold); border-color:var(--gold); color:#131313; }
+  .actions button:hover { border-color:#3a4763; }
+  #toast { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:var(--ok);
+    color:#08210f; font-weight:700; font-size:13px; padding:9px 16px; border-radius:8px; opacity:0;
+    transition:opacity .2s; pointer-events:none; }
+  .hint { color:var(--muted); font-size:12px; margin:10px 0 0; line-height:1.55; }
+  .hint code { font:500 11px var(--mono); color:var(--text); }
+</style>
+
+<header>
+  <h1>SlapCaps <span>Designer</span></h1>
+  <p>Design a caption or PIP look → export the FCP file + the fcpkit preset. No install, works offline.</p>
+  <div class="tabs">
+    <button id="tabCap" class="on">CAPTION</button>
+    <button id="tabPip">PIP</button>
+  </div>
+</header>
+
+<main>
+  <div class="stagecol">
+    <div class="frame" id="capFrame"><p class="capline"><span class="capbox" id="capText"></span></p></div>
+    <div class="frame" id="pipFrame" style="display:none"><div id="pipBox"></div></div>
+    <div class="scrubrow" id="capScrub">
+      <button id="playBtn" title="cycle words">▶</button>
+      <input type="range" id="wordPos" min="0" max="3" value="1" step="1">
+      <span style="font:500 11px var(--mono);color:#5b6377" id="wordLbl">word 2/4</span>
+    </div>
+    <div class="stagenote" id="stageNote"></div>
+  </div>
+
+  <div class="controls">
+    <div id="capPanel"></div>
+    <div id="pipPanel" style="display:none"></div>
+    <div class="actions">
+      <button class="primary" id="dlXml">⬇ Download FCP file (.fcpxml)</button>
+      <button id="dlJson">⬇ Download fcpkit preset (JSON)</button>
+      <button id="cpXml">Copy XML</button>
+      <button id="cpJson">Copy preset</button>
+      <button id="cpCli">Copy CLI line</button>
+    </div>
+    <p class="hint" id="howHint"></p>
+  </div>
+</main>
+<div id="toast">copied</div>
+
+<script>
+"use strict";
+/* ============================== state ==================================== */
+const CAP_BASES = {
+  tiktok:   { font_size:100, font_color:"#ffffff", stroke:4, stroke_color:"#000000", shadow:.75,
+              highlight_color:"#ffd400", upcoming_color:"", box_color:"", box_roundness:.35,
+              box_pad_x:34, box_pad_y:22, rotation:0, pos_y:-560, uppercase:true, pop_in:true,
+              karaoke:"none" },
+  submagic: { font_size:84, font_color:"#ffd400", stroke:0, stroke_color:"#000000", shadow:0,
+              highlight_color:"#ffd400", upcoming_color:"#ffffff", box_color:"#e62117",
+              box_roundness:.3, box_pad_x:34, box_pad_y:22, rotation:0, pos_y:-560,
+              uppercase:false, pop_in:false, karaoke:"fill" },
+  oneword:  { font_size:140, font_color:"#ffffff", stroke:0, stroke_color:"#000000", shadow:.5,
+              highlight_color:"#ffffff", upcoming_color:"", box_color:"#e62117", box_roundness:.4,
+              box_pad_x:46, box_pad_y:30, rotation:0, pos_y:-430, uppercase:true, pop_in:true,
+              karaoke:"oneword" },
+  hormozi:  { font_size:104, font_color:"#ffffff", stroke:5, stroke_color:"#000000", shadow:.75,
+              highlight_color:"#ffd400", upcoming_color:"", box_color:"", box_roundness:.35,
+              box_pad_x:34, box_pad_y:22, rotation:0, pos_y:-560, uppercase:true, pop_in:true,
+              karaoke:"word" },
+  sticker:  { font_size:112, font_color:"#ffffff", stroke:7, stroke_color:"#000000", shadow:.75,
+              highlight_color:"#34c759", upcoming_color:"", box_color:"", box_roundness:.35,
+              box_pad_x:34, box_pad_y:22, rotation:-3, pos_y:-560, uppercase:true, pop_in:true,
+              karaoke:"none" },
+};
+const cap = Object.assign({ name:"my-caption", base:"submagic", sample:"this word hits different" },
+                          structuredClone(CAP_BASES.submagic));
+const pip = { name:"my-pip", shape:"circle", corner:"top-right", scale:.32, rotation:-2,
+              roundness:.55, frame_on:true, frame_color:"#ffffff", frame_width:14,
+              shadow_op:.55, shadow_blur:14, shadow_dist:18, format:"vertical", duration:20 };
+let mode = "cap", playing = null;
+
+/* ============================ control defs =============================== */
+const CAP_CONTROLS = [
+  ["Preset", [
+    ["name","text","Preset name"],
+    ["base","select","Start from", Object.keys(CAP_BASES)],
+    ["sample","text","Sample line"],
+    ["karaoke","select","Timing mode", [["none","whole line"],["word","karaoke — light active word"],
+                                        ["fill","follow-fill — spoken vs upcoming"],["oneword","one word at a time"]]],
+  ]],
+  ["Text", [
+    ["font_size","range","Size",[40,220,1],"px"],
+    ["font_color","color","Text color"],
+    ["highlight_color","color","Spoken / active color"],
+    ["upcoming_color","colorOpt","Upcoming color"],
+    ["uppercase","check","ALL CAPS"],
+    ["pop_in","check","Pop-in entrance"],
+  ]],
+  ["Outline & shadow", [
+    ["stroke","range","Outline width",[0,12,.5],"px"],
+    ["stroke_color","color","Outline color"],
+    ["shadow","range","Shadow opacity",[0,1,.05],""],
+  ]],
+  ["Box", [
+    ["box_color","colorOpt","Box color"],
+    ["box_roundness","range","Roundness",[0,1,.05],""],
+    ["box_pad_x","range","Pad X",[0,90,2],"px"],
+    ["box_pad_y","range","Pad Y",[0,60,2],"px"],
+  ]],
+  ["Placement", [
+    ["pos_y","range","Height",[-820,0,10],"px"],
+    ["rotation","range","Rotation",[-12,12,.5],"°"],
+  ]],
+];
+const PIP_CONTROLS = [
+  ["Preset", [
+    ["name","text","Preset name"],
+    ["format","select","Frame", [["vertical","1080 × 1920 (vertical)"],["wide","1920 × 1080 (wide)"]]],
+    ["shape","select","Shape", [["circle","circle"],["rounded","rounded"],["rect","square corners"]]],
+    ["corner","select","Corner", ["top-right","top-left","bottom-right","bottom-left"]],
+  ]],
+  ["Geometry", [
+    ["scale","range","Size",[.14,.6,.01],"×"],
+    ["rotation","range","Tilt",[-10,10,.5],"°"],
+    ["roundness","range","Corner radius",[0,1,.05],""],
+  ]],
+  ["Frame & shadow", [
+    ["frame_on","check","Border frame"],
+    ["frame_color","color","Frame color"],
+    ["frame_width","range","Frame width",[2,40,1],"px"],
+    ["shadow_op","range","Shadow opacity",[0,1,.05],""],
+    ["shadow_blur","range","Shadow blur",[0,40,1],"px"],
+    ["shadow_dist","range","Shadow distance",[0,50,1],"px"],
+  ]],
+];
+
+function buildPanel(defs, state, host){
+  host.innerHTML = "";
+  for (const [group, items] of defs){
+    const fs = document.createElement("fieldset");
+    fs.innerHTML = `<legend>${group}</legend>`;
+    for (const [key, kind, label, extra, unit] of items){
+      const row = document.createElement("div"); row.className = "row";
+      const id = host.id + "_" + key;
+      let ctl = "";
+      if (kind === "range"){
+        const [mn,mx,st] = extra;
+        ctl = `<input type="range" id="${id}" min="${mn}" max="${mx}" step="${st}" value="${state[key]}">
+               <output id="${id}_o">${state[key]}${unit||""}</output>`;
+      } else if (kind === "color"){
+        ctl = `<input type="color" id="${id}" value="${state[key]||"#ffffff"}"><span></span>`;
+      } else if (kind === "colorOpt"){
+        ctl = `<span style="display:flex;gap:8px;align-items:center">
+                 <input type="checkbox" id="${id}_on" ${state[key]?"checked":""}>
+                 <input type="color" id="${id}" value="${state[key]||"#e62117"}"></span><span></span>`;
+      } else if (kind === "check"){
+        ctl = `<input type="checkbox" id="${id}" ${state[key]?"checked":""}><span></span>`;
+      } else if (kind === "select"){
+        const opts = extra.map(o => Array.isArray(o)
+          ? `<option value="${o[0]}" ${state[key]===o[0]?"selected":""}>${o[1]}</option>`
+          : `<option ${state[key]===o?"selected":""}>${o}</option>`).join("");
+        ctl = `<select id="${id}">${opts}</select><span></span>`;
+      } else {
+        ctl = `<input type="text" id="${id}" value="${state[key]}"><span></span>`;
+      }
+      row.innerHTML = `<label for="${id}">${label}</label>${ctl}`;
+      fs.appendChild(row);
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const onch = () => {
+          if (kind === "range") { state[key] = parseFloat(el.value);
+            document.getElementById(id+"_o").textContent = el.value + (unit||""); }
+          else if (kind === "check") state[key] = el.checked;
+          else if (kind === "colorOpt") {
+            const on = document.getElementById(id+"_on");
+            state[key] = on.checked ? el.value : "";
+          } else state[key] = el.value;
+          if (key === "base") applyBase(el.value);
+          update();
+        };
+        el.addEventListener("input", onch);
+        if (kind === "colorOpt") document.getElementById(id+"_on").addEventListener("input", onch);
+      }, 0);
+    }
+    host.appendChild(fs);
+  }
+}
+function applyBase(name){
+  Object.assign(cap, structuredClone(CAP_BASES[name]));
+  buildPanel(CAP_CONTROLS, cap, document.getElementById("capPanel"));
+}
+
+/* ============================== preview ================================== */
+const SCALE = 480/1920; // stage px per frame px (vertical stage is 480 high at 300 wide? aspect keeps it)
+function words(){ return cap.sample.trim().split(/\s+/).filter(Boolean); }
+
+function update(){
+  const ws = words(), n = Math.max(1, ws.length);
+  const slider = document.getElementById("wordPos");
+  slider.max = n - 1; if (+slider.value > n-1) slider.value = n-1;
+  const active = Math.min(+slider.value, n-1);
+  document.getElementById("wordLbl").textContent = `word ${active+1}/${n}`;
+
+  if (mode === "cap"){
+    const frame = document.getElementById("capFrame");
+    const f = frame.clientHeight / 1920;
+    const el = document.getElementById("capText");
+    const line = el.parentElement;
+    line.style.bottom = Math.max(2, (960 + cap.pos_y) / 1920 * 100) + "%";
+    let displayWords = ws, act = active;
+    if (cap.karaoke === "oneword"){ displayWords = [ws[active]]; act = 0; }
+    const spans = displayWords.map((w,i) => {
+      let color = cap.font_color;
+      if (cap.karaoke === "word" && i === act) color = cap.highlight_color;
+      if (cap.karaoke === "oneword") color = cap.highlight_color;
+      if (cap.karaoke === "fill") color = i <= act ? cap.highlight_color : (cap.upcoming_color || cap.font_color);
+      const t = cap.uppercase ? w.toUpperCase() : w;
+      return `<span style="color:${color}">${t}</span>`;
+    });
+    el.innerHTML = spans.join(" ");
+    el.style.fontSize = (cap.font_size * f) + "px";
+    el.style.webkitTextStroke = cap.stroke ? `${Math.max(.5, cap.stroke * f * 2)}px ${cap.stroke_color}` : "0";
+    el.style.paintOrder = "stroke fill";
+    el.style.textShadow = cap.shadow ? `0 ${4*f*3}px ${10*f*3}px rgba(0,0,0,${cap.shadow})` : "none";
+    el.style.transform = `rotate(${cap.rotation}deg)`;
+    if (cap.box_color){
+      const h = cap.font_size * 1.18 + cap.box_pad_y * 2;
+      el.style.background = cap.box_color;
+      el.style.padding = `${cap.box_pad_y*f}px ${cap.box_pad_x*f}px`;
+      el.style.borderRadius = (cap.box_roundness * h * f / 2) + "px";
+    } else { el.style.background = "none"; el.style.padding = "0"; el.style.borderRadius = "0"; }
+    document.getElementById("stageNote").textContent =
+      "CSS approximation — the exported FCPXML is the source of truth. Use the slider to preview word timing.";
+  } else {
+    const frame = document.getElementById("pipFrame");
+    frame.className = "frame" + (pip.format === "wide" ? " wide" : "");
+    const box = document.getElementById("pipBox");
+    const FW = frame.clientWidth, FH = frame.clientHeight;
+    const frameW = pip.format === "wide" ? 1920 : 1080, frameH = pip.format === "wide" ? 1080 : 1920;
+    const side = Math.min(frameW, frameH);
+    const w = (pip.shape === "circle" ? side : frameW) * pip.scale / frameW * FW;
+    const h = (pip.shape === "circle" ? side : frameH) * pip.scale / frameH * FH;
+    box.style.width = w + "px"; box.style.height = h + "px";
+    const margX = FW * .06, margY = FH * .05;
+    box.style.left = pip.corner.includes("left") ? margX+"px" : "";
+    box.style.right = pip.corner.includes("right") ? margX+"px" : "";
+    box.style.top = pip.corner.includes("top") ? margY+"px" : "";
+    box.style.bottom = pip.corner.includes("bottom") ? margY+"px" : "";
+    box.style.transform = `rotate(${pip.rotation}deg)`;
+    box.style.borderRadius = pip.shape === "circle" ? "50%" :
+      pip.shape === "rect" ? "0" : (pip.roundness * Math.min(w,h) / 2) + "px";
+    const fw = pip.frame_on ? Math.max(1, pip.frame_width * FW / frameW) : 0;
+    box.style.boxShadow =
+      (fw ? `0 0 0 ${fw}px ${pip.frame_color}, ` : "") +
+      `0 ${pip.shadow_dist * FH / frameH}px ${pip.shadow_blur * FH / frameH * 2}px rgba(0,0,0,${pip.shadow_op})`;
+    document.getElementById("stageNote").textContent =
+      "Exports a full FCP project: placeholder base + PIP layer with crop, Shape Mask, frame card and Drop Shadow.";
+  }
+  document.getElementById("howHint").innerHTML = mode === "cap"
+    ? `<b>Use it:</b> ① Download the <code>.fcpxml</code> → FCP: File&nbsp;›&nbsp;Import&nbsp;›&nbsp;XML → save the look
+       as a Text Style preset (Text inspector › style dropdown › Save…). ② Drop the JSON next to fcpkit as
+       <code>presets.local.json</code> and <code>${(cap.name||"my-caption")}</code> becomes a batch style for whole videos:
+       <code>python3 -m fcpkit restyle ep.master.json --style ${(cap.name||"my-caption")}</code>.`
+    : `<b>Use it:</b> ① Download the <code>.fcpxml</code> → FCP: File&nbsp;›&nbsp;Import&nbsp;›&nbsp;XML → select the PIP clip →
+       File&nbsp;›&nbsp;Save&nbsp;Effects&nbsp;Preset (tick Transform + effects) → it lives in your Effects browser forever.
+       ② Or regenerate anytime: <code>${pipCli()}</code>.`;
+}
+
+/* =========================== FCPXML export =============================== */
+const FPSN = 30000, FPSD = 1001;                    // 29.97 exact
+const snap = s => Math.round(s * FPSN / FPSD);      // seconds -> frames
+const T = f => `${f * FPSD}/${FPSN}s`;              // frames -> rational time
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const hx = (h, a=1) => { const v = c => parseInt(h.substr(c,2),16)/255;
+  return `${+v(1).toFixed(4)} ${+v(3).toFixed(4)} ${+v(5).toFixed(4)} ${a}`; };
+const EFFECTS = {
+  title: ['Text', '.../Titles.localized/Basic Text.localized/Text.localized/Text.moti'],
+  shapes: ['Shapes', '.../Generators.localized/Elements.localized/Shapes.localized/Shapes.motn'],
+  mask: ['Shape Mask', 'FFSuperEllipseMask'],
+  shadow: ['Drop Shadow', '.../Effects.localized/Basics.localized/Drop Shadow.localized/Drop Shadow.moef'],
+  ph: ['Placeholder', '.../Generators.localized/Elements.localized/Placeholder.localized/Placeholder.motn'],
+};
+const NARROW = new Set("iljtf.,'!|:; "), WIDE = new Set("mwMW@%");
+function estW(text, size){
+  let w = 0; for (const ch of text)
+    w += NARROW.has(ch) ? .32 : WIDE.has(ch) ? .88 : /[A-Z0-9]/.test(ch) ? .68 : .52;
+  return w * size;
+}
+function header(effects, W, H){
+  const fx = effects.map((k,i) =>
+    `        <effect id="e${i}" name="${esc(EFFECTS[k][0])}" uid="${esc(EFFECTS[k][1])}"/>`).join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE fcpxml>\n\n<fcpxml version="1.10">\n    <resources>\n        <format id="r1" name="FFVideoFormatRateUndefined" frameDuration="${FPSD}/${FPSN}s" width="${W}" height="${H}" colorSpace="1-1-1 (Rec. 709)"/>\n${fx}\n    </resources>\n    <library>\n        <event name="fcpkit designer">\n`;
+}
+const FOOTER = `        </event>\n    </library>\n</fcpxml>\n`;
+
+function captionXML(){
+  const W = 1080, H = 1920;
+  const lines = [[cap.sample || "your caption here", 0.4, 2.2],
+                 ["designed in the control surface", 2.2, 4.4],
+                 ["loaded straight into final cut", 4.7, 6.4]];
+  let ts = 0, out = [];
+  const total = snap(6.6);
+  const styleAttrs = (color) => {
+    let a = ` font="Helvetica Neue" fontSize="${cap.font_size}" fontFace="Bold" fontColor="${hx(color)}" alignment="center" lineSpacing="-8"`;
+    if (cap.stroke > 0) a += ` strokeColor="${hx(cap.stroke_color)}" strokeWidth="-${cap.stroke}"`;
+    if (cap.shadow > 0) a += ` shadowColor="0 0 0 ${cap.shadow}" shadowOffset="5 315" shadowBlurRadius="10"`;
+    return a;
+  };
+  const emitBox = (text, f0, f1) => {
+    const w = estW(text, cap.font_size) + cap.box_pad_x * 2;
+    const h = cap.font_size * 1.18 + cap.box_pad_y * 2;
+    out.push(`                <video ref="e1" lane="1" offset="${T(f0)}" duration="${T(f1-f0)}" name="caption box">`,
+      `                    <adjust-transform position="0 ${cap.pos_y}" scale="${(w/W).toFixed(4)} ${(h/H).toFixed(4)}"${cap.rotation?` rotation="${cap.rotation}"`:""}/>`,
+      `                    <param name="Fill Color" value="${hx(cap.box_color).split(" ").slice(0,3).join(" ")}"/>`,
+      `                    <param name="Roundness" value="${cap.box_roundness}"/>`,
+      `                    <param name="Outline" value="0"/>`,
+      `                </video>`);
+  };
+  const emitTitle = (runs, f0, f1, label) => {
+    const lane = cap.box_color ? 2 : 1;
+    out.push(`                <title ref="e0" lane="${lane}" offset="${T(f0)}" duration="${T(f1-f0)}" name="${esc(label)}">`);
+    if (cap.pos_y || cap.rotation || cap.pop_in){
+      out.push(`                    <adjust-transform position="0 ${cap.pos_y}"${cap.rotation?` rotation="${cap.rotation}"`:""}>`);
+      if (cap.pop_in) out.push(
+        `                        <param name="scale"><keyframeAnimation>`,
+        `                            <keyframe time="${T(0)}" value="0.82 0.82"/>`,
+        `                            <keyframe time="${T(2)}" value="1.05 1.05"/>`,
+        `                            <keyframe time="${T(4)}" value="1.0 1.0"/>`,
+        `                        </keyframeAnimation></param>`);
+      out.push(`                    </adjust-transform>`);
+    }
+    out.push(`                    <text>`);
+    const ids = runs.map(([text]) => { ts += 1; return "ts" + ts; });
+    runs.forEach(([text], i) =>
+      out.push(`                        <text-style-ref ref="${ids[i]}">${esc(cap.uppercase ? text.toUpperCase() : text)}</text-style-ref>`));
+    out.push(`                    </text>`);
+    runs.forEach(([, color], i) =>
+      out.push(`                    <text-style-def id="${ids[i]}"><text-style${styleAttrs(color)}/></text-style-def>`));
+    out.push(`                </title>`);
+  };
+
+  for (const [text, t0, t1] of lines){
+    const ws = text.split(/\s+/), n = ws.length;
+    const weights = ws.map(w => Math.max(w.length, 1)), tw = weights.reduce((a,b)=>a+b,0);
+    let starts = [t0]; for (let i = 0; i < n; i++) starts.push(starts[i] + (t1-t0)*weights[i]/tw);
+    if (cap.karaoke === "none"){
+      if (cap.box_color) emitBox(cap.uppercase?text.toUpperCase():text, snap(t0), snap(t1));
+      emitTitle([[text, cap.font_color]], snap(t0), snap(t1), text);
+    } else {
+      for (let i = 0; i < n; i++){
+        const f0 = snap(starts[i]), f1 = Math.max(snap(starts[i+1]), f0+1);
+        if (cap.karaoke === "oneword"){
+          if (cap.box_color) emitBox(cap.uppercase?ws[i].toUpperCase():ws[i], f0, f1);
+          emitTitle([[ws[i], cap.highlight_color]], f0, f1, ws[i]);
+        } else {
+          if (cap.box_color) emitBox(cap.uppercase?text.toUpperCase():text, f0, f1);
+          const runs = [];
+          for (let j = 0; j < n; j++){
+            const hot = cap.karaoke === "fill" ? j <= i : j === i;
+            const color = hot ? cap.highlight_color : (cap.karaoke === "fill" && cap.upcoming_color ? cap.upcoming_color : cap.font_color);
+            const tok = ws[j] + (j < n-1 ? " " : "");
+            if (runs.length && runs[runs.length-1][1] === color) runs[runs.length-1][0] += tok;
+            else runs.push([tok, color]);
+          }
+          emitTitle(runs, f0, f1, text);
+        }
+      }
+    }
+  }
+  return header(["title","shapes"], W, H)
+    + `            <project name="${esc(cap.name || "Caption preset")}">\n`
+    + `                <sequence format="r1" tcStart="0s" tcFormat="NDF" audioLayout="stereo" audioRate="48k" duration="${T(total)}">\n`
+    + `                    <spine>\n`
+    + `                        <gap name="Captions" offset="0s" start="0s" duration="${T(total)}">\n`
+    + out.map(l => "            " + l).join("\n") + "\n"
+    + `                        </gap>\n                    </spine>\n                </sequence>\n            </project>\n` + FOOTER;
+}
+
+function pipXML(){
+  const W = pip.format === "wide" ? 1920 : 1080, H = pip.format === "wide" ? 1080 : 1920;
+  const total = snap(pip.duration);
+  const side = Math.min(W, H), circle = pip.shape === "circle";
+  const dispW = (circle ? side : W) * pip.scale, dispH = (circle ? side : H) * pip.scale;
+  const CORN = { "top-right":[.58,.58], "top-left":[-.58,.58], "bottom-right":[.58,-.55], "bottom-left":[-.58,-.55] };
+  const [fx0, fy0] = CORN[pip.corner];
+  const px = (fx0 * W/2).toFixed(0), py = (fy0 * H/2).toFixed(0);
+  const curv = circle ? 1 : pip.shape === "rect" ? 0 : pip.roundness;
+  let o = [];
+  o.push(`            <project name="${esc(pip.name || "PIP preset")}">`,
+    `                <sequence format="r1" tcStart="0s" tcFormat="NDF" audioLayout="stereo" audioRate="48k" duration="${T(total)}">`,
+    `                    <spine>`,
+    `                        <video ref="e0" offset="0s" start="0s" duration="${T(total)}" name="Main (replace me)">`);
+  if (pip.frame_on){
+    o.push(`                            <video ref="e1" lane="1" offset="0s" start="0s" duration="${T(total)}" name="PIP frame">`,
+      `                                <adjust-transform position="${px} ${py}" scale="${((dispW+2*pip.frame_width)/W).toFixed(4)} ${((dispH+2*pip.frame_width)/H).toFixed(4)}" rotation="${pip.rotation}"/>`,
+      `                                <param name="Fill Color" value="${hx(pip.frame_color).split(" ").slice(0,3).join(" ")}"/>`,
+      `                                <param name="Roundness" value="${circle ? 1 : pip.roundness}"/>`,
+      `                                <param name="Outline" value="0"/>`,
+      `                            </video>`);
+  }
+  const lane = pip.frame_on ? 2 : 1;
+  o.push(`                            <video ref="e0" lane="${lane}" offset="0s" start="0s" duration="${T(total)}" name="PIP (replace me)">`);
+  if (circle){
+    const cx = ((W - side)/2).toFixed(0), cy = ((H - side)/2).toFixed(0);
+    o.push(`                                <adjust-crop mode="trim"><trim-rect left="${cx}" right="${cx}" top="${cy}" bottom="${cy}"/></adjust-crop>`);
+  }
+  o.push(`                                <adjust-transform position="${px} ${py}" scale="${pip.scale} ${pip.scale}" rotation="${pip.rotation}"/>`,
+    `                                <filter-video ref="e2" name="Shape Mask">`,
+    circle ? `                                    <param name="Radius" value="${(side*.49).toFixed(0)} ${(side*.49).toFixed(0)}"/>`
+           : `                                    <param name="Radius" value="${(W*.47).toFixed(0)} ${(H*.47).toFixed(0)}"/>`,
+    `                                    <param name="Curvature" value="${curv}"/>`,
+    `                                    <param name="Feather" value="0"/>`,
+    `                                </filter-video>`,
+    `                                <filter-video ref="e3" name="Drop Shadow">`,
+    `                                    <param name="Opacity" value="${pip.shadow_op}"/>`,
+    `                                    <param name="Blur" value="${pip.shadow_blur}"/>`,
+    `                                    <param name="Distance" value="${pip.shadow_dist}"/>`,
+    `                                </filter-video>`,
+    `                            </video>`,
+    `                        </video>`,
+    `                    </spine>`, `                </sequence>`, `            </project>`);
+  return header(["ph","shapes","mask","shadow"], W, H) + o.join("\n") + "\n" + FOOTER;
+}
+
+/* =========================== preset JSON / CLI =========================== */
+function capPresetJSON(){
+  const p = { base: ["submagic","oneword","hormozi","sticker","tiktok"].includes(cap.base) ? cap.base : "tiktok",
+    font_size: String(cap.font_size), font_color: cap.font_color,
+    highlight_color: cap.highlight_color,
+    stroke_width: String(cap.stroke), rotation: String(cap.rotation),
+    position: `0,${cap.pos_y}`, uppercase: String(cap.uppercase), pop_in: String(cap.pop_in),
+    box_roundness: String(cap.box_roundness), box_pad: `${cap.box_pad_x},${cap.box_pad_y}`,
+    karaoke: String(cap.karaoke !== "none"),
+    karaoke_mode: cap.karaoke === "fill" ? "fill" : "word",
+    karaoke_display: cap.karaoke === "oneword" ? "word" : "line",
+  };
+  if (cap.stroke > 0) p.stroke_color = cap.stroke_color;
+  if (cap.upcoming_color) p.upcoming_color = cap.upcoming_color;
+  if (cap.box_color) p.box_color = cap.box_color;
+  if (cap.shadow > 0){ const a = Math.round(cap.shadow*255).toString(16).padStart(2,"0");
+    p.shadow_color = "#000000" + a; }
+  return JSON.stringify({ [cap.name || "my-caption"]: p }, null, 2) + "\n";
+}
+function pipCli(){
+  return `python3 -m fcpkit pip --shape ${pip.shape} --corner ${pip.corner} --scale ${pip.scale}`
+    + ` --rotation ${pip.rotation} --roundness ${pip.roundness}`
+    + (pip.frame_on ? ` --frame-color '${pip.frame_color}' --frame-width ${pip.frame_width}` : "")
+    + (pip.format === "wide" ? " --width 1920 --height 1080" : "");
+}
+function capCli(){
+  let s = `python3 -m fcpkit fcpxml ep.master.json --set font_size=${cap.font_size} --set rotation=${cap.rotation}`;
+  if (cap.box_color) s += ` --set box_color=${cap.box_color}`;
+  if (cap.upcoming_color) s += ` --set upcoming_color=${cap.upcoming_color}`;
+  s += ` --set highlight_color=${cap.highlight_color}`;
+  return s;
+}
+
+/* ============================== plumbing ================================= */
+function dl(name, text){
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([text], {type:"text/plain"}));
+  a.download = name; a.click(); URL.revokeObjectURL(a.href);
+}
+function toast(msg){ const t = document.getElementById("toast");
+  t.textContent = msg; t.style.opacity = 1; setTimeout(() => t.style.opacity = 0, 1400); }
+async function copy(text, msg){ try { await navigator.clipboard.writeText(text); toast(msg); }
+  catch { toast("copy blocked — use download"); } }
+
+document.getElementById("dlXml").onclick = () =>
+  dl((mode==="cap"?cap.name:pip.name || "preset") + ".fcpxml", mode==="cap"?captionXML():pipXML());
+document.getElementById("dlJson").onclick = () =>
+  mode==="cap" ? dl("presets.local.json", capPresetJSON()) : dl(pip.name+".pip.txt", pipCli()+"\n");
+document.getElementById("cpXml").onclick = () => copy(mode==="cap"?captionXML():pipXML(), "XML copied");
+document.getElementById("cpJson").onclick = () => copy(mode==="cap"?capPresetJSON():pipCli()+"\n", "preset copied");
+document.getElementById("cpCli").onclick = () => copy(mode==="cap"?capCli():pipCli(), "CLI line copied");
+
+function setMode(m){
+  mode = m;
+  document.getElementById("tabCap").classList.toggle("on", m==="cap");
+  document.getElementById("tabPip").classList.toggle("on", m==="pip");
+  document.getElementById("capPanel").style.display = m==="cap"?"":"none";
+  document.getElementById("pipPanel").style.display = m==="pip"?"":"none";
+  document.getElementById("capFrame").style.display = m==="cap"?"":"none";
+  document.getElementById("pipFrame").style.display = m==="pip"?"":"none";
+  document.getElementById("capScrub").style.display = m==="cap"?"":"none";
+  update();
+}
+document.getElementById("tabCap").onclick = () => setMode("cap");
+document.getElementById("tabPip").onclick = () => setMode("pip");
+document.getElementById("wordPos").addEventListener("input", update);
+document.getElementById("playBtn").onclick = function(){
+  if (playing){ clearInterval(playing); playing = null; this.textContent = "▶"; return; }
+  this.textContent = "⏸";
+  playing = setInterval(() => {
+    const s = document.getElementById("wordPos");
+    s.value = (+s.value + 1) % (+s.max + 1); update();
+  }, 450);
+};
+
+buildPanel(CAP_CONTROLS, cap, document.getElementById("capPanel"));
+buildPanel(PIP_CONTROLS, pip, document.getElementById("pipPanel"));
+window.__designer = { captionXML, pipXML, capPresetJSON, cap, pip, setMode, update };
+setTimeout(update, 50);
+</script>
+</html>

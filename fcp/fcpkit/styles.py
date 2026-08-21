@@ -13,7 +13,10 @@ RGBA = tuple[float, float, float, float]
 
 
 def hex_rgba(hexstr: str, alpha: float = 1.0) -> RGBA:
+    """#RRGGBB or #RRGGBBAA (the designer exports 8-digit when alpha < 1)."""
     h = hexstr.lstrip("#")
+    if len(h) == 8:
+        alpha = round(int(h[6:8], 16) / 255, 4)
     return (int(h[0:2], 16) / 255, int(h[2:4], 16) / 255, int(h[4:6], 16) / 255, alpha)
 
 
@@ -123,6 +126,35 @@ _add(Style(
     font_size=112, stroke_width=7, rotation=-3.0, pop_in=True,
     highlight_color=hex_rgba("#34C759"),
 ))
+
+
+def load_custom_presets(path: str | None = None) -> list[str]:
+    """Merge user-designed presets (from designer.html or hand-written JSON)
+    into the registry. Format — presets.local.json:
+
+        { "my-look": { "base": "submagic", "box_color": "#0A84FF",
+                       "font_size": "96", "rotation": "-2" } }
+
+    Values are strings and coerced exactly like CLI --set overrides, so the
+    designer, the CLI and this file all speak one dialect. Auto-loaded by the
+    CLI from ./presets.local.json or $FCPKIT_PRESETS.
+    """
+    import json as _json
+    import os as _os
+    from pathlib import Path as _Path
+    p = _Path(path or _os.environ.get("FCPKIT_PRESETS") or "presets.local.json")
+    if not p.exists():
+        return []
+    data = _json.loads(p.read_text(encoding="utf-8"))
+    loaded = []
+    for name, fields in data.items():
+        fields = dict(fields)
+        base = get_style(fields.pop("base", "tiktok"))
+        style = with_overrides(base, {k: str(v) for k, v in fields.items()})
+        PRESETS[name] = replace(style, name=name,
+                                blurb=fields.get("blurb", f"custom (base: {base.name})"))
+        loaded.append(name)
+    return loaded
 
 
 def get_style(name: str) -> Style:

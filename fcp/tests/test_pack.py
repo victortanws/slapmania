@@ -70,6 +70,52 @@ class TestPack(unittest.TestCase):
         self.assertEqual(dict(PRESETS), before)
 
 
+class TestCirclePipAndCustomPresets(unittest.TestCase):
+    def test_circle_pip_geometry(self):
+        from fcpkit import fcpxml, validate as val
+        import tempfile, xml.etree.ElementTree as ET
+        b = fcpxml.build_pip(shape="circle", frame_color=(1, 1, 1, 1))
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / "c.fcpxml"
+            b.write(f)
+            self.assertEqual(val.validate(f), [])
+            root = ET.parse(f).getroot()
+        pipclip = [v for v in root.iter("video") if v.get("name", "").startswith("PIP (replace")][0]
+        crop = pipclip.find("adjust-crop")
+        self.assertIsNotNone(crop)                      # square crop before mask
+        tr = crop.find("trim-rect")
+        self.assertEqual(tr.get("top"), tr.get("bottom"))
+        self.assertEqual(tr.get("top"), "420")          # (1920-1080)/2
+        mask = pipclip.findall("filter-video")[0]
+        params = {pm.get("name"): pm.get("value") for pm in mask.findall("param")}
+        self.assertEqual(params["Curvature"], "1")
+        rx, ry = params["Radius"].split()
+        self.assertEqual(rx, ry)                        # circular, not oval
+        frame = [v for v in root.iter("video") if v.get("name") == "PIP frame"][0]
+        sx, sy = frame.find("adjust-transform").get("scale").split()
+        # Square card: equal pixel size on both axes (scales differ by aspect).
+        self.assertAlmostEqual(float(sx) * 1080, float(sy) * 1920, places=1)
+
+    def test_designer_preset_roundtrip(self):
+        import json, tempfile
+        from fcpkit.styles import PRESETS, load_custom_presets, hex_rgba
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / "presets.local.json"
+            f.write_text(json.dumps({"my-look": {
+                "base": "submagic", "box_color": "#0A84FF", "font_size": "96",
+                "shadow_color": "#000000BF", "karaoke_mode": "fill"}}))
+            loaded = load_custom_presets(str(f))
+        try:
+            self.assertEqual(loaded, ["my-look"])
+            s = PRESETS["my-look"]
+            self.assertEqual(s.name, "my-look")
+            self.assertEqual(s.box_color, hex_rgba("#0A84FF"))
+            self.assertEqual(s.font_size, 96)
+            self.assertAlmostEqual(s.shadow_color[3], 0.749, places=2)  # BF hex alpha
+        finally:
+            PRESETS.pop("my-look", None)
+
+
 class TestMotionize(unittest.TestCase):
     def test_recolor_targets_only_named_blocks(self):
         src = (FIX / "master_moti" / "Master.moti").read_text()

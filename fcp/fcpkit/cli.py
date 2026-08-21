@@ -133,7 +133,7 @@ def cmd_pip(a) -> None:
                          rotation=a.rotation, roundness=a.roundness,
                          media=a.media,
                          frame_color=hex_rgba(a.frame_color) if a.frame_color else None,
-                         frame_width=a.frame_width,
+                         frame_width=a.frame_width, shape=a.shape,
                          effects=fcpxml.load_effects(a.effects))
     b.write(a.output)
     problems = val.validate(a.output)
@@ -276,6 +276,8 @@ def main(argv=None) -> None:
     p.add_argument("--media", help="file path for the PIP layer (else a Placeholder)")
     p.add_argument("--frame-color", help="hex color for a border frame card, e.g. #FFFFFF")
     p.add_argument("--frame-width", type=float, default=14.0, help="frame border px")
+    p.add_argument("--shape", choices=["rounded", "circle", "rect"], default="rounded",
+                   help="circle = square-crop + full curvature (round facecam)")
     p.add_argument("--width", type=int, default=1080)
     p.add_argument("--height", type=int, default=1920)
     p.add_argument("--fps", type=float, default=29.97)
@@ -331,6 +333,10 @@ def main(argv=None) -> None:
     a = ap.parse_args(argv)
     if a.cmd == "yt" and not a.url and not a.transcript:
         ap.error("yt needs a URL or --transcript")
+    from .styles import load_custom_presets
+    custom = load_custom_presets()
+    if custom:
+        print(f"custom presets loaded: {', '.join(custom)}", file=sys.stderr)
     a.fn(a)
 
 

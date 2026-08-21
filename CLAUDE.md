@@ -501,7 +501,7 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   core) for Victor's video-editing workflow: captions/PIP/analysis emitted as
   **FCPXML 1.10** for File > Import > XML. Run from `fcp/` with
   `PYTHONPATH=$PWD python3 -m fcpkit …`; tests:
-  `python3 -m unittest discover tests` (36, all green).
+  `python3 -m unittest discover tests` (38, all green).
 - **Master JSON owns truth** (timings/text/style/emphasis/translations);
   everything else (styled titles, native multi-lang ITT caption lanes, SRT,
   karaoke) derives from it. Times are rational Fractions snapped to
@@ -511,6 +511,16 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   best-known defaults in `fcpxml.DEFAULT_EFFECTS`, overridden by
   `effects.local.json` (gitignored) via `fcpkit learn-effects <real FCP
   export>` — that's the calibration step, don't hardcode new uids.
+- **Designer control surface (`fcp/designer.html`)**: single-file offline
+  web app (double-click to open) — live-tunes caption looks (colors incl.
+  follow-fill spoken/upcoming, box, rotation, karaoke modes) and PIP (shape
+  rect/rounded/CIRCLE, corner, frame ring, shadow); exports .fcpxml directly
+  (JS emitter mirrors the python one, 29.97 rational times) + a
+  `presets.local.json` the CLI auto-loads (styles.load_custom_presets; env
+  FCPKIT_PRESETS). Circle PIP = square adjust-crop + Shape Mask curvature 1
+  (`fcpkit pip --shape circle`). hex_rgba accepts #RRGGBBAA. Validated
+  end-to-end with Playwright driving the page + python validator on its
+  exports.
 - **Boxed looks (2026-07-31)**: `submagic` (two-color follow-fill karaoke on
   a red box) and `oneword` (giant single-word CapCut look) presets; the box is
   a Shapes-generator clip (lane 1) behind the title (lane 2), sized by

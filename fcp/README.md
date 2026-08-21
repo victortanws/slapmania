@@ -135,6 +135,24 @@ the caption pipeline for repurposing long-form into Shorts.
 python3 -m fcpkit srt ep12.master.json --lang es -o ep12.es.srt
 ```
 
+## The designer — a control surface for making presets
+
+`designer.html` (double-click it, no install) is a live preset lab: pick a
+base look, drag sliders and color pickers — text/spoken/upcoming colors, box
+color + roundness, outline, rotation, position, karaoke mode, and PIP shape
+(**circle**/rounded/rect), corner, frame ring, shadow — with a live preview
+including word-timing playback. Then:
+
+- **Download FCP file** — a ready .fcpxml of the look (import → save as a
+  Text Style / Effects Preset in FCP, or sell it).
+- **Download fcpkit preset** — a `presets.local.json`; drop it next to fcpkit
+  and your preset name works everywhere (`restyle --style my-look`,
+  `pack --brand …` etc). The CLI auto-loads it and says so.
+
+The designer's JS exporter mirrors the python emitter (same rational-time
+rules); its output passes `fcpkit validate` — that's tested in CI via a real
+headless Chromium run.
+
 ## Selling the presets — packs, brand kits, Motion templates
 
 Three layers, from "ship today" to "premium tier":
