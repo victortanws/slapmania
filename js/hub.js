@@ -16,6 +16,7 @@
 //     makeFigure(arch, x, z, ry) // -> { group, dispose() }  a standing volunteer
 //     onChallenge(arch)          // walk up + interact -> start a match
 //     onPrompt(arch, line)       // show/clear the interact prompt (null = clear); line = what they say
+//   hub.enter(roster, lastMatch?) // lastMatch {key,dist,foul}: that volunteer greets you with the result
 //   })
 //
 // Movement is deliberately BOTH: hold a direction to walk it, or click/tap a
@@ -42,6 +43,27 @@ export const STATIONS = [
   { key: 'hoss', x: 37, z: -5.5, ry: 2.3 },
 ];
 
+// What the volunteer you JUST fought says when you walk back up — keyed off the
+// result, so the fairground remembers the last thing that happened in it.
+// Generic on purpose: it plays for any of the six, once, before their own taunts.
+const REMATCH = {
+  foul: ["You fell over. In front of everyone. I didn't even move. Want to try standing first?",
+    "That was a foul. On yourself. I have never seen anybody lose to the ground before."],
+  whiff: ["That was it? I've had firmer HANDSHAKES. Rematch, or are you just browsing?",
+    "You call that a slap? My cheek filed it under 'weather'."],
+  short: ["Back already? My cheek's still deciding how it feels about you.",
+    'Not bad. Not GOOD. Not bad. Again?'],
+  far: ['...you again. I just WALKED back from over there.',
+    'That one had postage on it. Go on then — round two.'],
+  gone: ["I saw the county line. It waved. I'm not doing that again — fine, once more.",
+    "They're still measuring the last one. Wait — you want ANOTHER?"],
+};
+function rematchLine(r) {
+  const tier = r.foul ? 'foul' : r.dist < 3 ? 'whiff' : r.dist < 20 ? 'short' : r.dist < 50 ? 'far' : 'gone';
+  const p = REMATCH[tier];
+  return p[Math.abs(Math.floor((r.dist || 0) * 7)) % p.length];   // deterministic, like commentaryFor
+}
+
 const REACH = 2.6;          // how close you must stand to challenge someone
 const SPEED = 3.2;
 
@@ -51,6 +73,7 @@ export function createHub(host) {
   let figures = [];
   let active = false;
   let near = null;            // the station currently in reach
+  let lastResult = null;      // { key, dist, foul } handed in by enter(); spent on first greeting
 
   function build() {
     cast = createCast();
@@ -65,8 +88,9 @@ export function createHub(host) {
   }
   const stations = () => figures.map((f) => ({ x: f.x, z: f.z, r: 0.5 }));
 
-  function enter(roster) {
+  function enter(roster, last = null) {
     if (!nav) build();
+    lastResult = last && last.key ? last : null;
     nav.rebuild();
     figures = [];
     for (const st of STATIONS) {
@@ -128,7 +152,10 @@ export function createHub(host) {
       // faceoff only ever showed one line per match), so the fairground gets a
       // voice for free — rotated per station so two visits never repeat.
       let line = null;
-      if (near) {
+      if (near && lastResult && lastResult.key === near.arch.key) {
+        line = rematchLine(lastResult);          // the grudge plays once, then the usual taunts
+        lastResult = null;
+      } else if (near) {
         const pool = near.arch.taunts || [];
         if (pool.length) { near.said = ((near.said || 0) + 1) % pool.length; line = pool[near.said]; }
       }

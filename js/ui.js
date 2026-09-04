@@ -92,21 +92,49 @@ export function hubPrompt(text, line) {
 // tapping the chip recentres — bound once by main.js
 export function bindCamTag(fn) { if (el.camTag) el.camTag.addEventListener('click', fn); }
 
-// only 'footing', 'clock' and 'escape' are ever produced (see main.js foul()
-// calls); the old 'punch'/'fingertips' fouls were removed with the dead onContact code
-export const FOUL_LINES = {
-  footing: 'He wound up so hard he slapped himself off his own feet.',
-  clock: 'Thirty seconds of nothing. The crowd is booing. The opponent is chewing wheat.',
-  escape: 'She made the exit gate. The last thing this attempt saw was her back.',
-  takedown: 'Single-leg, side control, term sheet. He warned you about the reach.',
+// Foul text rotates per type (a player learning the coil should not read the
+// same sentence six times) and follows the SLAPPER's pronouns (fem = look.female).
+// Only 'footing', 'clock', 'escape' and 'takedown' are ever produced (main.js foul()).
+const PRO = (fem) => (fem
+  ? { He: 'She', he: 'she', His: 'Her', his: 'her', him: 'her', self: 'herself', HE: 'SHE', HIMSELF: 'HERSELF', HIS: 'HER' }
+  : { He: 'He', he: 'he', His: 'His', his: 'his', him: 'him', self: 'himself', HE: 'HE', HIMSELF: 'HIMSELF', HIS: 'HIS' });
+const FOUL_POOL = {
+  footing: [
+    (P) => `${P.He} wound up so hard ${P.he} slapped ${P.self} off ${P.his} own feet.`,
+    () => 'The coil was magnificent. The lunge was a rumor. Gravity accepted the offer.',
+    (P) => `Too much twist, not enough trust. ${P.He} is face-down and the volunteer has not blinked.`,
+  ],
+  clock: [
+    () => 'The clock ran out. The crowd is booing. The opponent is chewing wheat.',
+    () => 'Time. The volunteer checked a watch they do not own.',
+    () => 'Time. The crowd has started a slow clap, and it is not the supportive kind.',
+  ],
+  escape: [() => 'She made the exit gate. The last thing this attempt saw was her back.'],
+  takedown: [() => 'Single-leg, side control, term sheet. He warned you about the reach.'],
 };
-
-export const FOUL_BANNERS = {
-  footing: ['FOUL!', 'HE HAS SLAPPED HIMSELF OFF HIS OWN FEET'],
-  clock: ['FORFEIT!', 'FROZEN BY THE MAGNITUDE OF THE MOMENT'],
-  escape: ["SHE'S GONE!", 'THE PHENOM MADE THE GATE — UNSLAPPED'],
-  takedown: ['TAKEDOWN!', "HE'S BEEN TRAINING FOR THIS — NEVER SLAP THE REACH"],
+const FOUL_BANNER_POOL = {
+  footing: [
+    (P) => ['FOUL!', `${P.HE} HAS SLAPPED ${P.HIMSELF} OFF ${P.HIS} OWN FEET`],
+    () => ['FOUL!', 'THE WIND-UP WON. THE SLAPPER LOST.'],
+    () => ['FOUL!', 'DOWN GOES THE SLAPPER — UNASSISTED'],
+  ],
+  clock: [
+    () => ['FORFEIT!', 'FROZEN BY THE MAGNITUDE OF THE MOMENT'],
+    () => ['FORFEIT!', 'THE CLOCK SLAPPED FIRST'],
+    () => ['FORFEIT!', 'STAGE FRIGHT, COUNTY-GRADE'],
+  ],
+  escape: [() => ["SHE'S GONE!", 'THE PHENOM MADE THE GATE — UNSLAPPED']],
+  takedown: [() => ['TAKEDOWN!', "HE'S BEEN TRAINING FOR THIS — NEVER SLAP THE REACH"]],
 };
+// one cursor per type: foulBanner() advances it at the whistle, foulLine() reads
+// the same take on the result card, so banner and card always tell one story
+const foulIdx = {};
+export function foulLine(type, fem) {
+  const p = FOUL_POOL[type] || FOUL_POOL.footing;
+  return p[(foulIdx[type] || 0) % p.length](PRO(fem));
+}
+// legacy shape (first take, male) — nothing in the game reads it any more
+export const FOUL_LINES = Object.fromEntries(Object.entries(FOUL_POOL).map(([k, v]) => [k, v[0](PRO(false))]));
 
 // the commentary knows who flew: pronouns follow the volunteer (fem = arch.female),
 // and each tier rotates a couple of lines so repeat flights don't repeat the joke.
@@ -329,8 +357,10 @@ export function bodyLineFor(d) {
   if (d < 1) return 'The referee is trying very hard not to laugh.';
   return BODY_LINES[Math.floor(Math.random() * BODY_LINES.length)];
 }
-export function foulBanner(type) {
-  const [big, sub] = FOUL_BANNERS[type];
+export function foulBanner(type, fem) {
+  const p = FOUL_BANNER_POOL[type] || FOUL_BANNER_POOL.footing;
+  const k = (foulIdx[type] = (foulIdx[type] == null ? 0 : foulIdx[type] + 1));
+  const [big, sub] = p[k % p.length](PRO(fem));
   banner(big, sub, { foul: true, ms: 2400 });
 }
 

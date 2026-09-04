@@ -129,6 +129,7 @@ let lastClearedId = null; // set when a tour goal clears — an outro may follow
 let failIdx = 0;          // rotates the failure-scene pool
 const failSceneShown = new Set(); // challenge ids whose humiliating beat has already played — retries skip straight back in
 let winIdx = 0;           // rotates the victory-beat pool
+let lastMatch = null;     // { key, dist, foul } of the last result — the hub greets you with it
 let prevHandSeg = null;   // last frame's palm segment — the contact test sweeps from it
 let tookTakedown = false; // Slopberg caught a slap mid-REACH this match — the fail beat knows
 let bulwarkPts = 0;       // Tick-Tock v2: cumulative points this MATCH — the IMMOVABILITY meter
@@ -367,7 +368,8 @@ function enterHub() {
   ui.hideCards();
   ui.intro(null); ui.bubble(null); ui.coach(null); ui.showDistance(null);
   camReset();
-  const n = hub.enter(oppListNow());
+  const n = hub.enter(oppListNow(), lastMatch);   // the one you just fought has something to say
+  lastMatch = null;
   setState('ROAM');                     // ctx-roam strips the match furniture
   track('hub_entered', { stations: n });
   return n;
@@ -1270,7 +1272,7 @@ function foul(type) {
   sfx.whoosh(0);
   ui.showMeters(false);
   ui.setClock(null);
-  ui.foulBanner(type);
+  ui.foulBanner(type, !!player.look.female);
   setState('FOULED');
 }
 
@@ -1638,6 +1640,7 @@ function showResult() {
   timeScale = 1;
   const arch = opponent.arch;
   const flew = opponent.launched ? opponent.distance() : 0;
+  if (opponent.arch) lastMatch = { key: opponent.arch.key, dist: flew, foul: (slap && slap.foul) || null };
   // LEAVE HIM WHERE HE LANDED. Volunteers used to vanish with the card, so the
   // lane looked untouched no matter how many people you had launched down it.
   // Scenery + nav blocker only — never a physics collider, or every tuned
@@ -1700,7 +1703,7 @@ function showResult() {
     stage.setBestMark(bestDist);
     if (!first) ui.slapBurst('🚩 NEW PERSONAL BEST!', `THE FLAG MOVES TO ${dist.toFixed(1)}m`);
   }
-  let line = isFoul ? ui.FOUL_LINES[slap.foul]
+  let line = isFoul ? ui.foulLine(slap.foul, !!player.look.female)
     : (slap && slap.absorbed) ? absorbLine(arch)
     : (slap && slap.part === 'torso' ? ui.bodyLineFor(flew) : ui.commentaryFor(flew, opponent.wallSplat, !!arch.female));
   // world personality on the result card — deterministic garnish, never scoring

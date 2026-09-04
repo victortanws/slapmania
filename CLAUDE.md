@@ -667,3 +667,13 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   works because campaign.js has no three.js import; opponent.js does, so
   measure taunts in the browser (`ROSTER[].taunts.length` after MORE_TAUNTS).
   `__slapp.scene(beats, opts)` plays any beat array on the spot (test seam).
+- **Foul text rotates and follows the slapper's pronouns** (`ui.foulLine(type,
+  fem)` / `ui.foulBanner(type, fem)`, one cursor per type so banner and card
+  tell the same take; `FOUL_LINES` kept as a legacy shape, unread). The
+  scriptable foul is the BACKWARD one — hold S ~3.4s (`[[2600,'KeyS',true],
+  [6200,'KeyS',false]]`, drive 9.5s); L-while-coiled only nudges leanV.
+- **The hub remembers the last match**: `showResult` records `lastMatch`
+  {key, dist, foul}; `enterHub` hands it to `hub.enter(roster, last)`; the
+  volunteer you just fought greets you with a result-tier line (foul / whiff /
+  short / far / gone — `REMATCH` in hub.js) once, then their taunts resume.
+  Verified end to end under `drive`: hub → E → 3 fouls → MATCH_END → hub → Hank.
