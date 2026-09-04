@@ -293,7 +293,7 @@ export const ROSTER = [
     skin: 0xf2ece6, shirt: 0x3a86ff, pants: 0xffd23f, stripes: 0xffd23f,
     hair: 'frizz', hairCol: 0xff4d4d, redNose: 0xe0242a, paintedGrin: 0xc0202a,
     pickLine: 'Honk honk. The clown does not fear the palm.',
-    taunts: ['I bounce back, sugar — it is the whole act!', 'Honk if you missed!'],
+    taunts: ['I bounce back, sugar — it is the whole act!', 'Honk if you missed!', "Barrel's right here, sugar. Aim for the barrel — everyone else does.", 'Honk honk. That was my nose. You were aiming for the cheek.'],
   },
   // ---- WONDERS SPECIMENS (dlc: true): movement-gimmick volunteers — public
   // pick only with the Supporter Pack; campaigns summon them by key regardless ----
@@ -308,7 +308,7 @@ export const ROSTER = [
     skin: 0xe2b088, shirt: 0xf0c030, stripes: 0xd8404f, pants: 0x2f6fe0,
     hat: 'band', hatCol: 0xd8404f, hair: 'frizz', hairCol: 0xc06a2a, springShoes: 0xd8404f,
     pickLine: 'The specimen oscillates vertically. Science does not know why. Neither does the specimen.',
-    taunts: ['You gotta TIME it, flatfoot!', "Gravity keeps askin'. I keep declinin'."],
+    taunts: ['You gotta TIME it, flatfoot!', "Gravity keeps askin'. I keep declinin'.", 'Up, down, up — you keep swinging at the DOWN, flatfoot.', 'I have not touched this county for more than a second at a time.'],
   },
   {
     key: 'nadine', name: 'NAMASTE NADINE', tag: 'SUN SALUTATION', dlc: true,
@@ -318,7 +318,7 @@ export const ROSTER = [
     skin: 0xdda379, shirt: 0x7ac0b8, pants: 0x4a4458,
     hair: 'bun', hairCol: 0x6e4a2c, hat: 'band', hatCol: 0xf2e6cc, yogaMat: 0x8a5fb0,
     pickLine: 'She is not evading. She is exercising. The cheek arrives on the inhale.',
-    taunts: ['Breathe in... breathe WAY out of range.', 'My chakras are aligned, sweetheart. Your swing is not.'],
+    taunts: ['Breathe in... breathe WAY out of range.', 'My chakras are aligned, sweetheart. Your swing is not.', 'Inhale. Exhale. Whiff. That is the whole sequence, sweetheart.', 'Downward dog, upward cheek. You keep finding neither.'],
   },
   {
     key: 'horton', name: 'HEAD-TURNING HORTON', tag: 'ALL ANGLES', dlc: true,
@@ -329,7 +329,7 @@ export const ROSTER = [
     tails: true, bowtie: true,
     hat: 'top', hatCol: 0x17171d, bandCol: 0xd8b13c, hair: 'flat', hairCol: 0x2a2a2a,
     pickLine: 'Formal wear. Rotating skull. The cheek sweeps past like a lighthouse.',
-    taunts: ["You've been slapping my HAT, sir.", "Left profile, right profile — pick one. I certainly shan't."],
+    taunts: ["You've been slapping my HAT, sir.", "Left profile, right profile — pick one. I certainly shan't.", 'The hat is not the target, sir. The hat has NEVER been the target.', 'I have a good side. I have two. I am showing you neither.'],
   },
   // ---- WORLD LOCALS (world: key): volunteers who only appear in the pick
   // when their home world is active — each biome keeps its own regulars ----
@@ -339,7 +339,7 @@ export const ROSTER = [
     skin: 0xe8b58c, shirt: 0xc9b98a, pants: 0xb5a578,
     hat: 'floppy', hatCol: 0xdcd4b8, bandCol: 0x6e5a3a, hair: 'flat', hairCol: 0x8a6a4a,
     pickLine: "Been lost since '09. Fairly sure this fair is a mirage.",
-    taunts: ['I have survived quicksand, sir. You are merely damp.', 'By my map, that slap missed by three leagues.'],
+    taunts: ['I have survived quicksand, sir. You are merely damp.', 'By my map, that slap missed by three leagues.', 'I have been lost since Tuesday. Your swing has been lost longer.', 'Note for the expedition log: the local fauna cannot aim.'],
   },
   {
     key: 'flambeau', name: 'FLAMBEAU THE FIRE-EATER', tag: 'SIDESHOW', world: 'lava',
@@ -347,7 +347,7 @@ export const ROSTER = [
     skin: 0xd89468, shirt: 0x8a1f2e, stripes: 0xf0c030, pants: 0x1f1f28,
     hair: 'flat', hairCol: 0x14100c,
     pickLine: 'Eats fire professionally. Considers your palm an appetizer.',
-    taunts: ['I gargle magma, darling.', 'Ooh, toasty! Again.'],
+    taunts: ['I gargle magma, darling.', 'Ooh, toasty! Again.', 'Darling, I swallow torches. That was a birthday candle.', 'Careful — the cheek is flame-retardant, not fool-retardant.'],
   },
   {
     key: 'wally', name: 'WOODEN WALLY', tag: 'TRAINING DUMMY', world: 'dojo',
@@ -355,7 +355,7 @@ export const ROSTER = [
     skin: 0xc9a468, shirt: 0xc9a468, pants: 0x9a7a48,
     paintedGrin: 0x7a4a20, hair: 'flat', hairCol: 0x8a6a3a,
     pickLine: 'A mook jong that achieved consciousness and regrets it.',
-    taunts: ['I was carved for this.', 'Termites hit harder.'],
+    taunts: ['I was carved for this.', 'Termites hit harder.', 'Knock on wood. Go on. That IS the training.', 'Splinters are on you. That is the contract.'],
   },
   {
     key: 'inkblot', name: 'INKBLOT IAN', tag: 'TEST SUBJECT', world: 'therapy',
@@ -363,7 +363,7 @@ export const ROSTER = [
     skin: 0xe8c8a2, shirt: 0xf4f0ea, pants: 0x2a2a33, inkblot: 0x1a1a22,
     hair: 'flat', hairCol: 0x2a2a2a,
     pickLine: 'Everyone sees something different in him. He sees a slap coming.',
-    taunts: ['You see a butterfly? I see your whiff.', 'That one looked like your childhood.'],
+    taunts: ['You see a butterfly? I see your whiff.', 'That one looked like your childhood.', 'Two bats and a whiff. That is what you see. That is what I see.', 'Interesting. You swing at what you fear, and you fear the cheek.'],
   },
   {
     key: 'hal', name: 'HALO HAL', tag: 'TRAINEE ANGEL', world: 'heaven',
@@ -371,7 +371,7 @@ export const ROSTER = [
     skin: 0xf0d0b0, shirt: 0xf6f2e8, pants: 0xf6f2e8,
     halo: true, wings: true, hair: 'flat', hairCol: 0xf0e0a0,
     pickLine: "Hasn't earned the big wings. You're his flight test.",
-    taunts: ['Cloud nine has a weight limit, friend.', 'I get my wings if you clear 60. No pressure.'],
+    taunts: ['Cloud nine has a weight limit, friend.', 'I get my wings if you clear 60. No pressure.', 'Wings are earned, friend. So are cheeks. Neither is happening today.', 'Careful — up here, everything you throw has a witness.'],
   },
   {
     key: 'larry', name: 'LOW-LEVEL LARRY', tag: 'DEMON, 3RD CLASS', world: 'hell',
@@ -379,7 +379,7 @@ export const ROSTER = [
     skin: 0xc0392b, shirt: 0x8a8f98, pants: 0x3a3a44, tie: 0x2a2a33,
     horns: true, hair: 'flat', hairCol: 0x1a1a1a,
     pickLine: '400 years in the complaints department. This is his lunch break.',
-    taunts: ['Your form has been escalated to my supervisor.', 'File a grievance. The window closes never.'],
+    taunts: ['Your form has been escalated to my supervisor.', 'File a grievance. The window closes never.', 'Your swing has been placed in a queue. Estimated wait: eternity.', 'I torment souls for a living, friend. That one tormented no one.'],
   },
   {
     key: 'joe', name: "JACK O'LANTERN JOE", tag: 'NIGHT GREETER', world: 'haunted',
@@ -387,7 +387,7 @@ export const ROSTER = [
     // vine-green hands, patched night-shift flannel; the head IS the costume
     skin: 0x9aa858, shirt: 0x5a3a28, pants: 0x3a3a2c, pumpkinHead: true,
     pickLine: 'Grows back from seeds. Has the best face at the fair, and it is carved.',
-    taunts: ['Smashing me is a Halloween TRADITION.', 'I have a hundred cousins in that patch. All watching.'],
+    taunts: ['Smashing me is a Halloween TRADITION.', 'I have a hundred cousins in that patch. All watching.', 'Careful — I am lit from the inside. The candle judges too.', 'Every pumpkin in that patch has seen better carving.'],
   },
   {
     key: 'tony', name: 'BONY TONY', tag: 'FLYWEIGHT (LITERALLY)', world: 'haunted',
@@ -395,7 +395,7 @@ export const ROSTER = [
     // bone-white on grave-black — lighter than Slim Pete, and it is ALL he talks about
     skin: 0xe8e4da, shirt: 0x1a1a20, pants: 0x1a1a20, skullFace: true, ribs: 0xe8e4da,
     pickLine: 'Lighter than Slim Pete. It is ALL he talks about.',
-    taunts: ['No lungs, no fear.', 'I keep my landing teeth in a cup.'],
+    taunts: ['No lungs, no fear.', 'I keep my landing teeth in a cup.', "Miss again and I'll rattle. That's the closest I get to laughing.", 'I weigh nothing. You still cannot move me. Think about that.'],
   },
   {
     key: 'vance', name: 'VISIONARY VANCE', tag: 'FOUNDER MODE', world: 'techcampus',
@@ -413,7 +413,7 @@ export const ROSTER = [
     skin: 0xeecfa8, shirt: 0xf4f0ea, pants: 0xf4f0ea, suit: true, tie: 0xf4f0ea, skirt: 0xf4f0ea,
     hair: 'pony', hairCol: 0xf0cf6a, lipstick: 0xc0202a,
     pickLine: 'One drop of slop can do anything. Sworn testimony pending.',
-    taunts: ['The product works. In an environment of belief.', 'My voice is two octaves of credibility.'],
+    taunts: ['The product works. In an environment of belief.', 'My voice is two octaves of credibility.', 'That swing was pre-revenue.', 'My cheek has raised two rounds. Your hand has raised nothing.'],
   },
   {
     key: 'slopberg', name: 'MARK SLOPBERG', tag: 'JUST A NORMAL GUY', world: 'techcampus',

@@ -658,3 +658,12 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   renders it as `.hubSay` (italic yellow) above the `.hubCta` line. The pools
   were already deep via MORE_TAUNTS; the faceoff only ever showed one line per
   match, so this was free depth.
+- **Line pools measured, not guessed.** WINS/FAILS were exactly 2 scenes per
+  storyline (a 9-challenge tour showed each win beat 4–5×) — now 4 each, in
+  voice, via `campaign.WINS/FAILS`. Public volunteers with 2 taunts (13: the
+  movement trio, chuckles, and the 9 world locals) now have 4; campaign bosses
+  stay at 2–3 (one match each). Measure a pool before writing for it:
+  `node --input-type=module -e "import * as C from '/tmp/slapaudit/campaign.mjs'; …"`
+  works because campaign.js has no three.js import; opponent.js does, so
+  measure taunts in the browser (`ROSTER[].taunts.length` after MORE_TAUNTS).
+  `__slapp.scene(beats, opts)` plays any beat array on the spot (test seam).

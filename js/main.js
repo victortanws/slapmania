@@ -2944,6 +2944,8 @@ window.__slapp = {
   // tour (campaign) test hooks
   get tour() { return { enabled: campaign.enabled(), active: campaign.active ? campaign.active.id : null, progress: campaign.progress() }; },
   tourReset: () => { campaign.reset(); return campaign.progress(); },
+  // play any cutscene array on the spot (WINS/FAILS/CUTSCENES beats) — test seam
+  scene: (lines, opts = {}) => playScene(lines.map((b) => ({ ...b, who: b.who === 'YOU' ? player.look.name : b.who })), null, opts),
   // test seam: jump straight into a match vs any ROSTER arch (incl. campaign-only
   // bosses) — pairs with .drive() for scripted mechanic audits without menu-walking
   _vs: (key) => {
