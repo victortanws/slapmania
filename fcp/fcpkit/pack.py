@@ -56,6 +56,7 @@ def _sample_doc(style_name: str, width: int, height: int, fps: float) -> Doc:
 def build_pack(out_dir: str | Path, name: str = "SlapCaps", version: str = "0.1.0",
                brand: Optional[dict] = None, width: int = 1080, height: int = 1920,
                fps: float = 29.97, make_zip: bool = True,
+               motion_dir: Optional[str] = None, textstyles_dir: Optional[str] = None,
                effects: Optional[dict] = None) -> Path:
     presets = branded_presets(brand)
     root = Path(out_dir) / f"{name}-v{version}"
@@ -86,17 +87,29 @@ def build_pack(out_dir: str | Path, name: str = "SlapCaps", version: str = "0.1.
     if bad:
         raise RuntimeError(f"pack failed validation: {bad}")
 
+    # Optional premium tiers ride along and install.command places them.
+    if motion_dir and Path(motion_dir).is_dir():
+        shutil.copytree(motion_dir, root / "motion")
+    if textstyles_dir and Path(textstyles_dir).is_dir():
+        shutil.copytree(textstyles_dir, root / "text-styles")
+
     (root / "preview.html").write_text(render_preview(name, version, presets, brand),
                                        encoding="utf-8")
     (root / "README.md").write_text(_readme(name, version, presets), encoding="utf-8")
     (root / "LICENSE.txt").write_text(_license(name), encoding="utf-8")
+    _write_installer(root, name)
+
+    # shasum-compatible checksum file (verify.command runs `shasum -c` on it).
+    sums = [f"{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.relative_to(root)}"
+            for p in sorted(root.rglob("*")) if p.is_file()]
+    (root / "checksums.txt").write_text("\n".join(sums) + "\n", encoding="utf-8")
 
     manifest = {
         "name": name, "version": version,
         "brand": (brand or {}).get("name"),
         "frame": f"{width}x{height}@{fps}",
         "files": {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest()
-                  for p in sorted(root.rglob("*")) if p.is_file()},
+                  for p in sorted(root.rglob("*")) if p.is_file() and p.name != "manifest.json"},
     }
     (root / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
@@ -121,6 +134,88 @@ class _patched_presets:
         from . import styles
         styles.PRESETS.clear()
         styles.PRESETS.update(self._saved)
+
+
+def _write_installer(root: Path, name: str) -> None:
+    """install.command / verify.command — double-clickable on macOS, so a
+    customer never needs a terminal, let alone fcpkit."""
+    install = f'''#!/bin/bash
+# {name} — installer for Final Cut Pro. Double-click to run.
+set -u
+cd "$(dirname "$0")"
+echo "== {name}: installing into Final Cut Pro =="
+
+TITLES="$HOME/Movies/Motion Templates.localized/Titles"
+[ -d "$HOME/Movies/Motion Templates/Titles" ] && TITLES="$HOME/Movies/Motion Templates/Titles"
+if [ -d motion ] && [ -n "$(ls -A motion 2>/dev/null)" ]; then
+  mkdir -p "$TITLES/{name}"
+  cp -R motion/. "$TITLES/{name}/"
+  echo "* Motion titles -> $TITLES/{name} (FCP Titles browser)"
+else
+  echo "* no motion/ folder — Titles-browser tier not in this pack"
+fi
+
+STYLES="$HOME/Library/Application Support/Motion/Library/Text Styles"
+if [ -d text-styles ] && ls text-styles/*.molo >/dev/null 2>&1; then
+  mkdir -p "$STYLES"
+  cp text-styles/*.molo "$STYLES/"
+  echo "* Text Style presets -> $STYLES (Text inspector dropdown)"
+fi
+
+# Fit the .fcpxml files to THIS Mac's Final Cut (exact built-in template ids).
+TROOT="/Applications/Final Cut Pro.app/Contents/Resources/Templates.localized"
+if [ -d "$TROOT" ] && command -v python3 >/dev/null 2>&1 && xcode-select -p >/dev/null 2>&1; then
+  python3 - "$TROOT" <<'PYEOF'
+import pathlib, re, sys
+troot = pathlib.Path(sys.argv[1])
+wanted = {{"Text.moti": "Text", "Shapes.motn": "Shapes",
+          "Placeholder.motn": "Placeholder", "Drop Shadow.moef": "Drop Shadow"}}
+uids = {{}}
+for f in troot.rglob("*"):
+    n = wanted.get(f.name)
+    if n and n not in uids:
+        uids[n] = ".../" + f.relative_to(troot).as_posix()
+pat = re.compile(r'(<effect\\b[^>]*\\bname=")([^"]+)("[^>]*\\buid=")([^"]*)(")')
+patched = 0
+for fx in pathlib.Path(".").rglob("*.fcpxml"):
+    t = fx.read_text()
+    def sub(m):
+        global patched
+        u = uids.get(m.group(2))
+        if not u or m.group(4) == u: return m.group(0)
+        patched += 1
+        return m.group(1) + m.group(2) + m.group(3) + u + m.group(5)
+    t2 = pat.sub(sub, t)
+    if t2 != t: fx.write_text(t2)
+print(f"* matched {{len(uids)}} built-in templates, patched {{patched}} references")
+PYEOF
+else
+  echo "* skipped template-id fit (FCP or dev tools not found) — imports still work"
+fi
+
+SAMPLE="$(ls presets/*.fcpxml 2>/dev/null | head -1)"
+if [ -n "$SAMPLE" ] && [ -d "/Applications/Final Cut Pro.app" ]; then
+  echo "* opening $SAMPLE in Final Cut Pro (import dialog)..."
+  open -a "Final Cut Pro" "$SAMPLE"
+fi
+echo "== done. In FCP: keep the imported project as your style palette, or save"
+echo "   each look via the Text inspector style dropdown / File > Save Effects Preset. =="
+'''
+    verify = f'''#!/bin/bash
+# {name} — verify file integrity against checksums.txt. Double-click to run.
+cd "$(dirname "$0")"
+if command -v shasum >/dev/null 2>&1; then
+  grep -v "  manifest.json$" checksums.txt | grep -v "  checksums.txt$" | shasum -a 256 -c -
+elif command -v sha256sum >/dev/null 2>&1; then
+  grep -v "  manifest.json$" checksums.txt | grep -v "  checksums.txt$" | sha256sum -c -
+else
+  echo "no shasum/sha256sum available"; exit 1
+fi
+'''
+    for fname, body in (("install.command", install), ("verify.command", verify)):
+        f = root / fname
+        f.write_text(body, encoding="utf-8")
+        f.chmod(0o755)
 
 
 # ------------------------------------------------------------- preview page

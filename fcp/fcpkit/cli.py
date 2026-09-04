@@ -181,7 +181,67 @@ def cmd_motionize(a) -> None:
           "browser immediately (restart FCP if the category was new)")
 
 
+def cmd_install(a) -> None:
+    from . import installer
+    report = installer.install_pack(a.pack, home=a.home, fcp_app=a.fcp,
+                                    open_sample=not a.no_open)
+    for line in report:
+        print(f"  {line}")
+
+
+def cmd_textstyles(a) -> None:
+    from . import installer
+    from .brand import load_brand
+    from .styles import PRESETS
+    from .brand import branded_presets
+    template = a.template or installer.newest_molo(a.home)
+    if template is None:
+        raise SystemExit(
+            "no saved Text Style found. Calibrate once: in FCP, style any title, "
+            "then Text inspector > style dropdown > 'Save All Format and Appearance "
+            "Attributes…' — then re-run this command."
+        )
+    presets = branded_presets(load_brand(a.brand) if a.brand else None)
+    out_dir = a.out or installer.text_styles_dir(a.home)
+    made = installer.clone_textstyles(template, presets, out_dir, prefix=a.prefix)
+    for m in made:
+        print(f"  {m}")
+    print(f"{len(made)} Text Style presets written from {Path(template).name} — "
+          "they appear in FCP's Text inspector style dropdown (restart FCP if open)")
+
+
+def cmd_verify(a) -> None:
+    from .selftest import run_verify
+    r = run_verify(home=a.home, fcp_app=a.fcp)
+    for label, ok, why in r.rows:
+        mark = "PASS" if ok else "FAIL"
+        print(f"  [{mark}] {label}" + (f" — {why}" if why else ""))
+    if r.ok:
+        print("verify: all stages green — the chain from text to Final Cut is sound")
+    else:
+        raise SystemExit("verify: FAILURES above")
+
+
 def cmd_learn(a) -> None:
+    if a.scan_fcp is not None:
+        from . import installer
+        app = a.scan_fcp or installer.FCP_APP
+        got = installer.scan_fcp_effects(app)
+        if not got:
+            raise SystemExit(f"no Templates root under {app} — is Final Cut installed there?")
+        import json as _json
+        existing = {}
+        p = Path(a.save)
+        if p.exists():
+            existing = _json.loads(p.read_text(encoding="utf-8"))
+        existing.update(got)
+        p.write_text(_json.dumps(existing, indent=2) + "\n", encoding="utf-8")
+        for key, eff in got.items():
+            print(f"  {key:<14} {eff['uid']}")
+        print(f"saved to {a.save} — harvested from the Final Cut bundle itself")
+        return
+    if not a.export:
+        raise SystemExit("learn-effects needs an export file, or --scan-fcp on the Mac")
     got = fcpxml.learn_effects(a.export, save_to=a.save)
     for key, eff in got.items():
         print(f"  {key:<14} {eff['name']:<20} {eff['uid']}")
@@ -314,8 +374,30 @@ def main(argv=None) -> None:
     p.add_argument("--prefix", help="template name prefix (default from master name)")
     p.set_defaults(fn=cmd_motionize)
 
+    p = sub.add_parser("install", help="install a pack INTO Final Cut (templates, styles, uid fit)")
+    p.add_argument("pack", help="pack directory (from `fcpkit pack` or an unzipped purchase)")
+    p.add_argument("--home", default=str(Path.home()))
+    p.add_argument("--fcp", default="/Applications/Final Cut Pro.app")
+    p.add_argument("--no-open", action="store_true", help="don't open the sample in FCP")
+    p.set_defaults(fn=cmd_install)
+
+    p = sub.add_parser("textstyles", help="generate native FCP Text Style presets (.molo)")
+    p.add_argument("--template", help="a saved .molo to clone (default: your newest saved style)")
+    p.add_argument("--brand", help="brandkit.json for the color set")
+    p.add_argument("--prefix", default="SlapCaps")
+    p.add_argument("--out", help="output dir (default: FCP's Text Styles folder — installs live)")
+    p.add_argument("--home", default=str(Path.home()))
+    p.set_defaults(fn=cmd_textstyles)
+
+    p = sub.add_parser("verify", help="prove the whole workflow end-to-end on this machine")
+    p.add_argument("--home", default=str(Path.home()))
+    p.add_argument("--fcp", default="/Applications/Final Cut Pro.app")
+    p.set_defaults(fn=cmd_verify)
+
     p = sub.add_parser("learn-effects", help="harvest exact effect uids from a real FCP export")
-    p.add_argument("export", help="any .fcpxml exported from YOUR Final Cut")
+    p.add_argument("export", nargs="?", help="any .fcpxml exported from YOUR Final Cut")
+    p.add_argument("--scan-fcp", nargs="?", const="", metavar="APP",
+                   help="scan the Final Cut app bundle itself (no export needed)")
     p.add_argument("--save", default=fcpxml.LOCAL_EFFECTS_FILE)
     p.set_defaults(fn=cmd_learn)
 

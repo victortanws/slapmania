@@ -501,7 +501,7 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   core) for Victor's video-editing workflow: captions/PIP/analysis emitted as
   **FCPXML 1.10** for File > Import > XML. Run from `fcp/` with
   `PYTHONPATH=$PWD python3 -m fcpkit …`; tests:
-  `python3 -m unittest discover tests` (38, all green).
+  `python3 -m unittest discover tests` (48, all green).
 - **Master JSON owns truth** (timings/text/style/emphasis/translations);
   everything else (styled titles, native multi-lang ITT caption lanes, SRT,
   karaoke) derives from it. Times are rational Fractions snapped to
@@ -526,6 +526,15 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   a Shapes-generator clip (lane 1) behind the title (lane 2), sized by
   `est_text_width`; `fcpkit pip --frame-color` adds a rounded border card
   behind the PIP the same way. Shapes uid needs `learn-effects` calibration.
+- **Install layer (installer.py/selftest.py)**: `fcpkit install <pack>` fits
+  a pack to the local FCP (scans the app bundle's Templates.localized to
+  derive real built-in uids — uid = ".../"+relpath — and patches .fcpxml in
+  place), copies motion/ → ~/Movies/Motion Templates…/Titles/<Pack> and
+  text-styles/*.molo → ~/Library/App Support/Motion/Library/Text Styles, then
+  `open`s a sample (launches FCP import). `fcpkit textstyles` clones a
+  user-saved .molo per preset (recolor_ozml). `fcpkit verify` = end-to-end
+  self-test w/ PASS/FAIL rows. Packs ship install.command/verify.command +
+  checksums.txt (verify BEFORE install — uid fit rewrites files).
 - **Sellable layers**: `fcpkit pack` builds a distributable zip (per-preset
   fcpxml + PIP + preview.html catalog/sales page + manifest sha256s;
   `fcp/dist/` gitignored); brand kits (`brand.py`, one JSON recolors/refonts

@@ -135,6 +135,39 @@ the caption pipeline for repurposing long-form into Shorts.
 python3 -m fcpkit srt ep12.master.json --lang es -o ep12.es.srt
 ```
 
+## Installing INTO Final Cut — one command / one double-click
+
+```bash
+python3 -m fcpkit verify                   # prove the whole chain on this machine
+python3 -m fcpkit install dist/SlapCaps-v0.4.0   # put the pack into FCP
+```
+
+`install` (and the pack's double-clickable `install.command`, for customers):
+
+1. re-validates every file, then **fits the pack to YOUR Final Cut** — it scans
+   the FCP app bundle itself, derives the exact built-in template ids (Text,
+   Shapes, Placeholder, Drop Shadow) and patches the .fcpxml files in place, so
+   nothing can import as a red "missing effect";
+2. copies `motion/` templates into `~/Movies/Motion Templates…/Titles/<Pack>/`
+   → they appear in FCP's **Titles browser** as drag-and-drop presets;
+3. copies `text-styles/*.molo` into FCP's Text Styles library
+   → they appear in the **Text inspector style dropdown**;
+4. opens the first sample in Final Cut, which launches straight into XML import
+   (double-clicking any .fcpxml does the same).
+
+`python3 -m fcpkit textstyles` generates those native .molo Text Style presets:
+save ONE style from FCP's Text inspector (the calibration template), and it
+clones a recolored copy per preset directly into FCP's styles folder — the
+looks are then one click in the dropdown with no import at all.
+`learn-effects --scan-fcp` harvests ids from the app bundle without needing an
+export. Run the pack's `verify.command` (checksums) BEFORE `install.command` —
+the id-fit step legitimately rewrites files.
+
+`fcpkit verify` runs the pipeline end-to-end in a scratch dir — every preset
+export, bilingual caption timing parity, all three PIP shapes, pack checksums,
+uid patching — and on the Mac additionally checks the FCP bundle, preset
+folders, and Apple's DTD. Exit code 1 if anything fails.
+
 ## The designer — a control surface for making presets
 
 `designer.html` (double-click it, no install) is a live preset lab: pick a
