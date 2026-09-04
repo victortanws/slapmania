@@ -77,11 +77,15 @@ export function camTag(text, cine = false) {
   el.camTag.classList.remove('hidden');
 }
 // the hub's "walk up to someone" prompt — its own element, see index.html
-export function hubPrompt(text) {
+// `line` is optional — the volunteer's own words above the call to action.
+// First-party strings only (roster text), so building markup here is safe.
+export function hubPrompt(text, line) {
   const e = document.getElementById('hubPrompt');
   if (!e) return;
   if (!text) { e.classList.add('hidden'); e.textContent = ''; return; }
-  e.textContent = text;
+  e.textContent = '';
+  if (line) { const q = document.createElement('div'); q.className = 'hubSay'; q.textContent = `\u201C${line}\u201D`; e.appendChild(q); }
+  const c = document.createElement('div'); c.className = 'hubCta'; c.textContent = text; e.appendChild(c);
   e.classList.remove('hidden');
 }
 

@@ -354,9 +354,9 @@ function ensureHub() {
     stage, player, camera,
     makeFigure: (arch, x, z, ry) => stage.makeStandee(arch, x, z, ry),
     onChallenge: (arch) => enterMatchFromHub(arch),
-    onPrompt: (arch) => ui.hubPrompt(arch
+    onPrompt: (arch, line) => ui.hubPrompt(arch
       ? `${arch.name} · ${arch.tag} — ${isTouch ? 'TAP TO CHALLENGE' : 'PRESS [E] TO CHALLENGE'}`
-      : null),
+      : null, line),
   });
   return hub;
 }

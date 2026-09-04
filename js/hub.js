@@ -15,7 +15,7 @@
 //     player,                    // the Player instance to walk around
 //     makeFigure(arch, x, z, ry) // -> { group, dispose() }  a standing volunteer
 //     onChallenge(arch)          // walk up + interact -> start a match
-//     onPrompt(text)             // show/clear the interact prompt (null = clear)
+//     onPrompt(arch, line)       // show/clear the interact prompt (null = clear); line = what they say
 //   })
 //
 // Movement is deliberately BOTH: hold a direction to walk it, or click/tap a
@@ -124,7 +124,15 @@ export function createHub(host) {
     }
     if (best !== near) {
       near = best;
-      host.onPrompt(near ? near.arch : null);
+      // The volunteers TALK when you walk up. Their taunt pools are deep (the
+      // faceoff only ever showed one line per match), so the fairground gets a
+      // voice for free — rotated per station so two visits never repeat.
+      let line = null;
+      if (near) {
+        const pool = near.arch.taunts || [];
+        if (pool.length) { near.said = ((near.said || 0) + 1) % pool.length; line = pool[near.said]; }
+      }
+      host.onPrompt(near ? near.arch : null, line);
     }
     // the volunteers turn to watch you go past — cheap, and it makes the
     // fairground feel inhabited rather than decorated

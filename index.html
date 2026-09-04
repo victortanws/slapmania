@@ -142,7 +142,9 @@ body.smackon #distance, body.smackon #flightChain, body.smackon #coach{visibilit
   background:rgba(10,12,26,.82);border:3px solid var(--yellow);color:#fff;font-size:15px;letter-spacing:1px;
   padding:10px 20px;border-radius:10px;z-index:42;text-align:center;text-shadow:2px 2px 0 #000;
   box-shadow:4px 4px 0 rgba(0,0,0,.45);}
-@media (max-width:560px){ #hubPrompt{bottom:120px;font-size:12px;padding:8px 14px;} }
+#hubPrompt .hubSay{font-size:16px;letter-spacing:0;color:var(--yellow);font-style:italic;margin-bottom:6px;line-height:1.25;}
+#hubPrompt .hubCta{font-size:13px;letter-spacing:1px;opacity:.92;}
+@media (max-width:560px){ #hubPrompt{bottom:120px;font-size:12px;padding:8px 14px;} #hubPrompt .hubSay{font-size:13px;} #hubPrompt .hubCta{font-size:11px;} }
 
 /* NB: pulses on OPACITY, not scale. `throb` scales to 1.12, which grows the
    element's box by 12% and made this chip collide with the attempts pips —

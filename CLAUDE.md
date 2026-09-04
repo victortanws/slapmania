@@ -640,3 +640,21 @@ social meta, Supabase leaderboard wired and verified live (read + write + caps).
   permanently un-rendered — which is why freeze-frame screenshots kept needing a
   manual `setInterval` render. `drive` now always restores it, and `freeze(false)`
   clears it too.
+
+## Content pass (2026-09-04)
+
+- **Spoken numbers must follow retuned goals.** Goals were retuned to measured
+  values in several passes (`goal.v` + card `desc` updated), but 64 cutscene
+  beats still QUOTED the old, higher number ("fifty meters" for a 45m goal,
+  "ninety percent" for 81). Fixed by script: `/tmp/slapaudit/fixnums.mjs`
+  (number-words → `goal.v`, preserves sentence case / ALL CAPS / Ray's
+  "four-ten" slang) and verified with a linear scanner (645 lines, 0 real
+  mismatches — "a seventy-seven" and "four-ten" are parser artifacts). **When
+  you retune a goal, grep its cutscene for the number-words too.** NB the
+  olympic cutscenes are (validly) indented 4 spaces inside `CUTSCENES` — a
+  2-space region regex silently skips them.
+- **Hub volunteers talk.** `hub.js` hands `onPrompt(arch, line)` a taunt from
+  `arch.taunts` (rotated per station, `near.said`), `ui.hubPrompt(text, line)`
+  renders it as `.hubSay` (italic yellow) above the `.hubCta` line. The pools
+  were already deep via MORE_TAUNTS; the faceoff only ever showed one line per
+  match, so this was free depth.

@@ -959,24 +959,24 @@ export const CUTSCENES = {
   a1c2: [
     { who: '👻 MASTER SLEE', text: 'The county built that barricade to keep slapped folk out of the pie stand. Pete, kindly stand in front of it.', shot: 'spirit' },
     { who: 'SLIM PETE', text: 'I volunteered for the pie.', shot: 'opp' },
-    { who: '👻 MASTER SLEE', text: 'Twenty meters. The barricade has had this coming for years.', shot: 'spirit' },
+    { who: '👻 MASTER SLEE', text: 'Eighteen meters. The barricade has had this coming for years.', shot: 'spirit' },
   ],
   a1c3: [
     { who: '👻 MASTER SLEE', text: 'Mabel. My first student. I died halfway through her last lesson.', shot: 'spirit' },
     { who: 'MULE-KICK MABEL', text: "Every Sunday for forty years I came back to this field and held the follow-through. Waitin' on the old man to say 'good.'", shot: 'opp' },
     { who: 'YOU', text: 'Then why volunteer for the slap?', shot: 'player' },
-    { who: 'MULE-KICK MABEL', text: "Because if he finally found a student, my lesson can finish too. Thirty-five meters, sugar. Make it one he'd call good.", shot: 'opp' },
+    { who: 'MULE-KICK MABEL', text: "Because if he finally found a student, my lesson can finish too. Thirty-two meters, sugar. Make it one he'd call good.", shot: 'opp' },
     { who: '👻 MASTER SLEE', text: '...do not miss.', shot: 'spirit' },
   ],
   a2c1: [
     { who: 'BRUCE SLEE', text: "You're still doing this, grandfather.", shot: 'bruce' },
     { who: '👻 MASTER SLEE', text: 'Bruce. Watch the stranger. Scroll Two — a feather flies far and proves nothing.', shot: 'spirit' },
     { who: 'BIG BERTHA', text: "Six fairs, sugar. Don't insult me with a light one.", shot: 'opp' },
-    { who: 'BRUCE SLEE', text: 'Six hundred points. The old man used to call Bertha the only honest scale in the county.', shot: 'bruce' },
+    { who: 'BRUCE SLEE', text: 'Five hundred forty points. The old man used to call Bertha the only honest scale in the county.', shot: 'bruce' },
   ],
   a2c2: [
     { who: 'BIG HOSS', text: "The ghost's been tryin' to move me since '86.", shot: 'opp' },
-    { who: '👻 MASTER SLEE', text: 'Hill. He is a hill. Twenty-two meters.', shot: 'spirit' },
+    { who: '👻 MASTER SLEE', text: 'Hill. He is a hill. Twenty meters.', shot: 'spirit' },
   ],
   a2c3: [
     { who: '👻 MASTER SLEE', text: 'The first guardian. I set him there myself. Or he was already there. It was a long time ago.', shot: 'spirit' },
@@ -986,12 +986,12 @@ export const CUTSCENES = {
   ],
   a3c1: [
     { who: '👻 MASTER SLEE', text: 'Forget distance. The Maestro will listen to your chain.', shot: 'spirit' },
-    { who: 'MAESTRO FORTISSIMO', text: 'I can hear a flat swivel from the parking lot. Ninety percent. In tune.', shot: 'opp' },
+    { who: 'MAESTRO FORTISSIMO', text: 'I can hear a flat swivel from the parking lot. Eighty-one percent. In tune.', shot: 'opp' },
     { who: 'BRUCE SLEE', text: 'This is the part where students quit.', shot: 'bruce' },
   ],
   a3c2: [
     { who: '👻 MASTER SLEE', text: 'Anyone can throw a feather over the county line. The Third Scroll throws HANK. No featherweights, no wind, no excuses.', shot: 'spirit' },
-    { who: 'HAYSEED HANK', text: "Seventy-five meters. My scarecrow is gonna think I'm showin' off.", shot: 'opp' },
+    { who: 'HAYSEED HANK', text: "Sixty-eight meters. My scarecrow is gonna think I'm showin' off.", shot: 'opp' },
     { who: '👻 MASTER SLEE', text: 'Tell the scarecrow it is next.', shot: 'spirit' },
   ],
   a3c3: [
@@ -1052,7 +1052,7 @@ export const CUTSCENES = {
   f1c2: [
     { who: 'THE INFLUENCER', text: 'If the fair trends, the council literally cannot ignore it. I did the math. Well — I did a poll.', shot: 'opp' },
     { who: 'YOU', text: 'You want me to slap you... for the algorithm?', shot: 'player' },
-    { who: 'THE INFLUENCER', text: "For clause 1(b), bestie: 'the fair shall demonstrably trend.' I ANNOTATED the wager. Fifty-five meters minimum or it won't clip well.", shot: 'opp' },
+    { who: 'THE INFLUENCER', text: "For clause 1(b), bestie: 'the fair shall demonstrably trend.' I ANNOTATED the wager. Fifty meters minimum or it won't clip well.", shot: 'opp' },
   ],
   f1c3: [
     { who: 'THE ASSESSOR', text: 'This fairground appraises at... sentimental value. My briefcase does not have a column for sentimental value.', shot: 'opp' },
@@ -1063,12 +1063,12 @@ export const CUTSCENES = {
     { who: 'JUDGE PENNYWHISTLE', text: "Clause two, champ: every witness Don bought stays bought unless 'persuaded otherwise.' His consultants paid Ravin' Ray to testify the fair is 'basically a warehouse rave — rezone it.'", shot: 'judge' },
     { who: "RAVIN' RAY", text: 'They gave me glowsticks, man. Industrial glowsticks.', shot: 'opp' },
     { who: 'YOU', text: 'You sold us out for glowsticks?', shot: 'player' },
-    { who: "RAVIN' RAY", text: '...they glow so good. Thirty meters and I recant everything.', shot: 'opp' },
+    { who: "RAVIN' RAY", text: '...they glow so good. Twenty-seven meters and I recant everything.', shot: 'opp' },
   ],
   f2c2: [
     { who: 'JUDGE PENNYWHISTLE', text: "The wager has filing fees, champ — Don's lawyers bill by the OBJECTION. Defense funds grow on points, and our biggest draw is the big man. Folks pay just to watch him not move.", shot: 'judge' },
     { who: 'BIG HOSS', text: "Twenty years I've been the fair's north wall, sugar. Tonight I'm the fundraiser.", shot: 'opp' },
-    { who: 'JUDGE PENNYWHISTLE', text: 'Five hundred points. If Hoss travels, the county opens its wallet out of sheer disbelief.', shot: 'judge' },
+    { who: 'JUDGE PENNYWHISTLE', text: 'Four hundred fifty points. If Hoss travels, the county opens its wallet out of sheer disbelief.', shot: 'judge' },
   ],
   f2c3: [
     { who: 'JUDGE PENNYWHISTLE', text: "Don's 'conflict-resolution specialist.' Nine-year pig-grease champion. HR could not hold him. Soap could not hold him.", shot: 'judge' },
@@ -1077,7 +1077,7 @@ export const CUTSCENES = {
   ],
   f3c1: [
     { who: 'JUDGE PENNYWHISTLE', text: 'Clause three, champ — lifted word for word from the county charter: "form beyond reproach, graded by certified faculty." Don\'s lawyers thought it sounded impossible. They had not met the faculty.', shot: 'judge' },
-    { who: 'SCHOOLMARM SUSIE', text: 'I grade in red ink and I have never given an A. Eighty-five percent, dear. Show your work.', shot: 'opp' },
+    { who: 'SCHOOLMARM SUSIE', text: 'I grade in red ink and I have never given an A. Seventy-seven percent, dear. Show your work.', shot: 'opp' },
     { who: 'YOU', text: 'What happens below eighty-five?', shot: 'player' },
     { who: 'SCHOOLMARM SUSIE', text: 'Detention. For the entire fair.', shot: 'opp' },
   ],
@@ -1096,10 +1096,10 @@ export const CUTSCENES = {
     { who: 'TREMENDOUS DON', text: "So you cleared my clauses. MY clauses! That's how good my lawyers are — even the losing side is winning. Anyway, I found a problem with the wager. Me. I'm contesting it.", shot: 'opp' },
     { who: 'YOU', text: 'This was never about parking, Don. Forty square feet. The old livestock tent. 1962.', shot: 'player' },
     { who: 'TREMENDOUS DON', text: "Sir Bacon-a-lot was ROBBED. Finest hog in the county — DISQUALIFIED. 'Over-greased.' A boy's dream, paved over by a JUDGE.", shot: 'opp' },
-    { who: 'TREMENDOUS DON', text: "So yes, I bought the judge. I bought the LOT. Four hundred points says you STILL never touch me.", shot: 'opp' },
+    { who: 'TREMENDOUS DON', text: "So yes, I bought the judge. I bought the LOT. Three hundred sixty points says you STILL never touch me.", shot: 'opp' },
   ],
   f4c2: [
-    { who: 'YOU', text: 'The final clause, your honor. "Three hundred fifty points off a sitting judge, twenty seconds a swing." Don didn\'t write this one either, did he.', shot: 'player' },
+    { who: 'YOU', text: 'The final clause, your honor. "Three hundred twenty points off a sitting judge, twenty seconds a swing." Don didn\'t write this one either, did he.', shot: 'player' },
     { who: 'JUDGE PENNYWHISTLE', text: "...No. I did. With Don's gold pen. Sixty years ago I judged the hogs, and I disqualified a greasy little pig over a greasy little boy —", shot: 'opp' },
     { who: 'JUDGE PENNYWHISTLE', text: "— and I have notarized his revenge ever since to keep it quiet. The whistle was bought a long time ago, champ.", shot: 'opp' },
     { who: 'YOU', text: 'You ate the witness, too, your honor. The hot dog. Mid-testimony.', shot: 'player' },
@@ -1133,12 +1133,12 @@ export const CUTSCENES = {
     { who: '🎬 DIRECTOR VANE', text: "This one's all elbows. Is it dramatic? Tell me it's dramatic, Charlie, I need one dramatic frame.", shot: 'wide' },
     { who: 'YOU', text: 'Observe the featherweight. Hollow-boned. Built to travel. There is nothing dramatic in it. It simply goes.', shot: 'player' },
     { who: 'SLIM PETE', text: "I'm RIGHT here, man.", shot: 'opp' },
-    { who: 'YOU', text: 'And shortly, he will be there. Twenty-two meters there.', shot: 'player' },
+    { who: 'YOU', text: 'And shortly, he will be there. Twenty meters there.', shot: 'player' },
   ],
   w1c3: [
     { who: 'GRANDPA CLETUS', text: "Sonny, I been slapped at three counties. You narrate every one of 'em in that voice?", shot: 'opp' },
     { who: 'YOU', text: 'The elder specimen. Weathered. Unbothered. In this one respect, he and I are the same animal.', shot: 'player' },
-    { who: 'GRANDPA CLETUS', text: "...huh. Fair enough. Twenty-eight meters, and mind the suspenders, they're my good pair.", shot: 'opp' },
+    { who: 'GRANDPA CLETUS', text: "...huh. Fair enough. Twenty-five meters, and mind the suspenders, they're my good pair.", shot: 'opp' },
   ],
   w1c4: [
     { who: 'YOU', text: 'Your honor. A formal complaint. The specimen will not stop jumping.', shot: 'player' },
@@ -1170,7 +1170,7 @@ export const CUTSCENES = {
   ],
   w2c2: [
     { who: 'THE INFLUENCER', text: "Okay so your little documentary is trending and I cannot — CANNOT — let a slapping tape out-clip me. I'm inserting myself into the ecosystem.", shot: 'opp' },
-    { who: 'YOU', text: 'An invasive species arrives. Loud. Reflective. Drawn to the lens. Standard protocol is relocation. Fifty-five meters, minimum.', shot: 'player' },
+    { who: 'YOU', text: 'An invasive species arrives. Loud. Reflective. Drawn to the lens. Standard protocol is relocation. Fifty meters, minimum.', shot: 'player' },
     { who: 'THE INFLUENCER', text: 'Relocate me somewhere with GOOD lighting, bestie.', shot: 'opp' },
   ],
   w2c3: [
@@ -1180,12 +1180,12 @@ export const CUTSCENES = {
     { who: 'YOU', text: 'We shall learn whose voice stays flat when the other cracks the air. Begin.', shot: 'player' },
   ],
   w3c1: [
-    { who: 'MAESTRO FORTISSIMO', text: 'I watched your film. Forty million people, and not ONE of them heard the flat swivel in Reel One. I heard it. Ninety percent, narrator, or I walk out of my own documentary.', shot: 'opp' },
+    { who: 'MAESTRO FORTISSIMO', text: 'I watched your film. Forty million people, and not ONE of them heard the flat swivel in Reel One. I heard it. Eighty-one percent, narrator, or I walk out of my own documentary.', shot: 'opp' },
     { who: 'YOU', text: 'The specimen has learned to critique the observer. Note the reversal — rare, and slightly rude. I will grant it a ninety-percent chain. For science. Not for the review.', shot: 'player' },
   ],
   w3c2: [
     { who: '🎬 DIRECTOR VANE', text: 'Penultimate reel. I need a MIRACLE. The featherweight, terminal velocity, county line. Give me the ending — and Charlie, this once, for the Academy: cry.', shot: 'wide' },
-    { who: 'YOU', text: 'Released at the correct angle, the featherweight reaches what the ancients called escape velocity. Eighty-eight meters. Observe closely. I will not be crying.', shot: 'player' },
+    { who: 'YOU', text: 'Released at the correct angle, the featherweight reaches what the ancients called escape velocity. Seventy-nine meters. Observe closely. I will not be crying.', shot: 'player' },
     { who: 'SLIM PETE', text: "Third documentary I'm in. Still no residuals.", shot: 'opp' },
   ],
   w3c3: [
@@ -1221,7 +1221,7 @@ export const CUTSCENES = {
     { who: 'YOU', text: 'It is, Hank. An empty hand, and the willingness to use it. Hold still.', shot: 'player' },
   ],
   b1c2: [
-    { who: 'YOU', text: 'Water does not push the river. It becomes the river. Watch the featherweight learn this — twenty-five meters downstream.', shot: 'player' },
+    { who: 'YOU', text: 'Water does not push the river. It becomes the river. Watch the featherweight learn this — twenty-three meters downstream.', shot: 'player' },
     { who: 'SLIM PETE', text: 'Every philosopher in this county practices on ME specifically.', shot: 'opp' },
     { who: 'YOU', text: 'Because you, alone among them, understand flight.', shot: 'player' },
   ],
@@ -1238,25 +1238,25 @@ export const CUTSCENES = {
   b2c1: [
     { who: '👻 MASTER SLEE', text: 'Chuck\'s first legend: "He cannot be caught." Dale is where that story lives. Catch the uncatchable, and one third of the myth unravels.', shot: 'spirit' },
     { who: 'DODGY DALE', text: 'I taught Chuck the slip. Or he taught me — the story changes at every fair. Six seasons, not one landing, and every miss gets a signed apology.', shot: 'opp' },
-    { who: 'YOU', text: 'A slip has a rhythm. A rhythm is a promise. I will meet you at the honest word of it — forty-five meters.', shot: 'player' },
+    { who: 'YOU', text: 'A slip has a rhythm. A rhythm is a promise. I will meet you at the honest word of it — thirty-six meters.', shot: 'player' },
   ],
   b2c2: [
     { who: '👻 MASTER SLEE', text: 'Second legend: "He slides through any grip." Pete has spent a decade making that sentence true. Only a real palm holds — a perfect one, or none.', shot: 'spirit' },
     { who: 'GREASED PETE', text: "Chuck wrote me into a TALE, kid. You don't HOLD a tale — you retell it bigger. Slide off me and you just make me famous.", shot: 'opp' },
-    { who: 'YOU', text: 'I do not wish to hold you, Pete. I wish to ARRIVE so completely the grease has nothing left to refuse. Forty meters.', shot: 'player' },
+    { who: 'YOU', text: 'I do not wish to hold you, Pete. I wish to ARRIVE so completely the grease has nothing left to refuse. Thirty-six meters.', shot: 'player' },
   ],
   b2c3: [
     { who: '👻 MASTER SLEE', text: 'The last facet: "He never budges." McGraw is Chuck\'s stubbornness, cast in iron. Below seventy percent he will not grant you so much as a blink.', shot: 'spirit' },
     { who: 'IRON-JAW McGRAW', text: "Move me and you've moved the mountain's opinion of you. Seventy percent. Show the form, or don't waste the wind.", shot: 'opp' },
-    { who: 'YOU', text: 'Form is not decoration, iron man. It is the whole sentence. Let me speak it clearly — thirty meters clearly.', shot: 'player' },
+    { who: 'YOU', text: 'Form is not decoration, iron man. It is the whole sentence. Let me speak it clearly — twenty-seven meters clearly.', shot: 'player' },
   ],
   b3c1: [
-    { who: '👻 MASTER SLEE', text: 'No gatekeepers now. Only the long road, the thin air, and your own honesty. Send Hank fifty meters down the open lane — pure form, no tricks.', shot: 'spirit' },
-    { who: 'HAYSEED HANK', text: 'Fifty meters. From a man who talks like a folded-up fortune. And somehow I believe him.', shot: 'opp' },
-    { who: 'YOU', text: 'The road up is the road in. Breathe. Coil. Fifty meters is one long exhale.', shot: 'player' },
+    { who: '👻 MASTER SLEE', text: 'No gatekeepers now. Only the long road, the thin air, and your own honesty. Send Hank forty-five meters down the open lane — pure form, no tricks.', shot: 'spirit' },
+    { who: 'HAYSEED HANK', text: 'Forty-five meters. From a man who talks like a folded-up fortune. And somehow I believe him.', shot: 'opp' },
+    { who: 'YOU', text: 'The road up is the road in. Breathe. Coil. Forty-five meters is one long exhale.', shot: 'player' },
   ],
   b3c2: [
-    { who: 'SCHOOLMARM SUSIE', text: "Chuck's porch has a sign-in sheet, and I am the sign-in sheet. Ninety percent, in red ink, or you do not pass. I have never once passed anyone.", shot: 'opp' },
+    { who: 'SCHOOLMARM SUSIE', text: "Chuck's porch has a sign-in sheet, and I am the sign-in sheet. Eighty-one percent, in red ink, or you do not pass. I have never once passed anyone.", shot: 'opp' },
     { who: 'YOU', text: 'Then let me be the first sentence you cannot correct. Every link, in tune. Grade me.', shot: 'player' },
     { who: 'SCHOOLMARM SUSIE', text: '...show your work, dragon.', shot: 'opp' },
   ],
@@ -1288,37 +1288,37 @@ export const CUTSCENES = {
   n1c2: [
     { who: 'GRANDPA CLETUS', text: "Fell asleep in the outhouse at closin'. Again. Forty years I been accidental night-fair folk.", shot: 'opp' },
     { who: 'YOU', text: 'You could just... leave with me. After I win.', shot: 'player' },
-    { who: 'GRANDPA CLETUS', text: "Leave? Sonny, the night crowd thinks I'm HILARIOUS. The skeletons got no eyelids — they physically cannot stop watchin' me. Twenty-five meters, and stick the dismount.", shot: 'opp' },
+    { who: 'GRANDPA CLETUS', text: "Leave? Sonny, the night crowd thinks I'm HILARIOUS. The skeletons got no eyelids — they physically cannot stop watchin' me. Twenty-three meters, and stick the dismount.", shot: 'opp' },
   ],
   n1c3: [
-    { who: "🎃 JACK O'LANTERN JOE", text: "Audition's passed. Now the billing question: how far can you send the greeter? Thirty meters puts you on the poster.", shot: 'opp' },
-    { who: 'YOU', text: 'What happens to you at thirty meters?', shot: 'player' },
+    { who: "🎃 JACK O'LANTERN JOE", text: "Audition's passed. Now the billing question: how far can you send the greeter? Twenty-seven meters puts you on the poster.", shot: 'opp' },
+    { who: 'YOU', text: 'What happens to you at twenty-seven meters?', shot: 'player' },
     { who: "🎃 JACK O'LANTERN JOE", text: "I land in the pumpkin patch, I plant myself, and by Tuesday there's more of me. It's a living. Technically it isn't. Swing.", shot: 'opp' },
   ],
   n2c1: [
     { who: '💀 BONY TONY', text: "Forty years I've watched the living get launched over that hay wall. You know what I am? AERODYNAMIC. You know what nobody ever does? Slap the skeleton.", shot: 'opp' },
     { who: 'YOU', text: "There's no wind resistance to you at all, is there.", shot: 'player' },
-    { who: '💀 BONY TONY', text: "I'm a paper airplane with ambitions, friend. Sixty meters. Make the bones SOAR.", shot: 'opp' },
+    { who: '💀 BONY TONY', text: "I'm a paper airplane with ambitions, friend. Fifty-four meters. Make the bones SOAR.", shot: 'opp' },
   ],
   n2c2: [
     { who: "RAVIN' RAY", text: "Oh, I'm not trapped here, man. I BOOKED this. Only fair in the county open during my hours.", shot: 'opp' },
     { who: 'YOU', text: 'The Night Fair has a rave?', shot: 'player' },
-    { who: "RAVIN' RAY", text: 'Dude. The skeletons are ALREADY glowsticks. Four-fifty points — the crowd goes quiet right before the drop, and that quiet is YOUR cue.', shot: 'opp' },
+    { who: "RAVIN' RAY", text: 'Dude. The skeletons are ALREADY glowsticks. Four-ten points — the crowd goes quiet right before the drop, and that quiet is YOUR cue.', shot: 'opp' },
   ],
   n2c3: [
     { who: '💀 BONY TONY', text: 'Sixty was a warm-up. The record wall says CLETUS, 1961, "unassisted." Tonight we chisel in TONY.', shot: 'opp' },
     { who: 'GRANDPA CLETUS', text: "That record was wind-aided and I will fight the wall that says otherwise.", shot: 'wide' },
-    { who: '💀 BONY TONY', text: "Seventy-five meters, slapper. If a bone comes loose mid-flight, keep going — I'll collect myself. I always do.", shot: 'opp' },
+    { who: '💀 BONY TONY', text: "Sixty-eight meters, slapper. If a bone comes loose mid-flight, keep going — I'll collect myself. I always do.", shot: 'opp' },
   ],
   n3c1: [
     { who: 'MAESTRO FORTISSIMO', text: 'This fair has a HAUNTED ORGAN. It plays whatever it wants, and what it wants is my Requiem — BADLY. Every night. In the wrong key.', shot: 'opp' },
     { who: 'YOU', text: 'So you volunteered to spite an organ.', shot: 'player' },
-    { who: 'MAESTRO FORTISSIMO', text: 'I volunteered because the finale needs PERCUSSION. Eighty-eight percent, in tempo, or the organ wins. The organ must NEVER win.', shot: 'opp' },
+    { who: 'MAESTRO FORTISSIMO', text: 'I volunteered because the finale needs PERCUSSION. Seventy-nine percent, in tempo, or the organ wins. The organ must NEVER win.', shot: 'opp' },
   ],
   n3c2: [
     { who: "🎃 JACK O'LANTERN JOE", text: "...you hear that? The mower stopped. The mower NEVER stops. He's listening to the show.", shot: 'opp' },
     { who: 'YOU', text: 'Is that good?', shot: 'player' },
-    { who: "🎃 JACK O'LANTERN JOE", text: "It means you headline at dawn whether you like it or not. Sixty-five meters — send me clean over the mower, and do NOT land me on his lawn.", shot: 'opp' },
+    { who: "🎃 JACK O'LANTERN JOE", text: "It means you headline at dawn whether you like it or not. Fifty-nine meters — send me clean over the mower, and do NOT land me on his lawn.", shot: 'opp' },
   ],
   n3c3: [
     { who: '💀 THE GREEN REAPER', text: "Four hundred years I've kept these grounds. And every Halloween, some LIVING person tramples the night lawn during my mow.", shot: 'opp' },
@@ -1502,7 +1502,7 @@ export const CUTSCENES = {
   ],
   k2c3: [
     { who: 'GIGGLES DELUXE', text: 'LIMITED TIME ONLY: me, but forever. This location never closes. I AM the location.', shot: 'opp' },
-    { who: 'YOU', text: 'Twenty seconds, sixty-five percent form, three hundred sixty points. Auntie is revoking your franchise, your smile, and your little toy.', shot: 'player' },
+    { who: 'YOU', text: 'Twenty seconds, sixty-five percent form, three hundred eighty points. Auntie is revoking your franchise, your smile, and your little toy.', shot: 'player' },
     { who: 'GIGGLES DELUXE', text: 'Your cardiologist sends his regards. We have him too.', shot: 'opp' },
     { who: 'YOU', text: 'Then Auntie will slap BOTH your locations. Hold still.', shot: 'player' },
   ],
@@ -1635,7 +1635,7 @@ export const CUTSCENES = {
     { who: 'SLIM PETE', text: "It's the fear of flyin', doc. Can't even LOOK at a bird without my knees going.", shot: 'opp' },
     { who: 'YOU', text: 'Exposure therapy. Gold standard. Ordinarily we begin with a photograph of an airplane and work upward over nine years.', shot: 'player' },
     { who: 'SLIM PETE', text: 'And in the new practice?', shot: 'opp' },
-    { who: 'YOU', text: 'You ARE the airplane. Twenty-five meters. I will bill the sky.', shot: 'player' },
+    { who: 'YOU', text: 'You ARE the airplane. Twenty-three meters. I will bill the sky.', shot: 'player' },
   ],
   t1c3: [
     { who: 'BIG BERTHA', text: "Doc, I carry this whole county. Every bake sale, every busted heart, everybody's troubles. I can't put a single one of 'em down.", shot: 'opp' },
@@ -1646,26 +1646,26 @@ export const CUTSCENES = {
     { who: 'TREMENDOUS DON', text: 'Doc, everyone says I have the biggest ego. Tremendous ego. I said thank you.', shot: 'opp' },
     { who: 'YOU', text: 'Fascinating. An ego so inflated it hears diagnosis as applause. In fifty years I have met one other case. Also him. Different toupee.', shot: 'player' },
     { who: 'TREMENDOUS DON', text: "So what's the treatment? Is it expensive? I only take expensive treatments.", shot: 'opp' },
-    { who: 'YOU', text: 'Four hundred and fifty points of grounding, applied to the cheek. The most expensive slap in medicine. You will love it.', shot: 'player' },
+    { who: 'YOU', text: 'Four hundred ten points of grounding, applied to the cheek. The most expensive slap in medicine. You will love it.', shot: 'player' },
     { who: "🐈 THE CAT", text: "(the cat has heard this exact breakthrough before. The cat remains unimpressed. The cat is always unimpressed.)", shot: "wide" },
   ],
   t2c2: [
     { who: 'THE INFLUENCER', text: "Doc, if a post gets under 10k likes I literally feel nothing. Is that bad? Wait — say it to the camera.", shot: 'opp' },
     { who: 'YOU', text: 'External validation as a load-bearing wall. The old cure is two years of learning to sit quietly with oneself.', shot: 'player' },
     { who: 'THE INFLUENCER', text: 'Two YEARS? I have a brand deal Thursday.', shot: 'opp' },
-    { who: 'YOU', text: 'Then we take the shortcut. Fifty-five meters, entirely offline. For the duration of the flight no one can perceive you — and you will discover you still exist. I validate this trajectory.', shot: 'player' },
+    { who: 'YOU', text: 'Then we take the shortcut. Forty-five meters, entirely offline. For the duration of the flight no one can perceive you — and you will discover you still exist. I validate this trajectory.', shot: 'player' },
   ],
   t2c3: [
     { who: 'INKBLOT IAN', text: "Doc! Since the session — my aunt saw ME. Not a moth. ME. But I gotta know it wasn't a fluke.", shot: 'opp' },
     { who: 'YOU', text: 'Note for the record: at your first session, your shadow flinched before your face did. Today the shadow stands still. That is progress, Ian. Measurable. Billable.', shot: 'player' },
-    { who: 'YOU', text: 'Ah, the retest. RIGOR! You are my favorite data point, Ian. This time the form itself must be legible — an eighty percent chain, or the result will not replicate.', shot: 'player' },
+    { who: 'YOU', text: 'Ah, the retest. RIGOR! You are my favorite data point, Ian. This time the form itself must be legible — an seventy-two percent chain, or the result will not replicate.', shot: 'player' },
     { who: 'INKBLOT IAN', text: 'What do you see this time, doc?', shot: 'opp' },
     { who: 'YOU', text: 'A butterfly, Ian. You were never a moth. Now — once more, for the record, and do not flinch.', shot: 'player' },
   ],
   t3c1: [
     { who: 'HAYSEED HANK', text: "Doc, I keep havin' the same dream. I'm flyin' over the barn, over the corn, over the county line... then I wake up face-down in the pond.", shot: 'opp' },
     { who: 'YOU', text: "A recurring dream is the unconscious filing a complaint. Yours is refreshingly literal: the barn is the barn, the corn is the corn.", shot: 'player' },
-    { who: 'YOU', text: "The flight, Hank, is a FLIGHT. Some dreams require interpretation. Yours requires forty-five meters. ...One moment. The cat is doing it AGAIN.", shot: 'player' },
+    { who: 'YOU', text: "The flight, Hank, is a FLIGHT. Some dreams require interpretation. Yours requires forty-one meters. ...One moment. The cat is doing it AGAIN.", shot: 'player' },
     { who: '🐈 THE CAT', text: "(sprawled at the edge of the tent, the cat holds Carl's stare and slow-blinks. To a cat, a slow blink means trust. To a man out-analyzed by it for a month, it means WAR.)", shot: 'cat' },
     { who: 'YOU', text: "Fifty years of practice. Four hundred papers. And the finest analyst in this tent is a cat the size of a hay wagon that bills NOTHING and is NEVER WRONG. One intervention remains. Ready the palm.", shot: 'player' },
     { who: 'HAYSEED HANK', text: "Uh — Doc? Is... is slappin' the cat part of the therapy?", shot: 'opp' },
@@ -1704,38 +1704,38 @@ export const CUTSCENES = {
   v1c2: [
     { who: 'THE INFLUENCER', text: "Okay don't be mad. They offered me equity. My whole feed is slop now — my FACE isn't even my face, it's a generated face with better teeth.", shot: 'opp' },
     { who: 'YOU', text: 'Your real teeth are fine.', shot: 'player' },
-    { who: 'THE INFLUENCER', text: 'RIGHT? So launch me fifty meters, ORGANICALLY. One genuinely real clip and the algorithm remembers I exist. No filters. Well. One filter.', shot: 'opp' },
+    { who: 'THE INFLUENCER', text: 'RIGHT? So launch me forty-five meters, ORGANICALLY. One genuinely real clip and the algorithm remembers I exist. No filters. Well. One filter.', shot: 'opp' },
   ],
   v1c3: [
     { who: 'VISIONARY VANCE', text: 'Small setback: the fortune chatbot told a farmer his tractor "yearns for the sea." He drove it into the pond. We\'re calling it an alignment issue.', shot: 'opp' },
-    { who: 'YOU', text: 'The pond is forty meters from here.', shot: 'player' },
-    { who: 'VISIONARY VANCE', text: "Are you pitching ME? Because that sounded like a roadmap. Fine — ship me forty meters. We'll log it as user engagement.", shot: 'opp' },
+    { who: 'YOU', text: 'The pond is thirty-six meters from here.', shot: 'player' },
+    { who: 'VISIONARY VANCE', text: "Are you pitching ME? Because that sounded like a roadmap. Fine — ship me thirty-six meters. We'll log it as user engagement.", shot: 'opp' },
   ],
   v2c1: [
     { who: 'MIRACLE MIRA', text: 'One drop of slop can do anything. Cure boredom. Replace corn. Balance the county budget. The board believes me, the magazine believed me, and you, too, will believe me.', shot: 'opp' },
     { who: 'YOU', text: 'Has anyone actually seen the product work?', shot: 'player' },
-    { who: 'MIRACLE MIRA', text: 'The product works in an environment of BELIEF. Which is why your demo must be flawless where mine are... staged. Seventy-five percent form, minimum. I would know a fake. Professionally.', shot: 'opp' },
+    { who: 'MIRACLE MIRA', text: 'The product works in an environment of BELIEF. Which is why your demo must be flawless where mine are... staged. Sixty-eight percent form, minimum. I would know a fake. Professionally.', shot: 'opp' },
   ],
   v2c2: [
     { who: 'BIG HOSS', text: 'They hired me as "office wellness furniture." I sit in the lobby. Investors pat me for luck.', shot: 'opp' },
     { who: 'YOU', text: "How's the pay?", shot: 'player' },
-    { who: 'BIG HOSS', text: "All the cafeteria slop I can eat, and sugar, I can EAT. I'm their whole burn rate. Five hundred points — show the board what their money weighs.", shot: 'opp' },
+    { who: 'BIG HOSS', text: "All the cafeteria slop I can eat, and sugar, I can EAT. I'm their whole burn rate. Four hundred ten points — show the board what their money weighs.", shot: 'opp' },
   ],
   v2c3: [
     { who: 'MIRACLE MIRA', text: 'The auditors are asking where the product is. The product is a JOURNEY. Regardless — I require an exit.', shot: 'opp' },
     { who: 'YOU', text: 'The county line is that way.', shot: 'player' },
-    { who: 'MIRACLE MIRA', text: 'Sixty meters, minimum — an exit only counts if it is bigger than the last round. Make it look planned. I will be describing it that way regardless.', shot: 'opp' },
+    { who: 'MIRACLE MIRA', text: 'Fifty-four meters, minimum — an exit only counts if it is bigger than the last round. Make it look planned. I will be describing it that way regardless.', shot: 'opp' },
   ],
   v3c1: [
     { who: 'YOU', text: 'Memo forty-one: the models are getting slappier. Memo forty-two: I quit. Memo forty-three: watch this.', shot: 'player' },
     { who: 'SCHOOLMARM SUSIE', text: 'They hired me to grade the machine\'s homework. Forty thousand essays. Every single one ended with "in conclusion, in conclusion."', shot: 'opp' },
-    { who: 'YOU', text: 'I trained that model, madam faculty. I scaled it. And here is my final finding: capability without form is slop. Grade ME — eighty-eight percent, every link handwritten, fully interpretable.', shot: 'player' },
+    { who: 'YOU', text: 'I trained that model, madam faculty. I scaled it. And here is my final finding: capability without form is slop. Grade ME — seventy-nine percent, every link handwritten, fully interpretable.', shot: 'player' },
     { who: 'SCHOOLMARM SUSIE', text: 'See me after class — that was the MACHINE\'s grade. Show me the opposite, doctor. THAT goes on the fridge.', shot: 'opp' },
   ],
   v3c2: [
     { who: 'VISIONARY VANCE', text: "The runway's gone. Mira's gone — beautifully, actually, real hang-time. There's one move left, and I need a demo the board will never forget.", shot: 'opp' },
-    { who: 'YOU', text: 'You want me to slap you seventy-five meters. As a fundraising strategy.', shot: 'player' },
-    { who: 'VISIONARY VANCE', text: "A HUMAN. Slapped SEVENTY-FIVE METERS. By HAND. That's the most authentic content this valley has produced in a decade. We'll raise a Series F on the crater alone.", shot: 'opp' },
+    { who: 'YOU', text: 'You want me to slap you sixty-eight meters. As a fundraising strategy.', shot: 'player' },
+    { who: 'VISIONARY VANCE', text: "A HUMAN. Slapped SIXTY-EIGHT METERS. By HAND. That's the most authentic content this valley has produced in a decade. We'll raise a Series F on the crater alone.", shot: 'opp' },
   ],
   v3c3: [
     { who: 'VISIONARY VANCE', text: 'Board, county, press: AGI is HERE. S.L.O.P. UNIT-1 — Synthetic Labor Optimized Personnel. It can do anything a person can do.', shot: 'wide' },
@@ -1766,10 +1766,10 @@ export const CUTSCENES = {
     o1c2: [
       { who: 'MAESTRO FORTISSIMO', text: 'Commissioner! Before you judge the slap — know that I am ALSO applying. Cello. OLYMPIC cello.', shot: 'opp' },
       { who: '🏅 COMMISSIONER QUIBBLE', text: 'Sir, the cello is not—', shot: 'wide' },
-      { who: 'MAESTRO FORTISSIMO', text: 'The cello is ATHLETIC! Have you SEEN a tremolo?! Fine — we bundle the bids. Slapper: sixty-five percent, in tempo, while I accompany. If the chain is music, BOTH sports advance.', shot: 'opp' },
+      { who: 'MAESTRO FORTISSIMO', text: 'The cello is ATHLETIC! Have you SEEN a tremolo?! Fine — we bundle the bids. Slapper: fifty-nine percent, in tempo, while I accompany. If the chain is music, BOTH sports advance.', shot: 'opp' },
     ],
     o1c3: [
-      { who: '🏅 COMMISSIONER QUIBBLE', text: 'Question three: measurability. Every event needs a qualifying standard. The Committee proposes: thirty meters.', shot: 'wide' },
+      { who: '🏅 COMMISSIONER QUIBBLE', text: 'Question three: measurability. Every event needs a qualifying standard. The Committee proposes: twenty-seven meters.', shot: 'wide' },
       { who: 'SLIM PETE', text: "Thirty? Sir, with respect, I done thirty by ACCIDENT. Twice. There's a plaque.", shot: 'opp' },
       { who: '🏅 COMMISSIONER QUIBBLE', text: 'The plaque is not sanctioned. Do it again, before an official.', shot: 'wide' },
     ],
@@ -1777,7 +1777,7 @@ export const CUTSCENES = {
       { who: '🏅 COMMISSIONER QUIBBLE', text: "Round two is paperwork. Form 7: certified instruction. Form 12: a sanctioned bout. And Form 88 — evaluation by a Committee-recognized athlete.", shot: 'wide' },
       { who: '🏅 COMMISSIONER QUIBBLE', text: "We have dispatched... the phenom. May the Movement forgive us.", shot: 'wide' },
       { who: 'SCHOOLMARM SUSIE', text: "Thirty years I've taught this county to read, to reason, and to line up single-file. If the world can watch a man slap another man into a pond, it can watch teaching. I volunteer for Form 7.", shot: 'opp' },
-      { who: 'SCHOOLMARM SUSIE', text: 'Eighty percent, dear, and DIAGRAM every link. I sign nothing I have not graded, and my red pen has never once run dry.', shot: 'opp' },
+      { who: 'SCHOOLMARM SUSIE', text: 'Seventy-two percent, dear, and DIAGRAM every link. I sign nothing I have not graded, and my red pen has never once run dry.', shot: 'opp' },
     ],
     o2c2: [
       { who: '🏅 COMMISSIONER QUIBBLE', text: 'Form 12. A head-to-head. Two competitors, sanctioned exchange, witnessed and stapled.', shot: 'wide' },
@@ -1802,13 +1802,13 @@ export const CUTSCENES = {
     o3c1: [
       { who: '🏅 COMMISSIONER QUIBBLE', text: "Four hundred million views. The vote moves to a LIVE final — which means pageantry.", shot: 'wide' },
       { who: '🏅 COMMISSIONER QUIBBLE', text: "The anthem committee requests guidance: for a county, do we play the state song, the fair jingle, or — heaven help us — both?", shot: 'wide' },
-      { who: 'BIG BERTHA', text: "Sugar, when I get moved, the county SINGS. Five hundred fifty points — THAT's your anthem. Tell the committee it's in the key of OOF.", shot: 'opp' },
+      { who: 'BIG BERTHA', text: "Sugar, when I get moved, the county SINGS. Five hundred points — THAT's your anthem. Tell the committee it's in the key of OOF.", shot: 'opp' },
       { who: 'YOU', text: "I poured that grandstand's foundation. Let's make it shake.", shot: 'player' },
     ],
     o3c2: [
       { who: '🏅 COMMISSIONER QUIBBLE', text: 'Every Olympic sport arrives with a record for the next generation to chase. Set one. Officially. I have brought the good clipboard.', shot: 'wide' },
       { who: 'HAYSEED HANK', text: "A world record. With my name spelled right. Ma wanted me in the hymn book — she'll settle for the record book.", shot: 'opp' },
-      { who: 'YOU', text: 'Fifty meters, Hank. The book will spell it H-A-N-K.', shot: 'player' },
+      { who: 'YOU', text: 'Forty-five meters, Hank. The book will spell it H-A-N-K.', shot: 'player' },
     ],
     o3c3: [
       { who: '🏅 COMMISSIONER QUIBBLE', text: "Disaster. BOTH federations are claiming Ms. Eileen's demonstration for their medal table. The flag office has escalated.", shot: 'wide' },
@@ -1844,14 +1844,14 @@ export const CUTSCENES = {
     { who: 'YOU', text: "My shadow arrived separately. It is standing to my left. I did not authorize this. Fifty years I interpreted shadows; tonight mine has requested a session.", shot: 'player' },
     { who: 'YOU', text: "The couch is en route. The cat walked here on its own. The cat KNEW.", shot: 'player' },
     { who: "🎃 JACK O'LANTERN JOE", text: "Evenin', doc. First visit? Face like yours — fixed smile, professional, nothin' behind the eyes — you'll fit right in. Mine's carved on too.", shot: 'opp' },
-    { who: 'YOU', text: "The persona, literalized in gourd. Patient presents as a mask that GREW here. Flush on the carved cheek, thirty meters.", shot: 'player' },
+    { who: 'YOU', text: "The persona, literalized in gourd. Patient presents as a mask that GREW here. Flush on the carved cheek, twenty-seven meters.", shot: 'player' },
     { who: 'YOU', text: "And note, in red ink: when I strike the mask, we find out whose face I kept underneath mine.", shot: 'player' },
     { who: "🐈 THE CAT", text: "(the cat is already inside the Haunted Fair. It got in before you. It always gets in first.)", shot: "wide" },
   ],
   t4c2: [
     { who: '💀 BONY TONY', text: "Heard there's a doctor on the grounds! Forty years dead and my back still hurts. What's your rate?", shot: 'opp' },
     { who: 'YOU', text: 'The subtraction case. No license, no tenure, no boat. I have spent fifty years dreading the day I become him — and he is standing here CHEERFUL.', shot: 'player' },
-    { who: '💀 BONY TONY', text: "Cheerful? Doc, I'm UNBURDENED. No lungs, no drag, no fear. You want to know what's left when everything's stripped away? Seventy meters. Watch what's left FLY.", shot: 'opp' },
+    { who: '💀 BONY TONY', text: "Cheerful? Doc, I'm UNBURDENED. No lungs, no drag, no fear. You want to know what's left when everything's stripped away? Sixty-three meters. Watch what's left FLY.", shot: 'opp' },
     { who: 'YOU', text: 'Prescription: altitude. Note for the Red Book — the bones, freed of the flesh of the curriculum vitae, remain aerodynamic. There is hope for the profession.', shot: 'player' },
   ],
   t4c3: [
@@ -1859,7 +1859,7 @@ export const CUTSCENES = {
     { who: '💀 THE GREEN REAPER', text: "Doctor. I was your next slide all along — every hourglass in your books, every boat you couldn't afford.", shot: 'opp' },
     { who: '💀 THE GREEN REAPER', text: "Four hundred years I keep this lawn, and tonight, apparently, I'm a METAPHOR. I charge extra for metaphor.", shot: 'opp' },
     { who: 'YOU', text: "You are the appointment every analyst defers, groundskeeper. I have written three books about avoiding you, and billed for all three.", shot: 'player' },
-    { who: 'YOU', text: "Tonight I settle the invoice — five hundred points, form legible, before your shift ends.", shot: 'player' },
+    { who: 'YOU', text: "Tonight I settle the invoice — four hundred fifty points, form legible, before your shift ends.", shot: 'player' },
     { who: '💀 THE GREEN REAPER', text: 'Twenty seconds a swing, sixty-five percent, and doctor — the lawn takes cancellations. It does not GIVE them.', shot: 'opp' },
   ],
   outro_t4c3: [
@@ -1889,7 +1889,7 @@ export const CUTSCENES = {
   c1c2: [
     { who: 'YOU', text: 'The fourth circle — the hoarders, straining at great weights for all eternity. And there, atop the largest weight... no. It cannot be.', shot: 'player' },
     { who: 'TREMENDOUS DON', text: "Timeshare! It's a TIMESHARE. Beautiful circle. Very exclusive. The flames are gold-plated — I had them done.", shot: 'opp' },
-    { who: '👻 VIRGIL', text: "He's not damned, exactly. He toured the place and made an offer. Four hundred points, poet — down here that's a security deposit.", shot: 'wide' },
+    { who: '👻 VIRGIL', text: "He's not damned, exactly. He toured the place and made an offer. Three hundred sixty points, poet — down here that's a security deposit.", shot: 'wide' },
     { who: 'YOU', text: 'Even in the pit, he closes.', shot: 'player' },
   ],
   c1c3: [
@@ -1921,36 +1921,36 @@ export const CUTSCENES = {
   c2c1: [
     { who: '👻 VIRGIL', text: "Out of the pit and onto the foothills. Still smokin', but it's UP from here — the mountain works in terraces. First terrace: pride.", shot: 'wide' },
     { who: 'MAESTRO FORTISSIMO', text: 'I am here VOLUNTARILY. Purging the sin of pride. It is taking DECADES, because — and I say this humbly — mine is the finest pride on the mountain.', shot: 'opp' },
-    { who: 'YOU', text: 'Eighty-five percent, maestro, every link in tune. Not for the terrace. For the tempo.', shot: 'player' },
+    { who: 'YOU', text: 'Seventy-seven percent, maestro, every link in tune. Not for the terrace. For the tempo.', shot: 'player' },
     { who: 'MAESTRO FORTISSIMO', text: 'For the TEMPO! You see? He learns. One honest slap, in time, and I ascend — to the next terrace, where I shall be humble about THAT.', shot: 'opp' },
   ],
   c2c2: [
     { who: "RAVIN' RAY", text: "Sloth terrace, man. The penance is you gotta HUSTLE, forever. They put me here 'cause I sleep all day. That's not sloth. That's SCHEDULING.", shot: 'opp' },
-    { who: '👻 VIRGIL', text: "He's appealed it three times. The mountain don't do appeals. It does do momentum — thirty-two meters counts as hustle, and up he goes.", shot: 'wide' },
+    { who: '👻 VIRGIL', text: "He's appealed it three times. The mountain don't do appeals. It does do momentum — twenty-nine meters counts as hustle, and up he goes.", shot: 'wide' },
     { who: 'YOU', text: 'Then rise, nocturnal one — on this terrace, momentum itself counts as virtue!', shot: 'player' },
     { who: "RAVIN' RAY", text: 'See, THAT guy gets it. Drop it on the downbeat.', shot: 'opp' },
   ],
   c2c3: [
     { who: 'CUSTODIAN CATO', text: 'VIRGIL. Still telling folk my gate is three feet east?', shot: 'opp' },
     { who: '👻 VIRGIL', text: 'It IS three feet east, Cato. I have the stakes.', shot: 'wide' },
-    { who: 'CUSTODIAN CATO', text: 'The GATE decides where the gate is. Pilgrim — sixty-five percent form, twenty-eight meters, and I open it. Anything less is litter, and litter gets swept DOWN.', shot: 'opp' },
+    { who: 'CUSTODIAN CATO', text: 'The GATE decides where the gate is. Pilgrim — sixty-five percent form, twenty-five meters, and I open it. Anything less is litter, and litter gets swept DOWN.', shot: 'opp' },
     { who: 'YOU', text: 'Two old men and a property line. Even Purgatory is a county.', shot: 'player' },
   ],
   c3c1: [
-    { who: 'HALO HAL', text: "Poet! You made it! Big news: my wings review is TODAY. If a visitor clears me sixty meters, that's 'demonstrated flight aptitude.' It's in the manual. I highlighted it.", shot: 'opp' },
+    { who: 'HALO HAL', text: "Poet! You made it! Big news: my wings review is TODAY. If a visitor clears me fifty-four meters, that's 'demonstrated flight aptitude.' It's in the manual. I highlighted it.", shot: 'opp' },
     { who: '👻 VIRGIL', text: 'The cloud country runs on paperwork too. Told you. Everything is a county.', shot: 'wide' },
     { who: 'YOU', text: 'Then soar, apprentice! One honest slap, and heaven itself must file your promotion!', shot: 'player' },
   ],
   c3c2: [
     { who: 'GRANDPA CLETUS', text: "Sonny. Been visitin' up here since '61 — they let me nap on the clouds, on account of I'm 'closest to the door.' Their words. I choose to take it kindly.", shot: 'opp' },
     { who: 'YOU', text: 'The veteran, serene upon the summit of all things. Why volunteer, elder?', shot: 'player' },
-    { who: 'GRANDPA CLETUS', text: "Forty-five meters, up HERE, with the floaty gravity? That's the closest to flyin' an old man gets while still buyin' green bananas. Gentle on the halo — it's a rental.", shot: 'opp' },
+    { who: 'GRANDPA CLETUS', text: "Forty-one meters, up HERE, with the floaty gravity? That's the closest to flyin' an old man gets while still buyin' green bananas. Gentle on the halo — it's a rental.", shot: 'opp' },
   ],
   c3c3: [
     { who: '👻 VIRGIL', text: "Well. Here's the top. Everyone I ever guided went through that gate. Job's done, poet — I'll just wait here. Like always. Somebody's got to mind the stakes.", shot: 'wide' },
     { who: 'YOU', text: 'Guide. In every circle, one soul waits on a single honest slap. You surveyed all three worlds — and never once crossed your own line. Whose slap do YOU await?', shot: 'player' },
     { who: '👻 VIRGIL', text: "...seven hundred years of boundaries, and the poet finds the one I drew around myself.", shot: 'opp' },
-    { who: '👻 VIRGIL', text: "Fine. FINE. But I stand still for nobody — sixty percent form, forty meters, and mind the sidestep. I invented the sidestep.", shot: 'opp' },
+    { who: '👻 VIRGIL', text: "Fine. FINE. But I stand still for nobody — sixty percent form, thirty-six meters, and mind the sidestep. I invented the sidestep.", shot: 'opp' },
     { who: 'YOU', text: 'Then hold still exactly as much as you are able, old friend. This canto ends with you THROUGH the gate.', shot: 'player' },
   ],
   outro_c3c3: [
@@ -1965,7 +1965,7 @@ export const CUTSCENES = {
     { who: 'MARK SLOPBERG', text: "Hey. Mark. I bought the crater. And SynerCorn. And the robot — it does birthdays now. Come up to the house, I'll show you the cows. This is my normal voice.", shot: 'opp' },
     { who: 'YOU', text: 'The house has a gate, a guard, and a pool that pretends the horizon works for it.', shot: 'player' },
     { who: 'MARK SLOPBERG', text: "Infinity pool. Technically it never ends, which the lawyers love.", shot: 'opp' },
-    { who: 'MARK SLOPBERG', text: "The valley says your slap can't be acquired. I respect that so much I'd like to acquire the experience. Forty-five meters, over the palms — I want to see my herd from above.", shot: 'opp' },
+    { who: 'MARK SLOPBERG', text: "The valley says your slap can't be acquired. I respect that so much I'd like to acquire the experience. Forty-one meters, over the palms — I want to see my herd from above.", shot: 'opp' },
   ],
   v3c4: [
     { who: 'MARK SLOPBERG', text: 'Welcome to the living room. Normal living room. The couch seats forty. The fireplace is load-bearing content.', shot: 'opp' },
@@ -1986,7 +1986,7 @@ export const CUTSCENES = {
     { who: 'X MARSWELL', text: "Board says the AI play is crowded. Fine. We're pivoting the whole company to MARS. Specifically: Mars-slop. We generate the slop HERE, we ship it THERE, and Mars finally has content.", shot: 'opp' },
     { who: 'YOU', text: 'Mars has no one to read it.', shot: 'player' },
     { who: 'X MARSWELL', text: "Not YET — that's a top-of-funnel problem. Look. I do rockets. I do EVs. I do a flamethrower. I posted through a hurricane.", shot: 'opp' },
-    { who: 'X MARSWELL', text: "The one thing I've never once landed is a dodge. Sixty meters. Call it my first crewed launch.", shot: 'opp' },
+    { who: 'X MARSWELL', text: "The one thing I've never once landed is a dodge. Fifty-four meters. Call it my first crewed launch.", shot: 'opp' },
     { who: 'YOU', text: 'Ignition.', shot: 'player' },
   ],
 };
